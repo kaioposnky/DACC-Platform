@@ -1,6 +1,7 @@
 ﻿using DaccApi.Helpers;
 using DaccApi.Infrastructure.Repositories.User;
 using DaccApi.Model;
+using DaccApi.Services.Auth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.User
@@ -9,7 +10,7 @@ namespace DaccApi.Services.User
     {
         private readonly IUsuarioRepository _usuarioRepository;
 
-        public UserService(IUsuarioRepository usuarioRepository) 
+        public UserService(IUsuarioRepository usuarioRepository)
         {
             _usuarioRepository = usuarioRepository;
         }
@@ -38,9 +39,9 @@ namespace DaccApi.Services.User
 
                 _usuarioRepository.Add(request);
 
-                return ResponseHelper.CreateSuccessResponse(usuario, "Usuário adicionado com sucesso.");
+                return ResponseHelper.CreateSuccessResponse("", "Usuário adicionado com sucesso.");
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return ResponseHelper.CreateErrorResponse("Ocorreu um erro ao tentar cadastrar o usuário, favor relatar ao suporte pelo: contato.daccfei@gmail.com ");
             }
