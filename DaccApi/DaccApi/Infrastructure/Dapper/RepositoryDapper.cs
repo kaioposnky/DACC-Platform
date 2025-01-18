@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Xml.Linq;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 
@@ -7,6 +8,7 @@ namespace DaccApi.Infrastructure.Dapper
     public class RepositoryDapper : IRepositoryDapper
     {
         private readonly string _connectionString;
+        private readonly string _queriesFilePath;
         private IDbConnection? _connection;
 
         public RepositoryDapper(IConfiguration configuration)
@@ -57,6 +59,20 @@ namespace DaccApi.Infrastructure.Dapper
         public async Task<IEnumerable<T>> QueryProcedureAsync<T>(string procedureName, object? parameters = null)
         {
             return await GetConnection().QueryAsync<T>(procedureName, parameters, commandType: CommandType.StoredProcedure);
+        }
+
+        public string GetQueryNamed(string queryName)
+        {
+            var xdoc = XDocument.Load(_queriesFilePath);
+            var queryElement = xdoc.Descendants("query")
+                .FirstOrDefault(q => q.Attribute("name")?.Value == queryName);
+
+            if (queryElement == null)
+            {
+                throw new KeyNotFoundException($"Query '{queryName}' not found in the configuration file.");
+            }
+
+            return queryElement.Value.Trim();
         }
     }
 }
