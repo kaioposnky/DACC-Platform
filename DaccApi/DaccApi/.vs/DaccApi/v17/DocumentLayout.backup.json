@@ -3,28 +3,20 @@
   "WorkspaceRootPath": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|c:\\users\\pichau\\reposit\u00F3rios\\web-api-.net-dacc\\daccapi\\daccapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|c:\\users\\pichau\\reposit\u00F3rios\\web-api-.net-dacc\\daccapi\\daccapi\\responses\\userresponse\\userresponserequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|solutionrelative:responses\\userresponse\\userresponserequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|c:\\users\\pichau\\reposit\u00F3rios\\web-api-.net-dacc\\daccapi\\daccapi\\model\\usuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|solutionrelative:model\\usuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|c:\\users\\pichau\\reposit\u00F3rios\\web-api-.net-dacc\\daccapi\\daccapi\\services\\user\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|solutionrelative:services\\user\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|c:\\users\\pichau\\reposit\u00F3rios\\web-api-.net-dacc\\daccapi\\daccapi\\controllers\\user\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|solutionrelative:controllers\\user\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|c:\\users\\pichau\\reposit\u00F3rios\\web-api-.net-dacc\\daccapi\\daccapi\\services\\user\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|solutionrelative:services\\user\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|c:\\users\\pichau\\reposit\u00F3rios\\web-api-.net-dacc\\daccapi\\daccapi\\model\\requestuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|solutionrelative:model\\requestuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|c:\\users\\pichau\\reposit\u00F3rios\\web-api-.net-dacc\\daccapi\\daccapi\\helpers\\userresponsehelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|solutionrelative:helpers\\userresponsehelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|c:\\users\\pichau\\reposit\u00F3rios\\web-api-.net-dacc\\daccapi\\daccapi\\infrastructure\\repositories\\user\\iusuariorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|solutionrelative:infrastructure\\repositories\\user\\iusuariorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|c:\\users\\pichau\\reposit\u00F3rios\\web-api-.net-dacc\\daccapi\\daccapi\\infrastructure\\repositories\\user\\usuariorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -33,6 +25,14 @@
     {
       "AbsoluteMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|c:\\users\\pichau\\reposit\u00F3rios\\web-api-.net-dacc\\daccapi\\daccapi\\services\\user\\iuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|solutionrelative:services\\user\\iuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|c:\\users\\pichau\\reposit\u00F3rios\\web-api-.net-dacc\\daccapi\\daccapi\\model\\usuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|solutionrelative:model\\usuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|c:\\users\\pichau\\reposit\u00F3rios\\web-api-.net-dacc\\daccapi\\daccapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{DC7C0C60-49AD-4250-BE50-1884DAD190F2}|DaccApi.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -42,37 +42,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Usuario.cs",
-              "DocumentMoniker": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\Model\\Usuario.cs",
-              "RelativeDocumentMoniker": "Model\\Usuario.cs",
-              "ToolTip": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\Model\\Usuario.cs",
-              "RelativeToolTip": "Model\\Usuario.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAoAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-18T04:02:27.382Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "UserResponseRequest.cs",
-              "DocumentMoniker": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\Responses\\UserResponse\\UserResponseRequest.cs",
-              "RelativeDocumentMoniker": "Responses\\UserResponse\\UserResponseRequest.cs",
-              "ToolTip": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\Responses\\UserResponse\\UserResponseRequest.cs",
-              "RelativeToolTip": "Responses\\UserResponse\\UserResponseRequest.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-18T03:41:49.658Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 7,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
@@ -81,69 +55,96 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2025-01-18T03:59:09.159Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "UserResponseHelper.cs",
-              "DocumentMoniker": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\Helpers\\UserResponseHelper.cs",
-              "RelativeDocumentMoniker": "Helpers\\UserResponseHelper.cs",
-              "ToolTip": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\Helpers\\UserResponseHelper.cs",
-              "RelativeToolTip": "Helpers\\UserResponseHelper.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAlAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-18T03:38:55.653Z",
+              "IsPinned": true,
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
+              "Title": "IUsuarioRepository.cs",
+              "DocumentMoniker": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\Infrastructure\\Repositories\\User\\IUsuarioRepository.cs",
+              "RelativeDocumentMoniker": "Infrastructure\\Repositories\\User\\IUsuarioRepository.cs",
+              "ToolTip": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\Infrastructure\\Repositories\\User\\IUsuarioRepository.cs",
+              "RelativeToolTip": "Infrastructure\\Repositories\\User\\IUsuarioRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-18T15:02:46.461Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Usuario.cs",
+              "DocumentMoniker": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\Model\\Usuario.cs",
+              "RelativeDocumentMoniker": "Model\\Usuario.cs",
+              "ToolTip": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\Model\\Usuario.cs",
+              "RelativeToolTip": "Model\\Usuario.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-18T14:51:58.582Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "RequestUser.cs",
+              "DocumentMoniker": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\Model\\RequestUser.cs",
+              "RelativeDocumentMoniker": "Model\\RequestUser.cs",
+              "ToolTip": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\Model\\RequestUser.cs*",
+              "RelativeToolTip": "Model\\RequestUser.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-18T04:04:11.542Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "UserController.cs",
               "DocumentMoniker": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\Controllers\\User\\UserController.cs",
               "RelativeDocumentMoniker": "Controllers\\User\\UserController.cs",
               "ToolTip": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\Controllers\\User\\UserController.cs",
               "RelativeToolTip": "Controllers\\User\\UserController.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAABIAAAAlAAAAAAAAAA==",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAABsAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-18T03:33:42.694Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 5,
               "Title": "IUserService.cs",
               "DocumentMoniker": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\Services\\User\\IUserService.cs",
               "RelativeDocumentMoniker": "Services\\User\\IUserService.cs",
               "ToolTip": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\Services\\User\\IUserService.cs",
               "RelativeToolTip": "Services\\User\\IUserService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-18T03:26:34.159Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 0,
               "Title": "UserService.cs",
               "DocumentMoniker": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\Services\\User\\UserService.cs",
               "RelativeDocumentMoniker": "Services\\User\\UserService.cs",
               "ToolTip": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\Services\\User\\UserService.cs",
               "RelativeToolTip": "Services\\User\\UserService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAcAAAAAAAAAAAAiwA8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-18T03:25:59.18Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 4,
               "Title": "UsuarioRepository.cs",
               "DocumentMoniker": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\Infrastructure\\Repositories\\User\\UsuarioRepository.cs",
               "RelativeDocumentMoniker": "Infrastructure\\Repositories\\User\\UsuarioRepository.cs",
               "ToolTip": "C:\\Users\\Pichau\\Reposit\u00F3rios\\Web-API-.NET-DACC\\DaccApi\\DaccApi\\Infrastructure\\Repositories\\User\\UsuarioRepository.cs",
               "RelativeToolTip": "Infrastructure\\Repositories\\User\\UsuarioRepository.cs",
-              "ViewState": "AgIAAAEAAAAAAAAAAAAAACAAAAASAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwCAAAAASAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-17T18:33:34.074Z",
               "EditorCaption": ""

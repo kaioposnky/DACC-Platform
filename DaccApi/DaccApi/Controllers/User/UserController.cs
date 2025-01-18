@@ -19,32 +19,14 @@ namespace DaccApi.Controllers
             _userService = userService;
         }
 
-        [HttpPost("add")]
+        [HttpPost("CreateUser")]
         [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult Add([FromBody] RequestUsuario request)
+        public IActionResult CreateUser([FromBody] RequestUsuario request)
         {
-            var usuario = new Usuario
-            {
-                Name = request.Name,
-                Email = request.Email,
-                Password = request.Password,
-                RegistrationDate = request.RegistrationDate,
-            };
-
-            if (usuario == null)
-                return ResponseHelper.CreateBadRequestResponse("Usuário não pode ser nulo.");
-
-            try
-            {
-                _userService.Add(usuario);
-                return ResponseHelper.CreateSuccessResponse(usuario, "Usuário adicionado com sucesso.");
-            }
-            catch (Exception ex)
-            {
-                return ResponseHelper.CreateErrorResponse($"Ocorreu um erro crítico na plataforma, favor acionar o suporte em: contato.dacc@gmail.com");
-            }
+            var response = _userService.CreateUser(request);
+            return response;
         }
     }
 }

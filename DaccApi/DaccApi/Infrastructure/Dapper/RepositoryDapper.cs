@@ -7,6 +7,7 @@ namespace DaccApi.Infrastructure.Dapper
 {
     public class RepositoryDapper : IRepositoryDapper
     {
+        private Dictionary<string, string> _queriesCache = new Dictionary<string, string>();
         private readonly string _connectionString;
         private readonly string _queriesFilePath;
         private IDbConnection? _connection;
@@ -63,16 +64,37 @@ namespace DaccApi.Infrastructure.Dapper
 
         public string GetQueryNamed(string queryName)
         {
-            var xdoc = XDocument.Load(_queriesFilePath);
-            var queryElement = xdoc.Descendants("query")
-                .FirstOrDefault(q => q.Attribute("name")?.Value == queryName);
-
-            if (queryElement == null)
+            try
             {
-                throw new KeyNotFoundException($"Query '{queryName}' not found in the configuration file.");
-            }
+                if (_queriesCache.ContainsKey(queryName))
+                {
+                    return _queriesCache[queryName];
+                }
 
-            return queryElement.Value.Trim();
+                var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Queries");
+
+                var xmlFiles = Directory.GetFiles(directoryPath, "*.hbm.xml");
+
+                foreach (var file in xmlFiles)
+                {
+
+                    var xdoc = XDocument.Load(file);
+                    var queryElement = xdoc.Descendants("query")
+                        .FirstOrDefault(q => q.Attribute("name")?.Value == queryName);
+
+                    if (queryElement != null)
+                    {
+                        _queriesCache[queryName] = queryElement.Value.Trim();
+                        return _queriesCache[queryName];
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new KeyNotFoundException($"Query '{queryName}' não encontrada em nenhum arquivo de configuração.");
+            }
+            return ($"Query '{queryName}' não encontrada em nenhum arquivo de configuração.");
         }
+
     }
 }

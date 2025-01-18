@@ -1,5 +1,7 @@
-﻿using DaccApi.Infrastructure.Repositories.User;
+﻿using DaccApi.Helpers;
+using DaccApi.Infrastructure.Repositories.User;
 using DaccApi.Model;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.User
 {
@@ -9,20 +11,38 @@ namespace DaccApi.Services.User
 
         public UserService(IUsuarioRepository usuarioRepository) 
         {
-            usuarioRepository = _usuarioRepository;
+            _usuarioRepository = usuarioRepository;
         }
 
-        public bool Add(Usuario usuario) 
+        public IActionResult CreateUser(RequestUsuario request)
         {
             try
             {
-                _usuarioRepository.Add(usuario);
+                if (request == null)
+                    return ResponseHelper.CreateBadRequestResponse("Requisição inválida. O corpo da solicitação não pode ser nulo.");
 
-                return true;
+                if (string.IsNullOrWhiteSpace(request.Name) ||
+                    string.IsNullOrWhiteSpace(request.Email) ||
+                    string.IsNullOrWhiteSpace(request.Password))
+                {
+                    return ResponseHelper.CreateBadRequestResponse("Os campos Nome, Email e Senha são obrigatórios.");
+                }
+
+                var usuario = new Usuario
+                {
+                    Name = request.Name,
+                    Email = request.Email,
+                    Password = request.Password,
+                    RegistrationDate = request.RegistrationDate
+                };
+
+                _usuarioRepository.Add(request);
+
+                return ResponseHelper.CreateSuccessResponse(usuario, "Usuário adicionado com sucesso.");
             }
             catch (Exception ex) 
             {
-                throw new ApplicationException("Ocorreu um erro ao tentar cadastrar o usuário, favor relatar ao suporte pelo: contato.dacc@gmail.com ");
+                return ResponseHelper.CreateErrorResponse("Ocorreu um erro ao tentar cadastrar o usuário, favor relatar ao suporte pelo: contato.daccfei@gmail.com ");
             }
         }
     }

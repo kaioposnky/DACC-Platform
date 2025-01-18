@@ -1,9 +1,10 @@
 ﻿using DaccApi.Model;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.User
 {
     public interface IUserService
     {
-        public bool Add(Usuario usuario);
+        public IActionResult CreateUser(RequestUsuario request);
     }
 }
