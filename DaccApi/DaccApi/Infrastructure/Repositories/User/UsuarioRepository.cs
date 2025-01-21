@@ -30,6 +30,7 @@ namespace DaccApi.Infrastructure.Repositories.User
                     Senha = encryptPassword,
                     TipoUsuarioId = request.TypeId,
                     DataCadastro = DateTime.UtcNow,
+                    Situacao = (int)UserEnum.UserSituacao.Ativo,
                 };
 
 

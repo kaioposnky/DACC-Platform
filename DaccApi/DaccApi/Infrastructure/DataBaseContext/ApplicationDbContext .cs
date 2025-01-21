@@ -43,6 +43,10 @@ namespace DaccApi.Infrastructure.DataBaseContext
                 entity.Property(e => e.RegistrationDate)
                       .HasColumnName("DataCadastro")
                       .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(e => e.UsuSitua)
+                      .HasColumnName("Situacao")
+                      .IsRequired();
             });
         }
     }

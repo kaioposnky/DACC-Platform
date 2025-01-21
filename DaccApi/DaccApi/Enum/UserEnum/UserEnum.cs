@@ -7,5 +7,10 @@
             Master = 1,
 
         }
+        public enum UserSituacao
+        { 
+            Ativo = 1,
+            Inativo = 0
+        }
     }
 }
