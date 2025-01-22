@@ -12,14 +12,14 @@ namespace DaccApi.Infrastructure.Repositories.Products
             _repositoryDapper = repositoryDapper;
         }
 
-        public List<Product> GetListProductsAsync()
+        public async Task<List<Product>> GetListProductsAsync()
         {
             var sql = _repositoryDapper.GetQueryNamed("GetAllProducts");
             var param = new { };
 
-            var products = _repositoryDapper.QueryAsync<Product>(sql, param);
-            var productList = new List<Product>();
+            var products = await _repositoryDapper.QueryAsync<Product>(sql, param);
 
+            var productList = new List<Product>();
             foreach (var product in products)
             {
                 productList.Add(product);
@@ -27,5 +27,6 @@ namespace DaccApi.Infrastructure.Repositories.Products
 
             return productList;
         }
+
     }
 }

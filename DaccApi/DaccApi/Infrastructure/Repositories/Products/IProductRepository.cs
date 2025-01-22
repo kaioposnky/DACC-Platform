@@ -1,6 +1,9 @@
-﻿namespace DaccApi.Infrastructure.Repositories.Products
+﻿using DaccApi.Model;
+
+namespace DaccApi.Infrastructure.Repositories.Products
 {
-    public class IProductRepository
+    public interface IProductRepository
     {
+        public Task<List<Product>> GetListProductsAsync();
     }
 }
