@@ -20,10 +20,10 @@ namespace DaccApi.Controllers.Products
         [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public List<Product> Load_Main_Products()
+        public Task<List<Product>> Load_Main_Products()
         {
 
-            List<Product> products = _productService.GetProducts();
+            Task<List<Product>> products = _productService.GetProducts();
 
             return products;
         }

@@ -1,23 +1,29 @@
 ﻿using DaccApi.Helpers;
-using DaccApi.Infrastructure.Dapper;
 using DaccApi.Model;
 using Microsoft.AspNetCore.Mvc;
-using DaccApi
+using DaccApi.Infrastructure.Repositories;
+using DaccApi.Infrastructure.Repositories.Products;
 
 namespace DaccApi.Services.Products
 {
     public class ProductService : IProductService
     {
-        private readonly IRepositoryDapper _repositoryDapper;
+        private readonly IProductRepository _productRepository;
 
-        public List<Product> GetProducts()
+        public ProductService(IProductRepository productRepository)
         {
-            var products = new List<Product>();
+            _productRepository = productRepository;
+        }
+
+        public Task<List<Product>> GetProducts()
+        {
 
             try
             {
                 // Lógica de obter produtos usando Query do SQL
+                var products = _productRepository.GetListProductsAsync();
 
+                return products;
             }
             catch (Exception ex) {
 
