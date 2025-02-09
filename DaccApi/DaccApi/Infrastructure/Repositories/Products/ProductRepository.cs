@@ -31,5 +31,72 @@ namespace DaccApi.Infrastructure.Repositories.Products
             });
         }
 
+        public Product GetProductByIdAsync(int id)
+        {
+            var sql = _repositoryDapper.GetQueryNamed("GetAllProducts");
+            var param = new { };
+
+            // Deus por favor me ajuda a tipar essa desgrama corretamente :pray:
+            return (Product)Task.Run(() =>
+            {
+                return _repositoryDapper.QueryAsync<Product>(sql, param)
+                .GetAwaiter().GetResult();
+                
+            }).GetAwaiter().GetResult();
+        }
+
+
+        public void AddProductAsync(Product product)
+        {
+
+            var sql = _repositoryDapper.GetQueryNamed("AddProduct");
+            var param = new { 
+                Name = product.Name, 
+                ImageUrl = product.ImageUrl,
+                Price = product.Price,
+                Description = product.Description,
+                Id = product.Id,
+                ReleaseDate = product.ReleaseDate,
+            };
+
+            var taskResult = Task.Run(() =>
+            {
+                try
+                {
+                    // Tenta executar a tarefa de adicionar o produto
+                    _repositoryDapper.ExecuteAsync(sql, param);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception();
+                }
+                
+            });
+
+        }
+
+        public void RemoveProductByIdAsync(int id)
+        {
+
+            var sql = _repositoryDapper.GetQueryNamed("RemoveProductById");
+            var param = new
+            { Id = id };
+
+            var taskResult = Task.Run(() =>
+            {
+                try
+                {
+                    // Tenta executar a tarefa de adicionar o produto
+                    _repositoryDapper.ExecuteAsync(sql, param);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception();
+                }
+
+            });
+
+        }
+
     }
 }

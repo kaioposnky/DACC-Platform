@@ -6,10 +6,22 @@
 	</query>
 
 	<!-- Consulta para obter um produto por ID -->
-	<query name="GetUsuarioById">
-		SELECT usuarioid, nome, email
-		FROM Usuarios
-		WHERE id = @Id;
+	<query name="GetProductById">
+		SELECT Name, ImageUrl, Price, Description, Id, ReleaseDate
+		FROM Products
+		WHERE Id = @Id;
+	</query>
+
+	<!-- Query para adicionar um produto -->
+	<query name="AddProduct">
+		INSERT INTO Produtos (Name, ImageUrl, Price, Description, Id, ReleaseDate)
+		VALUES (@Name, @ImageUrl, @Price, @Description, @Id, @ReleaseDate)
+	</query>
+
+	<!-- Query para remover um produto usando id-->
+	<query name="RemoveProductById">
+		DELETE FROM Produtos
+		WHERE Id = @Id;
 	</query>
 
 	<!-- Consulta para atualizar um usuário -->

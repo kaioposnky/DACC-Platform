@@ -1,7 +1,4 @@
-﻿using DaccApi.Helpers;
-using DaccApi.Model;
-using Microsoft.AspNetCore.Mvc;
-using DaccApi.Infrastructure.Repositories;
+﻿using DaccApi.Model;
 using DaccApi.Infrastructure.Repositories.Products;
 
 namespace DaccApi.Services.Products
@@ -29,6 +26,47 @@ namespace DaccApi.Services.Products
 
                 throw ex;
             }
-        } 
+        }
+        
+        public Product GetProductById(int ProductId)
+        {
+            // Implementar lógica de registro de pessoa que abriu o produto para deixar salvo
+
+            // TODO: Implementar no Repository
+            var product = _productRepository.GetProductByIdAsync(ProductId);
+
+            return product;
+
+        }
+
+        public String AddProduct(string productName, string productDescription, byte[] productImageUrl, double productPrice, int productId)
+        {
+            // Implementar lógica de registro de pessoa que fez esse request de adicionar o produto
+
+            var newProduct = new Product();
+
+            newProduct.Name = productName;
+            newProduct.ImageUrl = productImageUrl;
+            newProduct.Price = productPrice;
+            newProduct.Description = productDescription;
+            newProduct.Id = productId;
+            newProduct.ReleaseDate = DateTime.Now;
+            // Adicionar comentários nos produtos
+
+            _productRepository.AddProductAsync(newProduct);
+
+            return "Produto " + productName + " adicionado com sucesso!";
+        }
+
+        public String RemoveProductById(int productId)
+        {
+            // Implementar lógica de registro de pessoa que fez esse request de adicionar o produto
+
+            _productRepository.RemoveProductByIdAsync(productId);
+
+            String productName = GetProductById(productId).Name;
+
+            return "Produto " + productName + " removido com sucesso!";
+        }
     }
 }
