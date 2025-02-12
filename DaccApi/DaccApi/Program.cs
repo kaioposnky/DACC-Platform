@@ -15,7 +15,9 @@ using DaccApi;
 using DaccApi.Services.Products;
 using DaccApi.Infrastructure.Repositories.Products;
 using DaccApi.Services.Diretorias;
-using DaccApi.Infrastructure.Repositories.Diretoria;
+using DaccApi.Infrastructure.Repositories.Diretorias;
+using DaccApi.Infrastructure.Repositories.Projetos;
+using DaccApi.Services.Projetos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -76,14 +78,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IDbConnection>(sp =>
     new NpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IRepositoryDapper, RepositoryDapper>();
-builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IArgon2Utility, Argon2Utility>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IDiretoriasRepository, DiretoriasRepository>();
 builder.Services.AddScoped<IDiretoriasService, DiretoriasService>();
+builder.Services.AddScoped<IDiretoriasRepository, DiretoriasRepository>();
+builder.Services.AddScoped<IProjetosService, ProjetosService>();
+builder.Services.AddScoped<IProjetosRepository, ProjetosRepository>();
 
 
 var app = builder.Build();

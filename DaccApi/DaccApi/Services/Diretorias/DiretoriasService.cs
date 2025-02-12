@@ -10,7 +10,7 @@ namespace DaccApi.Services.Diretorias
         public List<Diretoria> GetDiretorias()
         {
 
-            List<Diretoria> diretorias = _diretoriasRepository.GetDiretorias();
+            List<Diretoria> diretorias = _diretoriasRepository.GetDiretoriasAsync();
 
             return diretorias;
         }

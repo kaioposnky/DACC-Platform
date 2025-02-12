@@ -23,9 +23,9 @@ namespace DaccApi.Controllers.Products
         public List<Diretoria> GetDiretorias()
         {
 
-            List<Diretoria> products = _diretoriasService.GetDiretorias();
+            List<Diretoria> diretorias = _diretoriasService.GetDiretorias();
 
-            return products;
+            return diretorias;
         }
 
     }
