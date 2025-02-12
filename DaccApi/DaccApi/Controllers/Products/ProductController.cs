@@ -3,15 +3,15 @@ using DaccApi.Responses.UserResponse;
 using DaccApi.Services.Products;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DaccApi.Controllers.Products
+namespace DaccApi.Controllers.Diretorias
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ProductController : ControllerBase
+    public class DiretoriasController : ControllerBase
     {
         private readonly IProductService _productService;
 
-        public ProductController(IProductService productService)
+        public DiretoriasController(IProductService productService)
         {
             _productService = productService;
         }
