@@ -59,7 +59,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
                 ReleaseDate = product.ReleaseDate,
             };
 
-            var taskResult = Task.Run(() =>
+            Task.Run(() =>
             {
                 try
                 {
@@ -82,7 +82,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
             var param = new
             { Id = id };
 
-            var taskResult = Task.Run(() =>
+            Task.Run(() =>
             {
                 try
                 {
@@ -98,5 +98,33 @@ namespace DaccApi.Infrastructure.Repositories.Products
 
         }
 
+        public void AddProductRatingAsync(ProductRating productRating)
+        {
+            var sql = _repositoryDapper.GetQueryNamed("");
+            var param = new
+            {
+                Rating = productRating.Rating,
+                Commentary = productRating.Commentary,
+                ProductId = productRating.ProductId,
+                UserId = productRating.UserId,
+                State = productRating.State,
+                DatePosted = productRating.DatePosted,
+            };
+
+            Task.Run(() =>
+            {
+
+                try
+                {
+                    // Tenta executar a tarefa de adicionar o produto
+                    _repositoryDapper.ExecuteAsync(sql, param);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception();
+                }
+
+            });
+        }
     }
 }

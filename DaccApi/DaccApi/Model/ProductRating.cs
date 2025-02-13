@@ -7,6 +7,6 @@
         public int ProductId { get; set; }
         public int UserId { get; set; }
         public int State { get; set; } // Estado de ativação da avaliação, 0 = desativada, 1 = ativada
-        public DateTime PostDate { get; set; }
+        public DateTime DatePosted { get; set; }
     }
 }

@@ -11,5 +11,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
 
         public void RemoveProductByIdAsync(int id);
 
+        public void AddProductRatingAsync(ProductRating productRating);
+
     }
 }
