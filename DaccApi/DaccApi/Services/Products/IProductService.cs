@@ -6,6 +6,6 @@ namespace DaccApi.Services.Products
     public interface IProductService
     {
 
-        public Task<List<Product>> GetProducts();
+        public List<Product> GetProducts();
     }
 }

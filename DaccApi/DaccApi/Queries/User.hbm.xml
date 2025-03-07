@@ -2,8 +2,8 @@
 <queries>
 	<!-- Consulta para inserir um usuário -->
 	<query name="InsertUsuario">
-		INSERT INTO Usuarios (nome, email, senha, tipousuarioid, datacadastro, situacao)
-		VALUES (@Nome, @Email, @Senha, @TipoUsuarioId, @DataCadastro, @Situacao);
+		INSERT INTO Usuarios (nome, email, senha, tipousuarioid, datacadastro, Situacao)
+		VALUES (@Nome, @Email, @Senha, @TipoUsuarioId, @DataCadastro, @Situacao );
 	</query>
 
 	<!-- Consulta para obter todos os usuários -->

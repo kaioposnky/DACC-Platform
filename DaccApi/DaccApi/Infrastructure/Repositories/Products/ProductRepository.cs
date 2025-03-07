@@ -7,29 +7,25 @@ namespace DaccApi.Infrastructure.Repositories.Products
     {
         private readonly IRepositoryDapper _repositoryDapper;
 
-        public ProductRepository(IRepositoryDapper repositoryDapper)
+        public ProductRepository(IRepositoryDapper repositoryDapper) 
         {
             _repositoryDapper = repositoryDapper;
         }
-
-        public Task<List<Product>> GetListProductsAsync()
+        public List<Product> GetListProducts()
         {
             var sql = _repositoryDapper.GetQueryNamed("GetAllProducts");
             var param = new { };
 
-            return Task.Run(() =>
+            var products = _repositoryDapper.Query<Product>(sql).ToList();
+
+            if (products == null || !products.Any())
             {
-                var products = _repositoryDapper.QueryAsync<Product>(sql, param).GetAwaiter().GetResult();
+                Console.WriteLine("Nenhum produto encontrado.");
+            }
 
-                var productList = new List<Product>();
-                foreach (var product in products)
-                {
-                    productList.Add(product);
-                }
-
-                return productList;
-            });
+            return products;
         }
+
 
     }
 }

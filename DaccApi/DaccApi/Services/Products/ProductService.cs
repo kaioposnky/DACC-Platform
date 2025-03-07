@@ -15,13 +15,11 @@ namespace DaccApi.Services.Products
             _productRepository = productRepository;
         }
 
-        public Task<List<Product>> GetProducts()
+        public List<Product> GetProducts()
         {
-
             try
             {
-                // Lógica de obter produtos usando Query do SQL
-                var products = _productRepository.GetListProductsAsync();
+                List<Product> products = _productRepository.GetListProducts();
 
                 return products;
             }
