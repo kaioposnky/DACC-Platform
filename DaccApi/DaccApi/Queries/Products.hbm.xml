@@ -1,18 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <queries>
-	<!-- Consulta para inserir um usuário -->
-	<query name="InsertUsuario">
-		INSERT INTO Usuarios (nome, email, senha, tipousuarioid, datacadastro, Situacao)
-		VALUES (@Nome, @Email, @Senha, @TipoUsuarioId, @DataCadastro, @Situacao );
+	<!-- Consulta para obter todos os produtos -->
+	<query name="GetAllProducts">
+		SELECT ProdutoId, Nome, Descricao, Preco, DataDeLancamento, ImagemProduto FROM Produtos;
 	</query>
 
-	<!-- Consulta para obter todos os usuários -->
-	<query name="GetAllUsuarios">
-		SELECT usuarioid, nome, email
-		FROM Usuarios;
-	</query>
-
-	<!-- Consulta para obter um usuário por ID -->
+	<!-- Consulta para obter um produto por ID -->
 	<query name="GetUsuarioById">
 		SELECT usuarioid, nome, email
 		FROM Usuarios

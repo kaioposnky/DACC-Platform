@@ -35,6 +35,7 @@ namespace DaccApi.Services.User
                     Email = request.Email,
                     Password = request.Password,
                     RegistrationDate = request.RegistrationDate
+                    
                 };
 
                 _usuarioRepository.Add(request);

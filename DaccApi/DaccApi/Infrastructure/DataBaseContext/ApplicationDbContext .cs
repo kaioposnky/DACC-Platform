@@ -44,7 +44,7 @@ namespace DaccApi.Infrastructure.DataBaseContext
                       .HasColumnName("DataCadastro")
                       .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                entity.Property(e => e.UsuSitua)
+                entity.Property(e => e.Situacao)
                       .HasColumnName("Situacao")
                       .IsRequired();
             });
