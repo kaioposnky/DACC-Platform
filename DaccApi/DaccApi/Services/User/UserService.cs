@@ -29,7 +29,7 @@ namespace DaccApi.Services.User
                     return ResponseHelper.CreateBadRequestResponse("Os campos Nome, Email e Senha são obrigatórios.");
                 }
 
-                var usuario = new Usuario
+                var usuario = new Model.User
                 {
                     Name = request.Name,
                     Email = request.Email,

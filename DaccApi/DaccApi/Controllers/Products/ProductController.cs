@@ -36,5 +36,43 @@ namespace DaccApi.Controllers.Products
             var products = _productService.GetProductById(requestProduto);
             return products;
         }
+
+
+        [HttpGet("AddProduct")]
+        [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public String AddProduct(string name, string description, byte[] imageUrl, double price, int id)
+        {
+
+            String response = _productService.AddProduct(name, description, imageUrl, price, id);
+
+            return response;
+        }
+
+        [HttpGet("RemoveProductById")]
+        [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public String RemoveProductById(int productId)
+        {
+
+            String response = _productService.RemoveProductById(productId);
+
+            return response;
+        }
+
+        [HttpGet("AddProductRating")]
+        [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public String AddProductRating(int productId, int userId, string? comment, float rating)
+        {
+
+            String response = _productService.AddProductRating(productId, userId, comment, rating);
+
+            return response;
+        }
+
     }
 }

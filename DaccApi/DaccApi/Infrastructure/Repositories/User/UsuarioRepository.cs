@@ -42,7 +42,7 @@ namespace DaccApi.Infrastructure.Repositories.User
             }
         }
 
-        public List<Usuario> GetAll()
+        public List<Model.User> GetAll()
         {
             throw new NotImplementedException();
         }
