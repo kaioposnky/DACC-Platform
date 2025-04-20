@@ -15,18 +15,46 @@ namespace DaccApi.Services.Products
             _productRepository = productRepository;
         }
 
-        public List<Product> GetProducts()
+        public IActionResult GetAllProducts()
         {
             try
             {
-                List<Product> products = _productRepository.GetListProducts();
+                var products = _productRepository.GetAllProductsAsync().Result;
 
-                return products;
-            }
-            catch (Exception ex) {
+                if (products == null || products.Count == 0)
+                {
+                    return ResponseHelper.CreateBadRequestResponse("Nenhum produto foi encontrado!");
+                }
 
-                throw ex;
+                return ResponseHelper.CreateSuccessResponse(new { Products = products }, "Produtos obtidos com sucesso!");
             }
-        } 
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse("Erro ao obter os produtos!" + ex);
+            }
+        }
+
+        public IActionResult GetProductById(RequestProduto requestProduto)
+        {
+            try
+            {
+                if (requestProduto.Id == null)
+                {
+                    return ResponseHelper.CreateBadRequestResponse("Requisição inválida. O ProdutoId não pode ser nulo!");
+                }
+                var product = _productRepository.GetProductByIdAsync(requestProduto.Id).Result;
+
+                if (product == null)
+                {
+                    return ResponseHelper.CreateBadRequestResponse("Nenhum produto foi encontrado!");
+                }
+
+                return ResponseHelper.CreateSuccessResponse(new { Product = product }, "Produto obtido com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse("Erro ao obter um produto pelo Id!" + ex);
+            }
+        }
     }
 }

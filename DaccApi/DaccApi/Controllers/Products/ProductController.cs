@@ -1,4 +1,5 @@
-﻿using DaccApi.Model;
+﻿using DaccApi.Helpers;
+using DaccApi.Model;
 using DaccApi.Responses.UserResponse;
 using DaccApi.Services.Products;
 using Microsoft.AspNetCore.Mvc;
@@ -16,15 +17,23 @@ namespace DaccApi.Controllers.Products
             _productService = productService;
         }
 
-        [HttpGet("Load_Main_Products")]
-        [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+        [HttpGet("GetAllProducts")]
+        [ProducesResponseType(typeof(Produto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public List<Product> Load_Main_Products()
+        public IActionResult GetAllProducts()
         {
+            var products = _productService.GetAllProducts();
+            return products;
+        }
 
-            List<Product> products = _productService.GetProducts();
-
+        [HttpPost("GetProductById")]
+        [ProducesResponseType(typeof(Produto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetProductById([FromBody] RequestProduto requestProduto)
+        {
+            var products = _productService.GetProductById(requestProduto);
             return products;
         }
     }

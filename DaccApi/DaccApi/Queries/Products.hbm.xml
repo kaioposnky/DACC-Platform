@@ -6,10 +6,10 @@
 	</query>
 
 	<!-- Consulta para obter um produto por ID -->
-	<query name="GetUsuarioById">
-		SELECT usuarioid, nome, email
-		FROM Usuarios
-		WHERE id = @Id;
+	<query name="GetProductById">
+		SELECT ProdutoId, Nome, Descricao, Preco, DataDeLancamento, ImagemProduto
+		FROM Produtos
+		WHERE ProdutoId = @Id;
 	</query>
 
 	<!-- Consulta para atualizar um usuário -->
