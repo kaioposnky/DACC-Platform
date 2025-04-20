@@ -5,6 +5,11 @@ namespace DaccApi.Infrastructure.Repositories.User
     public interface IUsuarioRepository
     {
         public void Add(RequestUsuario request);
-        public List<Model.User> GetAll();
+      
+        public List<Usuario> GetAll();
+
+        public Task<Usuario?> GetUserById(Guid? id);
+
+        public Task<Usuario?> GetUserByEmail(String email);
     }
 }

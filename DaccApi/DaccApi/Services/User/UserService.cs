@@ -47,5 +47,53 @@ namespace DaccApi.Services.User
                 return ResponseHelper.CreateErrorResponse("Ocorreu um erro ao tentar cadastrar o usuário, favor relatar ao suporte pelo: contato.daccfei@gmail.com ");
             }
         }
+
+        public IActionResult GetUserById(RequestUsuario request)
+        {
+            try
+            {
+                if (request.UserId == null)
+                {
+                    return ResponseHelper.CreateBadRequestResponse("Requisição inválida. O UserId não pode ser nulo!");
+                }
+
+                var usuario = _usuarioRepository.GetUserById(request.UserId).Result;
+
+                if (usuario == null)
+                {
+                    return ResponseHelper.CreateBadRequestResponse("Usuário não encontrado!");
+                }
+
+                return ResponseHelper.CreateSuccessResponse(new { user = usuario }, "Usuário obtido com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse("Erro ao obter usuário pelo Id! " + ex);
+            }
+        }
+
+        public IActionResult GetUserByEmail(RequestUsuario request)
+        {
+            try
+            {
+                if (request.Email == null)
+                {
+                    return ResponseHelper.CreateBadRequestResponse("Requisição inválida. O Email não pode ser nulo!");
+                }
+
+                var usuario = _usuarioRepository.GetUserByEmail(request.Email).Result;
+
+                if (usuario == null)
+                {
+                    return ResponseHelper.CreateBadRequestResponse("Usuário não encontrado!");
+                }
+
+                return ResponseHelper.CreateSuccessResponse(new { user = usuario }, "Usuário obtido com sucesso!");
+            } catch(Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse("Erro ao obter usuário pelo Email! " + ex);
+            }
+            
+        }
     }
 }

@@ -46,5 +46,25 @@ namespace DaccApi.Controllers
 
             return Unauthorized(new { message = "Invalid credentials" });
         }
+
+        [HttpPost("GetUserById")]
+        [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetUserById([FromBody] RequestUsuario request)
+        {
+            var response = _userService.GetUserById(request);
+            return response;
+        }
+
+        [HttpPost("GetUserByEmail")]
+        [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetUserByEmail([FromBody] RequestUsuario request)
+        {
+            var response = _userService.GetUserByEmail(request);
+            return response;
+        }
     }
 }

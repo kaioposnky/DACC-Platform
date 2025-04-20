@@ -6,6 +6,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<DocumentationFile>bin\Debug\net7.0\DaccApi.xml</DocumentationFile>
+		<UserSecretsId>de8bfb10-6285-4eb9-a739-042754207b33</UserSecretsId>
 		<!-- Ajuste o caminho conforme necessário -->
 	</PropertyGroup>
 

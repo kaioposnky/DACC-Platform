@@ -46,5 +46,45 @@ namespace DaccApi.Infrastructure.Repositories.User
         {
             throw new NotImplementedException();
         }
+
+        public async Task<Usuario?> GetUserById(Guid? id)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("GetUsuarioById");
+
+                var param = new { Id = id };
+
+                var queryResult = await _repositoryDapper.QueryProcedureAsync<Usuario>(sql, param);
+
+                var usuario = queryResult.FirstOrDefault();
+
+                return usuario;
+            } catch(Exception ex)
+            {
+                throw new Exception("Erro ao obter usuário pelo Id na base de dados!");
+            }
+            
+        }
+
+        public async Task<Usuario?> GetUserByEmail(String email)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("GetUsuarioById");
+
+                var param = new { Email = email };
+
+                var queryResult = await _repositoryDapper.QueryProcedureAsync<Usuario>(sql, param);
+
+                var usuario = queryResult.FirstOrDefault();
+
+                return usuario;
+            } catch(Exception ex)
+            {
+                throw new Exception("Erro ao obter usuário pelo Email na base de dados!");
+            }
+
+        }
     }
 }
