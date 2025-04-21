@@ -1,5 +1,7 @@
 ﻿using DaccApi.Model;
 using DaccApi.Infrastructure.Repositories.Products;
+using Microsoft.AspNetCore.Mvc;
+using DaccApi.Helpers;
 
 namespace DaccApi.Services.Products
 {
@@ -52,11 +54,12 @@ namespace DaccApi.Services.Products
             {
                 return ResponseHelper.CreateErrorResponse("Erro ao obter um produto pelo Id!" + ex);
             }
+        }
         public String AddProduct(string productName, string productDescription, byte[] productImageUrl, double productPrice, int productId)
         {
             // Implementar lógica de registro de pessoa que fez esse request de adicionar o produto
 
-            var newProduct = new Product();
+            var newProduct = new Produto();
 
             newProduct.Name = productName;
             newProduct.ImageUrl = productImageUrl;
@@ -71,15 +74,13 @@ namespace DaccApi.Services.Products
             return "Produto " + productName + " adicionado com sucesso!";
         }
 
-        public String RemoveProductById(int productId)
+        public String RemoveProductById(Guid? productId)
         {
             // Implementar lógica de registro de pessoa que fez esse request de adicionar o produto
 
             _productRepository.RemoveProductByIdAsync(productId);
 
-            String productName = GetProductById(productId).Name;
-
-            return "Produto " + productName + " removido com sucesso!";
+            return "Produto  removido com sucesso!";
         }
 
         public String AddProductRating(int productId, int userId, string? comment, float rating)
@@ -100,12 +101,12 @@ namespace DaccApi.Services.Products
 
             _productRepository.AddProductRatingAsync(newProductRating);
 
-            String productName = GetProductById(productId).Name;
+            //String productName = GetProductById(productId);
 
             // Implementar lógica para obter nome de usuário que fez a operação
             // Implementar Salvar ação de compra do usuário numa base de dados para obtermos informações úteis para melhorar as vendas
 
-            return "Avaliação de nota" + rating + " feita ao produto " + productName + " com sucesso!";
+            return "Avaliação de nota" + rating + " feita ao produto com sucesso!";
         }
     
     }

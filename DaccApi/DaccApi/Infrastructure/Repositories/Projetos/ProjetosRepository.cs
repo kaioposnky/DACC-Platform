@@ -11,18 +11,19 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
             var sql = _repositoryDapper.GetQueryNamed("GetProjetos");
             var param = new { };
 
-            return Task.Run(() => {
+            return new List<Projeto>();
+            //return Task.Run(() => {
                 
-                var projetos = _repositoryDapper.QueryAsync<Projeto>(sql, param).GetAwaiter().GetResult();
+            //    var projetos = _repositoryDapper.QueryAsync<Projeto>(sql, param).GetAwaiter().GetResult();
 
-                var projetosList = new List<Projeto>();
-                foreach(var projeto in projetos)
-                {
-                    projetosList.Add(projeto);
-                }
+            //    var projetosList = new List<Projeto>();
+            //    foreach(var projeto in projetos)
+            //    {
+            //        projetosList.Add(projeto);
+            //    }
 
-                return projetosList;
-            }).GetAwaiter().GetResult();
+            //    return projetosList;
+            //}).GetAwaiter().GetResult();
         }
 
     }

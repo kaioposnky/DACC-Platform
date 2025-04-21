@@ -49,22 +49,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
 
         }
 
-        public Product GetProductByIdAsync(int id)
-        {
-            var sql = _repositoryDapper.GetQueryNamed("GetAllProducts");
-            var param = new { };
-
-            // Deus por favor me ajuda a tipar essa desgrama corretamente :pray:
-            return (Product)Task.Run(() =>
-            {
-                return _repositoryDapper.QueryAsync<Product>(sql, param)
-                .GetAwaiter().GetResult();
-                
-            }).GetAwaiter().GetResult();
-        }
-
-
-        public void AddProductAsync(Product product)
+        public void AddProductAsync(Produto product)
         {
 
             var sql = _repositoryDapper.GetQueryNamed("AddProduct");
@@ -93,7 +78,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
 
         }
 
-        public void RemoveProductByIdAsync(int id)
+        public void RemoveProductByIdAsync(Guid? id)
         {
 
             var sql = _repositoryDapper.GetQueryNamed("RemoveProductById");

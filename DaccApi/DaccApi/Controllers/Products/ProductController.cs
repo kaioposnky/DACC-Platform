@@ -54,7 +54,7 @@ namespace DaccApi.Controllers.Products
         [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public String RemoveProductById(int productId)
+        public String RemoveProductById(Guid? productId)
         {
 
             String response = _productService.RemoveProductById(productId);

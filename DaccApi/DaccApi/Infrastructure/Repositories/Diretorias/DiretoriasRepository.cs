@@ -12,18 +12,19 @@ namespace DaccApi.Infrastructure.Repositories.Diretorias
             var sql = _repositoryDapper.GetQueryNamed("GetAllDiretorias");
             var param = new { };
 
-            return Task.Run(() =>
-            {
-                var diretorias = _repositoryDapper.QueryAsync<Diretoria>(sql, param).GetAwaiter().GetResult();
+            return new List<Diretoria>();
+            //return Task.Run(() =>
+            //{
+            //    var diretorias = _repositoryDapper.QueryAsync<Diretoria>(sql, param).GetAwaiter().GetResult();
 
-                var diretoriasList = new List<Diretoria>();
-                foreach (var diretoria in diretorias)
-                {
-                    diretoriasList.Add(diretoria);
-                }
+            //    var diretoriasList = new List<Diretoria>();
+            //    foreach (var diretoria in diretorias)
+            //    {
+            //        diretoriasList.Add(diretoria);
+            //    }
 
-                return diretoriasList;
-            }).GetAwaiter().GetResult();
+            //    return diretoriasList;
+            //}).GetAwaiter().GetResult();
         }
 
     }

@@ -11,11 +11,11 @@ namespace DaccApi.Infrastructure.DataBaseContext
 
         }
 
-        public DbSet<User> Usuarios { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>(entity =>
+            modelBuilder.Entity<Usuario>(entity =>
             {
                 entity.ToTable("Usuario");
 
