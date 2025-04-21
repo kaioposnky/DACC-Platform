@@ -7,24 +7,21 @@ namespace DaccApi.Infrastructure.Repositories.Diretorias
     {
         private readonly IRepositoryDapper _repositoryDapper;
 
-        public List<Diretoria> GetDiretoriasAsync()
+        public async Task<List<Diretoria>> GetAllDiretoriasAsync()
         {
-            var sql = _repositoryDapper.GetQueryNamed("GetAllDiretorias");
-            var param = new { };
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("GetAllDiretorias");
 
-            return new List<Diretoria>();
-            //return Task.Run(() =>
-            //{
-            //    var diretorias = _repositoryDapper.QueryAsync<Diretoria>(sql, param).GetAwaiter().GetResult();
+                var queryResult = await _repositoryDapper.QueryProcedureAsync<Diretoria>(sql);
 
-            //    var diretoriasList = new List<Diretoria>();
-            //    foreach (var diretoria in diretorias)
-            //    {
-            //        diretoriasList.Add(diretoria);
-            //    }
-
-            //    return diretoriasList;
-            //}).GetAwaiter().GetResult();
+                var diretorias = queryResult.ToList();
+                return diretorias;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao obter diretorias no banco de dados!");
+            }
         }
 
     }

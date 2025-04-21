@@ -5,7 +5,7 @@ namespace DaccApi.Infrastructure.Repositories.Diretorias
     public interface IDiretoriasRepository
     {
 
-        public List<Diretoria> GetDiretoriasAsync();
+        public Task<List<Diretoria>> GetAllDiretoriasAsync();
 
     }
 }

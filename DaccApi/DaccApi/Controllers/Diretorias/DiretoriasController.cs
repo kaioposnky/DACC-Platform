@@ -20,12 +20,10 @@ namespace DaccApi.Controllers.Products
         [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public List<Diretoria> GetDiretorias()
+        public IActionResult GetDiretorias()
         {
-
-            List<Diretoria> diretorias = _diretoriasService.GetDiretorias();
-
-            return diretorias;
+            var response = _diretoriasService.GetAllDiretorias();
+            return response;
         }
 
     }
