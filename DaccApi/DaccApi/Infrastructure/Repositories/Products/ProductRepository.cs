@@ -1,4 +1,5 @@
-﻿using DaccApi.Infrastructure.Dapper;
+﻿using System.Threading.Tasks;
+using DaccApi.Infrastructure.Dapper;
 using DaccApi.Model;
 
 namespace DaccApi.Infrastructure.Repositories.Products
@@ -25,9 +26,8 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao obter todos os produtos na base de dados!");
+                throw new Exception("Erro ao obter todos os produtos no banco de dados!");
             }
-            
         }
 
         public async Task<Produto?> GetProductByIdAsync(Guid? id)
@@ -44,90 +44,51 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao obter produto pelo Id na base de dados!");
+                throw new Exception("Erro ao obter produto pelo Id no banco de dados!");
             }
-
         }
 
-        public void AddProductAsync(Produto product)
+        public async void AddProductAsync(Produto product)
         {
-
-            var sql = _repositoryDapper.GetQueryNamed("AddProduct");
-            var param = new { 
-                Name = product.Name, 
-                ImageUrl = product.ImageUrl,
-                Price = product.Price,
-                Description = product.Description,
-                Id = product.Id,
-                ReleaseDate = product.ReleaseDate,
-            };
-
-            Task.Run(() =>
+            try
             {
-                try
-                {
-                    // Tenta executar a tarefa de adicionar o produto
-                    _repositoryDapper.ExecuteAsync(sql, param);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception();
-                }
-                
-            });
+                var sql = _repositoryDapper.GetQueryNamed("AddProduct");
 
+                await _repositoryDapper.ExecuteAsync(sql, product);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao adicionar produto no banco de dados!");
+            }
         }
 
-        public void RemoveProductByIdAsync(Guid? id)
+        public async void RemoveProductByIdAsync(Guid? id)
         {
-
-            var sql = _repositoryDapper.GetQueryNamed("RemoveProductById");
-            var param = new
-            { Id = id };
-
-            Task.Run(() =>
+            try
             {
-                try
-                {
-                    // Tenta executar a tarefa de adicionar o produto
-                    _repositoryDapper.ExecuteAsync(sql, param);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception();
-                }
+                var sql = _repositoryDapper.GetQueryNamed("RemoveProductById");
+                var param = new { Id = id };
 
-            });
-
+                await _repositoryDapper.ExecuteAsync(sql, param);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao remover produto no banco de dados!");
+            }
         }
 
-        public void AddProductRatingAsync(ProductRating productRating)
+        public async void AddProductRatingAsync(ProductRating productRating)
         {
-            var sql = _repositoryDapper.GetQueryNamed("");
-            var param = new
+            try
             {
-                Rating = productRating.Rating,
-                Commentary = productRating.Commentary,
-                ProductId = productRating.ProductId,
-                UserId = productRating.UserId,
-                State = productRating.State,
-                DatePosted = productRating.DatePosted,
-            };
+                var sql = _repositoryDapper.GetQueryNamed("");
 
-            Task.Run(() =>
+                await _repositoryDapper.ExecuteAsync(sql, productRating);
+            }
+            catch (Exception ex)
             {
-
-                try
-                {
-                    // Tenta executar a tarefa de adicionar o produto
-                    _repositoryDapper.ExecuteAsync(sql, param);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception();
-                }
-
-            });
+                throw new Exception("Erro ao adicionar avaliação do produto no banco de dados");
+            }
         }
     }
 }

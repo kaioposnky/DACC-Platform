@@ -20,10 +20,8 @@ namespace DaccApi.Services.Products
             {
                 var products = _productRepository.GetAllProductsAsync().Result;
 
-                if (products == null || products.Count == 0)
-                {
-                    return ResponseHelper.CreateBadRequestResponse("Nenhum produto foi encontrado!");
-                }
+                if (products.Count == 0) return ResponseHelper.CreateBadRequestResponse("Nenhum produto foi encontrado!");
+
 
                 return ResponseHelper.CreateSuccessResponse(new { Products = products }, "Produtos obtidos com sucesso!");
             }
@@ -43,10 +41,7 @@ namespace DaccApi.Services.Products
                 }
                 var product = _productRepository.GetProductByIdAsync(requestProduto.Id).Result;
 
-                if (product == null)
-                {
-                    return ResponseHelper.CreateBadRequestResponse("Nenhum produto foi encontrado!");
-                }
+                if (product == null) return ResponseHelper.CreateBadRequestResponse("Nenhum produto foi encontrado!");
 
                 return ResponseHelper.CreateSuccessResponse(new { Product = product }, "Produto obtido com sucesso!");
             }
@@ -55,58 +50,102 @@ namespace DaccApi.Services.Products
                 return ResponseHelper.CreateErrorResponse("Erro ao obter um produto pelo Id!" + ex);
             }
         }
-        public String AddProduct(string productName, string productDescription, byte[] productImageUrl, double productPrice, int productId)
+        public IActionResult AddProduct(RequestProduto requestProduto)
         {
             // Implementar lógica de registro de pessoa que fez esse request de adicionar o produto
-
-            var newProduct = new Produto();
-
-            newProduct.Name = productName;
-            newProduct.ImageUrl = productImageUrl;
-            newProduct.Price = productPrice;
-            newProduct.Description = productDescription;
-            newProduct.Id = productId;
-            newProduct.ReleaseDate = DateTime.Now;
-            // Adicionar comentários nos produtos
-
-            _productRepository.AddProductAsync(newProduct);
-
-            return "Produto " + productName + " adicionado com sucesso!";
-        }
-
-        public String RemoveProductById(Guid? productId)
-        {
-            // Implementar lógica de registro de pessoa que fez esse request de adicionar o produto
-
-            _productRepository.RemoveProductByIdAsync(productId);
-
-            return "Produto  removido com sucesso!";
-        }
-
-        public String AddProductRating(int productId, int userId, string? comment, float rating)
-        {
-
-            if (rating > 5 || rating < 0)
+            try
             {
-                throw new ArgumentException("A nota da avaliação deve ser um valor entre 0 e 5!");
+                if (string.IsNullOrWhiteSpace(requestProduto.Description) ||
+                    string.IsNullOrWhiteSpace(requestProduto.Name) ||
+                    requestProduto.ImageUrl == null ||
+                    requestProduto.Price == null ||
+                    requestProduto.Id == null)
+                {
+                    return ResponseHelper.CreateBadRequestResponse(
+                        "Request inválido. Os campos Id, Name, Description, ImageUrl, Price não podem ser nulos.");
+                }
+
+                if (requestProduto.Price <= 0)
+                {
+                    return ResponseHelper.CreateBadRequestResponse("O campo Price deve conter um valor > 0.");
+                }
+                
+                var newProduct = new Produto
+                {
+                    Name = requestProduto.Name,
+                    ImageUrl = requestProduto.ImageUrl,
+                    Price = requestProduto.Price,
+                    Description = requestProduto.Description,
+                    Id = requestProduto.Id,
+                    ReleaseDate = null // Lógica para só liberar produtos que estão com release date
+                };
+
+                // Adicionar comentários nos produtos
+
+                _productRepository.AddProductAsync(newProduct);
+
+                return ResponseHelper.CreateSuccessResponse(
+                    new { addedProduct = newProduct }, "Produto adicionado com sucesso!");
             }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse("Erro ao adicionar produto!" + ex);
+            }
+        }
 
-            var newProductRating = new ProductRating();
-            newProductRating.ProductId = productId;
-            newProductRating.UserId = userId;
-            newProductRating.Commentary = comment;
-            newProductRating.Rating = rating;
-            newProductRating.DatePosted = DateTime.Now;
+        public IActionResult RemoveProductById(RequestProduto requestProduto)
+        {            // Implementar lógica de registro de pessoa que fez esse request de adicionar o produto
+            try
+            {
+                if (requestProduto.Id == null)
+                {
+                    return ResponseHelper.CreateBadRequestResponse("Request inválido. O Id precisa não pode ser nulo.");
+                }
+                
+                // Lógica interessante de se adicionar mais tarde
+                // if (requestProduto.ReleaseDate != null)
+                // {
+                //     return ResponseHelper.CreateBadRequestResponse("Você não pode remover um produto que já está lançado!");
+                // }
+                
+                _productRepository.RemoveProductByIdAsync(requestProduto.Id);
 
+                return ResponseHelper.CreateSuccessResponse("", "Produto removido com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao remover produto por id" + ex);
+            }
+        }
 
-            _productRepository.AddProductRatingAsync(newProductRating);
+        public IActionResult AddProductRating(RequestProductRating requestProductRating)
+        {
+            try
+            {
+                if (requestProductRating.Rating is <= 0 or >= 5)
+                {
+                    return ResponseHelper.CreateBadRequestResponse("Request inválido. A nota da avaliação deve ser um valor entre 0 e 5!");
+                }
 
-            //String productName = GetProductById(productId);
+                var newProductRating = new ProductRating
+                {
+                    ProductId = requestProductRating.ProductId,
+                    UserId = requestProductRating.UserId,
+                    Commentary = requestProductRating.Commentary,
+                    Rating = requestProductRating.Rating,
+                    DatePosted = DateTime.Now
+                };
 
-            // Implementar lógica para obter nome de usuário que fez a operação
-            // Implementar Salvar ação de compra do usuário numa base de dados para obtermos informações úteis para melhorar as vendas
-
-            return "Avaliação de nota" + rating + " feita ao produto com sucesso!";
+                _productRepository.AddProductRatingAsync(newProductRating);
+                
+                // Implementar lógica para obter nome de usuário que fez a operação para guardar em banco de dados
+                
+                return ResponseHelper.CreateSuccessResponse("", "Avaliação adicionada com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse("Erro ao adicionar avaliação ao produto!" + ex);
+            }
         }
     
     }

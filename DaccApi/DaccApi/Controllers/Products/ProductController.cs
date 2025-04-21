@@ -42,11 +42,9 @@ namespace DaccApi.Controllers.Products
         [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public String AddProduct(string name, string description, byte[] imageUrl, double price, int id)
+        public IActionResult AddProduct(RequestProduto requestProduto)
         {
-
-            String response = _productService.AddProduct(name, description, imageUrl, price, id);
-
+            var response = _productService.AddProduct(requestProduto);
             return response;
         }
 
@@ -54,11 +52,9 @@ namespace DaccApi.Controllers.Products
         [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public String RemoveProductById(Guid? productId)
+        public IActionResult RemoveProductById(RequestProduto requestProduto)
         {
-
-            String response = _productService.RemoveProductById(productId);
-
+            var response = _productService.RemoveProductById(requestProduto);
             return response;
         }
 
@@ -66,11 +62,9 @@ namespace DaccApi.Controllers.Products
         [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public String AddProductRating(int productId, int userId, string? comment, float rating)
+        public IActionResult AddProductRating(RequestProductRating requestProductRating)
         {
-
-            String response = _productService.AddProductRating(productId, userId, comment, rating);
-
+            var response = _productService.AddProductRating(requestProductRating);
             return response;
         }
 
