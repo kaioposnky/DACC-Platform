@@ -38,7 +38,7 @@ namespace DaccApi.Infrastructure.Repositories.User
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao adicionar o usuário na base de dados");
+                throw new Exception("Erro ao adicionar o usuário na banco de dados");
             }
         }
 
@@ -62,7 +62,7 @@ namespace DaccApi.Infrastructure.Repositories.User
                 return usuario;
             } catch(Exception ex)
             {
-                throw new Exception("Erro ao obter usuário pelo Id na base de dados!");
+                throw new Exception("Erro ao obter usuário pelo Id na banco de dados!");
             }
             
         }
@@ -82,7 +82,7 @@ namespace DaccApi.Infrastructure.Repositories.User
                 return usuario;
             } catch(Exception ex)
             {
-                throw new Exception("Erro ao obter usuário pelo Email na base de dados!");
+                throw new Exception("Erro ao obter usuário pelo Email na banco de dados!");
             }
 
         }

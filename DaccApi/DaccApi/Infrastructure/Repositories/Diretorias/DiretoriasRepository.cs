@@ -7,6 +7,11 @@ namespace DaccApi.Infrastructure.Repositories.Diretorias
     {
         private readonly IRepositoryDapper _repositoryDapper;
 
+        public DiretoriasRepository(IRepositoryDapper repositoryDapper)
+        {
+            _repositoryDapper = repositoryDapper;
+        }
+
         public async Task<List<Diretoria>> GetAllDiretoriasAsync()
         {
             try

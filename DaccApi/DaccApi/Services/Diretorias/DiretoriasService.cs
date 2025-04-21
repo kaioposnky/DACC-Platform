@@ -9,6 +9,11 @@ namespace DaccApi.Services.Diretorias
     public class DiretoriasService : IDiretoriasService
     {
         private readonly IDiretoriasRepository _diretoriasRepository;
+
+        public DiretoriasService(IDiretoriasRepository diretoriasRepository)
+        {
+            _diretoriasRepository = diretoriasRepository;
+        }
         public IActionResult GetAllDiretorias()
         {
             try

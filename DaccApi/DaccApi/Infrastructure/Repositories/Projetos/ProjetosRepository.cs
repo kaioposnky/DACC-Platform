@@ -6,7 +6,11 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
 {
     public class ProjetosRepository : IProjetosRepository
     {
-        private readonly RepositoryDapper _repositoryDapper;
+        private readonly IRepositoryDapper _repositoryDapper;
+        public ProjetosRepository(IRepositoryDapper repositoryDapper)
+        {
+            _repositoryDapper = repositoryDapper;
+        }
         public async Task<List<Projeto>> GetAllProjetosAsync()
         {
             var sql = _repositoryDapper.GetQueryNamed("GetProjetos");
