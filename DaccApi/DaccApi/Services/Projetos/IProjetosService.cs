@@ -1,9 +1,10 @@
 ﻿using DaccApi.Model;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.Projetos
 {
     public interface IProjetosService
     {
-        public List<Projeto> GetProjetos();
+        public IActionResult GetAllProjetos();
     }
 }

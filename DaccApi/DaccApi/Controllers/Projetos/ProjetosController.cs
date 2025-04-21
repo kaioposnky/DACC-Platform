@@ -20,11 +20,10 @@ namespace DaccApi.Controllers.Projetos
         [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public List<Projeto> GetProjetos()
+        public IActionResult GetProjetos()
         {
 
-            List<Projeto> projetos = _projetosService.GetProjetos();
-
+            var projetos = _projetosService.GetAllProjetos();
             return projetos;
         }
 
