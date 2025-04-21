@@ -8,8 +8,8 @@ namespace DaccApi.Services.Products
 
         public IActionResult GetAllProducts();
         public IActionResult GetProductById(RequestProduto requestProduto);
-        public String AddProduct(string name, string description, byte[] imageUrl, double price, int id);
-        public String RemoveProductById(Guid? productId);
-        public String AddProductRating(int productId, int userId, string? comment, float score);
+        public IActionResult AddProduct(RequestProduto requestProduto);
+        public IActionResult RemoveProductById(RequestProduto requestProduto);
+        public IActionResult AddProductRating(RequestProductRating requestProductRating);
     }
 }
