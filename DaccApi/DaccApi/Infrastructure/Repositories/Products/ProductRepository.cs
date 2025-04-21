@@ -76,19 +76,5 @@ namespace DaccApi.Infrastructure.Repositories.Products
                 throw new Exception("Erro ao remover produto no banco de dados!");
             }
         }
-
-        public async void AddProductRatingAsync(ProductRating productRating)
-        {
-            try
-            {
-                var sql = _repositoryDapper.GetQueryNamed("");
-
-                await _repositoryDapper.ExecuteAsync(sql, productRating);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao adicionar avaliação do produto no banco de dados");
-            }
-        }
     }
 }

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Query para add Avaliacao em um produto -->
+<queries>
+    <query name="UpdateUsuario">
+        <!-- Cria um elemento nessa tabela que vincula Avaliacao com Usuário-->
+        INSERT INTO Avaliacao_Comentario(UserId, ProductId)
+        VALUES (@UserId, @ProductId);
+
+        <!-- Adiciona a Avaliação de fato -->
+        INSERT INTO Avaliacao(Rating, Commentary, ProductId, UserId, State, DatePosted)
+        VALUES (@Rating, @Commentary, @ProductId, @UserId, @State, @DatePosted);
+    </query>
+<!--    Querry para pegar todas as avaliações-->
+    <query name="GetAllAvaliacoes">
+        SELECT * FROM Avaliacoes;
+    </query>
+</queries>
+

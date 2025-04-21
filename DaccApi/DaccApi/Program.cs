@@ -12,11 +12,13 @@ using System.Data;
 using Npgsql;
 using Microsoft.OpenApi.Models;
 using DaccApi;
+using DaccApi.Infrastructure.Repositories.Avaliacao;
 using DaccApi.Services.Products;
 using DaccApi.Infrastructure.Repositories.Products;
 using DaccApi.Services.Diretorias;
 using DaccApi.Infrastructure.Repositories.Diretorias;
 using DaccApi.Infrastructure.Repositories.Projetos;
+using DaccApi.Services.Avaliacao;
 using DaccApi.Services.Projetos;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -89,6 +91,8 @@ builder.Services.AddScoped<IDiretoriasService, DiretoriasService>();
 builder.Services.AddScoped<IDiretoriasRepository, DiretoriasRepository>();
 builder.Services.AddScoped<IProjetosService, ProjetosService>();
 builder.Services.AddScoped<IProjetosRepository, ProjetosRepository>();
+builder.Services.AddScoped<IAvaliacaoService, AvaliacaoService>();
+builder.Services.AddScoped<IAvaliacaoRepository, AvaliacaoRepository>();
 
 
 var app = builder.Build();

@@ -117,36 +117,6 @@ namespace DaccApi.Services.Products
                 throw new Exception("Erro ao remover produto por id" + ex);
             }
         }
-
-        public IActionResult AddProductRating(RequestProductRating requestProductRating)
-        {
-            try
-            {
-                if (requestProductRating.Rating is <= 0 or >= 5)
-                {
-                    return ResponseHelper.CreateBadRequestResponse("Request inválido. A nota da avaliação deve ser um valor entre 0 e 5!");
-                }
-
-                var newProductRating = new ProductRating
-                {
-                    ProductId = requestProductRating.ProductId,
-                    UserId = requestProductRating.UserId,
-                    Commentary = requestProductRating.Commentary,
-                    Rating = requestProductRating.Rating,
-                    DatePosted = DateTime.Now
-                };
-
-                _productRepository.AddProductRatingAsync(newProductRating);
-                
-                // Implementar lógica para obter nome de usuário que fez a operação para guardar em banco de dados
-                
-                return ResponseHelper.CreateSuccessResponse("", "Avaliação adicionada com sucesso!");
-            }
-            catch (Exception ex)
-            {
-                return ResponseHelper.CreateErrorResponse("Erro ao adicionar avaliação ao produto!" + ex);
-            }
-        }
     
     }
 }

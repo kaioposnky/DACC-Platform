@@ -10,6 +10,5 @@ namespace DaccApi.Services.Products
         public IActionResult GetProductById(RequestProduto requestProduto);
         public IActionResult AddProduct(RequestProduto requestProduto);
         public IActionResult RemoveProductById(RequestProduto requestProduto);
-        public IActionResult AddProductRating(RequestProductRating requestProductRating);
     }
 }

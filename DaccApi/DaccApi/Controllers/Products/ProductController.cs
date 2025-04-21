@@ -58,15 +58,5 @@ namespace DaccApi.Controllers.Products
             return response;
         }
 
-        [HttpGet("AddProductRating")]
-        [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult AddProductRating(RequestProductRating requestProductRating)
-        {
-            var response = _productService.AddProductRating(requestProductRating);
-            return response;
-        }
-
     }
 }
