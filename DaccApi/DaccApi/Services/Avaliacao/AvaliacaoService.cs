@@ -13,7 +13,7 @@ public class AvaliacaoService : IAvaliacaoService
     {
         _avaliacaoRepository = avaliacaoRepository;
     }
-    public IActionResult CreateAvaliacaoProduct(RequestAvaliacao requestAvaliacao)
+    public IActionResult CreateAvaliacao(RequestAvaliacao requestAvaliacao)
     {
         try
         {
@@ -23,13 +23,12 @@ public class AvaliacaoService : IAvaliacaoService
                 requestAvaliacao.Rating == null ||
                 requestAvaliacao.UserId == null)
             {
-                return ResponseHelper.CreateBadRequestResponse(
-                    "Request inválido. Os campos ProductId, Commentary, Rating, UserId não podem ser nulos.");
+                return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequest.NULL_BODY);
             }
             
             if (requestAvaliacao.Rating is <= 0 or >= 5)
             {
-                return ResponseHelper.CreateBadRequestResponse("Request inválido. A nota da avaliação deve ser um valor entre 0 e 5!");
+                return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequest.INVALID_RATING);
             }
             
             var newProductRating = new Model.AvaliacaoProduto
@@ -41,15 +40,15 @@ public class AvaliacaoService : IAvaliacaoService
                 DatePosted = DateTime.Now
             };
 
-            _avaliacaoRepository.CreateProductRatingAsync(newProductRating);
+            _avaliacaoRepository.CreateAvaliacaoAsync(newProductRating);
                 
             // Implementar lógica para obter nome de usuário que fez a operação para guardar em banco de dados
                 
-            return ResponseHelper.CreateSuccessResponse("", "Avaliação adicionada com sucesso!");
+            return ResponseHelper.CreateSuccessResponse("", AvaliacaoResponseMessages.SuccessRequest.GENERAL);
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse("Erro ao adicionar avaliação ao produto!" + ex);
+            return ResponseHelper.CreateErrorResponse(AvaliacaoResponseMessages.ErrorRequest.GENERAL + ex);
         }
     }
 
@@ -59,14 +58,15 @@ public class AvaliacaoService : IAvaliacaoService
         {
             var avaliacoes = _avaliacaoRepository.GetAllAvaliacoesAsync().Result;
 
-            if (avaliacoes.Count == 0) return ResponseHelper.CreateBadRequestResponse("Nenhuma avaliação foi encontrada!");
+            if (avaliacoes.Count == 0) return ResponseHelper.CreateBadRequestResponse(
+                AvaliacaoResponseMessages.BadRequest.NONE_FOUND);
 
-            return ResponseHelper.CreateSuccessResponse(new { Avaliacoes = avaliacoes },
-                "Avaliações obtidas com sucesso");
+            return ResponseHelper.CreateSuccessResponse(new { Avaliacoes = avaliacoes }, 
+                AvaliacaoResponseMessages.SuccessRequest.GENERAL);
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse("Erro ao obter todas as avaliações! " + ex);
+            return ResponseHelper.CreateErrorResponse(AvaliacaoResponseMessages.ErrorRequest.GENERAL + ex);
         }
     }
 
@@ -80,13 +80,14 @@ public class AvaliacaoService : IAvaliacaoService
             var avaliacoes = _avaliacaoRepository.GetAvaliacoesByProductIdAsync(request.ProductId).Result;
 
             if (avaliacoes.Count == 0) 
-                return ResponseHelper.CreateBadRequestResponse("O produto não tem nenhuma avaliação!");
+                return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequest.NONE_FOUND);
         
-            return ResponseHelper.CreateSuccessResponse(new { Avaliacoes = avaliacoes }, "Avaliações obtidas com sucesso!");
+            return ResponseHelper.CreateSuccessResponse(new { Avaliacoes = avaliacoes }, 
+                AvaliacaoResponseMessages.SuccessRequest.GENERAL);
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse("Erro ao obter avaliacao do produto! " + ex);
+            return ResponseHelper.CreateErrorResponse(AvaliacaoResponseMessages.SuccessRequest.GENERAL + ex);
         }
     }
 
@@ -96,19 +97,19 @@ public class AvaliacaoService : IAvaliacaoService
         {
             if (request.UserId == null)
             {
-                return ResponseHelper.CreateBadRequestResponse("Request inválido. O campo UserId não pode ser nulo.");
+                return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequest.NULL_USER_ID);
             }
             
             var avaliacoes = _avaliacaoRepository.GetAvaliacoesByUserIdAsync(request.UserId).Result;
 
             if (avaliacoes.Count == 0)
-                return ResponseHelper.CreateBadRequestResponse("Nenhuma avaliação foi encontrada para esse usuário!");
+                return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequest.NONE_FOUND);
             return ResponseHelper.CreateSuccessResponse(new { Avaliacoes = avaliacoes },
-                "Avalições do usuário obtidas com sucesso!");
+                AvaliacaoResponseMessages.SuccessRequest.GENERAL);
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse("Erro ao obter avaliacoes do usuário!");
+            return ResponseHelper.CreateErrorResponse(AvaliacaoResponseMessages.ErrorRequest.GENERAL + ex);
         }
     }
 }

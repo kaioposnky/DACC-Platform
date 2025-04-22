@@ -24,13 +24,13 @@ namespace DaccApi.Controllers.Avaliacao
             return response;
         }
         
-        [HttpGet("CreateProductRating")]
+        [HttpGet("CreateAvaliacao")]
         [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult CreateProductRating(RequestAvaliacao request)
+        public IActionResult CreateAvaliacao(RequestAvaliacao request)
         {
-            var response = _avaliacaoService.CreateAvaliacaoProduct(request);
+            var response = _avaliacaoService.CreateAvaliacao(request);
             return response;
         }
         
