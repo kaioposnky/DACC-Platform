@@ -1,4 +1,5 @@
 ﻿using DaccApi.Model;
+using DaccApi.Responses;
 using DaccApi.Responses.UserResponse;
 using DaccApi.Services.Avaliacao;
 using Microsoft.AspNetCore.Mvc;
@@ -15,9 +16,9 @@ namespace DaccApi.Controllers.Avaliacao
             _avaliacaoService = avaliacaoService;
         }
         [HttpPost("GetAllAvaliacoes")]
-        [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
         public IActionResult GetAllAvaliacoes([FromBody] RequestAvaliacao request)
         {
             var response = _avaliacaoService.GetAllAvaliacoes();
@@ -25,9 +26,9 @@ namespace DaccApi.Controllers.Avaliacao
         }
         
         [HttpGet("CreateAvaliacao")]
-        [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
         public IActionResult CreateAvaliacao(RequestAvaliacao request)
         {
             var response = _avaliacaoService.CreateAvaliacao(request);
@@ -35,9 +36,9 @@ namespace DaccApi.Controllers.Avaliacao
         }
         
         [HttpPost("GetProductAvaliacao")]
-        [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
         public IActionResult GetProductAvaliacao(RequestAvaliacao request)
         {
             var response = _avaliacaoService.GetAvaliacoesProduct(request);
@@ -45,9 +46,9 @@ namespace DaccApi.Controllers.Avaliacao
         }
         
         [HttpPost("GetAvaliacoesUser")]
-        [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
         public IActionResult GetAvaliacoesUser(RequestAvaliacao request)
         {
             var response = _avaliacaoService.GetAvaliacoesUser(request);

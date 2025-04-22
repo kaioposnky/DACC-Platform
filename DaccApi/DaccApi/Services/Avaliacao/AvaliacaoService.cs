@@ -23,15 +23,15 @@ public class AvaliacaoService : IAvaliacaoService
                 requestAvaliacao.Rating == null ||
                 requestAvaliacao.UserId == null)
             {
-                return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequest.NULL_BODY);
+                return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequestMessages.NULL_BODY);
             }
             
             if (requestAvaliacao.Rating is <= 0 or >= 5)
             {
-                return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequest.INVALID_RATING);
+                return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequestMessages.INVALID_RATING);
             }
             
-            var newProductRating = new Model.AvaliacaoProduto
+            var newProductRating = new AvaliacaoProduto
             {
                 ProductId = requestAvaliacao.ProductId.Value,
                 UserId = requestAvaliacao.UserId.Value,
@@ -44,11 +44,11 @@ public class AvaliacaoService : IAvaliacaoService
                 
             // Implementar lógica para obter nome de usuário que fez a operação para guardar em banco de dados
                 
-            return ResponseHelper.CreateSuccessResponse("", AvaliacaoResponseMessages.SuccessRequest.GENERAL);
+            return ResponseHelper.CreateSuccessResponse("", AvaliacaoResponseMessages.SuccessRequestMessages.GENERIC);
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(AvaliacaoResponseMessages.ErrorRequest.GENERAL + ex);
+            return ResponseHelper.CreateErrorResponse(AvaliacaoResponseMessages.ErrorRequestMessages.GENERIC + ex);
         }
     }
 
@@ -59,14 +59,14 @@ public class AvaliacaoService : IAvaliacaoService
             var avaliacoes = _avaliacaoRepository.GetAllAvaliacoesAsync().Result;
 
             if (avaliacoes.Count == 0) return ResponseHelper.CreateBadRequestResponse(
-                AvaliacaoResponseMessages.BadRequest.NONE_FOUND);
+                AvaliacaoResponseMessages.BadRequestMessages.NONE_FOUND);
 
             return ResponseHelper.CreateSuccessResponse(new { Avaliacoes = avaliacoes }, 
-                AvaliacaoResponseMessages.SuccessRequest.GENERAL);
+                AvaliacaoResponseMessages.SuccessRequestMessages.GENERIC);
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(AvaliacaoResponseMessages.ErrorRequest.GENERAL + ex);
+            return ResponseHelper.CreateErrorResponse(AvaliacaoResponseMessages.ErrorRequestMessages.GENERIC + ex);
         }
     }
 
@@ -80,14 +80,14 @@ public class AvaliacaoService : IAvaliacaoService
             var avaliacoes = _avaliacaoRepository.GetAvaliacoesByProductIdAsync(request.ProductId).Result;
 
             if (avaliacoes.Count == 0) 
-                return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequest.NONE_FOUND);
+                return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequestMessages.NONE_FOUND);
         
             return ResponseHelper.CreateSuccessResponse(new { Avaliacoes = avaliacoes }, 
-                AvaliacaoResponseMessages.SuccessRequest.GENERAL);
+                AvaliacaoResponseMessages.SuccessRequestMessages.GENERIC);
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(AvaliacaoResponseMessages.SuccessRequest.GENERAL + ex);
+            return ResponseHelper.CreateErrorResponse(AvaliacaoResponseMessages.SuccessRequestMessages.GENERIC + ex);
         }
     }
 
@@ -97,19 +97,19 @@ public class AvaliacaoService : IAvaliacaoService
         {
             if (request.UserId == null)
             {
-                return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequest.NULL_USER_ID);
+                return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequestMessages.NULL_USER_ID);
             }
             
             var avaliacoes = _avaliacaoRepository.GetAvaliacoesByUserIdAsync(request.UserId).Result;
 
             if (avaliacoes.Count == 0)
-                return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequest.NONE_FOUND);
+                return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequestMessages.NONE_FOUND);
             return ResponseHelper.CreateSuccessResponse(new { Avaliacoes = avaliacoes },
-                AvaliacaoResponseMessages.SuccessRequest.GENERAL);
+                AvaliacaoResponseMessages.SuccessRequestMessages.GENERIC);
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(AvaliacaoResponseMessages.ErrorRequest.GENERAL + ex);
+            return ResponseHelper.CreateErrorResponse(AvaliacaoResponseMessages.ErrorRequestMessages.GENERIC + ex);
         }
     }
 }

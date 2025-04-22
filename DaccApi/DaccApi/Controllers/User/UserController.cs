@@ -22,9 +22,9 @@ namespace DaccApi.Controllers
         }
 
         [HttpPost("CreateUser")]
-        [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
         public IActionResult CreateUser([FromBody] RequestUsuario request)
         {
             var response = _userService.CreateUser(request);
@@ -33,9 +33,9 @@ namespace DaccApi.Controllers
         }
 
         [HttpPost("Login")]
-        [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
         public IActionResult Login([FromBody] RequestUsuario request)
         {
             if (_authService.ValidateCredentials(request))
@@ -48,9 +48,9 @@ namespace DaccApi.Controllers
         }
 
         [HttpPost("GetUserById")]
-        [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
         public IActionResult GetUserById([FromBody] RequestUsuario request)
         {
             var response = _userService.GetUserById(request);
@@ -58,9 +58,9 @@ namespace DaccApi.Controllers
         }
 
         [HttpPost("GetUserByEmail")]
-        [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
         public IActionResult GetUserByEmail([FromBody] RequestUsuario request)
         {
             var response = _userService.GetUserByEmail(request);

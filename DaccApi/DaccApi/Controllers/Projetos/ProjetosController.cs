@@ -1,4 +1,5 @@
 ﻿using DaccApi.Model;
+using DaccApi.Responses;
 using DaccApi.Responses.UserResponse;
 using DaccApi.Services.Projetos;
 using Microsoft.AspNetCore.Mvc;
@@ -17,9 +18,9 @@ namespace DaccApi.Controllers.Projetos
         }
 
         [HttpGet("GetProjetos")]
-        [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
         public IActionResult GetProjetos()
         {
 
