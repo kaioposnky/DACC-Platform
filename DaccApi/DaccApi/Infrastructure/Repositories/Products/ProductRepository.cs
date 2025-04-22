@@ -48,7 +48,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
         }
 
-        public async void AddProductAsync(Produto product)
+        public async void CreateProductAsync(Produto product)
         {
             try
             {

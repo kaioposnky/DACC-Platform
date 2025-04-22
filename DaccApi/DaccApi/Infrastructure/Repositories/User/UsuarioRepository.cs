@@ -16,7 +16,7 @@ namespace DaccApi.Infrastructure.Repositories.User
             _argon2Utility = argon2Utility;
         }
 
-        public void Add(RequestUsuario request)
+        public void CreateUser(RequestUsuario request)
         {
             try
             {
