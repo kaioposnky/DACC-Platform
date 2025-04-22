@@ -11,11 +11,11 @@ public class AvaliacaoRepository : IAvaliacaoRepository
     {
         _repositoryDapper = repositoryDapper;
     }
-    public async void AddProductRatingAsync(Model.AvaliacaoProduto avaliacaoProduto)
+    public async void CreateProductRatingAsync(AvaliacaoProduto avaliacaoProduto)
     {
         try
         {
-            var sql = _repositoryDapper.GetQueryNamed("");
+            var sql = _repositoryDapper.GetQueryNamed("CreateAvaliacao");
 
             await _repositoryDapper.ExecuteAsync(sql, avaliacaoProduto);
         }
@@ -40,5 +40,36 @@ public class AvaliacaoRepository : IAvaliacaoRepository
         {
             throw new Exception("Erro ao obter todas as avaliações no banco de dados!");
         }
+    }
+
+    public async Task<List<AvaliacaoProduto>> GetAvaliacoesByProductIdAsync(Guid? id)
+    {
+        try
+        {
+            var sql = _repositoryDapper.GetQueryNamed("GetAvalicoesProductId");
+            var param = new { Id = id };
+
+            var queryResult = await _repositoryDapper.QueryProcedureAsync<AvaliacaoProduto>(sql, param);
+
+            var avaliacoes = queryResult.ToList();
+            return avaliacoes;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Erro ao obter Produto pelo Id no banco de dados!");
+        }
+        
+    }
+
+    public async Task<List<AvaliacaoProduto>> GetAvaliacoesByUserIdAsync(Guid? id)
+    {
+        var sql = _repositoryDapper.GetQueryNamed("GetProductAvaliacaoUserByUserId");
+        var param = new { Id = id };
+        
+        
+        var queryResult = await _repositoryDapper.QueryProcedureAsync<AvaliacaoProduto>(sql, param);
+
+        var avaliacoes = queryResult.ToList();
+        return avaliacoes;
     }
 }

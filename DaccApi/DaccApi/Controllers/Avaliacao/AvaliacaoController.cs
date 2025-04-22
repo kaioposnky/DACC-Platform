@@ -15,19 +15,42 @@ namespace DaccApi.Controllers.Avaliacao
             _avaliacaoService = avaliacaoService;
         }
         [HttpPost("GetAllAvaliacoes")]
+        [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetAllAvaliacoes([FromBody] RequestAvaliacao request)
         {
             var response = _avaliacaoService.GetAllAvaliacoes();
             return response;
         }
         
-        [HttpGet("AddProductRating")]
+        [HttpGet("CreateProductRating")]
         [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult AddProductRating(RequestAvaliacao request)
+        public IActionResult CreateProductRating(RequestAvaliacao request)
         {
-            var response = _avaliacaoService.AddAvaliacaoProduct(request);
+            var response = _avaliacaoService.CreateAvaliacaoProduct(request);
+            return response;
+        }
+        
+        [HttpPost("GetProductAvaliacao")]
+        [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetProductAvaliacao(RequestAvaliacao request)
+        {
+            var response = _avaliacaoService.GetAvaliacoesProduct(request);
+            return response;
+        }
+        
+        [HttpPost("GetAvaliacoesUser")]
+        [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetAvaliacoesUser(RequestAvaliacao request)
+        {
+            var response = _avaliacaoService.GetAvaliacoesUser(request);
             return response;
         }
     }

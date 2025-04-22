@@ -5,6 +5,8 @@ namespace DaccApi.Services.Avaliacao;
 
 public interface IAvaliacaoService
 {
-    public IActionResult AddAvaliacaoProduct(RequestAvaliacao requestAvaliacao);
+    public IActionResult CreateAvaliacaoProduct(RequestAvaliacao requestAvaliacao);
     public IActionResult GetAllAvaliacoes();
+    public IActionResult GetAvaliacoesProduct(RequestAvaliacao request);
+    public IActionResult GetAvaliacoesUser(RequestAvaliacao request);
 }
