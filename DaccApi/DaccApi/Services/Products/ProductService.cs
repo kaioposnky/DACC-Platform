@@ -50,7 +50,7 @@ namespace DaccApi.Services.Products
                 return ResponseHelper.CreateErrorResponse("Erro ao obter um produto pelo Id!" + ex);
             }
         }
-        public IActionResult AddProduct(RequestProduto requestProduto)
+        public IActionResult CreateProduct(RequestProduto requestProduto)
         {
             // Implementar lógica de registro de pessoa que fez esse request de adicionar o produto
             try
@@ -76,16 +76,16 @@ namespace DaccApi.Services.Products
                     ImageUrl = requestProduto.ImageUrl,
                     Price = requestProduto.Price,
                     Description = requestProduto.Description,
-                    Id = requestProduto.Id,
+                    Id = requestProduto.Id.Value,
                     ReleaseDate = null // Lógica para só liberar produtos que estão com release date
                 };
 
                 // Adicionar comentários nos produtos
 
-                _productRepository.AddProductAsync(newProduct);
+                _productRepository.CreateProductAsync(newProduct);
 
                 return ResponseHelper.CreateSuccessResponse(
-                    new { addedProduct = newProduct }, "Produto adicionado com sucesso!");
+                    new { Product = newProduct }, "Produto adicionado com sucesso!");
             }
             catch (Exception ex)
             {

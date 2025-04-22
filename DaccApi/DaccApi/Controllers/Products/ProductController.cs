@@ -38,13 +38,13 @@ namespace DaccApi.Controllers.Products
         }
 
 
-        [HttpGet("AddProduct")]
+        [HttpGet("CreateProduct")]
         [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult AddProduct(RequestProduto requestProduto)
+        public IActionResult CreateProduct(RequestProduto requestProduto)
         {
-            var response = _productService.AddProduct(requestProduto);
+            var response = _productService.CreateProduct(requestProduto);
             return response;
         }
 
