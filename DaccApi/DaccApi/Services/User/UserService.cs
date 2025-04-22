@@ -38,7 +38,7 @@ namespace DaccApi.Services.User
                     
                 };
 
-                _usuarioRepository.Add(request);
+                _usuarioRepository.CreateUser(request);
 
                 return ResponseHelper.CreateSuccessResponse("", "Usuário adicionado com sucesso.");
             }
