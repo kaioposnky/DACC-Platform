@@ -1,34 +1,30 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <queries>
 	<!-- Consulta para obter todos os produtos -->
+<!--	TODO: ADICIONAR URL DA IMAGEM DO PRODUTO NA QUERY -->
+<!--	TODO: SELECIONAR COR BASE DO PRODUTO -->
 	<query name="GetAllProducts">
-		SELECT * FROM Produtos;
+		SELECT * FROM produtos;
 	</query>
 
 	<!-- Consulta para obter um produto por ID -->
+<!--	TODO: ADICIONAR URL DA IMAGEM DO PRODUTO NA QUERY -->
+<!--	TODO: SELECIONAR COR DO PRODUTO COM ID X -->
 	<query name="GetProductById">
-		SELECT Name, ImageUrl, Price, Description, Id, ReleaseDate
-		FROM Products
-		WHERE Id = @Id;
+		SELECT id, nome, preco, descricao, data_cadastro
+		FROM produtos
+		WHERE id = @Id;
 	</query>
 
 	<!-- Query para adicionar um produto -->
 	<query name="AddProduct">
-		INSERT INTO Produtos (Name, ImageUrl, Price, Description, Id, ReleaseDate)
-		VALUES (@Name, @ImageUrl, @Price, @Description, @Id, @ReleaseDate)
+		INSERT INTO produtos (nome, descricao, preco, estoque, categoria_id)
+		VALUES (@Nome, @Descricao, @Preco, @Estoque, @CategoriaId);
 	</query>
 
 	<!-- Query para remover um produto usando id-->
 	<query name="RemoveProductById">
-		DELETE FROM Produtos
-		WHERE Id = @Id;
-	</query>
-
-
-
-	<!-- Consulta para deletar um usuário -->
-	<query name="DeleteUsuario">
-		DELETE FROM Usuarios
-		WHERE usuarioid = @Id;
+		DELETE FROM produtos
+		WHERE id = @Id;
 	</query>
 </queries>

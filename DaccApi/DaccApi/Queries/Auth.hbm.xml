@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-
-<query name="GetAuthByLogin">
-	SELECT usuarioid, nome, email
-	FROM Usuarios
-	WHERE email = @Email and senha = @Password;
-</query>

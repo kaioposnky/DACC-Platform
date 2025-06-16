@@ -9,13 +9,13 @@ namespace DaccApi.Controllers.Products
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ProductController : ControllerBase
+    public class ProdutosController : ControllerBase
     {
-        private readonly IProductService _productService;
+        private readonly IProdutosService _produtosService;
 
-        public ProductController(IProductService productService)
+        public ProdutosController(IProdutosService produtosService)
         {
-            _productService = productService;
+            _produtosService = produtosService;
         }
 
         [HttpGet("GetAllProducts")]
@@ -24,7 +24,7 @@ namespace DaccApi.Controllers.Products
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
         public IActionResult GetAllProducts()
         {
-            var products = _productService.GetAllProducts();
+            var products = _produtosService.GetAllProducts();
             return products;
         }
 
@@ -34,7 +34,7 @@ namespace DaccApi.Controllers.Products
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
         public IActionResult GetProductById([FromBody] RequestProduto requestProduto)
         {
-            var products = _productService.GetProductById(requestProduto);
+            var products = _produtosService.GetProductById(requestProduto);
             return products;
         }
 
@@ -45,7 +45,7 @@ namespace DaccApi.Controllers.Products
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
         public IActionResult CreateProduct(RequestProduto requestProduto)
         {
-            var response = _productService.CreateProduct(requestProduto);
+            var response = _produtosService.CreateProduct(requestProduto);
             return response;
         }
 
@@ -55,7 +55,7 @@ namespace DaccApi.Controllers.Products
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
         public IActionResult RemoveProductById(RequestProduto requestProduto)
         {
-            var response = _productService.RemoveProductById(requestProduto);
+            var response = _produtosService.RemoveProductById(requestProduto);
             return response;
         }
 

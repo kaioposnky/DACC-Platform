@@ -19,7 +19,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "DACC": {
+    "DACC2": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

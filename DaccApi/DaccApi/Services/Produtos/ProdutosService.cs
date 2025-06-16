@@ -5,22 +5,23 @@ using DaccApi.Helpers;
 
 namespace DaccApi.Services.Products
 {
-    public class ProductService : IProductService
+    public class ProdutosService : IProdutosService
     {
-        private readonly IProductRepository _productRepository;
+        private readonly IProdutosRepository _produtosRepository;
 
-        public ProductService(IProductRepository productRepository)
+        public ProdutosService(IProdutosRepository produtosRepository)
         {
-            _productRepository = productRepository;
+            _produtosRepository = produtosRepository;
         }
 
         public IActionResult GetAllProducts()
         {
             try
             {
-                var products = _productRepository.GetAllProductsAsync().Result;
+                var products = _produtosRepository.GetAllProductsAsync().Result;
 
-                if (products.Count == 0) return ResponseHelper.CreateBadRequestResponse("Nenhum produto foi encontrado!");
+                if (products.Count == 0) 
+                    return ResponseHelper.CreateBadRequestResponse("Nenhum produto foi encontrado!");
 
 
                 return ResponseHelper.CreateSuccessResponse(new { Products = products }, "Produtos obtidos com sucesso!");
@@ -39,7 +40,7 @@ namespace DaccApi.Services.Products
                 {
                     return ResponseHelper.CreateBadRequestResponse("Requisição inválida. O ProdutoId não pode ser nulo!");
                 }
-                var product = _productRepository.GetProductByIdAsync(requestProduto.Id).Result;
+                var product = _produtosRepository.GetProductByIdAsync(requestProduto.Id).Result;
 
                 if (product == null) return ResponseHelper.CreateBadRequestResponse("Nenhum produto foi encontrado!");
 
@@ -55,34 +56,32 @@ namespace DaccApi.Services.Products
             // Implementar lógica de registro de pessoa que fez esse request de adicionar o produto
             try
             {
-                if (string.IsNullOrWhiteSpace(requestProduto.Description) ||
-                    string.IsNullOrWhiteSpace(requestProduto.Name) ||
-                    requestProduto.ImageUrl == null ||
-                    requestProduto.Price == null ||
-                    requestProduto.Id == null)
+                if (string.IsNullOrWhiteSpace(requestProduto.Descricao) ||
+                    string.IsNullOrWhiteSpace(requestProduto.Nome) ||
+                    requestProduto.ImagemUrl == null ||
+                    requestProduto.Preco == null)
                 {
                     return ResponseHelper.CreateBadRequestResponse(
                         "Request inválido. Os campos Id, Name, Description, ImageUrl, Price não podem ser nulos.");
                 }
 
-                if (requestProduto.Price <= 0)
+                if (requestProduto.Preco <= 0)
                 {
                     return ResponseHelper.CreateBadRequestResponse("O campo Price deve conter um valor > 0.");
                 }
                 
                 var newProduct = new Produto
                 {
-                    Name = requestProduto.Name,
-                    ImageUrl = requestProduto.ImageUrl,
-                    Price = requestProduto.Price,
-                    Description = requestProduto.Description,
-                    Id = requestProduto.Id.Value,
-                    ReleaseDate = null // Lógica para só liberar produtos que estão com release date
+                    Nome = requestProduto.Nome,
+                    ImagemUrl = requestProduto.ImagemUrl,
+                    Preco = requestProduto.Preco,
+                    Descricao = requestProduto.Descricao,
+                    Id = requestProduto.Id,
                 };
 
                 // Adicionar comentários nos produtos
 
-                _productRepository.CreateProductAsync(newProduct);
+                _produtosRepository.CreateProductAsync(newProduct);
 
                 return ResponseHelper.CreateSuccessResponse(
                     new { Product = newProduct }, "Produto adicionado com sucesso!");
@@ -108,7 +107,7 @@ namespace DaccApi.Services.Products
                 //     return ResponseHelper.CreateBadRequestResponse("Você não pode remover um produto que já está lançado!");
                 // }
                 
-                _productRepository.RemoveProductByIdAsync(requestProduto.Id);
+                _produtosRepository.RemoveProductByIdAsync(requestProduto.Id);
 
                 return ResponseHelper.CreateSuccessResponse("", "Produto removido com sucesso!");
             }

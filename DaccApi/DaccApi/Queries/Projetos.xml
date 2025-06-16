@@ -1,6 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-
-<query name="GetAllProjetos">
-	SELECT name, description, diretoriaResponsavel, imageUrl, releaseDate, id
-	FROM Projetos;
-</query>

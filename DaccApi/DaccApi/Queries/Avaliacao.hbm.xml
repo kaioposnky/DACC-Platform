@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Query para add Avaliacao em um produto -->
+<queries>
+<!--    Query para criar uma avaliação de um usuário-->
+    <query name="CreateAvaliacao">
+        INSERT INTO avaliacoes(usuario_id, produto_id, nota, comentario)
+        VALUES (@UsuarioId, @ProdutoId, @Nota, @Comentario);
+    </query>
+<!--    Query para obter todas as avaliações-->
+    <query name="GetAllAvaliacoes">
+        SELECT * FROM avaliacoes;
+    </query>
+<!--    Query para obter as avaliacoes de um produto especifico-->
+    <query name="GetAvalicoesProductId">
+        SELECT * FROM avaliacoes WHERE produto_id = @Id;
+    </query>
+<!--    Query para obter as avaliacoes de um usuario-->
+    <query name="GetProductAvaliacaoUserByUserId">
+        SELECT * FROM avaliacoes WHERE usuario_id = @Id;
+    </query>
+    
+</queries>
+

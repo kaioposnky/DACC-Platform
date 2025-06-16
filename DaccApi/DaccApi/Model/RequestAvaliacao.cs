@@ -2,9 +2,9 @@
 {
     public class RequestAvaliacao
     {
-        public double? Rating { get; set; }
-        public Guid? UserId { get; set; }
-        public string? Commentary { get; set; }
-        public Guid? ProductId { get; set; }
+        public double Nota { get; set; }
+        public Guid UsuarioId { get; set; }
+        public string? Comentario { get; set; }
+        public Guid ProdutoId { get; set; }
     }
 }

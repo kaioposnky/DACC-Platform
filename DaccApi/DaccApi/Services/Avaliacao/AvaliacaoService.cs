@@ -17,27 +17,18 @@ public class AvaliacaoService : IAvaliacaoService
     {
         try
         {
-
-            if (requestAvaliacao.ProductId == null ||
-                requestAvaliacao.Commentary == null ||
-                requestAvaliacao.Rating == null ||
-                requestAvaliacao.UserId == null)
-            {
-                return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequestMessages.NULL_BODY);
-            }
             
-            if (requestAvaliacao.Rating is <= 0 or >= 5)
+            if (requestAvaliacao.Nota is <= 0 or >= 5)
             {
                 return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequestMessages.INVALID_RATING);
             }
             
             var newProductRating = new AvaliacaoProduto
             {
-                ProductId = requestAvaliacao.ProductId.Value,
-                UserId = requestAvaliacao.UserId.Value,
-                Commentary = requestAvaliacao.Commentary,
-                Rating = requestAvaliacao.Rating.Value,
-                DatePosted = DateTime.Now
+                ProdutoId = requestAvaliacao.ProdutoId,
+                UsuarioId = requestAvaliacao.UsuarioId,
+                Comentario = requestAvaliacao.Comentario,
+                Nota = requestAvaliacao.Nota,
             };
 
             _avaliacaoRepository.CreateAvaliacaoAsync(newProductRating);
@@ -74,10 +65,10 @@ public class AvaliacaoService : IAvaliacaoService
     {
         try
         {
-            if (request.ProductId == null) return ResponseHelper.CreateBadRequestResponse(
+            if (request.ProdutoId == null) return ResponseHelper.CreateBadRequestResponse(
                 "Request inválido. O campo ProductID não pode ser nulo.");
 
-            var avaliacoes = _avaliacaoRepository.GetAvaliacoesByProductIdAsync(request.ProductId).Result;
+            var avaliacoes = _avaliacaoRepository.GetAvaliacoesByProductIdAsync(request.ProdutoId).Result;
 
             if (avaliacoes.Count == 0) 
                 return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequestMessages.NONE_FOUND);
@@ -95,12 +86,12 @@ public class AvaliacaoService : IAvaliacaoService
     {
         try
         {
-            if (request.UserId == null)
+            if (request.UsuarioId == null)
             {
                 return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequestMessages.NULL_USER_ID);
             }
             
-            var avaliacoes = _avaliacaoRepository.GetAvaliacoesByUserIdAsync(request.UserId).Result;
+            var avaliacoes = _avaliacaoRepository.GetAvaliacoesByUserIdAsync(request.UsuarioId).Result;
 
             if (avaliacoes.Count == 0)
                 return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequestMessages.NONE_FOUND);

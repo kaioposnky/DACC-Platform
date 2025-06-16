@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <queries>
     <query name="GetAllNoticias">
-        SELECT * FROM Noticias;
+        SELECT * FROM noticias;
     </query>
 </queries>

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.Products
 {
-    public interface IProductService
+    public interface IProdutosService
     {
 
         public IActionResult GetAllProducts();

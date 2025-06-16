@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.User
 {
-    public class UserService : IUserService
+    public class UsuarioService : IUsuarioService
     {
         private readonly IUsuarioRepository _usuarioRepository;
 
-        public UserService(IUsuarioRepository usuarioRepository)
+        public UsuarioService(IUsuarioRepository usuarioRepository)
         {
             _usuarioRepository = usuarioRepository;
         }
@@ -22,20 +22,18 @@ namespace DaccApi.Services.User
                 if (request == null)
                     return ResponseHelper.CreateBadRequestResponse("Requisição inválida. O corpo da solicitação não pode ser nulo.");
 
-                if (string.IsNullOrWhiteSpace(request.Name) ||
+                if (string.IsNullOrWhiteSpace(request.Nome) ||
                     string.IsNullOrWhiteSpace(request.Email) ||
-                    string.IsNullOrWhiteSpace(request.Password))
+                    string.IsNullOrWhiteSpace(request.Senha))
                 {
                     return ResponseHelper.CreateBadRequestResponse("Os campos Nome, Email e Senha são obrigatórios.");
                 }
 
                 var usuario = new Model.Usuario
                 {
-                    Name = request.Name,
+                    Nome = request.Nome,
                     Email = request.Email,
-                    Password = request.Password,
-                    RegistrationDate = request.RegistrationDate
-                    
+                    Senha = request.Senha,
                 };
 
                 _usuarioRepository.CreateUser(request);
@@ -52,12 +50,12 @@ namespace DaccApi.Services.User
         {
             try
             {
-                if (request.UserId == null)
+                if (request.Id == null)
                 {
                     return ResponseHelper.CreateBadRequestResponse("Requisição inválida. O UserId não pode ser nulo!");
                 }
 
-                var usuario = _usuarioRepository.GetUserById(request.UserId).Result;
+                var usuario = _usuarioRepository.GetUserById(request.Id).Result;
 
                 if (usuario == null)
                 {

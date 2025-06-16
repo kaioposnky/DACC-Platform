@@ -10,14 +10,14 @@ namespace DaccApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController : ControllerBase
+    public class UsuarioController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private readonly IUsuarioService _usuarioService;
         private readonly IAuthService _authService;
 
-        public UserController(IUserService userService, IAuthService authService)
+        public UsuarioController(IUsuarioService usuarioService, IAuthService authService)
         {
-            _userService = userService;
+            _usuarioService = usuarioService;
             _authService = authService;
         }
 
@@ -27,7 +27,7 @@ namespace DaccApi.Controllers
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
         public IActionResult CreateUser([FromBody] RequestUsuario request)
         {
-            var response = _userService.CreateUser(request);
+            var response = _usuarioService.CreateUser(request);
             return response;
             
         }
@@ -53,7 +53,7 @@ namespace DaccApi.Controllers
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
         public IActionResult GetUserById([FromBody] RequestUsuario request)
         {
-            var response = _userService.GetUserById(request);
+            var response = _usuarioService.GetUserById(request);
             return response;
         }
 
@@ -63,7 +63,7 @@ namespace DaccApi.Controllers
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
         public IActionResult GetUserByEmail([FromBody] RequestUsuario request)
         {
-            var response = _userService.GetUserByEmail(request);
+            var response = _usuarioService.GetUserByEmail(request);
             return response;
         }
     }

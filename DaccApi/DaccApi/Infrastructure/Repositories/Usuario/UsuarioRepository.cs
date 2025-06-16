@@ -21,18 +21,17 @@ namespace DaccApi.Infrastructure.Repositories.User
             try
             {
                 var sql = _repositoryDapper.GetQueryNamed("InsertUsuario");
-                var encryptPassword = _argon2Utility.HashPassword(request.Password);
+                var encryptPassword = _argon2Utility.HashPassword(request.Senha);
 
                 var parameters = new
                 {
-                    Nome = request.Name,
+                    Nome = request.Nome,
                     Email = request.Email,
                     Senha = encryptPassword,
-                    TipoUsuarioId = request.TypeId,
+                    TipoUsuarioId = request.TipoUsuario,
                     DataCadastro = DateTime.UtcNow,
                     Situacao = (int)UserEnum.UserSituacao.Ativo,
                 };
-
 
                 _repositoryDapper.ExecuteAsync(sql, parameters).Wait();
             }

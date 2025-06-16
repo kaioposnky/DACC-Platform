@@ -2,11 +2,10 @@
 {
     public class AvaliacaoProduto
     {
-        public double Rating { get; set; }
-        public Guid UserId { get; set; }
-        public string? Commentary { get; set; }
-        public Guid ProductId { get; set; }
-        public bool State { get; set; } 
-        public DateTime DatePosted { get; set; }
+        public double Nota { get; set; }
+        public Guid UsuarioId { get; set; }
+        public string? Comentario { get; set; }
+        public Guid ProdutoId { get; set; }
+        public DateTime DataPostada { get; set; }
     }
 }

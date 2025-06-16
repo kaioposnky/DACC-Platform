@@ -4,11 +4,11 @@ using DaccApi.Model;
 
 namespace DaccApi.Infrastructure.Repositories.Products
 {
-    public class ProductRepository : IProductRepository
+    public class ProdutosRepository : IProdutosRepository
     {
         private readonly IRepositoryDapper _repositoryDapper;
 
-        public ProductRepository(IRepositoryDapper repositoryDapper) 
+        public ProdutosRepository(IRepositoryDapper repositoryDapper) 
         {
             _repositoryDapper = repositoryDapper;
         }
@@ -19,14 +19,14 @@ namespace DaccApi.Infrastructure.Repositories.Products
                 var sql = _repositoryDapper.GetQueryNamed("GetAllProducts");
 
                 var queryResult = await _repositoryDapper.QueryProcedureAsync<Produto>(sql);
-
+                
                 var products = queryResult.ToList();
-
+                
                 return products;
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao obter todos os produtos no banco de dados!");
+                throw ex;
             }
         }
 
