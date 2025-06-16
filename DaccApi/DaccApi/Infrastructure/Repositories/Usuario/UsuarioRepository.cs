@@ -46,7 +46,7 @@ namespace DaccApi.Infrastructure.Repositories.User
             throw new NotImplementedException();
         }
 
-        public async Task<Usuario?> GetUserById(Guid? id)
+        public Usuario? GetUserById(Guid? id)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace DaccApi.Infrastructure.Repositories.User
 
                 var param = new { Id = id };
 
-                var queryResult = await _repositoryDapper.QueryProcedureAsync<Usuario>(sql, param);
+                var queryResult = _repositoryDapper.Query<Usuario>(sql, param);
 
                 var usuario = queryResult.FirstOrDefault();
 
@@ -66,7 +66,7 @@ namespace DaccApi.Infrastructure.Repositories.User
             
         }
 
-        public async Task<Usuario?> GetUserByEmail(String email)
+        public Usuario? GetUserByEmail(string email)
         {
             try
             {
@@ -74,7 +74,7 @@ namespace DaccApi.Infrastructure.Repositories.User
 
                 var param = new { Email = email };
 
-                var queryResult = await _repositoryDapper.QueryProcedureAsync<Usuario>(sql, param);
+                var queryResult = _repositoryDapper.Query<Usuario>(sql, param);
 
                 var usuario = queryResult.FirstOrDefault();
 

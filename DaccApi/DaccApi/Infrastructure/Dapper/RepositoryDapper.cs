@@ -52,9 +52,9 @@ namespace DaccApi.Infrastructure.Dapper
             return await GetConnection().ExecuteAsync(sql, parameters);
         }
 
-        public IEnumerable<T> Query<T>(string sql)
+        public IEnumerable<T> Query<T>(string sql, object? parameters = null)
         {
-            return GetConnection().Query<T>(sql);
+            return GetConnection().Query<T>(sql, parameters);
         }
 
 

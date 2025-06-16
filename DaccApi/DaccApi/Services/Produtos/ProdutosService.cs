@@ -18,7 +18,7 @@ namespace DaccApi.Services.Products
         {
             try
             {
-                var products = _produtosRepository.GetAllProductsAsync().Result;
+                var products = _produtosRepository.GetAllProducts();
 
                 if (products.Count == 0) 
                     return ResponseHelper.CreateBadRequestResponse("Nenhum produto foi encontrado!");
@@ -40,7 +40,7 @@ namespace DaccApi.Services.Products
                 {
                     return ResponseHelper.CreateBadRequestResponse("Requisição inválida. O ProdutoId não pode ser nulo!");
                 }
-                var product = _produtosRepository.GetProductByIdAsync(requestProduto.Id).Result;
+                var product = _produtosRepository.GetProductById(requestProduto.Id);
 
                 if (product == null) return ResponseHelper.CreateBadRequestResponse("Nenhum produto foi encontrado!");
 

@@ -47,7 +47,7 @@ public class AvaliacaoService : IAvaliacaoService
     {
         try
         {
-            var avaliacoes = _avaliacaoRepository.GetAllAvaliacoesAsync().Result;
+            var avaliacoes = _avaliacaoRepository.GetAllAvaliacoes();
 
             if (avaliacoes.Count == 0) return ResponseHelper.CreateBadRequestResponse(
                 AvaliacaoResponseMessages.BadRequestMessages.NONE_FOUND);
@@ -68,7 +68,7 @@ public class AvaliacaoService : IAvaliacaoService
             if (request.ProdutoId == null) return ResponseHelper.CreateBadRequestResponse(
                 "Request inválido. O campo ProductID não pode ser nulo.");
 
-            var avaliacoes = _avaliacaoRepository.GetAvaliacoesByProductIdAsync(request.ProdutoId).Result;
+            var avaliacoes = _avaliacaoRepository.GetAvaliacoesByProductId(request.ProdutoId);
 
             if (avaliacoes.Count == 0) 
                 return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequestMessages.NONE_FOUND);
@@ -91,7 +91,7 @@ public class AvaliacaoService : IAvaliacaoService
                 return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequestMessages.NULL_USER_ID);
             }
             
-            var avaliacoes = _avaliacaoRepository.GetAvaliacoesByUserIdAsync(request.UsuarioId).Result;
+            var avaliacoes = _avaliacaoRepository.GetAvaliacoesByUserId(request.UsuarioId);
 
             if (avaliacoes.Count == 0)
                 return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequestMessages.NONE_FOUND);
