@@ -46,15 +46,10 @@ namespace DaccApi.Services.User
             }
         }
 
-        public IActionResult GetUserById(Guid? id)
+        public IActionResult GetUserById(int id)
         {
             try
             {
-                if (id == null ||Guid.Empty == id)
-                {
-                    return ResponseHelper.CreateBadRequestResponse("Requisição inválida. O UserId não pode ser nulo!");
-                }
-
                 var usuario = _usuarioRepository.GetUserById(id).Result;
 
                 if (usuario == null)

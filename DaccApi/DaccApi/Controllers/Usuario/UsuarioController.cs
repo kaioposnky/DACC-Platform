@@ -51,7 +51,7 @@ namespace DaccApi.Controllers.Usuario
         [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult GetUser([FromQuery] Guid? id, [FromQuery] string? email)
+        public IActionResult GetUser([FromQuery] int id, [FromQuery] string? email)
         {
             if (!string.IsNullOrEmpty(email))
             {

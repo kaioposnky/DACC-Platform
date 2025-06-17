@@ -39,7 +39,7 @@ namespace DaccApi.Controllers.Avaliacao
         [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult GetProductAvaliacao(Guid? id)
+        public IActionResult GetProductAvaliacao([FromQuery] int id)
         {
             var response = _avaliacaoService.GetAvaliacoesProductById(id);
             return response;
@@ -49,7 +49,7 @@ namespace DaccApi.Controllers.Avaliacao
         [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult GetAvaliacoesUser(Guid? id)
+        public IActionResult GetAvaliacoesUser([FromQuery] int id)
         {
             var response = _avaliacaoService.GetAvaliacoesUserById(id);
             return response;

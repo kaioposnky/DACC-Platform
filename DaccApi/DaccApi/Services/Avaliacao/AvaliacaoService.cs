@@ -61,14 +61,10 @@ public class AvaliacaoService : IAvaliacaoService
         }
     }
 
-    public IActionResult GetAvaliacoesProductById(Guid? productId)
+    public IActionResult GetAvaliacoesProductById(int productId)
     {
         try
         {
-            if (productId == null || Guid.Empty == productId) 
-                return ResponseHelper.CreateBadRequestResponse(
-                    "Request inválido. O campo ProductID não pode ser nulo.");
-
             var avaliacoes = _avaliacaoRepository.GetAvaliacoesByProductId(productId).Result;
 
             if (avaliacoes.Count == 0) 
@@ -83,14 +79,10 @@ public class AvaliacaoService : IAvaliacaoService
         }
     }
 
-    public IActionResult GetAvaliacoesUserById(Guid? userId)
+    public IActionResult GetAvaliacoesUserById(int userId)
     {
         try
         {
-            if (userId == null || Guid.Empty == userId)
-            {
-                return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequestMessages.NULL_USER_ID);
-            }
             
             var avaliacoes = _avaliacaoRepository.GetAvaliacoesByUserId(userId).Result;
 

@@ -7,8 +7,8 @@ namespace DaccApi.Services.Products
     {
 
         public IActionResult GetAllProducts();
-        public IActionResult GetProductById(Guid? userId);
+        public IActionResult GetProductById(int userId);
         public IActionResult CreateProduct(RequestProduto requestProduto);
-        public IActionResult RemoveProductById(Guid? produtoId);
+        public IActionResult RemoveProductById(int produtoId);
     }
 }

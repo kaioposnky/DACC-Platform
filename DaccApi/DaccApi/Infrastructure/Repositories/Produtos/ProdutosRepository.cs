@@ -23,7 +23,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
             return products;
         }
 
-        public async Task<Produto?> GetProductById(Guid? id)
+        public async Task<Produto?> GetProductById(int id)
         {
             try
             {
@@ -55,7 +55,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
         }
 
-        public async void RemoveProductByIdAsync(Guid? id)
+        public async void RemoveProductByIdAsync(int id)
         {
             try
             {

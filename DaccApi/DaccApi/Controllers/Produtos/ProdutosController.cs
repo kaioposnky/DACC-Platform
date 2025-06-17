@@ -32,7 +32,7 @@ namespace DaccApi.Controllers.Produtos
         [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult GetProductById([FromQuery] Guid? id)
+        public IActionResult GetProductById([FromQuery] int id)
         {
             var products = _produtosService.GetProductById(id);
             return products;
@@ -53,7 +53,7 @@ namespace DaccApi.Controllers.Produtos
         [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult RemoveProductById([FromQuery] Guid? id)
+        public IActionResult RemoveProductById([FromQuery] int id)
         {
             var response = _produtosService.RemoveProductById(id);
             return response;

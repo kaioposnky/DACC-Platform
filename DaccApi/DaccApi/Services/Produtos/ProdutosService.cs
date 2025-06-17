@@ -32,14 +32,10 @@ namespace DaccApi.Services.Products
             }
         }
 
-        public IActionResult GetProductById(Guid? produtoId)
+        public IActionResult GetProductById(int produtoId)
         {
             try
             {
-                if (produtoId == null || Guid.Empty == produtoId)
-                {
-                    return ResponseHelper.CreateBadRequestResponse("Requisição inválida. O ProdutoId não pode ser nulo!");
-                }
                 var product = _produtosRepository.GetProductById(produtoId).Result;
 
                 if (product == null) return ResponseHelper.CreateBadRequestResponse("Nenhum produto foi encontrado!");
@@ -92,20 +88,10 @@ namespace DaccApi.Services.Products
             }
         }
 
-        public IActionResult RemoveProductById(Guid? produtoId)
-        {            // Implementar lógica de registro de pessoa que fez esse request de adicionar o produto
+        public IActionResult RemoveProductById(int produtoId)
+        {
             try
             {
-                if (produtoId == null || Guid.Empty == produtoId)
-                {
-                    return ResponseHelper.CreateBadRequestResponse("Request inválido. O Id precisa não pode ser nulo.");
-                }
-                
-                // Lógica interessante de se adicionar mais tarde
-                // if (requestProduto.ReleaseDate != null)
-                // {
-                //     return ResponseHelper.CreateBadRequestResponse("Você não pode remover um produto que já está lançado!");
-                // }
 
                 _produtosRepository.RemoveProductByIdAsync(produtoId);
 

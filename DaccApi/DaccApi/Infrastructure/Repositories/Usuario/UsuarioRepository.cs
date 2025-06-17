@@ -46,7 +46,7 @@ namespace DaccApi.Infrastructure.Repositories.User
             throw new NotImplementedException();
         }
 
-        public async Task<Usuario?> GetUserById(Guid? id)
+        public async Task<Usuario?> GetUserById(int id)
         {
             try
             {
