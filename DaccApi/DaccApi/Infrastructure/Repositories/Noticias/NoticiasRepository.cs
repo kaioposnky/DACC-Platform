@@ -12,13 +12,13 @@ public class NoticiasRepository : INoticiasRepository
         _repositoryDapper = repositoryDapper;
     }
 
-    public List<Noticia> GetAllNoticias()
+    public async Task<List<Noticia>> GetAllNoticias()
     {
         try
         {
             var sql = _repositoryDapper.GetQueryNamed("GetAllNoticias");
 
-            var queryResult = _repositoryDapper.Query<Noticia>(sql);
+            var queryResult = await _repositoryDapper.QueryAsync<Noticia>(sql);
 
             var noticias = queryResult.ToList();
             return noticias;

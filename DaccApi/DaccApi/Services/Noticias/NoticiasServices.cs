@@ -17,7 +17,7 @@ public class NoticiasServices : INoticiasServices
     {
         try
         {
-            var noticias = _noticiasRepository.GetAllNoticias();
+            var noticias = _noticiasRepository.GetAllNoticias().Result;
 
             if (noticias.Count == 0) return ResponseHelper.CreateBadRequestResponse();
 

@@ -55,7 +55,7 @@ namespace DaccApi.Services.User
                     return ResponseHelper.CreateBadRequestResponse("Requisição inválida. O UserId não pode ser nulo!");
                 }
 
-                var usuario = _usuarioRepository.GetUserById(id);
+                var usuario = _usuarioRepository.GetUserById(id).Result;
 
                 if (usuario == null)
                     return ResponseHelper.CreateBadRequestResponse("Usuário não encontrado!");
@@ -77,7 +77,7 @@ namespace DaccApi.Services.User
                     return ResponseHelper.CreateBadRequestResponse("Requisição inválida. O Email não pode ser nulo!");
                 }
 
-                var usuario = _usuarioRepository.GetUserByEmail(email);
+                var usuario = _usuarioRepository.GetUserByEmail(email).Result;
 
                 if (usuario == null)
                 {

@@ -12,13 +12,13 @@ namespace DaccApi.Infrastructure.Repositories.Diretorias
             _repositoryDapper = repositoryDapper;
         }
 
-        public List<Diretoria> GetAllDiretorias()
+        public async Task<List<Diretoria>> GetAllDiretorias()
         {
             try
             {
                 var sql = _repositoryDapper.GetQueryNamed("GetAllDiretorias");
 
-                var queryResult = _repositoryDapper.Query<Diretoria>(sql);
+                var queryResult = await _repositoryDapper.QueryAsync<Diretoria>(sql);
 
                 var diretorias = queryResult.ToList();
                 return diretorias;

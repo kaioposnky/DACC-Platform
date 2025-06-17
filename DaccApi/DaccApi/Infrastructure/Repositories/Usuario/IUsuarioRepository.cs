@@ -8,8 +8,8 @@ namespace DaccApi.Infrastructure.Repositories.User
       
         public List<Usuario> GetAll();
 
-        public Usuario? GetUserById(Guid? id);
+        public Task<Usuario?> GetUserById(Guid? id);
 
-        public Usuario? GetUserByEmail(string email);
+        public Task<Usuario?> GetUserByEmail(string email);
     }
 }

@@ -4,5 +4,5 @@ namespace DaccApi.Infrastructure.Repositories.Noticias;
 
 public interface INoticiasRepository
 {
-    public List<Noticia> GetAllNoticias();
+    public Task<List<Noticia>> GetAllNoticias();
 }

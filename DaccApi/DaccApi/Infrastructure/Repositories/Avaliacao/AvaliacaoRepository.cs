@@ -25,13 +25,13 @@ public class AvaliacaoRepository : IAvaliacaoRepository
         }
     }
     
-    public List<AvaliacaoProduto> GetAllAvaliacoes()
+    public async Task<List<AvaliacaoProduto>> GetAllAvaliacoes()
     {
         try
         {
             var sql = _repositoryDapper.GetQueryNamed("GetAllAvaliacoes");
 
-            var queryResult = _repositoryDapper.Query<AvaliacaoProduto>(sql);
+            var queryResult = await _repositoryDapper.QueryAsync<AvaliacaoProduto>(sql);
 
             var avaliacoes = queryResult.ToList();
             return avaliacoes;
@@ -42,14 +42,14 @@ public class AvaliacaoRepository : IAvaliacaoRepository
         }
     }
 
-    public List<AvaliacaoProduto> GetAvaliacoesByProductId(Guid? id)
+    public async Task<List<AvaliacaoProduto>> GetAvaliacoesByProductId(Guid? id)
     {
         try
         {
             var sql = _repositoryDapper.GetQueryNamed("GetAvalicoesProductId");
             var param = new { Id = id };
 
-            var queryResult = _repositoryDapper.Query<AvaliacaoProduto>(sql, param);
+            var queryResult = await _repositoryDapper.QueryAsync<AvaliacaoProduto>(sql, param);
 
             var avaliacoes = queryResult.ToList();
             return avaliacoes;
@@ -61,13 +61,13 @@ public class AvaliacaoRepository : IAvaliacaoRepository
         
     }
 
-    public List<AvaliacaoProduto> GetAvaliacoesByUserId(Guid? id)
+    public async Task<List<AvaliacaoProduto>> GetAvaliacoesByUserId(Guid? id)
     {
         var sql = _repositoryDapper.GetQueryNamed("GetProductAvaliacaoUserByUserId");
         var param = new { Id = id };
         
         
-        var queryResult = _repositoryDapper.Query<AvaliacaoProduto>(sql, param);
+        var queryResult = await _repositoryDapper.QueryAsync<AvaliacaoProduto>(sql, param);
 
         var avaliacoes = queryResult.ToList();
         return avaliacoes;

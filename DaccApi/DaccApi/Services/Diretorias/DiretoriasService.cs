@@ -18,7 +18,7 @@ namespace DaccApi.Services.Diretorias
         {
             try
             {
-                var diretorias = _diretoriasRepository.GetAllDiretorias();
+                var diretorias = _diretoriasRepository.GetAllDiretorias().Result;
 
                 if (diretorias == null || diretorias.Count == 0)
                 {

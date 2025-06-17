@@ -16,7 +16,7 @@ namespace DaccApi.Services.Projetos
         {
             try
             {
-                var projetos = _projetosRepository.GetAllProjetos();
+                var projetos = _projetosRepository.GetAllProjetos().Result;
                 
                 if (projetos.Count == 0) return ResponseHelper.CreateBadRequestResponse("Nenhum projeto foi encontrado!");
 

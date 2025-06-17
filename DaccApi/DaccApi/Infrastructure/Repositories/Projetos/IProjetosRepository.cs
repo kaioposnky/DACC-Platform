@@ -4,6 +4,6 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
 {
     public interface IProjetosRepository 
     {
-        public List<Projeto> GetAllProjetos();
+        public Task<List<Projeto>> GetAllProjetos();
     }
 }
