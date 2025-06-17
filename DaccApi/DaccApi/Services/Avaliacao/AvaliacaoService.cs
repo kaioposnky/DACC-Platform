@@ -61,14 +61,15 @@ public class AvaliacaoService : IAvaliacaoService
         }
     }
 
-    public IActionResult GetAvaliacoesProduct(RequestAvaliacao request)
+    public IActionResult GetAvaliacoesProductById(Guid? productId)
     {
         try
         {
-            if (request.ProdutoId == null) return ResponseHelper.CreateBadRequestResponse(
-                "Request inválido. O campo ProductID não pode ser nulo.");
+            if (productId == null || Guid.Empty == productId) 
+                return ResponseHelper.CreateBadRequestResponse(
+                    "Request inválido. O campo ProductID não pode ser nulo.");
 
-            var avaliacoes = _avaliacaoRepository.GetAvaliacoesByProductId(request.ProdutoId);
+            var avaliacoes = _avaliacaoRepository.GetAvaliacoesByProductId(productId);
 
             if (avaliacoes.Count == 0) 
                 return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequestMessages.NONE_FOUND);
@@ -82,16 +83,16 @@ public class AvaliacaoService : IAvaliacaoService
         }
     }
 
-    public IActionResult GetAvaliacoesUser(RequestAvaliacao request)
+    public IActionResult GetAvaliacoesUserById(Guid? userId)
     {
         try
         {
-            if (request.UsuarioId == null)
+            if (userId == null || Guid.Empty == userId)
             {
                 return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequestMessages.NULL_USER_ID);
             }
             
-            var avaliacoes = _avaliacaoRepository.GetAvaliacoesByUserId(request.UsuarioId);
+            var avaliacoes = _avaliacaoRepository.GetAvaliacoesByUserId(userId);
 
             if (avaliacoes.Count == 0)
                 return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequestMessages.NONE_FOUND);

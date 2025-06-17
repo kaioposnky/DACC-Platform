@@ -15,7 +15,7 @@ namespace DaccApi.Controllers.Noticias
             _noticiasServices = noticiasServices;
         }
 
-        [HttpGet("GetAllNoticias")]
+        [HttpGet("")]
         [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]

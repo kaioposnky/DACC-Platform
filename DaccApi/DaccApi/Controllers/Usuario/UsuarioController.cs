@@ -6,7 +6,7 @@ using DaccApi.Responses.UserResponse;
 using DaccApi.Responses;
 using Microsoft.AspNetCore.Authorization;
 
-namespace DaccApi.Controllers
+namespace DaccApi.Controllers.Usuario
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -21,7 +21,7 @@ namespace DaccApi.Controllers
             _authService = authService;
         }
 
-        [HttpPost("CreateUser")]
+        [HttpPost("criar")]
         [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
@@ -32,7 +32,7 @@ namespace DaccApi.Controllers
             
         }
 
-        [HttpPost("Login")]
+        [HttpPost("login")]
         [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
@@ -47,24 +47,22 @@ namespace DaccApi.Controllers
             return Unauthorized(new { message = "Invalid credentials" });
         }
 
-        [HttpPost("GetUserById")]
+        [HttpGet("user")]
         [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult GetUserById([FromBody] RequestUsuario request)
+        public IActionResult GetUser([FromQuery] Guid? id, [FromQuery] string? email)
         {
-            var response = _usuarioService.GetUserById(request);
-            return response;
-        }
-
-        [HttpPost("GetUserByEmail")]
-        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult GetUserByEmail([FromBody] RequestUsuario request)
-        {
-            var response = _usuarioService.GetUserByEmail(request);
-            return response;
+            if (!string.IsNullOrEmpty(email))
+            {
+                var response = _usuarioService.GetUserByEmail(email);
+                return response;
+            }
+            else
+            {
+                var response = _usuarioService.GetUserById(id);
+                return response;
+            }
         }
     }
 }

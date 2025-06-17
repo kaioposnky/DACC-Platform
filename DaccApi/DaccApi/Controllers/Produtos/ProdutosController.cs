@@ -5,7 +5,7 @@ using DaccApi.Responses.UserResponse;
 using DaccApi.Services.Products;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DaccApi.Controllers.Products
+namespace DaccApi.Controllers.Produtos
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -18,7 +18,7 @@ namespace DaccApi.Controllers.Products
             _produtosService = produtosService;
         }
 
-        [HttpGet("GetAllProducts")]
+        [HttpGet("")]
         [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
@@ -28,34 +28,34 @@ namespace DaccApi.Controllers.Products
             return products;
         }
 
-        [HttpPost("GetProductById")]
+        [HttpGet("produto")]
         [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult GetProductById([FromBody] RequestProduto requestProduto)
+        public IActionResult GetProductById([FromQuery] Guid? id)
         {
-            var products = _produtosService.GetProductById(requestProduto);
+            var products = _produtosService.GetProductById(id);
             return products;
         }
 
 
-        [HttpGet("CreateProduct")]
+        [HttpPost("criar")]
         [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult CreateProduct(RequestProduto requestProduto)
+        public IActionResult CreateProduct([FromBody] RequestProduto requestProduto)
         {
             var response = _produtosService.CreateProduct(requestProduto);
             return response;
         }
 
-        [HttpGet("RemoveProductById")]
+        [HttpDelete("remover")]
         [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult RemoveProductById(RequestProduto requestProduto)
+        public IActionResult RemoveProductById([FromQuery] Guid? id)
         {
-            var response = _produtosService.RemoveProductById(requestProduto);
+            var response = _produtosService.RemoveProductById(id);
             return response;
         }
 

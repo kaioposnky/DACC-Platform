@@ -17,7 +17,7 @@ namespace DaccApi.Controllers.Projetos
             _projetosService = projetosService;
         }
 
-        [HttpGet("GetProjetos")]
+        [HttpGet("")]
         [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]

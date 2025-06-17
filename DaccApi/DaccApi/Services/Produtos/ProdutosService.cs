@@ -32,15 +32,15 @@ namespace DaccApi.Services.Products
             }
         }
 
-        public IActionResult GetProductById(RequestProduto requestProduto)
+        public IActionResult GetProductById(Guid? produtoId)
         {
             try
             {
-                if (requestProduto.Id == null)
+                if (produtoId == null || Guid.Empty == produtoId)
                 {
                     return ResponseHelper.CreateBadRequestResponse("Requisição inválida. O ProdutoId não pode ser nulo!");
                 }
-                var product = _produtosRepository.GetProductById(requestProduto.Id);
+                var product = _produtosRepository.GetProductById(produtoId);
 
                 if (product == null) return ResponseHelper.CreateBadRequestResponse("Nenhum produto foi encontrado!");
 
@@ -92,11 +92,11 @@ namespace DaccApi.Services.Products
             }
         }
 
-        public IActionResult RemoveProductById(RequestProduto requestProduto)
+        public IActionResult RemoveProductById(Guid? produtoId)
         {            // Implementar lógica de registro de pessoa que fez esse request de adicionar o produto
             try
             {
-                if (requestProduto.Id == null)
+                if (produtoId == null || Guid.Empty == produtoId)
                 {
                     return ResponseHelper.CreateBadRequestResponse("Request inválido. O Id precisa não pode ser nulo.");
                 }
@@ -106,14 +106,14 @@ namespace DaccApi.Services.Products
                 // {
                 //     return ResponseHelper.CreateBadRequestResponse("Você não pode remover um produto que já está lançado!");
                 // }
-                
-                _produtosRepository.RemoveProductByIdAsync(requestProduto.Id);
+
+                _produtosRepository.RemoveProductByIdAsync(produtoId);
 
                 return ResponseHelper.CreateSuccessResponse("", "Produto removido com sucesso!");
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao remover produto por id" + ex);
+                return ResponseHelper.CreateErrorResponse("Erro ao remover produto!" + ex);
             }
         }
     

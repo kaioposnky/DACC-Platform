@@ -46,22 +46,20 @@ namespace DaccApi.Services.User
             }
         }
 
-        public IActionResult GetUserById(RequestUsuario request)
+        public IActionResult GetUserById(Guid? id)
         {
             try
             {
-                if (request.Id == null)
+                if (id == null ||Guid.Empty == id)
                 {
                     return ResponseHelper.CreateBadRequestResponse("Requisição inválida. O UserId não pode ser nulo!");
                 }
 
-                var usuario = _usuarioRepository.GetUserById(request.Id);
+                var usuario = _usuarioRepository.GetUserById(id);
 
                 if (usuario == null)
-                {
                     return ResponseHelper.CreateBadRequestResponse("Usuário não encontrado!");
-                }
-
+                
                 return ResponseHelper.CreateSuccessResponse(new { user = usuario }, "Usuário obtido com sucesso!");
             }
             catch (Exception ex)
@@ -70,16 +68,16 @@ namespace DaccApi.Services.User
             }
         }
 
-        public IActionResult GetUserByEmail(RequestUsuario request)
+        public IActionResult GetUserByEmail(string email)
         {
             try
             {
-                if (request.Email == null)
+                if (string.IsNullOrEmpty(email))
                 {
                     return ResponseHelper.CreateBadRequestResponse("Requisição inválida. O Email não pode ser nulo!");
                 }
 
-                var usuario = _usuarioRepository.GetUserByEmail(request.Email);
+                var usuario = _usuarioRepository.GetUserByEmail(email);
 
                 if (usuario == null)
                 {

@@ -15,17 +15,17 @@ namespace DaccApi.Controllers.Avaliacao
         {
             _avaliacaoService = avaliacaoService;
         }
-        [HttpPost("GetAllAvaliacoes")]
+        [HttpGet("")]
         [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult GetAllAvaliacoes([FromBody] RequestAvaliacao request)
+        public IActionResult GetAllAvaliacoes()
         {
             var response = _avaliacaoService.GetAllAvaliacoes();
             return response;
         }
         
-        [HttpGet("CreateAvaliacao")]
+        [HttpPost("criar")]
         [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
@@ -35,23 +35,23 @@ namespace DaccApi.Controllers.Avaliacao
             return response;
         }
         
-        [HttpPost("GetProductAvaliacao")]
+        [HttpGet("produto")]
         [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult GetProductAvaliacao(RequestAvaliacao request)
+        public IActionResult GetProductAvaliacao(Guid? id)
         {
-            var response = _avaliacaoService.GetAvaliacoesProduct(request);
+            var response = _avaliacaoService.GetAvaliacoesProductById(id);
             return response;
         }
         
-        [HttpPost("GetAvaliacoesUser")]
+        [HttpGet("usuario")]
         [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult GetAvaliacoesUser(RequestAvaliacao request)
+        public IActionResult GetAvaliacoesUser(Guid? id)
         {
-            var response = _avaliacaoService.GetAvaliacoesUser(request);
+            var response = _avaliacaoService.GetAvaliacoesUserById(id);
             return response;
         }
     }
