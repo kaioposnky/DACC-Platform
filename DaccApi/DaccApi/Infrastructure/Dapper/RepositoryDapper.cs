@@ -52,12 +52,16 @@ namespace DaccApi.Infrastructure.Dapper
             return await GetConnection().ExecuteAsync(sql, parameters);
         }
 
-        public IEnumerable<T> Query<T>(string sql)
+        public IEnumerable<T> Query<T>(string sql, object? parameters = null)
         {
-            return GetConnection().Query<T>(sql);
+            return GetConnection().Query<T>(sql, parameters);
         }
 
-
+        public async Task<IEnumerable<T>> QueryAsync<T>(string sql, object? parameters = null)
+        {
+            return await GetConnection().QueryAsync<T>(sql, parameters);
+        }
+        
         public async Task<IEnumerable<T>> QueryProcedureAsync<T>(string procedureName, object? parameters = null)
         {
             return await GetConnection().QueryAsync<T>(procedureName, parameters, commandType: CommandType.StoredProcedure);

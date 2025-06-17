@@ -12,11 +12,15 @@ using System.Data;
 using Npgsql;
 using Microsoft.OpenApi.Models;
 using DaccApi;
+using DaccApi.Infrastructure.Repositories.Avaliacao;
 using DaccApi.Services.Products;
 using DaccApi.Infrastructure.Repositories.Products;
 using DaccApi.Services.Diretorias;
 using DaccApi.Infrastructure.Repositories.Diretorias;
+using DaccApi.Infrastructure.Repositories.Noticias;
 using DaccApi.Infrastructure.Repositories.Projetos;
+using DaccApi.Services.Avaliacao;
+using DaccApi.Services.Noticias;
 using DaccApi.Services.Projetos;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -81,14 +85,18 @@ builder.Services.AddScoped<IDbConnection>(sp =>
 builder.Services.AddScoped<IRepositoryDapper, RepositoryDapper>();
 builder.Services.AddScoped<IArgon2Utility, Argon2Utility>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProdutosService, ProdutosService>();
+builder.Services.AddScoped<IProdutosRepository, ProdutosRepository>();
 builder.Services.AddScoped<IDiretoriasService, DiretoriasService>();
 builder.Services.AddScoped<IDiretoriasRepository, DiretoriasRepository>();
 builder.Services.AddScoped<IProjetosService, ProjetosService>();
 builder.Services.AddScoped<IProjetosRepository, ProjetosRepository>();
+builder.Services.AddScoped<IAvaliacaoService, AvaliacaoService>();
+builder.Services.AddScoped<IAvaliacaoRepository, AvaliacaoRepository>();
+builder.Services.AddScoped<INoticiasRepository, NoticiasRepository>();
+builder.Services.AddScoped<INoticiasServices, NoticiasServices>();
 
 
 var app = builder.Build();

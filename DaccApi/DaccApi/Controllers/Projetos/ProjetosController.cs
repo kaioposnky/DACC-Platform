@@ -1,4 +1,5 @@
 ﻿using DaccApi.Model;
+using DaccApi.Responses;
 using DaccApi.Responses.UserResponse;
 using DaccApi.Services.Projetos;
 using Microsoft.AspNetCore.Mvc;
@@ -16,15 +17,14 @@ namespace DaccApi.Controllers.Projetos
             _projetosService = projetosService;
         }
 
-        [HttpGet("GetProjetos")]
-        [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public List<Projeto> GetProjetos()
+        [HttpGet("")]
+        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
+        public IActionResult GetProjetos()
         {
 
-            List<Projeto> projetos = _projetosService.GetProjetos();
-
+            var projetos = _projetosService.GetAllProjetos();
             return projetos;
         }
 

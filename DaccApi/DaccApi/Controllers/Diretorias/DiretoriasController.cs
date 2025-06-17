@@ -1,9 +1,9 @@
-﻿using DaccApi.Model;
+﻿using DaccApi.Responses;
 using DaccApi.Responses.UserResponse;
 using DaccApi.Services.Diretorias;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DaccApi.Controllers.Products
+namespace DaccApi.Controllers.Diretorias
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -16,16 +16,14 @@ namespace DaccApi.Controllers.Products
             _diretoriasService = diretoriasService;
         }
 
-        [HttpGet("GetDiretorias")]
-        [ProducesResponseType(typeof(UserResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public List<Diretoria> GetDiretorias()
+        [HttpGet("")]
+        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
+        public IActionResult GetDiretorias()
         {
-
-            List<Diretoria> diretorias = _diretoriasService.GetDiretorias();
-
-            return diretorias;
+            var response = _diretoriasService.GetAllDiretorias();
+            return response;
         }
 
     }

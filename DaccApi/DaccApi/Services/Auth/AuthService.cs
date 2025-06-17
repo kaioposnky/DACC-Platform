@@ -5,11 +5,23 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using DaccApi.Helpers;
+using DaccApi.Infrastructure.Cryptography;
+using DaccApi.Infrastructure.Repositories.User;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.Auth
 {
     public class AuthService : IAuthService
     {
+        private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IArgon2Utility _argon2Utility;
+        public AuthService(IUsuarioRepository usuarioRepository, IArgon2Utility argon2Utility)
+        {
+            _usuarioRepository = usuarioRepository;
+            _argon2Utility = argon2Utility;
+        }
+        
         public string GenerateToken(object request)
         {
             var expirationTime = DateTime.UtcNow.AddHours(3);
@@ -42,12 +54,23 @@ namespace DaccApi.Services.Auth
             return tokenHandler.WriteToken(token);
         }
 
-        // Simulação de validação de credenciais (essa parte pode ser adaptada para autenticar a partir de banco de dados)
+        // TODO: Depois dar uma olhada se essa implementação está razoável para o controller, apenas fiz a lógica
         public bool ValidateCredentials(RequestUsuario request)
         {
-            // Implementar a lógica de validação de usuário (e.g., comparar email e senha com o banco de dados)
-            // Para fins de exemplo, vamos retornar true, assumindo que as credenciais são válidas.
-            return true;
+            if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Senha))
+            {
+                return false;
+            }
+
+            var usuario = _usuarioRepository.GetUserByEmail(request.Email).Result;
+
+            if (usuario == null)
+            {
+                return false;
+            }
+            
+            return _argon2Utility.VerifyPassword(request.Senha, usuario.Senha);
+
         }
     }
 }

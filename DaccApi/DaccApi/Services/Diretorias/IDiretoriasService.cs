@@ -5,7 +5,7 @@ namespace DaccApi.Services.Diretorias
 {
     public interface IDiretoriasService
     {
-        public List<Diretoria> GetDiretorias();
+        public IActionResult GetAllDiretorias();
 
     }
 }

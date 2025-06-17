@@ -11,11 +11,11 @@ namespace DaccApi.Infrastructure.DataBaseContext
 
         }
 
-        public DbSet<User> Usuarios { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>(entity =>
+            modelBuilder.Entity<Usuario>(entity =>
             {
                 entity.ToTable("Usuario");
 
@@ -24,7 +24,7 @@ namespace DaccApi.Infrastructure.DataBaseContext
                       .HasColumnName("UsuarioID")
                       .ValueGeneratedOnAdd();
 
-                entity.Property(e => e.Name)
+                entity.Property(e => e.Nome)
                       .HasColumnName("Nome")
                       .IsRequired();
 
@@ -32,21 +32,18 @@ namespace DaccApi.Infrastructure.DataBaseContext
                       .HasColumnName("Email")
                       .IsRequired();
 
-                entity.Property(e => e.Password)
+                entity.Property(e => e.Senha)
                       .HasColumnName("Senha")
                       .IsRequired();
 
-                entity.Property(e => e.TypeId)
+                entity.Property(e => e.TipoUsuario)
                       .HasColumnName("TipoUsuarioID")
                       .IsRequired();
 
-                entity.Property(e => e.RegistrationDate)
+                entity.Property(e => e.DataCadastro)
                       .HasColumnName("DataCadastro")
                       .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                entity.Property(e => e.Situacao)
-                      .HasColumnName("Situacao")
-                      .IsRequired();
+                
             });
         }
     }
