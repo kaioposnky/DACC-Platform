@@ -13,6 +13,7 @@ using Npgsql;
 using Microsoft.OpenApi.Models;
 using DaccApi;
 using DaccApi.Infrastructure.Repositories.Avaliacao;
+using DaccApi.Infrastructure.Repositories.Carrinhos;
 using DaccApi.Services.Products;
 using DaccApi.Infrastructure.Repositories.Products;
 using DaccApi.Services.Diretorias;
@@ -97,6 +98,7 @@ builder.Services.AddScoped<IAvaliacaoService, AvaliacaoService>();
 builder.Services.AddScoped<IAvaliacaoRepository, AvaliacaoRepository>();
 builder.Services.AddScoped<INoticiasRepository, NoticiasRepository>();
 builder.Services.AddScoped<INoticiasServices, NoticiasServices>();
+builder.Services.AddScoped<ICarrinhoRepository, CarrinhoRepository>();
 
 
 var app = builder.Build();
