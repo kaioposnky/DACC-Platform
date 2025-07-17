@@ -267,6 +267,7 @@ CREATE TABLE noticia
 (
     id              SERIAL PRIMARY KEY,
     titulo          VARCHAR(200) NOT NULL,
+    descricao       VARCHAR(255) NOT NULL,
     conteudo        TEXT,
     imagem_url      VARCHAR(255),
     data_publicacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP

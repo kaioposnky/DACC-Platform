@@ -35,22 +35,23 @@ namespace DaccApi.Services.Auth
         public IActionResult LoginUser(RequestUsuario request)
         {
             if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Senha))
-                return ResponseHelper.CreateErrorResponse(ResponseError.WithDetails(ResponseError.BAD_REQUEST, new object[]{
-                    (string.IsNullOrEmpty(request.Email) ?
-                        new {
-                            field = "email",
-                            message = "Email é obrigatório"
-                        } : null)!,
-                    (string.IsNullOrEmpty(request.Senha) ?
-                        new {
-                            field = "senha",
-                            message = "Senha é obrigatória"
-                        } : null)!
-                }));
+            {
+                var validationDetails = new List<object>();
+                if (string.IsNullOrEmpty(request.Email))
+                {
+                    validationDetails.Add(new { field = "email", message = "Email é obrigatório" });
+                }
+                if (string.IsNullOrEmpty(request.Senha))
+                {
+                    validationDetails.Add(new { field = "senha", message = "Senha é obrigatória" });
+                }
+                
+                return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST.WithDetails(validationDetails.ToArray()));
+            }
             
             var usuario = _usuarioRepository.GetUserByEmail(request.Email).Result;
 
-            if (usuario == null || !ValidateCredentials(request.Email, request.Senha, usuario.Senha))
+            if (usuario == null || !ValidateCredentials(request.Email, request.Senha, usuario.SenhaHash))
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.INVALID_CREDENTIALS);
             }

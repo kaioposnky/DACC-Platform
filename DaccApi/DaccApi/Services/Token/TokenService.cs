@@ -27,7 +27,7 @@ namespace DaccApi.Services.Token
             var claims = new []
             {
                 new Claim(ClaimTypes.Name, usuario.Nome),
-                new Claim(ClaimTypes.Role, usuario.TipoUsuario),
+                new Claim(ClaimTypes.Role, usuario.TipoUsuario.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
                 new Claim(ClaimTypes.Email, usuario.Email),
                 new Claim(JwtRegisteredClaimNames.Sub, usuario.Email),

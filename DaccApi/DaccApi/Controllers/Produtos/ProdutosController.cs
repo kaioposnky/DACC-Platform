@@ -47,7 +47,7 @@ namespace DaccApi.Controllers.Produtos
             return response;
         }
         
-        [HttpDelete("{id:int}")]
+        [HttpPatch("{id:int}")]
         public IActionResult UpdateProduct([FromRoute] int id, [FromBody] RequestProduto requestProduto)
         {
             throw new NotImplementedException();
