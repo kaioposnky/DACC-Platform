@@ -28,8 +28,8 @@ CREATE TABLE tipos_progresso
 );
 
 -- 2. Tabela: Usuários
-DROP TABLE IF EXISTS usuarios;
-CREATE TABLE usuarios
+DROP TABLE IF EXISTS usuario;
+CREATE TABLE usuario
 (
     id               SERIAL PRIMARY KEY,
     nome             VARCHAR(100)        NOT NULL,
@@ -43,13 +43,13 @@ CREATE TABLE usuarios
     tipo_usuario_id  INT REFERENCES tipos_usuario (id)
 );
 
-DROP TABLE IF EXISTS posts;
-CREATE TABLE posts
+DROP TABLE IF EXISTS post;
+CREATE TABLE post
 (
     id               SERIAL PRIMARY KEY,
     titulo           VARCHAR(50) NOT NULL,
     conteudo         TEXT        NOT NULL,
-    autor_id         INT REFERENCES usuarios (id),
+    autor_id         INT REFERENCES usuario (id),
     tags             VARCHAR(255)[] NOT NULL,
     respondida       BOOLEAN     NOT NULL,
     visualizacoes    INT         NOT NULL,
@@ -59,26 +59,26 @@ CREATE TABLE posts
     data_atualizacao TIMESTAMP   NOT NULL
 );
 
-DROP TABLE IF EXISTS comentarios_post;
-CREATE TABLE comentarios_post
-(
-    id            SERIAL PRIMARY KEY,
-    post_id       INT REFERENCES posts (id),
-    comentario_id INT REFERENCES comentario (id)
-);
-
 DROP TABLE IF EXISTS comentario;
 CREATE TABLE comentario
 (
     id               SERIAL PRIMARY KEY,
-    post_id          INT REFERENCES posts (id),
-    autor_id         INT REFERENCES usuarios (id),
+    post_id          INT REFERENCES post (id),
+    autor_id         INT REFERENCES usuario (id),
     conteudo         TEXT      NOT NULL,
     aceito           BOOLEAN   NOT NULL,
     upvotes          INT       NOT NULL,
     downvotes        INT       NOT NULL,
     data_criacao     TIMESTAMP NOT NULL,
     data_atualizacao TIMESTAMP NOT NULL
+);
+
+DROP TABLE IF EXISTS comentarios_post;
+CREATE TABLE comentarios_post
+(
+    id            SERIAL PRIMARY KEY,
+    post_id       INT REFERENCES post (id),
+    comentario_id INT REFERENCES comentario (id)
 );
 
 DROP TABLE IF EXISTS anuncio;
@@ -89,7 +89,7 @@ CREATE TABLE anuncio
     conteudo         TEXT        NOT NULL,
     tipo_anuncio_id  INT REFERENCES tipos_anuncio (id),
     ativo            BOOLEAN     NOT NULL DEFAULT FALSE,
-    autor_id         INT REFERENCES usuarios (id),
+    autor_id         INT REFERENCES usuario (id),
     data_criacao     TIMESTAMP   NOT NULL,
     data_atualizacao TIMESTAMP   NOT NULL
 );
@@ -105,7 +105,7 @@ CREATE TABLE evento
     tipo_evento_id   INT REFERENCES tipos_evento (id),
     capacidade       INT          NOT NULL,
     registrados      INT          NOT NULL,
-    autor_id         INT REFERENCES usuarios (id),
+    autor_id         INT REFERENCES usuario (id),
     data_criacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -136,12 +136,27 @@ CREATE TABLE tamanhos
     descricao VARCHAR(50)
 );
 
+-- 4. Tabela: Produtos
+DROP TABLE IF EXISTS produto;
+CREATE TABLE produto
+(
+    id               SERIAL PRIMARY KEY,
+    nome             VARCHAR(150)   NOT NULL,
+    descricao        TEXT           NOT NULL,
+    preco            NUMERIC(10, 2) NOT NULL,
+    preco_original   NUMERIC(10, 2),
+    genero           BOOLEAN,
+    data_criacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    categoria_id     INT REFERENCES categorias (id)
+);
+
 -- Tabela para variações do produto
-DROP TABLE IF EXISTS produtos_variacoes;
-CREATE TABLE produtos_variacoes
+DROP TABLE IF EXISTS produto_variacao;
+CREATE TABLE produto_variacao
 (
     id         SERIAL PRIMARY KEY,
-    produto_id INT REFERENCES produtos (id),
+    produto_id INT REFERENCES produto (id),
     cor_id     INT REFERENCES cores (id),
     tamanho_id INT REFERENCES tamanhos (id),
     estoque    INT NOT NULL DEFAULT 0,
@@ -149,29 +164,13 @@ CREATE TABLE produtos_variacoes
     UNIQUE (produto_id, cor_id, tamanho_id)
 );
 
-
--- 4. Tabela: Produtos
-DROP TABLE IF EXISTS produtos;
-CREATE TABLE produtos
-(
-    id               SERIAL PRIMARY KEY,
-    nome             VARCHAR(150)   NOT NULL,
-    descricao        TEXT           NOT NULL,
-    preco            NUMERIC(10, 2) NOT NULL,
-    desconto         NUMERIC(10, 2),
-    genero           BOOLEAN,
-    data_criacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    categoria_id     INT REFERENCES categorias (id)
-);
-
 -- 5. Tabela: Imagens do Produto
-DROP TABLE IF EXISTS imagens_produto;
-CREATE TABLE imagens_produto
+DROP TABLE IF EXISTS imagem_produto;
+CREATE TABLE imagem_produto
 (
     id         SERIAL PRIMARY KEY,
-    produto_id INT REFERENCES produtos (id),
-    cor_id REFERENCES cores (id),
+    produto_id INT REFERENCES produto (id),
+    cor_id     INT REFERENCES cores (id),
     imagem_url VARCHAR(255) NOT NULL,
     ordem      INT          NOT NULL DEFAULT 0
 );
@@ -185,22 +184,22 @@ CREATE TABLE status_carrinho
 );
 
 -- 7. Tabela: Carrinhos
-DROP TABLE IF EXISTS carrinhos;
-CREATE TABLE carrinhos
+DROP TABLE IF EXISTS carrinho;
+CREATE TABLE carrinho
 (
     id                 SERIAL PRIMARY KEY,
-    usuario_id         INT REFERENCES usuarios (id),
+    usuario_id         INT REFERENCES usuario (id),
     status_carrinho_id INT REFERENCES status_carrinho (id),
     data_criacao       TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 8. Tabela: Itens do Carrinho
-DROP TABLE IF EXISTS itens_carrinho;
-CREATE TABLE itens_carrinho
+DROP TABLE IF EXISTS item_carrinho;
+CREATE TABLE item_carrinho
 (
     id          SERIAL PRIMARY KEY,
-    carrinho_id INT REFERENCES carrinhos (id),
-    produto_id  INT REFERENCES produtos (id),
+    carrinho_id INT REFERENCES carrinho (id),
+    produto_id  INT REFERENCES produto (id),
     quantidade  INT NOT NULL
 );
 
@@ -213,49 +212,49 @@ CREATE TABLE status_pedido
 );
 
 -- 10. Tabela: Métodos de Pagamento
-DROP TABLE IF EXISTS metodos_pagamento;
-CREATE TABLE metodos_pagamento
+DROP TABLE IF EXISTS metodo_pagamento;
+CREATE TABLE metodo_pagamento
 (
     id   SERIAL PRIMARY KEY,
     nome VARCHAR(50) NOT NULL UNIQUE
 );
 
 -- 11. Tabela: Pedidos
-DROP TABLE IF EXISTS pedidos;
-CREATE TABLE pedidos
+DROP TABLE IF EXISTS pedido;
+CREATE TABLE pedido
 (
     id                  SERIAL PRIMARY KEY,
-    usuario_id          INT REFERENCES usuarios (id),
+    usuario_id          INT REFERENCES usuario (id),
     data_pedido         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status_pedido_id    INT REFERENCES status_pedido (id),
-    metodo_pagamento_id INT REFERENCES metodos_pagamento (id)
+    metodo_pagamento_id INT REFERENCES metodo_pagamento (id)
 );
 
 -- 12. Tabela: Itens do Pedido
-DROP TABLE IF EXISTS itens_pedido;
-CREATE TABLE itens_pedido
+DROP TABLE IF EXISTS item_pedido;
+CREATE TABLE item_pedido
 (
     id         SERIAL PRIMARY KEY,
-    pedido_id  INT REFERENCES pedidos (id),
-    produto_id INT REFERENCES produtos (id),
+    pedido_id  INT REFERENCES pedido (id),
+    produto_id INT REFERENCES produto (id),
     quantidade INT NOT NULL
 );
 
 -- 13. Tabela: Avaliações
-DROP TABLE IF EXISTS avaliacoes;
-CREATE TABLE avaliacoes
+DROP TABLE IF EXISTS avaliacao;
+CREATE TABLE avaliacao
 (
     id             SERIAL PRIMARY KEY,
-    usuario_id     INT REFERENCES usuarios (id),
-    produto_id     INT REFERENCES produtos (id),
+    usuario_id     INT REFERENCES usuario (id),
+    produto_id     INT REFERENCES produto (id),
     nota           INT CHECK (nota BETWEEN 1 AND 5),
     comentario     TEXT,
     data_avaliacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 14. Tabela: Diretorias
-DROP TABLE IF EXISTS diretorias;
-CREATE TABLE diretorias
+DROP TABLE IF EXISTS diretoria;
+CREATE TABLE diretoria
 (
     id        SERIAL PRIMARY KEY,
     nome      VARCHAR(100) NOT NULL,
@@ -263,8 +262,8 @@ CREATE TABLE diretorias
 );
 
 -- 15. Tabela: Notícias
-DROP TABLE IF EXISTS noticias;
-CREATE TABLE noticias
+DROP TABLE IF EXISTS noticia;
+CREATE TABLE noticia
 (
     id              SERIAL PRIMARY KEY,
     titulo          VARCHAR(200) NOT NULL,
@@ -274,17 +273,17 @@ CREATE TABLE noticias
 );
 
 -- 16. Tabela: Projetos
-drop table if exists projetos;
-CREATE TABLE projetos
+DROP TABLE IF EXISTS projeto;
+CREATE TABLE projeto
 (
     id               SERIAL PRIMARY KEY,
     titulo           VARCHAR(200) NOT NULL,
     descricao        TEXT         NOT NULL,
     imagem_url       VARCHAR(255) NOT NULL,
-    status REFERENCES tipos_progresso (id),
-    lider_id         INT REFERENCES usuarios (id),
-    diretoria_id     INT REFERENCES diretorias (id),
-    membros_id       INT REFERENCES usuarios (id)[],
+    status_id        INT REFERENCES tipos_progresso (id),
+    lider_id         INT REFERENCES usuario (id),
+    diretoria_id     INT REFERENCES diretoria (id),
+    membros_id       INT[] NOT NULL,
     data_criacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -329,6 +328,14 @@ VALUES ('aguardando pagamento'),
        ('cancelado');
 
 -- Métodos de Pagamento
-INSERT INTO metodos_pagamento (nome)
+INSERT INTO metodo_pagamento (nome)
 VALUES ('venda física'),
        ('pix');
+
+-- Categorias de Produtos
+INSERT INTO categorias (nome, subtipo)
+VALUES ('roupas', 'camisetas'),
+       ('roupas', 'moletom'),
+       ('outros', 'canecas'),
+       ('outros', 'adesivos'),
+       ('outros', 'acessorios');
