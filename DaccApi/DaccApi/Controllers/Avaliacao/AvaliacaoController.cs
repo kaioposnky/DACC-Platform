@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DaccApi.Controllers.Avaliacao
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/ratings")]
     public class AvaliacaoController : ControllerBase
     {
         private readonly IAvaliacaoService _avaliacaoService;
@@ -16,43 +16,37 @@ namespace DaccApi.Controllers.Avaliacao
             _avaliacaoService = avaliacaoService;
         }
         [HttpGet("")]
-        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
         public IActionResult GetAllAvaliacoes()
         {
             var response = _avaliacaoService.GetAllAvaliacoes();
             return response;
         }
         
-        [HttpPost("criar")]
-        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult CreateAvaliacao(RequestAvaliacao request)
+        [HttpPost("")]
+        public IActionResult CreateAvaliacao([FromBody] RequestAvaliacao request)
         {
             var response = _avaliacaoService.CreateAvaliacao(request);
             return response;
         }
         
-        [HttpGet("produto")]
-        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult GetProductAvaliacao([FromQuery] int id)
+        [HttpGet("products/{id:int}")]
+        public IActionResult GetProductAvaliacoes([FromRoute] int id)
         {
             var response = _avaliacaoService.GetAvaliacoesProductById(id);
             return response;
         }
         
-        [HttpGet("usuario")]
-        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult GetAvaliacoesUser([FromQuery] int id)
+        [HttpGet("users/{id:int}")]
+        public IActionResult GetAvaliacoesUser([FromRoute] int id)
         {
             var response = _avaliacaoService.GetAvaliacoesUserById(id);
             return response;
+        }
+
+        [HttpDelete("{id:int}")]
+        public IActionResult DeleteAvaliacao([FromRoute] int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

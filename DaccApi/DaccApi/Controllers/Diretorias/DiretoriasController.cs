@@ -7,6 +7,7 @@ namespace DaccApi.Controllers.Diretorias
 {
     [ApiController]
     [Route("api/[controller]")]
+    /// DISCOTINUED
     public class DiretoriasController : ControllerBase
     {
         private readonly IDiretoriasService _diretoriasService;

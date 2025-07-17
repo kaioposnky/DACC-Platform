@@ -16,14 +16,38 @@ namespace DaccApi.Controllers.Noticias
         }
 
         [HttpGet("")]
-        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
         public IActionResult GetAllNoticias()
         {
             var response = _noticiasServices.GetAllNoticias();
             return response;
         }
+        
+        [HttpPost("")]
+        public IActionResult CreateNoticia()
+        {
+            throw new NotImplementedException();
+        }
+        
+        [HttpGet("{id:int}")]
+        public IActionResult GetNoticiaById([FromRoute] int id)
+        {
+            throw new NotImplementedException();
+        }
+        
+        [HttpDelete("{id:int}")]
+        public IActionResult DeleteNoticia([FromRoute] int id)
+        {
+            throw new NotImplementedException();
+        }
+        
+        [HttpPatch("{id:int}")]
+        public IActionResult UpdateNoticia([FromRoute] int id)
+        {
+            throw new NotImplementedException();
+        }
+        
+        
+        
     }
 }
 

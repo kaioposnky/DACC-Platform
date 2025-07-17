@@ -19,44 +19,38 @@ namespace DaccApi.Controllers.Produtos
         }
 
         [HttpGet("")]
-        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
         public IActionResult GetAllProducts()
         {
             var products = _produtosService.GetAllProducts();
             return products;
         }
 
-        [HttpGet("produto")]
-        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult GetProductById([FromQuery] int id)
+        [HttpGet("{id:int}")]
+        public IActionResult GetProductById([FromRoute] int id)
         {
             var products = _produtosService.GetProductById(id);
             return products;
         }
 
 
-        [HttpPost("criar")]
-        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
+        [HttpPost("")]
         public IActionResult CreateProduct([FromBody] RequestProduto requestProduto)
         {
             var response = _produtosService.CreateProduct(requestProduto);
             return response;
         }
 
-        [HttpDelete("remover")]
-        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult RemoveProductById([FromQuery] int id)
+        [HttpDelete("{id:int}")]
+        public IActionResult RemoveProduct([FromRoute] int id)
         {
             var response = _produtosService.RemoveProductById(id);
             return response;
+        }
+        
+        [HttpDelete("{id:int}")]
+        public IActionResult UpdateProduct([FromRoute] int id, [FromBody] RequestProduto requestProduto)
+        {
+            throw new NotImplementedException();
         }
 
     }

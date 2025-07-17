@@ -5,11 +5,13 @@ using DaccApi.Services.Auth;
 using DaccApi.Responses.UserResponse;
 using DaccApi.Responses;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
+using BadRequest = DaccApi.Responses.BadRequest;
 
 namespace DaccApi.Controllers.Usuario
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/users")]
     public class UsuarioController : ControllerBase
     {
         private readonly IUsuarioService _usuarioService;
@@ -20,11 +22,16 @@ namespace DaccApi.Controllers.Usuario
             _usuarioService = usuarioService;
             _authService = authService;
         }
-
-        [HttpPost("criar")]
-        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
+        
+        [HttpGet("")]
+        public IActionResult GetUsers()
+        {
+            // var response = _usuarioService.GetAllUsers();
+            // return response;
+            throw new NotImplementedException();
+        }
+        
+        [HttpPost("")]
         public IActionResult CreateUser([FromBody] RequestUsuario request)
         {
             var response = _usuarioService.CreateUser(request);
@@ -32,37 +39,23 @@ namespace DaccApi.Controllers.Usuario
             
         }
 
-        [HttpPost("login")]
-        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult Login([FromBody] RequestUsuario request)
+        [HttpGet("{id:int}")]
+        public IActionResult GetUser([FromRoute] int id)
         {
-            if (_authService.ValidateCredentials(request))
-            {
-                var token = _authService.GenerateToken(request);
-                return Ok(new { Token = token });
-            }
-
-            return Unauthorized(new { message = "Invalid credentials" });
+            var response = _usuarioService.GetUserById(id);
+            return response;
+        }
+        
+        [HttpPatch("{id:int}")]
+        public IActionResult UpdateUser([FromRoute] int id, [FromBody] RequestUsuario request)
+        {
+            throw new NotImplementedException();
         }
 
-        [HttpGet("user")]
-        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult GetUser([FromQuery] int id, [FromQuery] string? email)
+        [HttpDelete("{id:int}")]
+        public IActionResult DeleteUser([FromRoute] int id)
         {
-            if (!string.IsNullOrEmpty(email))
-            {
-                var response = _usuarioService.GetUserByEmail(email);
-                return response;
-            }
-            else
-            {
-                var response = _usuarioService.GetUserById(id);
-                return response;
-            }
+            throw new NotImplementedException();
         }
     }
 }
