@@ -1,10 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <queries>
     <query name="GetAllNoticias">
-        SELECT * FROM noticias;
+        SELECT * FROM noticia;
     </query>
     <query name="CreateNoticia">
         INSERT INTO noticia(titulo, descricao, conteudo)
         VALUES (@Titulo, @Descricao, @Conteudo)
     </query>
+    <query name="DeleteNoticia">
+        DELETE FROM noticia WHERE id=@id
+    </query>
+    <query name="GetNoticiaById">
+        SELECT FROM noticia WHERE id=@id
+    </query>
+    <query name="UpdateNoticia">
+        UPDATE noticia
+            SET titulo = @Titulo,
+                conteudo = @Conteudo,
+            WHERE id=@id
+    </query>
+    
 </queries>

@@ -52,5 +52,65 @@ public class NoticiasServices : INoticiasServices
             return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public IActionResult DeleteNoticia(int id)
+    {
+
+        try
+        {
+            var noticia = _noticiasRepository.GetNoticiaById(id).Result;
+            
+            if (noticia == null)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
+            }
+            _noticiasRepository.DeleteNoticia(id);
+
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
+        }
+        catch (Exception ex)
+        {
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    public IActionResult GetNoticiaById(int id)
+    {
+        try
+        {
+            var noticia = _noticiasRepository.GetNoticiaById(id).Result;
+
+            if (noticia == null) 
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { noticias = noticia}));
+        }
+        catch (Exception ex)
+        {
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public IActionResult UpdateNoticia(int id,RequestNoticia noticia)
+    {
+        try
+        {
+            var noticiaQuery = _noticiasRepository.GetNoticiaById(id).Result;
+            if (noticiaQuery == null ||
+                String.IsNullOrWhiteSpace(noticia.Categoria) ||
+                String.IsNullOrWhiteSpace(noticia.Descricao))
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
+            }
+            _noticiasRepository.UpdateNoticia(id, noticia);
+
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { noticias = noticia}));
+        }
+        catch (Exception ex)
+        {
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+        }
+    }
     
 }
