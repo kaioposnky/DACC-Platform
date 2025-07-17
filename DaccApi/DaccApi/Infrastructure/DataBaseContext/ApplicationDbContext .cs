@@ -17,33 +17,46 @@ namespace DaccApi.Infrastructure.DataBaseContext
         {
             modelBuilder.Entity<Usuario>(entity =>
             {
-                entity.ToTable("Usuario");
-
+                entity.ToTable("usuarios");
 
                 entity.Property(e => e.Id)
-                      .HasColumnName("UsuarioID")
+                      .HasColumnName("id")
                       .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Nome)
-                      .HasColumnName("Nome")
+                      .HasColumnName("nome")
                       .IsRequired();
 
                 entity.Property(e => e.Email)
-                      .HasColumnName("Email")
+                      .HasColumnName("email")
                       .IsRequired();
+    
+                entity.Property(e => e.Telefone)
+                    .HasColumnName("telefone")
+                    .IsRequired();
 
-                entity.Property(e => e.Senha)
-                      .HasColumnName("Senha")
+                entity.Property(e => e.SenhaHash)
+                      .HasColumnName("senha_hash")
                       .IsRequired();
-
-                entity.Property(e => e.TipoUsuario)
-                      .HasColumnName("TipoUsuarioID")
-                      .IsRequired();
-
+    
+                entity.Property(e => e.ImagemUrl)
+                    .HasColumnName("imagem_url");
+    
+                entity.Property(e => e.Ativo)
+                    .HasColumnName("ativo");
+        
                 entity.Property(e => e.DataCadastro)
-                      .HasColumnName("DataCadastro")
+                      .HasColumnName("data_criacao") 
                       .HasDefaultValueSql("CURRENT_TIMESTAMP");
-                
+          
+                entity.Property(e => e.DataAtualizacao)
+                      .HasColumnName("data_atualizacao")
+                      .HasDefaultValueSql("CURRENT_TIMESTAMP");
+    
+                entity.Property(e => e.TipoUsuario)
+                      .HasColumnName("tipo_usuario_id")
+                      .HasConversion<int>()
+                      .IsRequired();
             });
         }
     }

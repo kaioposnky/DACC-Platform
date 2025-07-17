@@ -19,30 +19,35 @@ namespace DaccApi.Services.User
         {
             try
             {
-                if (request == null)
-                    return ResponseHelper.CreateBadRequestResponse("Requisição inválida. O corpo da solicitação não pode ser nulo.");
-
                 if (string.IsNullOrWhiteSpace(request.Nome) ||
+                    string.IsNullOrWhiteSpace(request.Sobrenome) ||
                     string.IsNullOrWhiteSpace(request.Email) ||
-                    string.IsNullOrWhiteSpace(request.Senha))
+                    string.IsNullOrWhiteSpace(request.Senha) ||
+                    string.IsNullOrWhiteSpace(request.Telefone)
+                    )
                 {
                     return ResponseHelper.CreateBadRequestResponse("Os campos Nome, Email e Senha são obrigatórios.");
                 }
-
-                var usuario = new Model.Usuario
+                
+                var usuario = new Usuario
                 {
                     Nome = request.Nome,
+                    Sobrenome = request.Sobrenome,
                     Email = request.Email,
                     Senha = request.Senha,
+                    Telefone = request.Telefone,
+                    TipoUsuario = request.TipoUsuario
                 };
 
-                _usuarioRepository.CreateUser(request);
+                _usuarioRepository.CreateUser(usuario);
 
                 return ResponseHelper.CreateSuccessResponse("", "Usuário adicionado com sucesso.");
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse("Ocorreu um erro ao tentar cadastrar o usuário, favor relatar ao suporte pelo: contato.daccfei@gmail.com ");
+                return ResponseHelper.CreateErrorResponse(
+                    "Ocorreu um erro ao tentar cadastrar o usuário, favor relatar ao suporte pelo: contato.daccfei@gmail.com " +
+                    ex.StackTrace);
             }
         }
 

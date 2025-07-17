@@ -2,40 +2,40 @@
 <queries>
 	<!-- Consulta para inserir um usuário -->
 	<query name="InsertUsuario">
-		INSERT INTO usuarios (nome, sobrenome, email, telefone, senha_hash, tipo_usuario_id)
-		VALUES (@Nome, @Sobrenome, @Email, @Telefone, @SenhaHash, @TipoUsuarioId);
+		INSERT INTO usuario (nome, sobrenome, email, telefone, senha_hash, tipo_usuario_id)
+		VALUES (@Nome, @Sobrenome, @Email, @Telefone, @Senha, @TipoUsuarioId);
 	</query>
 
 	<!-- Consulta para obter todos os usuários -->
 	<query name="GetAllUsuarios">
-		SELECT id, nome, email
-		FROM usuarios;
+		SELECT id, nome, email, imagem_url
+		FROM usuario;
 	</query>
 
 	<!-- Consulta para obter um usuário por ID -->
 	<query name="GetUsuarioById">
 		SELECT id, nome, email
-		FROM usuarios
+		FROM usuario
 		WHERE id = @Id;
 	</query>
 	
 	<!-- Consulta para obter um usuário por Email -->
 	<query name="GetUsuarioByEmail">
 		SELECT senha_hash
-		FROM usuarios
+		FROM usuario
 		WHERE email = @Email;
 	</query>
 
 	<!-- Consulta para atualizar um usuário -->
 	<query name="UpdateUsuario">
-		UPDATE usuarios
+		UPDATE usuario
 		SET nome = @Nome, email = @Email, senha_hash = @SenhaHash
 		WHERE id = @Id;
 	</query>
 
 	<!-- Consulta para deletar um usuário -->
 	<query name="DeleteUsuario">
-		DELETE FROM usuarios
+		DELETE FROM usuario
 		WHERE id = @Id;
 	</query>
 </queries>
