@@ -21,7 +21,6 @@ namespace DaccApi.Services.User
             try
             {
                 if (string.IsNullOrWhiteSpace(request.Nome) ||
-                    string.IsNullOrWhiteSpace(request.Sobrenome) ||
                     string.IsNullOrWhiteSpace(request.Email) ||
                     string.IsNullOrWhiteSpace(request.Senha) ||
                     string.IsNullOrWhiteSpace(request.Telefone)
@@ -33,7 +32,6 @@ namespace DaccApi.Services.User
                 var usuario = new Usuario
                 {
                     Nome = request.Nome,
-                    Sobrenome = request.Sobrenome,
                     Email = request.Email,
                     SenhaHash = request.Senha,
                     Telefone = request.Telefone,

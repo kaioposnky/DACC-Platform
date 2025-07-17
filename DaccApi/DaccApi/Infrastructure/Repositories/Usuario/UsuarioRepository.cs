@@ -23,7 +23,6 @@ namespace DaccApi.Infrastructure.Repositories.User
             var param = new
             {
                 Nome = usuario.Nome,
-                Sobrenome = usuario.Sobrenome,
                 Email = usuario.Email,
                 Senha = senhaHash,
                 Telefone = usuario.Telefone,
