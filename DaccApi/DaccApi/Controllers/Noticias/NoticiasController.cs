@@ -1,4 +1,5 @@
-﻿using DaccApi.Responses;
+﻿using DaccApi.Model;
+using DaccApi.Responses;
 using DaccApi.Responses.UserResponse;
 using DaccApi.Services.Noticias;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DaccApi.Controllers.Noticias
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/news")]
     public class NoticiasController : ControllerBase
     {
         private readonly INoticiasServices _noticiasServices;
@@ -23,9 +24,10 @@ namespace DaccApi.Controllers.Noticias
         }
         
         [HttpPost("")]
-        public IActionResult CreateNoticia()
+        public IActionResult CreateNoticia([FromBody] RequestNoticia request)
         {
-            throw new NotImplementedException();
+            var response = _noticiasServices.CreateNoticia(request);
+            return response;
         }
         
         [HttpGet("{id:int}")]

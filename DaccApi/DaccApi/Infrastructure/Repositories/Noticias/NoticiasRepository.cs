@@ -27,6 +27,26 @@ public class NoticiasRepository : INoticiasRepository
         {
             throw new Exception("Erro ao obter todas as noticias no banco de dados.");
         }
-        
-    } 
+    }
+
+    public async Task CreateNoticia(RequestNoticia noticia)
+    {
+        try
+        {
+            var sql = _repositoryDapper.GetQueryNamed("CreateNoticia");
+            
+            var param = new
+            {
+                Titulo = noticia.Titulo,
+                Descricao = noticia.Descricao,
+                Conteudo = noticia.Conteudo,
+            };
+
+            await _repositoryDapper.ExecuteAsync(sql, param);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Erro ao criar noticia.");
+        }
+    }
 }

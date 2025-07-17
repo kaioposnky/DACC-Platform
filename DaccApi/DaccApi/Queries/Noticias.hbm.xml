@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<queries>
+    <query name="GetAllNoticias">
+        SELECT * FROM noticias;
+    </query>
+    <query name="CreateNoticia">
+        INSERT INTO noticia(titulo, descricao, conteudo)
+        VALUES (@Titulo, @Descricao, @Conteudo)
+    </query>
+</queries>

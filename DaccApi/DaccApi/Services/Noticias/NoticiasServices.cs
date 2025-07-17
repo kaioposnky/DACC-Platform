@@ -1,5 +1,7 @@
 ﻿using DaccApi.Helpers;
 using DaccApi.Infrastructure.Repositories.Noticias;
+using DaccApi.Model;
+using Helpers.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.Noticias;
@@ -19,16 +21,36 @@ public class NoticiasServices : INoticiasServices
         {
             var noticias = _noticiasRepository.GetAllNoticias().Result;
 
-            if (noticias.Count == 0) return ResponseHelper.CreateBadRequestResponse();
+            if (noticias.Count == 0) 
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
 
-            return ResponseHelper.CreateSuccessResponse( new { Noticias = noticias }, null);
-
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { noticias = noticias}));
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse();
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
         }
-        
+    }
+
+    public IActionResult CreateNoticia(RequestNoticia noticia)
+    {
+        try
+        {
+            if (String.IsNullOrWhiteSpace(noticia.Titulo) ||
+                String.IsNullOrWhiteSpace(noticia.Categoria) ||
+                String.IsNullOrWhiteSpace(noticia.Descricao))
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
+            }
+            
+            _noticiasRepository.CreateNoticia(noticia);
+
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
+        }
+        catch (Exception ex)
+        {
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+        }
     }
     
 }
