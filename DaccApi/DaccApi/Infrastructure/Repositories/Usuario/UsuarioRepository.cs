@@ -16,32 +16,31 @@ namespace DaccApi.Infrastructure.Repositories.User
             _argon2Utility = argon2Utility;
         }
 
-        public void CreateUser(RequestUsuario request)
+        public async Task CreateUser(Usuario usuario)
         {
+            var sql = _repositoryDapper.GetQueryNamed("InsertUsuario");
+            var senhaHash = _argon2Utility.HashPassword(usuario.SenhaHash);
+            var param = new
+            {
+                Nome = usuario.Nome,
+                Sobrenome = usuario.Sobrenome,
+                Email = usuario.Email,
+                Senha = senhaHash,
+                Telefone = usuario.Telefone,
+                TipoUsuarioId = usuario.TipoUsuario
+            };
+
             try
             {
-                var sql = _repositoryDapper.GetQueryNamed("InsertUsuario");
-                var encryptPassword = _argon2Utility.HashPassword(request.Senha);
-
-                var parameters = new
-                {
-                    Nome = request.Nome,
-                    Email = request.Email,
-                    Senha = encryptPassword,
-                    TipoUsuarioId = request.TipoUsuario,
-                    DataCadastro = DateTime.UtcNow,
-                    Situacao = (int)UserEnum.UserSituacao.Ativo,
-                };
-
-                _repositoryDapper.ExecuteAsync(sql, parameters).Wait();
+                await _repositoryDapper.ExecuteAsync(sql, param);
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao adicionar o usuário na banco de dados");
+                throw;
             }
         }
 
-        public List<Model.Usuario> GetAll()
+        public List<Usuario> GetAll()
         {
             throw new NotImplementedException();
         }

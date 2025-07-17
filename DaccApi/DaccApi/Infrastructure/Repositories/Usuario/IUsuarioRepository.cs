@@ -4,7 +4,7 @@ namespace DaccApi.Infrastructure.Repositories.User
 {
     public interface IUsuarioRepository
     {
-        public void CreateUser(RequestUsuario request);
+        public Task CreateUser(Usuario request);
       
         public List<Usuario> GetAll();
 
