@@ -1,5 +1,6 @@
 ﻿using DaccApi.Responses;
 using DaccApi.Responses.UserResponse;
+using Helpers.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Helpers
@@ -17,7 +18,7 @@ namespace DaccApi.Helpers
             message ??= ResponseMessages.SuccessRequestMessages.GENERIC;
             data ??= new { };
             
-            var response = new ResponseSuccess();
+            var response = ResponseSuccess.WithData(ResponseSuccess.OK, data);
             return new ObjectResult(response) { StatusCode = 200 };
         }
         

@@ -1,15 +1,15 @@
 namespace Helpers.Response{
     public class ResponseSuccess{
-        public int StatusCode { get; set; }
-        public Success Success { get; set; }
+        public int StatusCode { get; init; }
+        private Success SuccessInfo { get; init; }
 
         private ResponseSuccess(int statusCode, string message, object? data = null){
             StatusCode = statusCode;
-            Success = new Success(message, data);
+            SuccessInfo = new Success(message, data);
         }
 
         public static ResponseSuccess WithData(ResponseSuccess success, object data){
-            return new ResponseSuccess(success.StatusCode, success.Success.Message, data);
+            return new ResponseSuccess(success.StatusCode, success.SuccessInfo.Message, data);
         }
 
         public static ResponseSuccess OK = new ResponseSuccess(200, "Requisição bem-sucedida", null);
@@ -20,7 +20,7 @@ namespace Helpers.Response{
             public string Message { get; set; }
             public object? Data { get; set; }
 
-            private Success(string message, object? data){
+            public Success(string message, object? data){
                 Message = message;
                 Data = data;
             }

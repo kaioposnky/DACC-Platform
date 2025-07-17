@@ -1,15 +1,16 @@
 namespace Helpers.Response{
     public class ResponseError{
-        public int StatusCode { get; set; }
-        public Error Error { get; set; }
+        public int StatusCode { get; init; }
+        private Error ErrorInfo { get; init; }
 
         private ResponseError(int statusCode, string code, string message, object[]? details = null){
             StatusCode = statusCode;
-            Error = new Error(code, message, details);
+            ErrorInfo = new Error(code, message, details);
         }
 
-        public static ResponseError WithDetails(ResponseError error, object[] details){
-            return new ResponseError(error.StatusCode, error.Error.Code, error.Error.Message, details);
+        public ResponseError WithDetails(params object[]? details)
+        {
+            return new ResponseError(StatusCode, ErrorInfo.Code, ErrorInfo.Message, details);
         }
 
         public static ResponseError AUTH_TOKEN_INVALID = new ResponseError(401, "AUTH_TOKEN_INVALID", "Token JWT inválido", null);
@@ -28,18 +29,18 @@ namespace Helpers.Response{
         public static ResponseError REGISTRATION_CLOSED = new ResponseError(400, "REGISTRATION_CLOSED", "Inscrições encerradas", null);
         public static ResponseError INTERNAL_SERVER_ERROR = new ResponseError(500, "INTERNAL_SERVER_ERROR", "Erro interno do servidor", null);
         public static ResponseError BAD_REQUEST = new ResponseError(400, "BAD_REQUEST", "Dados inválidos na requisição", null);
-    }
+        
+        private class Error{
+            public string Code { get; init; }
+            public string Message { get; init; }
+            public object[]? Details { get; init; }
 
-    private class Error{
-        public string Code { get; set; }
-        public string Message { get; set; }
-        public object[]? Details { get; set; }
+            public Error(string code, string message, object[]? details){
+                Code = code;
+                Message = message;
+                Details = details;
+            }
 
-        private Error(string code, string message, object[]? details){
-            Code = code;
-            Message = message;
-            Details = details;
         }
-
     }
 }
