@@ -6,6 +6,7 @@ using System.Text;
 using DaccApi.Helpers;
 using DaccApi.Infrastructure.Cryptography;
 using DaccApi.Infrastructure.Repositories.User;
+using DaccApi.Services.Token;
 using Helpers.Response;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,42 +16,12 @@ namespace DaccApi.Services.Auth
     {
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IArgon2Utility _argon2Utility;
-        public AuthService(IUsuarioRepository usuarioRepository, IArgon2Utility argon2Utility)
+        private readonly ITokenService _tokenService;
+        public AuthService(IUsuarioRepository usuarioRepository, IArgon2Utility argon2Utility, ITokenService tokenService)
         {
             _usuarioRepository = usuarioRepository;
             _argon2Utility = argon2Utility;
-        }
-
-        private string GenerateToken(Usuario usuario)
-        {
-            var expirationTime = DateTime.UtcNow.AddHours(3);
-
-            var claims = new ClaimsIdentity();
-
-            var properties = usuario.GetType().GetProperties();
-            foreach (var property in properties)
-            {
-                var value = property.GetValue(usuario)?.ToString();
-                if (value != null)
-                {
-                    claims.AddClaim(new Claim(property.Name, value));
-                }
-            }
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key.secret));
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = claims,
-                Expires = expirationTime,
-                SigningCredentials = credentials
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            return tokenHandler.WriteToken(token);
+            _tokenService = tokenService;
         }
         private bool ValidateCredentials(string email, string password, string hashedPassword)
         {
@@ -84,7 +55,7 @@ namespace DaccApi.Services.Auth
                 return ResponseHelper.CreateErrorResponse(ResponseError.INVALID_CREDENTIALS);
             }
 
-            var token = GenerateToken(usuario);
+            var token = _tokenService.GenerateToken(usuario);
             
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, 
                 new {
