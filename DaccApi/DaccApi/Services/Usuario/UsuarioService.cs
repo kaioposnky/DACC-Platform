@@ -1,4 +1,5 @@
-﻿using DaccApi.Helpers;
+﻿using DaccApi.Enum.UserEnum;
+using DaccApi.Helpers;
 using DaccApi.Infrastructure.Repositories.User;
 using DaccApi.Model;
 using DaccApi.Services.Auth;
@@ -34,9 +35,10 @@ namespace DaccApi.Services.User
                     Nome = request.Nome,
                     Sobrenome = request.Sobrenome,
                     Email = request.Email,
-                    Senha = request.Senha,
+                    SenhaHash = request.Senha,
                     Telefone = request.Telefone,
-                    TipoUsuario = request.TipoUsuario
+                    // Se não for especificado, criar Visitante por padrão
+                    TipoUsuario = request.TipoUsuario ??= TipoUsuarioEnum.Visitante
                 };
 
                 _usuarioRepository.CreateUser(usuario);
