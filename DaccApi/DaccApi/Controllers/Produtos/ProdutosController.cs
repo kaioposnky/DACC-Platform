@@ -3,10 +3,13 @@ using DaccApi.Model;
 using DaccApi.Responses;
 using DaccApi.Responses.UserResponse;
 using DaccApi.Services.Products;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using DaccApi.Infrastructure.Authentication;
 
 namespace DaccApi.Controllers.Produtos
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ProdutosController : ControllerBase
@@ -18,6 +21,7 @@ namespace DaccApi.Controllers.Produtos
             _produtosService = produtosService;
         }
 
+        [AllowAnonymous]
         [HttpGet("")]
         public IActionResult GetAllProducts()
         {
@@ -25,6 +29,7 @@ namespace DaccApi.Controllers.Produtos
             return products;
         }
 
+        [AllowAnonymous]
         [HttpGet("{id:int}")]
         public IActionResult GetProductById([FromRoute] int id)
         {
@@ -34,6 +39,7 @@ namespace DaccApi.Controllers.Produtos
 
 
         [HttpPost("")]
+        [HasPermission(AppPermissions.Produtos.Create)]
         public IActionResult CreateProduct([FromBody] RequestProduto requestProduto)
         {
             var response = _produtosService.CreateProduct(requestProduto);
@@ -41,6 +47,7 @@ namespace DaccApi.Controllers.Produtos
         }
 
         [HttpDelete("{id:int}")]
+        [HasPermission(AppPermissions.Produtos.Delete)]
         public IActionResult RemoveProduct([FromRoute] int id)
         {
             var response = _produtosService.RemoveProductById(id);
@@ -48,6 +55,7 @@ namespace DaccApi.Controllers.Produtos
         }
         
         [HttpDelete("{id:int}")]
+        [HasPermission(AppPermissions.Produtos.Update)]
         public IActionResult UpdateProduct([FromRoute] int id, [FromBody] RequestProduto requestProduto)
         {
             throw new NotImplementedException();
