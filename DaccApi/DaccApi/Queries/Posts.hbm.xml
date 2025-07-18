@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Query para add Posts no fórum -->
+<queries>
+    <query name="GetAllPosts">
+        SELECT * FROM post;
+    </query>
+    <query name="CreatePosts">
+        INSERT INTO post(titulo, conteudo, tags)
+        VALUES (@Titulo, @Conteudo, @Tags)
+    </query>
+    <query name="GetPostById">
+        SELECT FROM post WHERE id=@id
+    </query>
+    <query name="DeletePosts">
+        DELETE FROM post WHERE id=@id
+    </query>
+    <query name="UpdatePosts">
+        UPDATE post
+            SET titulo = @Titulo,
+                conteudo = @Conteudo,
+                tags = @Tags,
+            WHERE id = @id
+    </query>
+    <query name="VotePosts">
+
+
+    </query>
+</queries>
