@@ -288,6 +288,22 @@ CREATE TABLE projeto
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+DROP TABLE IF EXISTS permissoes;
+CREATE TABLE permissoes
+(
+    id        SERIAL PRIMARY KEY,
+    nome      VARCHAR(100) NOT NULL UNIQUE,
+    descricao TEXT
+);
+
+DROP TABLE IF EXISTS role_permissoes;
+CREATE TABLE role_permissoes
+(
+    tipo_usuario_id INT REFERENCES tipos_usuario (id) ON DELETE CASCADE,
+    permissao_id    INT REFERENCES permissoes (id) ON DELETE CASCADE,
+    PRIMARY KEY (tipo_usuario_id, permissao_id)
+);
+
 -- Tipos de Usuário
 INSERT INTO tipos_usuario (nome)
 VALUES ('aluno'),
@@ -339,3 +355,135 @@ VALUES ('roupas', 'camisetas'),
        ('outros', 'canecas'),
        ('outros', 'adesivos'),
        ('outros', 'acessorios');
+
+INSERT INTO permissoes (nome, descricao)
+VALUES
+    -- Permissões de Usuários
+    ('users.view', 'Visualizar lista de usuários'),
+    ('users.create', 'Criar novos usuários'),
+    ('users.update', 'Atualizar informações de usuários'),
+    ('users.delete', 'Deletar usuários'),
+    
+    -- Permissões de Notícias
+    ('noticias.view', 'Visualizar notícias'),
+    ('noticias.create', 'Criar novas notícias'),
+    ('noticias.update', 'Atualizar notícias'),
+    ('noticias.delete', 'Deletar notícias'),
+    
+    -- Permissões de Projetos
+    ('projetos.view', 'Visualizar projetos'),
+    ('projetos.create', 'Criar novos projetos'),
+    ('projetos.update', 'Atualizar projetos'),
+    ('projetos.delete', 'Deletar projetos'),
+    ('projetos.members.add', 'Adicionar membros a um projeto'),
+    ('projetos.members.remove', 'Remover membros de um projeto'),
+
+    -- Permissões de Produtos
+    ('produtos.view', 'Visualizar produtos da loja'),
+    ('produtos.create', 'Criar novos produtos na loja'),
+    ('produtos.update', 'Atualizar produtos na loja'),
+    ('produtos.delete', 'Deletar produtos na loja'),
+    
+    -- Permissões de Eventos
+    ('eventos.view', 'Visualizar eventos'),
+    ('eventos.create', 'Criar novos eventos'),
+    ('eventos.update', 'Atualizar eventos'),
+    ('eventos.delete', 'Deletar eventos'),
+    ('eventos.register', 'Registrar-se em um evento'),
+
+    -- Permissões do Forum (Posts e Comentários)
+    ('forum.posts.view', 'Visualizar posts e comentários do fórum'),
+    ('forum.posts.create', 'Criar posts no fórum'),
+    ('forum.posts.update', 'Atualizar próprios posts no fórum'),
+    ('forum.posts.delete', 'Deletar próprios posts no fórum'),
+    ('forum.posts.vote', 'Votar em posts'),
+    ('forum.comments.create', 'Criar comentários em posts'),
+    ('forum.comments.update', 'Atualizar próprios comentários'),
+    ('forum.comments.delete', 'Deletar próprios comentários'),
+    ('forum.comments.vote', 'Votar em comentários'),
+    ('forum.comments.accept', 'Marcar um comentário como resposta aceita em seu próprio post'),
+    ('forum.admin.posts.update', 'Atualizar qualquer post no fórum'),
+    ('forum.admin.posts.delete', 'Deletar qualquer post no fórum'),
+    ('forum.admin.comments.update', 'Atualizar qualquer comentário no fórum'),
+    ('forum.admin.comments.delete', 'Deletar qualquer comentário no fórum'),
+
+    -- Permissões de Diretorias/Professores
+    ('faculty.view', 'Visualizar diretores/professores'),
+    ('faculty.create', 'Criar novos diretores/professores'),
+    ('faculty.update', 'Atualizar diretores/professores'),
+    ('faculty.delete', 'Deletar diretores/professores'),
+
+    -- Permissões de Carrinho de Compras
+    ('cart.view', 'Visualizar o próprio carrinho de compras'),
+    ('cart.items.add', 'Adicionar itens ao próprio carrinho'),
+    ('cart.items.update', 'Atualizar itens no próprio carrinho'),
+    ('cart.items.remove', 'Remover itens do próprio carrinho'),
+    ('cart.clear', 'Limpar o próprio carrinho'),
+
+    -- Permissões de Avaliações de Produtos
+    ('reviews.view', 'Visualizar avaliações de um produto'),
+    ('reviews.create', 'Criar uma avaliação para um produto');
+
+
+-- Atribuindo Permissões aos Roles (Tipos de Usuário)
+DO $$
+DECLARE
+    admin_id INT;
+    diretor_id INT;
+    aluno_id INT;
+    visitante_id INT;
+    permissao_rec RECORD;
+BEGIN
+    SELECT id INTO admin_id FROM tipos_usuario WHERE nome = 'administrador';
+    SELECT id INTO diretor_id FROM tipos_usuario WHERE nome = 'diretor';
+    SELECT id INTO aluno_id FROM tipos_usuario WHERE nome = 'aluno';
+    SELECT id INTO visitante_id FROM tipos_usuario WHERE nome = 'visitante';
+
+    -- Permissões do Visitante
+    INSERT INTO role_permissoes (tipo_usuario_id, permissao_id)
+    SELECT visitante_id, p.id FROM permissoes p WHERE p.nome IN (
+        'noticias.view',
+        'projetos.view',
+        'produtos.view',
+        'eventos.view',
+        'forum.posts.view',
+        'faculty.view',
+        'reviews.view'
+    );
+    
+    -- Permissões do Aluno
+    INSERT INTO role_permissoes (tipo_usuario_id, permissao_id)
+    SELECT aluno_id, p.id FROM permissoes p WHERE p.nome IN (
+        -- Herda permissões de visitante
+        'noticias.view', 'projetos.view', 'produtos.view', 'eventos.view', 'forum.posts.view', 'faculty.view', 'reviews.view',
+        -- Permissões específicas de Aluno
+        'forum.posts.create', 'forum.posts.update', 'forum.posts.delete', 'forum.posts.vote',
+        'forum.comments.create', 'forum.comments.update', 'forum.comments.delete', 'forum.comments.vote', 'forum.comments.accept',
+        'eventos.register',
+        'cart.view', 'cart.items.add', 'cart.items.update', 'cart.items.remove', 'cart.clear',
+        'reviews.create'
+    );
+
+    -- Permissões do Diretor
+    INSERT INTO role_permissoes (tipo_usuario_id, permissao_id)
+    SELECT diretor_id, p.id FROM permissoes p WHERE p.nome IN (
+        -- Herda permissões de aluno
+        'noticias.view', 'projetos.view', 'produtos.view', 'eventos.view', 'forum.posts.view', 'faculty.view', 'reviews.view',
+        'forum.posts.create', 'forum.posts.update', 'forum.posts.delete', 'forum.posts.vote',
+        'forum.comments.create', 'forum.comments.update', 'forum.comments.delete', 'forum.comments.vote', 'forum.comments.accept',
+        'eventos.register',
+        'cart.view', 'cart.items.add', 'cart.items.update', 'cart.items.remove', 'cart.clear',
+        'reviews.create',
+        -- Permissões específicas de Diretor
+        'noticias.create', 'noticias.update', 'noticias.delete',
+        'projetos.create', 'projetos.update', 'projetos.delete', 'projetos.members.add', 'projetos.members.remove',
+        'eventos.create', 'eventos.update', 'eventos.delete',
+        'users.view'
+    );
+    
+    -- Permissões do Administrador (todas)
+    FOR permissao_rec IN SELECT id FROM permissoes LOOP
+        INSERT INTO role_permissoes (tipo_usuario_id, permissao_id)
+        VALUES (admin_id, permissao_rec.id) ON CONFLICT DO NOTHING;
+    END LOOP;
+END $$;

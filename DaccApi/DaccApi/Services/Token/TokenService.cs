@@ -16,7 +16,7 @@ namespace DaccApi.Services.Token
             _configuration = configuration;
         }
 
-        public string GenerateToken(Usuario usuario)
+        public string GenerateToken(Usuario usuario, HashSet<string> permissions)
         {
             var expirationTime = DateTime.UtcNow.AddHours(3);
 
@@ -24,15 +24,22 @@ namespace DaccApi.Services.Token
             var issuer = _configuration["Jwt:Issuer"];
             var audience = _configuration["Jwt:Audience"]; 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var claims = new []
+            
+            var claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, usuario.Nome),
-                new Claim(ClaimTypes.Role, usuario.TipoUsuario),
+                new Claim(ClaimTypes.Role, TiposUsuario.FromEnum(usuario.TipoUsuario)),
                 new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
                 new Claim(ClaimTypes.Email, usuario.Email),
                 new Claim(JwtRegisteredClaimNames.Sub, usuario.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
+
+            // adiciona as permissões do cargo
+            foreach (var permission in permissions)
+            {
+                claims.Add(new Claim("permission", permission));
+            }
             
             var tokenOptions = new JwtSecurityToken(
                     issuer: issuer,
@@ -45,24 +52,25 @@ namespace DaccApi.Services.Token
             return _tokenHandler.WriteToken(tokenOptions);
         }
         
-        public string RefreshToken(Usuario usuario, string token)
-        {
-            var jwtSecurityToken = _tokenHandler.ReadToken(token) as JwtSecurityToken;
-            
-            var userId = jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
-            if (userId != usuario.Id.ToString())
-            {
-                throw new SecurityTokenException("Token não pertence ao usuário!");
-            }
-            
-            // Se o token expirou gerar um novo
-            if (jwtSecurityToken.ValidTo < DateTime.UtcNow)
-            {
-                return GenerateToken(usuario);
-            }
-            
-            // Se o token não expirou retornar o mesmo
-            return token;
-        }
+        // TODO
+        // public string RefreshToken(Usuario usuario, string token)
+        // {
+        //     var jwtSecurityToken = _tokenHandler.ReadToken(token) as JwtSecurityToken;
+        //     
+        //     var userId = jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
+        //     if (userId != usuario.Id.ToString())
+        //     {
+        //         throw new SecurityTokenException("Token não pertence ao usuário!");
+        //     }
+        //     
+        //     // Se o token expirou gerar um novo
+        //     if (jwtSecurityToken.ValidTo < DateTime.UtcNow)
+        //     {
+        //         return GenerateToken(usuario);
+        //     }
+        //     
+        //     // Se o token não expirou retornar o mesmo
+        //     return token;
+        // }
     }
 }

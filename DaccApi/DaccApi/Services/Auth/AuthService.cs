@@ -1,10 +1,7 @@
 ﻿using DaccApi.Model;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using DaccApi.Helpers;
 using DaccApi.Infrastructure.Cryptography;
+using DaccApi.Infrastructure.Repositories.Permission;
 using DaccApi.Infrastructure.Repositories.User;
 using DaccApi.Services.Token;
 using Helpers.Response;
@@ -17,12 +14,15 @@ namespace DaccApi.Services.Auth
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IArgon2Utility _argon2Utility;
         private readonly ITokenService _tokenService;
-        public AuthService(IUsuarioRepository usuarioRepository, IArgon2Utility argon2Utility, ITokenService tokenService)
+        private readonly IPermissionRepository _permissionRepository;
+        public AuthService(IUsuarioRepository u, IArgon2Utility a, ITokenService t, IPermissionRepository p)
         {
-            _usuarioRepository = usuarioRepository;
-            _argon2Utility = argon2Utility;
-            _tokenService = tokenService;
+            _usuarioRepository = u;
+            _argon2Utility = a;
+            _tokenService = t;
+            _permissionRepository = p;
         }
+        
         private bool ValidateCredentials(string email, string password, string hashedPassword)
         {
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
@@ -32,7 +32,8 @@ namespace DaccApi.Services.Auth
             
             return _argon2Utility.VerifyPassword(password, hashedPassword);
         }
-        public IActionResult LoginUser(RequestUsuario request)
+        
+        public async Task<IActionResult> LoginUser(RequestUsuario request)
         {
             if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Senha))
                 return ResponseHelper.CreateErrorResponse(ResponseError.WithDetails(ResponseError.BAD_REQUEST, new object[]{
@@ -50,12 +51,14 @@ namespace DaccApi.Services.Auth
             
             var usuario = _usuarioRepository.GetUserByEmail(request.Email).Result;
 
-            if (usuario == null || !ValidateCredentials(request.Email, request.Senha, usuario.Senha))
+            if (usuario == null || !ValidateCredentials(request.Email, request.Senha, usuario.SenhaHash!))
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.INVALID_CREDENTIALS);
             }
 
-            var token = _tokenService.GenerateToken(usuario);
+            var permissions = await _permissionRepository.GetPermissionsForRoleAsync(usuario.TipoUsuario);
+            
+            var token = _tokenService.GenerateToken(usuario, permissions);
             
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, 
                 new {

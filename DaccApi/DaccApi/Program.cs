@@ -12,6 +12,7 @@ using System.Data;
 using Npgsql;
 using Microsoft.OpenApi.Models;
 using DaccApi;
+using DaccApi.Infrastructure.Authentication;
 using DaccApi.Infrastructure.Repositories.Avaliacao;
 using DaccApi.Infrastructure.Repositories.Carrinhos;
 using DaccApi.Services.Products;
@@ -19,11 +20,14 @@ using DaccApi.Infrastructure.Repositories.Products;
 using DaccApi.Services.Diretorias;
 using DaccApi.Infrastructure.Repositories.Diretorias;
 using DaccApi.Infrastructure.Repositories.Noticias;
+using DaccApi.Infrastructure.Repositories.Permission;
 using DaccApi.Infrastructure.Repositories.Projetos;
 using DaccApi.Services.Avaliacao;
 using DaccApi.Services.Noticias;
+using DaccApi.Services.Permission;
 using DaccApi.Services.Projetos;
 using DaccApi.Services.Token;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -77,6 +81,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddMemoryCache();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -101,6 +106,10 @@ builder.Services.AddScoped<INoticiasRepository, NoticiasRepository>();
 builder.Services.AddScoped<INoticiasServices, NoticiasServices>();
 builder.Services.AddScoped<ICarrinhoRepository, CarrinhoRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
+builder.Services.AddScoped<IPermissionService, PermissionService>();
+builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
+builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
 
 
 builder.Services.AddAuthentication(x =>
