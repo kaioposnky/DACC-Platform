@@ -9,7 +9,6 @@ namespace DaccApi.Services.Posts
     public class PostsServices : IPostsServices
 {
     private readonly IPostsRepository _postsRepository;
-
     
     public PostsServices(IPostsRepository postsRepository)
     {
@@ -42,6 +41,7 @@ namespace DaccApi.Services.Posts
                 post.Tags == null || post .Tags.Length == 0)
                 
             {
+                // TODO: Adicionar campo de detalhes no request
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
             _postsRepository.CreatePost(post);
@@ -80,7 +80,7 @@ namespace DaccApi.Services.Posts
             var post = _postsRepository.GetPostById(id).Result;
 
             if (post == null) 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { posts = post}));
         }
@@ -96,20 +96,24 @@ namespace DaccApi.Services.Posts
         throw new NotImplementedException();
     }
 
-    public IActionResult UpdatePost(int id, RequestPost post)
+    public IActionResult UpdatePost(int id, RequestPost postUpdated)
     {
         try
         {
-            var postQuery = _postsRepository.GetPostById(id).Result;
-            if (postQuery == null ||
-                String.IsNullOrWhiteSpace(post.Conteudo) ||
-                post.Tags == null || post.Tags.Length == 0)
+            var post = _postsRepository.GetPostById(id).Result;
+            if (post == null)
             {
+                ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
+            }
+            else if ( String.IsNullOrWhiteSpace(postUpdated.Conteudo) ||
+                postUpdated.Tags.Length == 0)
+            {
+                // TODO: Adicionar campo de detalhes no request
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
-            _postsRepository.UpdatePost(id, post);
+            _postsRepository.UpdatePost(id, postUpdated);
 
-            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { posts = post}));
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { posts = postUpdated}));
         }
         catch (Exception ex)
         {
