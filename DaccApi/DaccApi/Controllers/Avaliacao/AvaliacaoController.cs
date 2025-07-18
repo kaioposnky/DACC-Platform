@@ -2,10 +2,13 @@
 using DaccApi.Responses;
 using DaccApi.Responses.UserResponse;
 using DaccApi.Services.Avaliacao;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using DaccApi.Infrastructure.Authentication;
 
 namespace DaccApi.Controllers.Avaliacao
 {
+    [Authorize]
     [ApiController]
     [Route("api/ratings")]
     public class AvaliacaoController : ControllerBase
@@ -15,7 +18,9 @@ namespace DaccApi.Controllers.Avaliacao
         {
             _avaliacaoService = avaliacaoService;
         }
+
         [HttpGet("")]
+        [HasPermission(AppPermissions.Reviews.View)]
         public IActionResult GetAllAvaliacoes()
         {
             var response = _avaliacaoService.GetAllAvaliacoes();
@@ -23,12 +28,14 @@ namespace DaccApi.Controllers.Avaliacao
         }
         
         [HttpPost("")]
+        [HasPermission(AppPermissions.Reviews.Create)]
         public IActionResult CreateAvaliacao([FromBody] RequestAvaliacao request)
         {
             var response = _avaliacaoService.CreateAvaliacao(request);
             return response;
         }
         
+        [AllowAnonymous]
         [HttpGet("products/{id:int}")]
         public IActionResult GetProductAvaliacoes([FromRoute] int id)
         {
@@ -37,6 +44,7 @@ namespace DaccApi.Controllers.Avaliacao
         }
         
         [HttpGet("users/{id:int}")]
+        [HasPermission(AppPermissions.Reviews.View)]
         public IActionResult GetAvaliacoesUser([FromRoute] int id)
         {
             var response = _avaliacaoService.GetAvaliacoesUserById(id);
@@ -44,6 +52,7 @@ namespace DaccApi.Controllers.Avaliacao
         }
 
         [HttpDelete("{id:int}")]
+        [HasPermission(AppPermissions.Reviews.Delete)]
         public IActionResult DeleteAvaliacao([FromRoute] int id)
         {
             throw new NotImplementedException();

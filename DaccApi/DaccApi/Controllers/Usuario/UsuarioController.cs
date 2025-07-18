@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DaccApi.Infrastructure.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using DaccApi.Model;
 using DaccApi.Services.User;
 using DaccApi.Services.Auth;
-using DaccApi.Responses.UserResponse;
-using DaccApi.Responses;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
-using BadRequest = DaccApi.Responses.BadRequest;
 
 namespace DaccApi.Controllers.Usuario
 {
@@ -23,6 +20,7 @@ namespace DaccApi.Controllers.Usuario
             _authService = authService;
         }
         
+        [HasPermission(AppPermissions.Users.ViewAll)]
         [HttpGet("")]
         public IActionResult GetUsers()
         {
@@ -31,14 +29,15 @@ namespace DaccApi.Controllers.Usuario
             throw new NotImplementedException();
         }
         
+        [HasPermission(AppPermissions.Users.Create)]
         [HttpPost("")]
         public IActionResult CreateUser([FromBody] RequestUsuario request)
         {
             var response = _usuarioService.CreateUser(request);
             return response;
-            
         }
 
+        [HasPermission(AppPermissions.Users.View)]
         [HttpGet("{id:int}")]
         public IActionResult GetUser([FromRoute] int id)
         {
@@ -46,16 +45,18 @@ namespace DaccApi.Controllers.Usuario
             return response;
         }
         
+        [HasPermission(AppPermissions.Users.Update)]
         [HttpPatch("{id:int}")]
         public IActionResult UpdateUser([FromRoute] int id, [FromBody] RequestUsuario request)
         {
             throw new NotImplementedException();
         }
 
+        [HasPermission(AppPermissions.Users.Delete)]
         [HttpDelete("{id:int}")]
         public IActionResult DeleteUser([FromRoute] int id)
         {
             throw new NotImplementedException();
         }
     }
-}
+}   
