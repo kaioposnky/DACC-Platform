@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Infrastructure.Authentication;
 
@@ -13,35 +13,40 @@ namespace DaccApi.Controllers.Posts
         [HttpGet("")]
         public IActionResult GetPosts()
         {
-            throw new NotImplementedException();
+            var response = _postsServices.GetAllPosts();
+            return response;
         }
 
         [HttpPost("")]
         [HasPermission(AppPermissions.Forum.CreatePost)]
         public IActionResult CreatePost()
         {
-            throw new NotImplementedException();
+            var response = _postsServices.CreatePost(request);
+            return response;
         }
 
         [AllowAnonymous]
         [HttpGet("{id:int}")]
         public IActionResult GetPostById([FromRoute] int id)
         {
-            throw new NotImplementedException();
+            var response = _postsServices.GetPostById(id);
+            return response;
         }
 
         [HttpDelete("{id:int}")]
         [HasPermission(AppPermissions.Forum.DeleteOwnPost)]
         public IActionResult DeletePost([FromRoute] int id)
         {
-            throw new NotImplementedException();
+            var response = _postsServices.DeletePost(id);
+            return response;
         }
 
         [HttpPatch("{id:int}")]
         [HasPermission(AppPermissions.Forum.UpdateOwnPost)]
         public IActionResult UpdatePost([FromRoute] int id)
         {
-            throw new NotImplementedException();
+            var response = _postsServices.UpdatePost(id, request);
+            return response;
         }
     }
 }

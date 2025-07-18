@@ -53,11 +53,16 @@ CREATE TABLE post
     tags             VARCHAR(255)[] NOT NULL,
     respondida       BOOLEAN     NOT NULL,
     visualizacoes    INT         NOT NULL,
-    upvotes          INT         NOT NULL,
-    downvotes        INT         NOT NULL,
     data_criacao     TIMESTAMP   NOT NULL,
     data_atualizacao TIMESTAMP   NOT NULL
 );
+
+DROP TABLE IF EXISTS votacao_post_usuario;
+CREATE TABLE votacao_post(
+     post_id INT REFERENCES post (id),
+     user_id INT REFERENCES usuario(id),
+     voto  BOOLEAN NOT NULL,
+)
 
 DROP TABLE IF EXISTS comentario;
 CREATE TABLE comentario
@@ -356,7 +361,6 @@ VALUES ('roupas', 'camisetas'),
        ('outros', 'canecas'),
        ('outros', 'adesivos'),
        ('outros', 'acessorios');
-
 INSERT INTO permissoes (nome, descricao)
 VALUES
     -- Permissões de Usuários
