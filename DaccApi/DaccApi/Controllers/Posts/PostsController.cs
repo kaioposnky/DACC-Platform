@@ -1,37 +1,31 @@
-﻿using DaccApi.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using DaccApi.Services.Posts;
-
-
+using DaccApi.Infrastructure.Authentication;
 
 namespace DaccApi.Controllers.Posts
 {
+    [Authorize]
     [ApiController]
-    [Route("api/posts")]
-
+    [Route("api/[controller]")]
     public class PostsController : ControllerBase
     {
-        private readonly IPostsServices _postsServices;
-
-        public PostsController(IPostsServices postsServices)
-        {
-            _postsServices = postsServices;
-        }
-
+        [AllowAnonymous]
         [HttpGet("")]
-        public IActionResult GetAllPosts()
+        public IActionResult GetPosts()
         {
             var response = _postsServices.GetAllPosts();
             return response;
         }
-        
+
         [HttpPost("")]
-        public IActionResult CreatePost([FromBody] RequestPost request)
+        [HasPermission(AppPermissions.Forum.CreatePost)]
+        public IActionResult CreatePost()
         {
             var response = _postsServices.CreatePost(request);
             return response;
         }
-        
+
+        [AllowAnonymous]
         [HttpGet("{id:int}")]
         public IActionResult GetPostById([FromRoute] int id)
         {
@@ -40,28 +34,19 @@ namespace DaccApi.Controllers.Posts
         }
 
         [HttpDelete("{id:int}")]
+        [HasPermission(AppPermissions.Forum.DeleteOwnPost)]
         public IActionResult DeletePost([FromRoute] int id)
         {
-
             var response = _postsServices.DeletePost(id);
             return response;
         }
-        
+
         [HttpPatch("{id:int}")]
-        public IActionResult UpdatePost([FromRoute] int id, [FromBody] RequestPost request)
+        [HasPermission(AppPermissions.Forum.UpdateOwnPost)]
+        public IActionResult UpdatePost([FromRoute] int id)
         {
             var response = _postsServices.UpdatePost(id, request);
             return response;
         }
-
-        /* IMPLEMENTAR PARTE DE VOTAÇÃO DO POST
-        [HttpPost("{id:int}"/vote)]
-        public IActionResult VotePost([FromRoute] int id)
-        {
-            return Ok();
-        }
-        */
-        
     }
-    
 }

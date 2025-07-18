@@ -8,9 +8,9 @@ namespace Helpers.Response{
             ErrorInfo = new Error(code, message, details);
         }
 
-        public ResponseError WithDetails(params object[]? details)
+        public static ResponseError WithDetails(ResponseError error, params object[]? details)
         {
-            return new ResponseError(StatusCode, ErrorInfo.Code, ErrorInfo.Message, details);
+            return new ResponseError(error.StatusCode, error.ErrorInfo.Code, error.ErrorInfo.Message, details);
         }
 
         public static ResponseError AUTH_TOKEN_INVALID = new ResponseError(401, "AUTH_TOKEN_INVALID", "Token JWT inválido", null);
