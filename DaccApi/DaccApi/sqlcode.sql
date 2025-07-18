@@ -61,7 +61,7 @@ DROP TABLE IF EXISTS votacao_post_usuario;
 CREATE TABLE votacao_post(
      post_id INT REFERENCES post (id),
      user_id INT REFERENCES usuario(id),
-     type_votes  BOOLEAN NOT NULL,
+     voto  BOOLEAN NOT NULL,
 )
 
 DROP TABLE IF EXISTS comentario;
