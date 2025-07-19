@@ -60,8 +60,10 @@ namespace DaccApi.Helpers
         /// Cria uma resposta de erro
         /// </summary>
         /// <param name="error">Mensagem de Error, Deixe vazio para usar uma mensagem genérica.</param>
+        /// <param name="message">Mensagem customizada para o erro.</param>
         /// <returns>IActionResult</returns>
-        public static IActionResult CreateErrorResponse(ResponseError error){
+        public static IActionResult CreateErrorResponse(ResponseError error, string? message = null){
+            if (message != null) error.ErrorInfo.Message = message;
             var response = new ApiResponse(false, error);
             return new ObjectResult(response) { StatusCode = error.StatusCode };
         }
@@ -70,8 +72,10 @@ namespace DaccApi.Helpers
         /// Cria uma resposta de sucesso
         /// </summary>
         /// <param name="success">Mensagem de Success, Deixe vazio para usar uma mensagem genérica.</param>
+        /// <param name="message">Mensagem customizada para o sucesso.</param>
         /// <returns>IActionResult</returns>
-        public static IActionResult CreateSuccessResponse(ResponseSuccess success){
+        public static IActionResult CreateSuccessResponse(ResponseSuccess success, string? message = null){
+            if (message != null) success.SuccessInfo.Message = message;
             var response = new ApiResponse(true, success);
             return new ObjectResult(response) { StatusCode = success.StatusCode };
         }

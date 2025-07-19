@@ -1,7 +1,7 @@
 namespace Helpers.Response{
     public class ResponseSuccess{
-        public int StatusCode { get; init; }
-        private Success SuccessInfo { get; init; }
+        public int StatusCode { get; set; }
+        public Success SuccessInfo { get; set; }
 
         private ResponseSuccess(int statusCode, string message, object? data = null){
             StatusCode = statusCode;
@@ -16,7 +16,7 @@ namespace Helpers.Response{
         public static ResponseSuccess CREATED = new ResponseSuccess(201, "Recurso criado com sucesso", null);
         public static ResponseSuccess NO_CONTENT = new ResponseSuccess(204, "Requisição bem-sucedida, mas não há conteúdo para retornar", null);
 
-        private class Success{
+        public class Success{
             public string Message { get; set; }
             public object? Data { get; set; }
 

@@ -1,7 +1,7 @@
 namespace Helpers.Response{
     public class ResponseError{
-        public int StatusCode { get; init; }
-        private Error ErrorInfo { get; init; }
+        public int StatusCode { get; set; }
+        public Error ErrorInfo { get; set; }
 
         private ResponseError(int statusCode, string code, string message, object[]? details = null){
             StatusCode = statusCode;
@@ -29,11 +29,12 @@ namespace Helpers.Response{
         public static ResponseError REGISTRATION_CLOSED = new ResponseError(400, "REGISTRATION_CLOSED", "Inscrições encerradas", null);
         public static ResponseError INTERNAL_SERVER_ERROR = new ResponseError(500, "INTERNAL_SERVER_ERROR", "Erro interno do servidor", null);
         public static ResponseError BAD_REQUEST = new ResponseError(400, "BAD_REQUEST", "Dados inválidos na requisição", null);
-        
-        private class Error{
-            public string Code { get; init; }
-            public string Message { get; init; }
-            public object[]? Details { get; init; }
+        public static ResponseError CONTENT_TOO_LARGE = new ResponseError(413, "CONTENT_TOO_LARGE", "O arquivo enviado não pode ter mais de 5MB de tamanho.", null);
+
+        public class Error{
+            public string Code { get; set; }
+            public string Message { get; set; }
+            public object[]? Details { get; set; }
 
             public Error(string code, string message, object[]? details){
                 Code = code;
