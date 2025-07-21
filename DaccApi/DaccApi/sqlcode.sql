@@ -59,9 +59,9 @@ CREATE TABLE usuario
     imagem_url       VARCHAR(255),
     ativo            BOOLEAN DEFAULT TRUE,
     newsletterSubscriber BOOLEAN DEFAULT FALSE,
+    cargo            VARCHAR(50) REFERENCES tipos_usuario (nome),
     data_criacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    cargo            VARCHAR(50) REFERENCES tipos_usuario (nome)
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabela: Posts
@@ -130,7 +130,6 @@ CREATE TABLE anuncio
     botao_primario_link VARCHAR(255),
     botao_secundario_texto VARCHAR(20),
     botao_secundario_link VARCHAR(255),
-    detalhes_id         INT REFERENCES anuncio_detalhes (id),
     imagem_url         VARCHAR(255),
     imagem_alt         VARCHAR(100),
     ativo            BOOLEAN     NOT NULL DEFAULT FALSE,
@@ -141,24 +140,15 @@ CREATE TABLE anuncio
 
 -- Tabela: Detalhes de Anúncios
 -- Armazena detalhes adicionais para anúncios
-DROP TABLE IF EXISTS anuncio_detalhes CASCADE;
-CREATE TABLE anuncio_detalhes
-(
-    id SERIAL PRIMARY KEY,
-    anuncio_detalhe INT REFERENCES anuncio_detalhe (id),
-    anuncio_id    INT REFERENCES anuncio (id),
-    ordem         INT DEFAULT 0,
-    UNIQUE (anuncio_id, ordem)
-);
-
--- Tabela: Detalhe de Anúncio
--- Armazena elementos individuais de detalhes para anúncios
 DROP TABLE IF EXISTS anuncio_detalhe CASCADE;
 CREATE TABLE anuncio_detalhe
 (
-    id            SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
+    anuncio_id    INT REFERENCES anuncio (id),
+    ordem         INT DEFAULT 0,
     imagem_url    VARCHAR(255),
-    conteudo      VARCHAR(255)
+    conteudo      VARCHAR(255),
+    UNIQUE (anuncio_id, ordem)
 );
 
 -- Tabela: Eventos
@@ -178,6 +168,18 @@ CREATE TABLE evento
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Reordenar para que diretoria venha antes de diretores
+-- Tabela: Diretorias
+-- Armazena as diferentes diretorias da organização
+DROP TABLE IF EXISTS diretoria CASCADE;
+CREATE TABLE diretoria
+(
+    id        SERIAL PRIMARY KEY,
+    nome    VARCHAR(100) UNIQUE NOT NULL,
+    descricao TEXT
+);
+
+-- Depois definir a tabela diretores
 -- Tabela: Diretores
 -- Armazena informações sobre diretores
 DROP TABLE IF EXISTS diretores CASCADE;
@@ -196,12 +198,13 @@ CREATE TABLE diretores
 
 -- Tabela: Categorias
 -- Armazena categorias para produtos
-DROP TABLE IF EXISTS categorias CASCADE;
-CREATE TABLE categorias
+DROP TABLE IF EXISTS categorias_produto CASCADE;
+CREATE TABLE categorias_produto
 (
     id      SERIAL PRIMARY KEY,
     nome    VARCHAR(100) NOT NULL,
-    subtipo VARCHAR(100)
+    subtipo VARCHAR(100),
+    UNIQUE (nome, subtipo)
 );
 
 -- Tabela: Cores
@@ -236,7 +239,7 @@ CREATE TABLE produto
     genero           BOOLEAN,
     data_criacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    categoria        VARCHAR(100) REFERENCES categorias (nome)
+    categoria_id     INT REFERENCES categorias_produto (id)  -- Alterado para usar ID em vez de nome
 );
 
 -- Tabela: Variações de Produto
@@ -319,16 +322,6 @@ CREATE TABLE avaliacao
     ativo          BOOLEAN DEFAULT TRUE,
     data_avaliacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Tabela: Diretorias
--- Armazena as diferentes diretorias da organização
-DROP TABLE IF EXISTS diretoria CASCADE;
-CREATE TABLE diretoria
-(
-    id        SERIAL PRIMARY KEY,
-    nome      VARCHAR(100) NOT NULL,
-    descricao TEXT
 );
 
 -- Tabela: Notícias
@@ -421,7 +414,7 @@ VALUES ('venda física'),
        ('pix');
 
 -- Categorias de Produtos
-INSERT INTO categorias (nome, subtipo)
+INSERT INTO categorias_produto (nome, subtipo)
 VALUES ('roupas', 'camisetas'),
        ('roupas', 'moletom'),
        ('outros', 'canecas'),
