@@ -39,21 +39,24 @@ namespace DaccApi.Controllers.Noticias
         [HttpGet("{id:int}")]
         public IActionResult GetNoticiaById([FromRoute] int id)
         {
-            throw new NotImplementedException();
+            var response = _noticiasServices.GetNoticiaById(id);
+            return response;
         }
         
         [HttpDelete("{id:int}")]
         [HasPermission(AppPermissions.Noticias.Delete)]
         public IActionResult DeleteNoticia([FromRoute] int id)
         {
-            throw new NotImplementedException();
+            var response = _noticiasServices.DeleteNoticia(id);
+            return response;
         }
         
         [HttpPatch("{id:int}")]
         [HasPermission(AppPermissions.Noticias.Update)]
-        public IActionResult UpdateNoticia([FromRoute] int id)
+        public IActionResult UpdateNoticia([FromRoute] int id, [FromBody] RequestNoticia request)
         {
-            throw new NotImplementedException();
+            var response = _noticiasServices.UpdateNoticia(id, request);
+            return response;
         }
     }
 }
