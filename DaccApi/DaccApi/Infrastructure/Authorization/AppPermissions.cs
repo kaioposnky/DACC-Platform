@@ -91,6 +91,8 @@
         {
             public const string View = "reviews.view";
             public const string Create = "reviews.create";
+            public const string Update = "reviews.update";
+            public const string Delete = "reviews.delete";
         }
     }
 }

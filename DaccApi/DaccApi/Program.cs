@@ -21,10 +21,12 @@ using DaccApi.Services.Diretorias;
 using DaccApi.Infrastructure.Repositories.Diretorias;
 using DaccApi.Infrastructure.Repositories.Noticias;
 using DaccApi.Infrastructure.Repositories.Permission;
+using DaccApi.Infrastructure.Repositories.Posts;
 using DaccApi.Infrastructure.Repositories.Projetos;
 using DaccApi.Services.Avaliacao;
 using DaccApi.Services.Noticias;
 using DaccApi.Services.Permission;
+using DaccApi.Services.Posts;
 using DaccApi.Services.Projetos;
 using DaccApi.Services.Token;
 using Microsoft.AspNetCore.Authorization;
@@ -113,6 +115,8 @@ builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+builder.Services.AddScoped<IPostsServices, PostsServices>();
+builder.Services.AddScoped<IPostsRepository, PostsRepository>();
 
 var app = builder.Build();
 

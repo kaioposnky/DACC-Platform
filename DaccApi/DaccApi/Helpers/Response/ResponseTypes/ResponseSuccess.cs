@@ -11,7 +11,11 @@ namespace Helpers.Response{
         public static ResponseSuccess WithData(ResponseSuccess success, object data){
             return new ResponseSuccess(success.StatusCode, success.SuccessInfo.Message, data);
         }
-
+        
+        public ResponseSuccess WithData(object data){
+            return new ResponseSuccess(this.StatusCode, this.SuccessInfo.Message, data);
+        }
+        
         public static ResponseSuccess OK = new ResponseSuccess(200, "Requisição bem-sucedida", null);
         public static ResponseSuccess CREATED = new ResponseSuccess(201, "Recurso criado com sucesso", null);
         public static ResponseSuccess NO_CONTENT = new ResponseSuccess(204, "Requisição bem-sucedida, mas não há conteúdo para retornar", null);

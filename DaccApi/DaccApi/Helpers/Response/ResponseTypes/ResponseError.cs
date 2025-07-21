@@ -8,6 +8,11 @@ namespace Helpers.Response{
             ErrorInfo = new Error(code, message, details);
         }
 
+        public ResponseError WithDetails(object[]? details)
+        {
+            return new ResponseError(this.StatusCode, this.ErrorInfo.Code, this.ErrorInfo.Message, details);
+        }
+        
         public static ResponseError WithDetails(ResponseError error, params object[]? details)
         {
             return new ResponseError(error.StatusCode, error.ErrorInfo.Code, error.ErrorInfo.Message, details);
