@@ -19,24 +19,21 @@ namespace DaccApi.Infrastructure.Repositories.User
         public async Task CreateUser(Usuario usuario)
         {
             var sql = _repositoryDapper.GetQueryNamed("InsertUsuario");
-            var senhaHash = _argon2Utility.HashPassword(usuario.SenhaHash);
+            var senhaHash = _argon2Utility.HashPassword(usuario.SenhaHash!);
             var param = new
             {
                 Nome = usuario.Nome,
+                Sobrenome = usuario.Sobrenome,
+                Ra = usuario.Ra,
+                Curso = usuario.Curso,
                 Email = usuario.Email,
-                Senha = senhaHash,
                 Telefone = usuario.Telefone,
-                TipoUsuarioId = usuario.TipoUsuario
+                Senha = senhaHash,
+                Cargo = usuario.Cargo,
             };
 
-            try
-            {
-                await _repositoryDapper.ExecuteAsync(sql, param);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            await _repositoryDapper.ExecuteAsync(sql, param);
+        
         }
 
         public List<Usuario> GetAll()
@@ -68,7 +65,7 @@ namespace DaccApi.Infrastructure.Repositories.User
         {
             try
             {
-                var sql = _repositoryDapper.GetQueryNamed("GetUsuarioById");
+                var sql = _repositoryDapper.GetQueryNamed("GetUsuarioByEmail");
 
                 var param = new { Email = email };
 

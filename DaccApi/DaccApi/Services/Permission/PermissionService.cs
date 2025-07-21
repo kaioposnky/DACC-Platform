@@ -15,16 +15,16 @@ namespace DaccApi.Services.Permission
             _memoryCache = memoryCache;
         }
         
-        public async Task<HashSet<string>?> GetPermissionsForRoleAsync(TipoUsuarioEnum role)
+        public async Task<HashSet<string>> GetPermissionsForRoleAsync(string role)
         {
-            var cacheKey = "permissions" + role.ToString();
+            var cacheKey = "permissions" + role;
 
-            return await _memoryCache.GetOrCreateAsync(cacheKey, async entry =>
+            return (await _memoryCache.GetOrCreateAsync(cacheKey, async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(2);
                 
                 return await _permissionRepository.GetPermissionsForRoleAsync(role);
-            });
+            }))!;
         }
     }
 }

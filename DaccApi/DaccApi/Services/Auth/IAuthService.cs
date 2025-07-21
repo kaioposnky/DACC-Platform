@@ -5,6 +5,7 @@ namespace DaccApi.Services.Auth
 {
     public interface IAuthService
     {
-        Task<IActionResult> LoginUser(RequestUsuario request);
+        Task<IActionResult> LoginUser(RequestLogin request);
+        Task<IActionResult> RegisterUser(RequestUsuario request);
     }
 }

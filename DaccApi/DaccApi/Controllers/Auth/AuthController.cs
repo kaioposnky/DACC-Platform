@@ -20,7 +20,7 @@ namespace DaccApi.Controllers.Auth
         
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<IActionResult> LoginUser([FromBody] RequestUsuario request)
+        public async Task<IActionResult> LoginUser([FromBody] RequestLogin request)
         {
             var response = await _authService.LoginUser(request);
             return response;
@@ -28,9 +28,10 @@ namespace DaccApi.Controllers.Auth
         
         [AllowAnonymous]
         [HttpPost("register")]
-        public IActionResult RegisterUser([FromBody] RequestUsuario request)
+        public async Task<IActionResult> RegisterUser([FromBody] RequestUsuario request)
         {
-            throw new NotImplementedException();
+            var response = await _authService.RegisterUser(request);
+            return response;
         }
         
         [HasPermission(AppPermissions.Users.RefreshToken)]
