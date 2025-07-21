@@ -4,6 +4,6 @@ namespace DaccApi.Services.Permission
 {
     public interface IPermissionService
     {
-        public Task<HashSet<string>> GetPermissionsForRoleAsync(TipoUsuarioEnum role);
+        public Task<HashSet<string>> GetPermissionsForRoleAsync(string role);
     }
 }

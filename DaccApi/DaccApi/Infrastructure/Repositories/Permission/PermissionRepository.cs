@@ -12,15 +12,13 @@ namespace DaccApi.Infrastructure.Repositories.Permission
             _repositoryDapper = repositoryDapper;
         }
         
-        public async Task<HashSet<string>> GetPermissionsForRoleAsync(TipoUsuarioEnum role)
+        public async Task<HashSet<string>> GetPermissionsForRoleAsync(string role)
         {
             var sql = _repositoryDapper.GetQueryNamed("GetPermissionsForRole");
-            
-            var roleName = TiposUsuario.FromEnum(role);
-            
+
             var param = new
             {
-                RoleName = roleName
+                RoleName = role
             };
             
             var permissions = await _repositoryDapper.QueryAsync<string>(sql, param);

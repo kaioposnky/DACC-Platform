@@ -28,14 +28,6 @@ namespace DaccApi.Controllers.Usuario
             // return response;
             throw new NotImplementedException();
         }
-        
-        [HasPermission(AppPermissions.Users.Create)]
-        [HttpPost("")]
-        public IActionResult CreateUser([FromBody] RequestUsuario request)
-        {
-            var response = _usuarioService.CreateUser(request);
-            return response;
-        }
 
         [HasPermission(AppPermissions.Users.View)]
         [HttpGet("{id:int}")]

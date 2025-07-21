@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <queries>
     <query name="GetPermissionsForRole">
-        SELECT p.nome FROM permissoes p
-            INNER JOIN role_permissoes rp ON p.id = rp.permissao_id
-            INNER JOIN tipos_usuario tu ON rp.tipo_usuario_id = tu.id
-            WHERE tu.nome = @RoleName";
+        SELECT permissao FROM role_permissoes WHERE tipo_usuario = @RoleName;
     </query>
 </queries>

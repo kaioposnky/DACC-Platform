@@ -2,26 +2,66 @@
 <queries>
 	<!-- Consulta para inserir um usuário -->
 	<query name="InsertUsuario">
-		INSERT INTO usuario (nome, sobrenome, email, telefone, senha_hash, tipo_usuario_id)
-		VALUES (@Nome, @Sobrenome, @Email, @Telefone, @Senha, @TipoUsuarioId);
+		INSERT INTO usuario (nome, sobrenome, ra, curso, email, telefone, senha_hash, cargo)
+		VALUES (@Nome, @Sobrenome, @Ra, @Curso, @Email, @Telefone, @Senha, @Cargo);
 	</query>
 
 	<!-- Consulta para obter todos os usuários -->
 	<query name="GetAllUsuarios">
-		SELECT id, nome, email, imagem_url
+		SELECT
+		id as Id,
+		nome as Nome,
+		sobrenome as Sobrenome,
+		ra as Ra,
+		curso as Curso,
+		email as Email,
+		telefone as Telefone,
+		imagem_url as ImagemUrl,
+		ativo as Ativo,
+		newsletterSubscriber as NewsLetterSubscriber,
+		cargo as Cargo,
+		data_criacao as DataCriacao,
+		data_atualizacao as DataAtualizacao
 		FROM usuario;
 	</query>
 
 	<!-- Consulta para obter um usuário por ID -->
 	<query name="GetUsuarioById">
-		SELECT id, nome, email
+		SELECT
+		id as Id,
+		nome as Nome,
+		sobrenome as Sobrenome,
+		ra as Ra,
+		curso as Curso,
+		email as Email,
+		telefone as Telefone,
+		imagem_url as ImagemUrl,
+		ativo as Ativo,
+		newsletterSubscriber as NewsLetterSubscriber,
+		cargo as Cargo,
+		data_criacao as DataCriacao,
+		data_atualizacao as DataAtualizacao
 		FROM usuario
 		WHERE id = @Id;
 	</query>
 	
 	<!-- Consulta para obter um usuário por Email -->
 	<query name="GetUsuarioByEmail">
-		SELECT senha_hash
+		SELECT
+		id as Id,
+		nome as Nome,
+		sobrenome as Sobrenome,
+		ra as Ra,
+		curso as Curso,
+		email as Email,
+		telefone as Telefone,
+		senha_hash as SenhaHash,
+		imagem_url as ImagemUrl,
+		ativo as Ativo,
+		newsletterSubscriber as NewsLetterSubscriber,
+		cargo as Cargo,
+		data_criacao as DataCriacao,
+		data_atualizacao as DataAtualizacao
 		FROM usuario
 		WHERE email = @Email;
 	</query>
@@ -29,7 +69,19 @@
 	<!-- Consulta para atualizar um usuário -->
 	<query name="UpdateUsuario">
 		UPDATE usuario
-		SET nome = @Nome, email = @Email, senha_hash = @SenhaHash
+		SET 
+			nome = @Nome, 
+			sobrenome = @Sobrenome,
+			ra = @Ra,
+			curso = @Curso,
+			email = @Email, 
+			telefone = @Telefone,
+			senha_hash = @SenhaHash,
+			imagem_url = @ImagemUrl,
+			ativo = @Ativo,
+			newsletterSubscriber = @NewsLetterSubscriber,
+			cargo = @Cargo,
+			data_atualizacao = CURRENT_TIMESTAMP
 		WHERE id = @Id;
 	</query>
 

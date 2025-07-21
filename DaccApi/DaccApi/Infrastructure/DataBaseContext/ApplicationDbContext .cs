@@ -34,10 +34,6 @@ namespace DaccApi.Infrastructure.DataBaseContext
                 entity.Property(e => e.Telefone)
                     .HasColumnName("telefone")
                     .IsRequired();
-
-                entity.Property(e => e.SenhaHash)
-                      .HasColumnName("senha_hash")
-                      .IsRequired();
     
                 entity.Property(e => e.ImagemUrl)
                     .HasColumnName("imagem_url");
@@ -45,7 +41,7 @@ namespace DaccApi.Infrastructure.DataBaseContext
                 entity.Property(e => e.Ativo)
                     .HasColumnName("ativo");
         
-                entity.Property(e => e.DataCadastro)
+                entity.Property(e => e.DataCriacao)
                       .HasColumnName("data_criacao") 
                       .HasDefaultValueSql("CURRENT_TIMESTAMP");
           
@@ -53,7 +49,7 @@ namespace DaccApi.Infrastructure.DataBaseContext
                       .HasColumnName("data_atualizacao")
                       .HasDefaultValueSql("CURRENT_TIMESTAMP");
     
-                entity.Property(e => e.TipoUsuario)
+                entity.Property(e => e.Cargo)
                       .HasColumnName("tipo_usuario_id")
                       .HasConversion<int>()
                       .IsRequired();

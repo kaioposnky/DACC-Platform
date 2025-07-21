@@ -1,8 +1,5 @@
-﻿using DaccApi.Enum.UserEnum;
-using DaccApi.Helpers;
+﻿using DaccApi.Helpers;
 using DaccApi.Infrastructure.Repositories.User;
-using DaccApi.Model;
-using DaccApi.Services.Auth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.User
@@ -14,41 +11,6 @@ namespace DaccApi.Services.User
         public UsuarioService(IUsuarioRepository usuarioRepository)
         {
             _usuarioRepository = usuarioRepository;
-        }
-
-        public IActionResult CreateUser(RequestUsuario request)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(request.Nome) ||
-                    string.IsNullOrWhiteSpace(request.Email) ||
-                    string.IsNullOrWhiteSpace(request.Senha) ||
-                    string.IsNullOrWhiteSpace(request.Telefone)
-                    )
-                {
-                    return ResponseHelper.CreateBadRequestResponse("Os campos Nome, Email e Senha são obrigatórios.");
-                }
-                
-                var usuario = new Usuario
-                {
-                    Nome = request.Nome,
-                    Email = request.Email,
-                    SenhaHash = request.Senha,
-                    Telefone = request.Telefone,
-                    // Se não for especificado, criar Visitante por padrão
-                    TipoUsuario = request.TipoUsuario ??= TipoUsuarioEnum.Visitante
-                };
-
-                _usuarioRepository.CreateUser(usuario);
-
-                return ResponseHelper.CreateSuccessResponse("", "Usuário adicionado com sucesso.");
-            }
-            catch (Exception ex)
-            {
-                return ResponseHelper.CreateErrorResponse(
-                    "Ocorreu um erro ao tentar cadastrar o usuário, favor relatar ao suporte pelo: contato.daccfei@gmail.com " +
-                    ex.StackTrace);
-            }
         }
 
         public IActionResult GetUserById(int id)
