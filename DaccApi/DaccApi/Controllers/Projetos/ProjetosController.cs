@@ -22,53 +22,59 @@ namespace DaccApi.Controllers.Projetos
 
         [AllowAnonymous]
         [HttpGet("")]
-        public IActionResult GetProjetos()
+        public IActionResult GetAllProjetos()
         {
 
-            var projetos = _projetosService.GetAllProjetos();
-            return projetos;
+            var response = _projetosService.GetAllProjetos();
+            return response;
         }
 
         [AllowAnonymous]
         [HttpGet("{id:int}")]
-        public IActionResult GetProjeto(int id)
+        public IActionResult GetProjetoById(int id)
         {
-            throw new NotImplementedException();
+            var response = _projetosService.GetProjetoById(id);
+            return response;
         }
 
         [HttpPost("")]
         [HasPermission(AppPermissions.Projetos.Create)]
-        public IActionResult CreateProjeto([FromBody] object request)
+        public IActionResult CreateProjeto([FromBody] RequestProjeto projeto)
         {
-            throw new NotImplementedException();
+            var response = _projetosService.CreateProjeto(projeto);
+            return response;
         }
 
         [HttpPatch("{id:int}")]
         [HasPermission(AppPermissions.Projetos.Update)]
-        public IActionResult UpdateProjeto([FromRoute] int id, [FromBody] object request)
+        public IActionResult UpdateProjeto([FromRoute] int id, [FromBody] RequestProjeto projeto)
         {
-            throw new NotImplementedException();
+            var response = _projetosService.UpdateProjeto(id, projeto);
+            return response;
         }
 
         [HttpDelete("{id:int}")]
         [HasPermission(AppPermissions.Projetos.Delete)]
         public IActionResult DeleteProjeto([FromRoute] int id)
         {
-            throw new NotImplementedException();
+            var response = _projetosService.DeleteProjeto(id);
+            return response;
         }
         
         [HttpPost("{projectId:int}/members/{userId:int}")]
         [HasPermission(AppPermissions.Projetos.AddMembers)]
         public IActionResult AddProjetoMember([FromRoute] int projectId, int userId)
         {
-            throw new NotImplementedException();
+            var response = _projetosService.AddProjetoMember(projectId, userId);
+            return response;
         }
         
         [HttpDelete("{projectId:int}/members/{userId:int}")]
         [HasPermission(AppPermissions.Projetos.RemoveMembers)]
         public IActionResult DeleteProjetoMember([FromRoute] int projectId, int userId)
         {
-            throw new NotImplementedException();
+            var response = _projetosService.DeleteProjetoMember(projectId, userId);
+            return response;
         }
         
     }
