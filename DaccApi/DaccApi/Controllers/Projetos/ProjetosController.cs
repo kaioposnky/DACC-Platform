@@ -61,21 +61,5 @@ namespace DaccApi.Controllers.Projetos
             return response;
         }
         
-        [HttpPost("{projectId:int}/members/{userId:int}")]
-        [HasPermission(AppPermissions.Projetos.AddMembers)]
-        public IActionResult AddProjetoMember([FromRoute] int projectId, int userId)
-        {
-            var response = _projetosService.AddProjetoMember(projectId, userId);
-            return response;
-        }
-        
-        [HttpDelete("{projectId:int}/members/{userId:int}")]
-        [HasPermission(AppPermissions.Projetos.RemoveMembers)]
-        public IActionResult DeleteProjetoMember([FromRoute] int projectId, int userId)
-        {
-            var response = _projetosService.DeleteProjetoMember(projectId, userId);
-            return response;
-        }
-        
     }
 }

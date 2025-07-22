@@ -13,10 +13,6 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
         public Task DeleteProjeto(int id);
         
         public Task  UpdateProjeto(int id, RequestProjeto projeto);
-        
-        public Task AddProjetoMember(int projetoId, int userId);
-        
-        public Task DeleteProjetoMember(int projetoId, int userId);
-        
+
     }
 }
