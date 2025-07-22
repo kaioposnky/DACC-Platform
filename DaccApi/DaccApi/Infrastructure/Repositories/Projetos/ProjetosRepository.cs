@@ -13,7 +13,7 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
         }
         public async Task<List<Projeto>> GetAllProjetos()
         {
-            var sql = _repositoryDapper.GetQueryNamed("GetProjetos");
+            var sql = _repositoryDapper.GetQueryNamed("GetAllProjetos");
 
             var queryResult = await _repositoryDapper.QueryAsync<Projeto>(sql);
 
@@ -22,5 +22,77 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
             return projetos;
         }
 
+        public async Task<Projeto?> GetProjetoById(int id)
+        {
+            var sql = _repositoryDapper.GetQueryNamed("GetProjetoById");
+            
+            var queryResult = await _repositoryDapper.QueryAsync<Projeto>(sql, new { Id = id });
+            
+            var projeto = queryResult.FirstOrDefault();
+            return projeto;
+        }
+
+        public async Task CreateProjeto(RequestProjeto projeto)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("CreateProjeto");
+            
+                var param = new
+                {
+                    Titulo = projeto.Titulo,
+                    Descricao = projeto.Descricao,
+                    Imagem_url = projeto.Imagem_url,
+                    Status = projeto.Status,
+                    Diretoria = projeto.Diretoria,
+                    Tags = projeto.Tags,
+                };
+
+                await _repositoryDapper.ExecuteAsync(sql, param);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao criar projeto.");
+            }
+        }
+
+        public async Task DeleteProjeto(int id)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("DeleteProjeto");
+                var param = new { id = id };
+                await _repositoryDapper.ExecuteAsync(sql, param);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao deletar projeto.");
+            }
+        }
+
+        public async Task UpdateProjeto(int id, RequestProjeto projeto)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("UpdateProjeto");
+                var param = new
+                {
+                    Titulo = projeto.Titulo,
+                    Descricao = projeto.Descricao,
+                    Imagem_url = projeto.Imagem_url,
+                    Status = projeto.Status,
+                    Diretoria = projeto.Diretoria,
+                    Tags = projeto.Tags,
+                };
+                await _repositoryDapper.ExecuteAsync(sql, param);
+                
+            
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao atualizar projeto.");
+            };
+        }
+        
     }
 }

@@ -1,0 +1,18 @@
+﻿namespace DaccApi.Model
+{
+    public class RequestProjeto
+    {
+        public string? Titulo { get; set; }
+        public string? Descricao { get; set; }
+        
+        public string? Imagem_url { get; set; }
+        
+        public string? Status { get; set; }
+        
+        public string? Diretoria { get; set; }
+        
+        public string[]? Tags { get; set; }
+    }
+    
+    
+}
