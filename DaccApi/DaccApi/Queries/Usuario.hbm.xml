@@ -3,9 +3,10 @@
 	<!-- Consulta para inserir um usuário -->
 	<query name="InsertUsuario">
 		INSERT INTO usuario (nome, sobrenome, ra, curso, email, telefone, senha_hash, cargo)
-		VALUES (@Nome, @Sobrenome, @Ra, @Curso, @Email, @Telefone, @Senha, @Cargo);
+		VALUES (@Nome, @Sobrenome, @Ra, @Curso, @Email, @Telefone, @Senha, @Cargo)
+		RETURNING id;
 	</query>
-
+	
 	<!-- Consulta para obter todos os usuários -->
 	<query name="GetAllUsuarios">
 		SELECT
