@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<queries>
+	<query name="GetAllDiretores">
+		SELECT * FROM diretores
+	</query>
+	<query name="CreateDiretor">
+		INSERT INTO diretores (nome,descricao,usuario_id,diretoria_id,email,github_link,linkedin_link)
+		VALUES (@Nome, @Descricao,@Usuario_id,@Diretoria_id, @Email, @Gitgub_link, @Linkedin_link)
+	</query>>
+	<query name="GetDiretorById">
+		SELECT FROM diretores WHERE id=@id
+	</query>
+	<query name="DeleteDiretor">
+		DELETE FROM diretores WHERE id=@id
+	</query>
+	<query name="UpdateDiretor">
+		UPDATE diretores
+			SET nome = @Nome,
+				descricao = @Descricao,
+				imagem_url = @Imagem_url,
+				diretoria_id = @Diretoria_id,
+				email = @Email,
+				github_link = @Github_link
+				linkedin_link = @Diretoria_link
+				WHERE id=@id
+	</query>
+</queries>

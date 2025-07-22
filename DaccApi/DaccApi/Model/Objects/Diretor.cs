@@ -1,6 +1,6 @@
 ﻿namespace DaccApi.Model
 {
-    public class Diretoria
+    public class Diretor
     {
         public string Name { get; set; }
         public string Description { get; set; }
