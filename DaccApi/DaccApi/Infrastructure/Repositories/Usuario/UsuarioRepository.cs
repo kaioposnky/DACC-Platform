@@ -1,7 +1,12 @@
-﻿using DaccApi.Enum.UserEnum;
+﻿using System.Data;
+using System.Security.Authentication;
+using DaccApi.Enum.UserEnum;
 using DaccApi.Infrastructure.Cryptography;
 using DaccApi.Infrastructure.Dapper;
 using DaccApi.Model;
+using NHibernate.Exceptions;
+using Npgsql;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Storage.ValueConversion;
 
 namespace DaccApi.Infrastructure.Repositories.User
 {
@@ -18,7 +23,7 @@ namespace DaccApi.Infrastructure.Repositories.User
 
         public async Task CreateUser(Usuario usuario)
         {
-            var sql = _repositoryDapper.GetQueryNamed("InsertUsuario");
+            var insertSql = _repositoryDapper.GetQueryNamed("InsertUsuario");
             var senhaHash = _argon2Utility.HashPassword(usuario.SenhaHash!);
             var param = new
             {
@@ -32,8 +37,33 @@ namespace DaccApi.Infrastructure.Repositories.User
                 Cargo = usuario.Cargo,
             };
 
-            await _repositoryDapper.ExecuteAsync(sql, param);
-        
+            try
+            {
+                var userIdResult = await _repositoryDapper.QueryAsync<int>(insertSql, param);
+                var userId = userIdResult.SingleOrDefault();
+
+                if (userId == 0) 
+                {
+                    throw new Exception("A inserção do usuário falhou ao retornar um ID.");
+                }
+
+            }
+            catch (PostgresException ex)
+            {
+                if (ex.SqlState == PostgresErrorCodes.UniqueViolation)
+                {
+                    throw ex.ConstraintName switch
+                    {
+                        "usuario_email_key" => new InvalidConstraintException("Já existe um usuário com esse email!"),
+                        "usuario_ra_key" => new InvalidConstraintException("Já existe um usuário com esse RA!"),
+                        _ => new Exception()
+                    };
+                }
+            } 
+            catch (Exception ex)
+            {
+                throw new Exception("Ocorreu um erro ao tentar cadastrar o usuário, favor relatar ao suporte pelo: contato.daccfei@gmail.com", ex);
+            }
         }
 
         public List<Usuario> GetAll()

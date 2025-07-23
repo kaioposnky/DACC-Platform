@@ -21,9 +21,10 @@ namespace DaccApi.Controllers
         [HttpPost("uploadImage")]
         [Authorize(Roles = "administrador")]
         [RequestSizeLimit(5 * 1024 * 1024)] // 5 MB
-        public async Task<IActionResult> UploadImageFile([FromBody] IFormFile file)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadImageFile(IFormFile file)
         {
-            if (file.Length == 0)
+            if (file == null || file.Length == 0)
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "Nenhum arquivo foi enviado.");
             }
