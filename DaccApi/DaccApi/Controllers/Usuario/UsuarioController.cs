@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Model;
 using DaccApi.Services.User;
-using DaccApi.Services.Auth;
-using Microsoft.AspNetCore.Authorization;
 
 namespace DaccApi.Controllers.Usuario
 {
@@ -12,21 +10,18 @@ namespace DaccApi.Controllers.Usuario
     public class UsuarioController : ControllerBase
     {
         private readonly IUsuarioService _usuarioService;
-        private readonly IAuthService _authService;
 
-        public UsuarioController(IUsuarioService usuarioService, IAuthService authService)
+        public UsuarioController(IUsuarioService usuarioService)
         {
             _usuarioService = usuarioService;
-            _authService = authService;
         }
         
         [HasPermission(AppPermissions.Users.ViewAll)]
         [HttpGet("")]
-        public IActionResult GetUsers()
+        public async Task<IActionResult> GetUsers()
         {
-            // var response = _usuarioService.GetAllUsers();
-            // return response;
-            throw new NotImplementedException();
+            var response = await _usuarioService.GetAllUsers();
+            return response;
         }
 
         [HasPermission(AppPermissions.Users.View)]
@@ -39,16 +34,18 @@ namespace DaccApi.Controllers.Usuario
         
         [HasPermission(AppPermissions.Users.Update)]
         [HttpPatch("{id:int}")]
-        public IActionResult UpdateUser([FromRoute] int id, [FromBody] RequestUsuario request)
+        public async Task<IActionResult> UpdateUser([FromRoute] int id, [FromBody] RequestUpdateUsuario request)
         {
-            throw new NotImplementedException();
+            var response = await _usuarioService.UpdateUser(id, request);
+            return response;
         }
 
         [HasPermission(AppPermissions.Users.Delete)]
         [HttpDelete("{id:int}")]
-        public IActionResult DeleteUser([FromRoute] int id)
+        public async Task<IActionResult> DeleteUser([FromRoute] int id)
         {
-            throw new NotImplementedException();
+            var response = await _usuarioService.DeleteUser(id);
+            return response;
         }
     }
 }   

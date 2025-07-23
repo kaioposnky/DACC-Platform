@@ -8,26 +8,26 @@
 	</query>
 	
 	<!-- Consulta para obter todos os usuários -->
-	<query name="GetAllUsuarios">
+	<query name="GetAllUsers">
 		SELECT
-		id as Id,
-		nome as Nome,
-		sobrenome as Sobrenome,
-		ra as Ra,
-		curso as Curso,
-		email as Email,
-		telefone as Telefone,
-		imagem_url as ImagemUrl,
-		ativo as Ativo,
-		newsletterSubscriber as NewsLetterSubscriber,
-		cargo as Cargo,
-		data_criacao as DataCriacao,
-		data_atualizacao as DataAtualizacao
+			id as Id,
+			nome as Nome,
+			sobrenome as Sobrenome,
+			ra as Ra,
+			curso as Curso,
+			email as Email,
+			telefone as Telefone,
+			imagem_url as ImagemUrl,
+			ativo as Ativo,
+			newsletterSubscriber as NewsLetterSubscriber,
+			cargo as Cargo,
+			data_criacao as DataCriacao,
+			data_atualizacao as DataAtualizacao
 		FROM usuario;
 	</query>
 
 	<!-- Consulta para obter um usuário por ID -->
-	<query name="GetUsuarioById">
+	<query name="GetUserById">
 		SELECT
 		id as Id,
 		nome as Nome,
@@ -47,7 +47,7 @@
 	</query>
 	
 	<!-- Consulta para obter um usuário por Email -->
-	<query name="GetUsuarioByEmail">
+	<query name="GetUserByEmail">
 		SELECT
 		id as Id,
 		nome as Nome,
@@ -68,26 +68,21 @@
 	</query>
 
 	<!-- Consulta para atualizar um usuário -->
-	<query name="UpdateUsuario">
+	<query name="UpdateUser">
 		UPDATE usuario
 		SET 
 			nome = @Nome, 
 			sobrenome = @Sobrenome,
-			ra = @Ra,
 			curso = @Curso,
-			email = @Email, 
 			telefone = @Telefone,
-			senha_hash = @SenhaHash,
 			imagem_url = @ImagemUrl,
-			ativo = @Ativo,
 			newsletterSubscriber = @NewsLetterSubscriber,
-			cargo = @Cargo,
 			data_atualizacao = CURRENT_TIMESTAMP
 		WHERE id = @Id;
 	</query>
 
 	<!-- Consulta para deletar um usuário -->
-	<query name="DeleteUsuario">
+	<query name="DeleteUser">
 		DELETE FROM usuario
 		WHERE id = @Id;
 	</query>

@@ -436,7 +436,8 @@ VALUES ('roupas', 'camisetas'),
 INSERT INTO permissoes (nome, descricao)
 VALUES
     -- Permissões de Usuários
-    ('users.view', 'Visualizar lista de usuários'),
+    ('users.view', 'Visualizar um usuário'),
+    ('user.viewall', 'Visualizar todos os usuários'),
     ('users.create', 'Criar novos usuários'),
     ('users.update', 'Atualizar informações de usuários'),
     ('users.delete', 'Deletar usuários'),
@@ -495,6 +496,7 @@ VALUES
     ('reviews.create', 'Criar uma avaliação para um produto');
 
 -- Atribuindo Permissões aos Roles (Tipos de Usuário)
+DELETE FROM role_permissoes;
 DO $$
 DECLARE
     permissao_rec RECORD;
