@@ -22,6 +22,7 @@ using DaccApi.Infrastructure.Repositories.Noticias;
 using DaccApi.Infrastructure.Repositories.Permission;
 using DaccApi.Infrastructure.Repositories.Posts;
 using DaccApi.Infrastructure.Repositories.Projetos;
+using DaccApi.Middleware;
 using DaccApi.Services.Avaliacao;
 using DaccApi.Services.Noticias;
 using DaccApi.Services.Permission;
@@ -118,6 +119,8 @@ builder.Services.AddScoped<IPostsServices, PostsServices>();
 builder.Services.AddScoped<IPostsRepository, PostsRepository>();
 
 var app = builder.Build();
+
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
