@@ -98,13 +98,11 @@ namespace DaccApi.Services.Auth
                 if (string.IsNullOrWhiteSpace(request.Nome) ||
                     string.IsNullOrWhiteSpace(request.Sobrenome) ||
                     string.IsNullOrWhiteSpace(request.Telefone) ||
-                    string.IsNullOrWhiteSpace(request.Curso) ||
-                    string.IsNullOrWhiteSpace(request.Ra)
-                   )
+                    string.IsNullOrWhiteSpace(request.Curso))
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
-
+                
                 if (!IsValidEmail(request.Email))
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "Formato de email inválido!");
@@ -176,6 +174,16 @@ namespace DaccApi.Services.Auth
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message + ex.StackTrace);;
             }
+        }
+
+        private static bool IsValidRa(string? ra)
+        {
+            if (ra == null || string.IsNullOrWhiteSpace(ra))
+            {
+                return false;
+            }
+
+            return ra.Any(char.IsDigit) && ra.Length == 9;
         }
         
         private static bool IsValidPassword(string? password)
