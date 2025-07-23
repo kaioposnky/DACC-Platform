@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Mail;
 using System.Security.Authentication;

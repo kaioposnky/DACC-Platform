@@ -16,14 +16,13 @@ using DaccApi.Infrastructure.Repositories.Avaliacao;
 using DaccApi.Infrastructure.Repositories.Carrinhos;
 using DaccApi.Services.Products;
 using DaccApi.Infrastructure.Repositories.Products;
-using DaccApi.Services.Diretorias;
-using DaccApi.Infrastructure.Repositories.Diretorias;
+using DaccApi.Services.Diretores;
+using DaccApi.Infrastructure.Repositories.Diretores;
 using DaccApi.Infrastructure.Repositories.Noticias;
 using DaccApi.Infrastructure.Repositories.Permission;
 using DaccApi.Infrastructure.Repositories.Posts;
 using DaccApi.Infrastructure.Repositories.Projetos;
 using DaccApi.Services.Avaliacao;
-using DaccApi.Services.FileStorage;
 using DaccApi.Services.Noticias;
 using DaccApi.Services.Permission;
 using DaccApi.Services.Posts;
@@ -86,7 +85,6 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -102,8 +100,8 @@ builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IProdutosService, ProdutosService>();
 builder.Services.AddScoped<IProdutosRepository, ProdutosRepository>();
-builder.Services.AddScoped<IDiretoriasService, DiretoriasService>();
-builder.Services.AddScoped<IDiretoriasRepository, DiretoriasRepository>();
+builder.Services.AddScoped<IDiretoresService, DiretoresService>();
+builder.Services.AddScoped<IDiretoresRepository, DiretoresRepository>();
 builder.Services.AddScoped<IProjetosService, ProjetosService>();
 builder.Services.AddScoped<IProjetosRepository, ProjetosRepository>();
 builder.Services.AddScoped<IAvaliacaoService, AvaliacaoService>();
@@ -118,7 +116,6 @@ builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
 builder.Services.AddScoped<IPostsServices, PostsServices>();
 builder.Services.AddScoped<IPostsRepository, PostsRepository>();
-builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 
 var app = builder.Build();
 
@@ -137,6 +134,8 @@ app.UseStaticFiles();
 
 var uploadFilesSubfolder = builder.Configuration["UploadFilesSubfolder"]!;
 var uploadsPath = Path.Combine(app.Environment.WebRootPath, uploadFilesSubfolder);
+
+
 
 if (!Directory.Exists(uploadsPath))
 {
