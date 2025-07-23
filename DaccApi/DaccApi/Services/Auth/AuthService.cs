@@ -131,14 +131,14 @@ namespace DaccApi.Services.Auth
                     Email = request.Email,
                     Telefone = request.Telefone,
                     SenhaHash = request.Senha,
-                    Cargo = CargoUsuario.Aluno
+                    Cargo = CargoUsuario.Aluno,
+                    DataCriacao = DateTime.Now,
+                    DataAtualizacao = DateTime.Now
                 };
 
                 await _usuarioRepository.CreateUser(usuario);
-
-                usuario.SenhaHash = "shhhh";
-
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED.WithData(new { usuario }));
+                
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED.WithData(new { users = usuario.ToResponse() }));
             }
             catch (InvalidConstraintException ex)
             {

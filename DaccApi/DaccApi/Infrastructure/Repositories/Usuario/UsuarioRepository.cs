@@ -66,16 +66,29 @@ namespace DaccApi.Infrastructure.Repositories.User
             }
         }
 
-        public List<Usuario> GetAll()
+        public async Task<List<Usuario>> GetAll()
         {
-            throw new NotImplementedException();
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("GetAllUsers");
+                
+                var queryResult = await _repositoryDapper.QueryAsync<Usuario>(sql);
+                
+                var usuarios = queryResult.ToList();
+                
+                return usuarios;
+            } 
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao obter lista de usuários!", ex);
+            }
         }
 
         public async Task<Usuario?> GetUserById(int id)
         {
             try
             {
-                var sql = _repositoryDapper.GetQueryNamed("GetUsuarioById");
+                var sql = _repositoryDapper.GetQueryNamed("GetUserById");
 
                 var param = new { Id = id };
 
@@ -95,7 +108,7 @@ namespace DaccApi.Infrastructure.Repositories.User
         {
             try
             {
-                var sql = _repositoryDapper.GetQueryNamed("GetUsuarioByEmail");
+                var sql = _repositoryDapper.GetQueryNamed("GetUserByEmail");
 
                 var param = new { Email = email };
 
@@ -111,6 +124,47 @@ namespace DaccApi.Infrastructure.Repositories.User
 
         }
 
+        public async Task<int> UpdateUser(Usuario user)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("UpdateUser");
+
+                var param = new
+                {
+                    Id = user.Id,
+                    Nome = user.Nome,
+                    Sobrenome = user.Sobrenome,
+                    Curso = user.Curso,
+                    Telefone = user.Telefone,
+                    ImagemUrl = user.ImagemUrl,
+                    NewsletterSubscriber = user.NewsLetterSubscriber
+                };
+
+                return await _repositoryDapper.ExecuteAsync(sql, param);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao atualizar informações do usuário!", ex);
+            }
+        }
+
+        public async Task<int> DeleteUser(int id)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("DeleteUser");
+
+                var param = new { Id = id };
+
+                return await _repositoryDapper.ExecuteAsync(sql, param);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao deletar usuário!", ex);
+            }
+        }
+        
         public async Task<TokensUsuario> GetUserTokens(int id)
         {
             try
