@@ -356,6 +356,17 @@ CREATE TABLE projeto
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Tabela: UsuarioTokens
+-- Armazena o AcessToken e o RefreshToken do usuário
+DROP TABLE IF EXISTS usuario_tokens CASCADE;
+CREATE TABLE usuario_tokens
+(
+    usuario_id          INT REFERENCES usuario (id),
+    access_token        VARCHAR(10000) NOT NULL,
+    refresh_token       VARCHAR(10000) NOT NULL,
+    UNIQUE (usuario_id)
+);
+
 -- Tabela: Permissões
 -- Armazena as permissões disponíveis no sistema
 DROP TABLE IF EXISTS permissoes CASCADE;

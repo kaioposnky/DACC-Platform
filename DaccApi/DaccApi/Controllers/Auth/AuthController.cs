@@ -34,11 +34,12 @@ namespace DaccApi.Controllers.Auth
             return response;
         }
         
-        [HasPermission(AppPermissions.Users.RefreshToken)]
+        [AllowAnonymous]
         [HttpPost("refresh")]
-        public IActionResult RefreshToken()
+        public async Task<IActionResult> RefreshToken([FromForm] string refreshToken)
         {
-            throw new NotImplementedException();
+            var response = await _authService.RefreshUserToken(refreshToken);
+            return response;
         }
         
         [HasPermission(AppPermissions.Users.Logout)]

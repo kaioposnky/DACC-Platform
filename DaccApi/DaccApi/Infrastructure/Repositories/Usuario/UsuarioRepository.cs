@@ -5,8 +5,8 @@ using DaccApi.Infrastructure.Cryptography;
 using DaccApi.Infrastructure.Dapper;
 using DaccApi.Model;
 using NHibernate.Exceptions;
-using Npgsql;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Storage.ValueConversion;
+using Npgsql;
 
 namespace DaccApi.Infrastructure.Repositories.User
 {
@@ -109,6 +109,55 @@ namespace DaccApi.Infrastructure.Repositories.User
                 throw new Exception("Erro ao obter usuário pelo Email na banco de dados!");
             }
 
+        }
+
+        public async Task<TokensUsuario> GetUserTokens(int id)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("GetUserTokens");
+                
+                var param = new { Id = id };
+                
+                var queryResult = await _repositoryDapper.QueryAsync<TokensUsuario>(sql, param);
+                
+                
+                var tokensUsuario = queryResult.FirstOrDefault();
+                
+                return tokensUsuario;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao obter tokens do usuário!");
+            }
+        }
+
+        public async Task UpdateUserTokens(int id, TokensUsuario tokensUsuario)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("UpdateUserTokens");
+
+                var param = new
+                {
+                    Id = id,
+                    AccessToken = tokensUsuario.AccessToken,
+                    RefreshToken = tokensUsuario.RefreshToken
+                };
+
+                await _repositoryDapper.ExecuteAsync(sql, param);
+            }
+            catch (PostgresException ex)
+            {
+                Console.WriteLine(ex.Detail);
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.MessageText);
+                throw new Exception("Erro ao atualizar tokens do usuário!" + ex.StackTrace);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao atualizar tokens do usuário!" + ex.StackTrace);
+            }
         }
     }
 }

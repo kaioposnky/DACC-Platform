@@ -11,5 +11,8 @@ namespace DaccApi.Infrastructure.Repositories.User
         public Task<Usuario?> GetUserById(int id);
 
         public Task<Usuario?> GetUserByEmail(string email);
+
+        public Task<TokensUsuario?> GetUserTokens(int id);
+        public Task UpdateUserTokens(int id, TokensUsuario tokensUsuario);
     }
 }
