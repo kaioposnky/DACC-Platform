@@ -23,7 +23,6 @@ using DaccApi.Infrastructure.Repositories.Permission;
 using DaccApi.Infrastructure.Repositories.Posts;
 using DaccApi.Infrastructure.Repositories.Projetos;
 using DaccApi.Services.Avaliacao;
-using DaccApi.Services.FileStorage;
 using DaccApi.Services.Noticias;
 using DaccApi.Services.Permission;
 using DaccApi.Services.Posts;
@@ -86,7 +85,6 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -118,7 +116,6 @@ builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
 builder.Services.AddScoped<IPostsServices, PostsServices>();
 builder.Services.AddScoped<IPostsRepository, PostsRepository>();
-builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 
 var app = builder.Build();
 
@@ -137,6 +134,8 @@ app.UseStaticFiles();
 
 var uploadFilesSubfolder = builder.Configuration["UploadFilesSubfolder"]!;
 var uploadsPath = Path.Combine(app.Environment.WebRootPath, uploadFilesSubfolder);
+
+
 
 if (!Directory.Exists(uploadsPath))
 {

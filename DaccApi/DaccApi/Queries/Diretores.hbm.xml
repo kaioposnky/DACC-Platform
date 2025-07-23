@@ -1,18 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <queries>
 	<query name="GetAllDiretores">
-		SELECT * FROM diretores
+		SELECT 
+			nome,
+			descricao,
+			imagem_url as ImagemUrl,
+			usuario_id as UsuarioId,
+			diretoria_id as DiretoriaId,
+			email,
+			github_link as GithubLink,
+			linkedin_link as LinkedinLink
+		FROM diretores
 	</query>
 	<query name="CreateDiretor">
 		INSERT INTO diretores
-		(nome,
-		descricao,
-		usuario_id as UsuarioId,
-		diretoria_id as DiretoriaId,
-		email,
-		github_link as GithubLink,
-		linkedin_link as LinkedinLink)
-		VALUES (@Nome, @Descricao,@Usuario_id,@Diretoria_id, @Email, @Github_link, @Linkedin_link)
+			(nome,
+			descricao,
+			usuario_id,
+			diretoria_id,
+			email,
+			github_link,
+			linkedin_link)
+		VALUES (@Nome, @Descricao,@UsuarioId,@DiretoriaId, @Email, @GithubLink, @LinkedinLink)
 	</query>>
 	<query name="GetDiretorById">
 		SELECT
@@ -33,11 +42,11 @@
 		UPDATE diretores
 			SET nome = @Nome,
 				descricao = @Descricao,
-				imagem_url = @Imagem_url,
-				diretoria_id = @Diretoria_id,
+				imagem_url = @ImagemUrl,
+				diretoria_id = @DiretoriaId,
 				email = @Email,
-				github_link = @Github_link
-				linkedin_link = @Diretoria_link
+				github_link = @GithubLink
+				linkedin_link = @LinkedinLink
 				WHERE id=@id
 	</query>
 </queries>

@@ -77,6 +77,7 @@ namespace DaccApi.Infrastructure.Repositories.Diretores
                 var sql = _repositoryDapper.GetQueryNamed("UpdateDiretor");
                 var param = new
                 {
+                    id = id,
                     Nome = diretor.Nome,
                     Descricao = diretor.Descricao,
                     ImagemUrl = diretor.ImagemUrl,

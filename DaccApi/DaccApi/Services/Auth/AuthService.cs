@@ -1,4 +1,5 @@
-﻿using DaccApi.Model;
+﻿using System.Data;
+using DaccApi.Model;
 using DaccApi.Helpers;
 using DaccApi.Infrastructure.Cryptography;
 using DaccApi.Infrastructure.Repositories.Permission;
