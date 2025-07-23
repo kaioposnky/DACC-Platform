@@ -1,10 +1,17 @@
-﻿using DaccApi.Model;
+﻿using System.Data;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net.Mail;
+using System.Security.Authentication;
+using System.Security.Claims;
+using DaccApi.Model;
 using DaccApi.Helpers;
 using DaccApi.Infrastructure.Cryptography;
 using DaccApi.Infrastructure.Repositories.Permission;
 using DaccApi.Infrastructure.Repositories.User;
+using DaccApi.Model.Responses;
 using DaccApi.Services.Token;
 using Helpers.Response;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.Auth
@@ -60,7 +67,11 @@ namespace DaccApi.Services.Auth
                 
                 var permissions = await _permissionRepository.GetPermissionsForRoleAsync(usuario.Cargo);
                 
-                var token = _tokenService.GenerateToken(usuario, permissions);
+                var accessToken = _tokenService.GenerateAccessToken(usuario, permissions);
+                var refreshToken = _tokenService.GenerateRefreshToken(usuario);
+                
+                await _usuarioRepository.UpdateUserTokens(usuario.Id, 
+                    new TokensUsuario(){AccessToken = accessToken, RefreshToken = refreshToken});
                 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, 
                     new {
@@ -69,7 +80,8 @@ namespace DaccApi.Services.Auth
                         email = usuario.Email,
                         role = usuario.Cargo,
                         avatar = usuario.ImagemUrl,
-                        token = token
+                        access_token = accessToken,
+                        refreshToken = refreshToken,
                     }
                 ));
             }
@@ -85,8 +97,6 @@ namespace DaccApi.Services.Auth
             {
                 if (string.IsNullOrWhiteSpace(request.Nome) ||
                     string.IsNullOrWhiteSpace(request.Sobrenome) ||
-                    string.IsNullOrWhiteSpace(request.Email) ||
-                    string.IsNullOrWhiteSpace(request.Senha) ||
                     string.IsNullOrWhiteSpace(request.Telefone) ||
                     string.IsNullOrWhiteSpace(request.Curso) ||
                     string.IsNullOrWhiteSpace(request.Ra)
@@ -94,6 +104,19 @@ namespace DaccApi.Services.Auth
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
+
+                if (!IsValidEmail(request.Email))
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "Formato de email inválido!");
+                }
+
+                if (!IsValidPassword(request.Senha))
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, 
+                        "Senha muito fraca! A senha deve ter ao menos 8 caracteres, " +
+                        "uma letra maiúscula, uma letra minúscula e um número!");
+                }
+                
                 
                 var usuario = new Usuario
                 {
@@ -118,6 +141,84 @@ namespace DaccApi.Services.Auth
                 return ResponseHelper.CreateErrorResponse(
                     "Ocorreu um erro ao tentar cadastrar o usuário, favor relatar ao suporte pelo: contato.daccfei@gmail.com " +
                     ex.StackTrace);
+            }
+        }
+
+        public async Task<IActionResult> RefreshUserToken(string refreshToken)
+        {
+            try
+            {
+                var userId = int.Parse(new JwtSecurityToken(refreshToken).Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value);
+                var user = await _usuarioRepository.GetUserById(userId);
+                
+                var validRefreshToken = await _tokenService.ValidateRefreshToken(userId, refreshToken);
+                if (!validRefreshToken || user == null)
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.AUTH_TOKEN_INVALID);
+                }
+                
+                var userPermissions = await _permissionRepository.GetPermissionsForRoleAsync(user.Cargo);
+                
+                var newAccessToken = _tokenService.GenerateAccessToken(user, userPermissions);
+                var newRefreshToken = _tokenService.GenerateRefreshToken(user);
+                
+                var userTokens = new TokensUsuario(){ AccessToken = newAccessToken, RefreshToken = newRefreshToken };
+
+                await _usuarioRepository.UpdateUserTokens(user.Id, userTokens);
+                
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { userTokens }));
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message + ex.StackTrace);;
+            }
+        }
+        
+        private static bool IsValidPassword(string? password)
+        {
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                return false;
+            }
+
+            if (password.Length < 8)
+            {
+                return false;
+            }
+
+            if (!password.Any(char.IsUpper))
+            {
+                return false;
+            }
+
+            if (!password.Any(char.IsLower))
+            {
+                return false;
+            }
+
+            if (!password.Any(char.IsDigit))
+            {
+                return false;
+            }
+
+            return true;
+        }
+        
+        private static bool IsValidEmail(string? email)
+        {
+            if (email == null || string.IsNullOrWhiteSpace(email))
+            {
+                return false;
+            }
+
+            try
+            {
+                var mail = new MailAddress(email);
+                return true;
+            }
+            catch (FormatException)
+            {
+                return false;
             }
         }
     }

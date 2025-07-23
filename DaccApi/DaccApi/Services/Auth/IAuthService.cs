@@ -7,5 +7,6 @@ namespace DaccApi.Services.Auth
     {
         Task<IActionResult> LoginUser(RequestLogin request);
         Task<IActionResult> RegisterUser(RequestUsuario request);
+        Task<IActionResult> RefreshUserToken(string refreshToken);
     }
 }

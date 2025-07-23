@@ -1,6 +1,10 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text;
+using DaccApi.Infrastructure.Repositories.Permission;
+using DaccApi.Infrastructure.Repositories.User;
 using DaccApi.Model;
 using Microsoft.IdentityModel.Tokens;
 
@@ -9,16 +13,20 @@ namespace DaccApi.Services.Token
     public class TokenService : ITokenService
     {
         private readonly IConfiguration _configuration;
+        private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IPermissionRepository _permissionRepository;
         private readonly JwtSecurityTokenHandler _tokenHandler = new();
 
-        public TokenService(IConfiguration configuration)
+        public TokenService(IConfiguration configuration, IUsuarioRepository usuarioRepository, IPermissionRepository permissionRepository)
         {
             _configuration = configuration;
+            _usuarioRepository = usuarioRepository;
+            _permissionRepository = permissionRepository;
         }
 
-        public string GenerateToken(Usuario usuario, HashSet<string> permissions)
+        public string GenerateAccessToken(Usuario usuario, HashSet<string> permissions)
         {
-            var expirationTime = DateTime.UtcNow.AddHours(3);
+            var expirationTime = DateTime.UtcNow.AddMinutes(15);
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var issuer = _configuration["Jwt:Issuer"];
@@ -51,26 +59,45 @@ namespace DaccApi.Services.Token
 
             return _tokenHandler.WriteToken(tokenOptions);
         }
+
+        public string GenerateRefreshToken(Usuario usuario)
+        {
+            var expirationTime = DateTime.UtcNow.AddHours(1);
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var issuer = _configuration["Jwt:Issuer"];
+            var audience = _configuration["Jwt:Audience"]; 
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, usuario.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+            
+            var tokenOptions = new JwtSecurityToken(
+                issuer: issuer,
+                audience: audience,
+                claims: claims,
+                expires: expirationTime,
+                signingCredentials: credentials
+            );
+
+            return _tokenHandler.WriteToken(tokenOptions);
+        }
         
-        // TODO
-        // public string RefreshToken(Usuario usuario, string token)
-        // {
-        //     var jwtSecurityToken = _tokenHandler.ReadToken(token) as JwtSecurityToken;
-        //     
-        //     var userId = jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
-        //     if (userId != usuario.Id.ToString())
-        //     {
-        //         throw new SecurityTokenException("Token não pertence ao usuário!");
-        //     }
-        //     
-        //     // Se o token expirou gerar um novo
-        //     if (jwtSecurityToken.ValidTo < DateTime.UtcNow)
-        //     {
-        //         return GenerateToken(usuario);
-        //     }
-        //     
-        //     // Se o token não expirou retornar o mesmo
-        //     return token;
-        // }
+        public async Task<bool> ValidateRefreshToken(int userId, string refreshToken)
+        {
+            var userTokensOld = await _usuarioRepository.GetUserTokens(userId);
+            var oldRefeshToken = userTokensOld.RefreshToken;
+
+            if (string.IsNullOrWhiteSpace(oldRefeshToken))
+            {
+                return true;
+            }
+
+            return oldRefeshToken.Equals(refreshToken);
+        }
     }
 }
