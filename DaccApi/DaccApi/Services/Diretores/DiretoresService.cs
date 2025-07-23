@@ -86,8 +86,8 @@ namespace DaccApi.Services.Diretores
             try
             {
                 var diretor = await _diretoresRepository.GetDiretorById(id);
-                Console.WriteLine(diretor);
 
+                
                 if (diretor == null) 
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
 
@@ -95,7 +95,6 @@ namespace DaccApi.Services.Diretores
             }
             catch (Exception ex)
             {
-                Console.WriteLine("aaa");
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.StackTrace);
             }
         }

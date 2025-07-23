@@ -45,7 +45,7 @@
 				imagem_url = @ImagemUrl,
 				diretoria_id = @DiretoriaId,
 				email = @Email,
-				github_link = @GithubLink
+				github_link = @GithubLink,
 				linkedin_link = @LinkedinLink
 				WHERE id=@id
 	</query>
