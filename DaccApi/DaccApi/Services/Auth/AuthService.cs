@@ -102,6 +102,12 @@ namespace DaccApi.Services.Auth
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
+
+                if (!IsValidRa(request.Ra))
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, 
+                        "RA inválido! Seu RA deve conter 9 dígitos numéricos");
+                }
                 
                 if (!IsValidEmail(request.Email))
                 {
