@@ -8,6 +8,7 @@ namespace DaccApi.Controllers.Forum
 {
     [Authorize]
     [ApiController]
+    [NonController]
     [Route("api/[controller]")]
     public class ForumController : ControllerBase
     {

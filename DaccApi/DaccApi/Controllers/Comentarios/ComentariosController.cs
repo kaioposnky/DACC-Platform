@@ -6,6 +6,7 @@ namespace DaccApi.Controllers.Comentarios
 {
     [Authorize]
     [ApiController]
+    [NonController]
     [Route("api/")]
     public class ComentariosController : ControllerBase
     {

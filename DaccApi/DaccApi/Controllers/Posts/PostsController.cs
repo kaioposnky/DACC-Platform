@@ -8,6 +8,7 @@ namespace DaccApi.Controllers.Posts
 {
     [Authorize]
     [ApiController]
+    [NonController]
     [Route("api/[controller]")]
     public class PostsController : ControllerBase
     {
