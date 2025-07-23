@@ -119,15 +119,5 @@ namespace DaccApi.Services.Projetos
             }
         }
 
-
-        public IActionResult AddProjetoMember(int projetoId, int userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IActionResult DeleteProjetoMember(int projetoId, int userId)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

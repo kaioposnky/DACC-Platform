@@ -13,8 +13,6 @@ namespace DaccApi.Services.Projetos
         public IActionResult DeleteProjeto(int id);
         
         public IActionResult UpdateProjeto(int id, RequestProjeto projeto);
-        
-        public IActionResult AddProjetoMember(int projetoId, int userId);
-        public IActionResult DeleteProjetoMember(int projetoId, int userId);
+
     }
 }

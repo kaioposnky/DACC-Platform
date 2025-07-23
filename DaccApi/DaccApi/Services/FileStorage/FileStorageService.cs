@@ -1,3 +1,6 @@
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+
 namespace DaccApi.Services.FileStorage
 {
     public class FileStorageService : IFileStorageService
@@ -21,14 +24,6 @@ namespace DaccApi.Services.FileStorage
                 throw new ArgumentException("Arquivo excede o tamanho máximo de 5MB.");
             }
 
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
-            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-
-            if (string.IsNullOrEmpty(extension) || !allowedExtensions.Contains(extension))
-            {
-                throw new ArgumentException("Tipo de arquivo não suportado. Apenas imagens (JPG, JPEG, PNG) são permitidas.");
-            }
-
             if (string.IsNullOrWhiteSpace(_environment.WebRootPath))
             {
                 _environment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
@@ -45,16 +40,25 @@ namespace DaccApi.Services.FileStorage
             {
                 Directory.CreateDirectory(uploadsFolder);
             }
-
+            
+            const string extension = ".webp";
             var uniqueFileName = $"{Guid.NewGuid()}{extension}";
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-            await using (var stream = new FileStream(filePath, FileMode.Create))
+            await using (var stream = file.OpenReadStream())
             {
-                await file.CopyToAsync(stream);
+                try
+                {
+                    var image = await Image.LoadAsync(stream);
+                    await image.SaveAsWebpAsync(filePath);
+                }
+                catch (Exception ex)
+                {
+                    throw new ArgumentException("Formato de imagem inválido!");
+                }
             }
 
-            var request = _httpContextAccessor.HttpContext.Request;
+            var request = _httpContextAccessor.HttpContext!.Request;
             var url = $"{request.Scheme}://{request.Host}/{subfolder}/{uniqueFileName}";
 
             return url;

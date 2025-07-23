@@ -93,16 +93,6 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
                 throw new Exception("Erro ao atualizar projeto.");
             };
         }
-
-
-        public async Task AddProjetoMember(int projetoId, int userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task DeleteProjetoMember(int projetoId, int userId)
-        {
-            
-        }
+        
     }
 }
