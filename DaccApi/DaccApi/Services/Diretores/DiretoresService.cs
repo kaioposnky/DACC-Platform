@@ -16,11 +16,11 @@ namespace DaccApi.Services.Diretores
         {
             _diretoresRepository = diretoresRepository;
         }
-        public IActionResult GetAllDiretores()
+        public async Task<IActionResult> GetAllDiretores()
         {
             try
             {
-                var diretores = _diretoresRepository.GetAllDiretores().Result;
+                var diretores = await _diretoresRepository.GetAllDiretores();
 
                 if (diretores.Count == 0)
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
@@ -34,37 +34,37 @@ namespace DaccApi.Services.Diretores
             
         }
 
-        public IActionResult CreateDiretor(RequestDiretor diretor)
+        public async Task<IActionResult> CreateDiretor(RequestDiretor diretor)
         {
             try
             {
                 if (String.IsNullOrWhiteSpace(diretor.Nome) ||
                     String.IsNullOrWhiteSpace(diretor.Descricao) ||
-                    String.IsNullOrWhiteSpace(diretor.Github_link)||
-                    String.IsNullOrWhiteSpace(diretor.Linkedin_link)||
+                    String.IsNullOrWhiteSpace(diretor.GithubLink)||
+                    String.IsNullOrWhiteSpace(diretor.LinkedinLink)||
                     String.IsNullOrWhiteSpace(diretor.Email)||
-                    diretor.Diretoria_id == null||
-                    diretor.Usuario_id == null)
+                    diretor.DiretoriaId == null||
+                    diretor.UsuarioId == null)
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
             
-                _diretoresRepository.CreateDiretor(diretor);
+                await _diretoresRepository.CreateDiretor(diretor);
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.StackTrace);
             }
         }
 
-        public IActionResult DeleteDiretor(int id)
+        public async Task<IActionResult> DeleteDiretor(int id)
         {
 
             try
             {
-                var diretor = _diretoresRepository.GetDiretorById(id).Result;
+                var diretor = await _diretoresRepository.GetDiretorById(id);
             
                 if (diretor == null)
                 {
@@ -81,11 +81,12 @@ namespace DaccApi.Services.Diretores
         }
 
 
-        public IActionResult GetDiretorById(int id)
+        public async Task<IActionResult> GetDiretorById(int id)
         {
             try
             {
-                var diretor = _diretoresRepository.GetDiretorById(id).Result;
+                var diretor = await _diretoresRepository.GetDiretorById(id);
+                Console.WriteLine(diretor);
 
                 if (diretor == null) 
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
@@ -94,15 +95,16 @@ namespace DaccApi.Services.Diretores
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+                Console.WriteLine("aaa");
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.StackTrace);
             }
         }
 
-        public IActionResult UpdateDiretor(int id,RequestDiretor diretor)
+        public async Task<IActionResult> UpdateDiretor(int id,RequestDiretor diretor)
         {
             try
             {
-                var diretorQuery = _diretoresRepository.GetDiretorById(id).Result;
+                var diretorQuery = await _diretoresRepository.GetDiretorById(id);
                 if (diretorQuery == null)
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);

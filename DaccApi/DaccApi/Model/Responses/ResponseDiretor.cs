@@ -4,8 +4,11 @@ public class ResponseDiretor
 {
     public string? Nome { get; set; }
     public string? Descricao { get; set; }
-    public string? Imagem_url { get; set; }
-    public string? email { get; set; }
-    public string? github_link    { get; set; }
-    public string? linkedin_link   { get; set; }
+            
+    public string? ImagemUrl { get; set; }
+    public int? UsuarioId { get; set; }
+    public int? DiretoriaId { get; set; }
+    public string? Email { get; set; }
+    public string? GithubLink    { get; set; }
+    public string? LinkedinLink   { get; set; }
 }

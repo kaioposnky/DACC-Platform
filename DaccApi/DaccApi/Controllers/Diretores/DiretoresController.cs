@@ -26,39 +26,39 @@ namespace DaccApi.Controllers.Diretores
         [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
-        public IActionResult GetAllDiretores()
+        public async Task<IActionResult> GetAllDiretores()
         {
-            var response = _diretoresService.GetAllDiretores();
+            var response = await _diretoresService.GetAllDiretores();
             return response;
         }
         [HttpGet("{id:int}")]
-        public IActionResult GetDiretorById([FromRoute] int id)
+        public async Task<IActionResult> GetDiretorById([FromRoute] int id)
         {
-            var response = _diretoresService.GetDiretorById(id);
+            var response = await _diretoresService.GetDiretorById(id);
             return response;
         }
 
         
         [HttpPost("")]
-        public IActionResult CreateDiretor([FromBody] RequestDiretor request)
+        public async Task<IActionResult> CreateDiretor([FromBody] RequestDiretor request)
         {
-            var response = _diretoresService.CreateDiretor(request);
+            var response = await _diretoresService.CreateDiretor(request);
             return response;
         }
         
 
         [HttpDelete("{id:int}")]
-        public IActionResult DeleteDiretor([FromRoute] int id)
+        public async Task<IActionResult> DeleteDiretor([FromRoute] int id)
         {
-            var response = _diretoresService.DeleteDiretor(id);
+            var response = await _diretoresService.DeleteDiretor(id);
             return response;
         }
         
         [HttpPatch("{id:int}")]
 
-        public IActionResult UpdateDiretor([FromRoute] int id, [FromBody] RequestDiretor request)
+        public async Task<IActionResult> UpdateDiretor([FromRoute] int id, [FromBody] RequestDiretor request)
         {
-            var response = _diretoresService.UpdateDiretor(id, request);
+            var response = await _diretoresService.UpdateDiretor(id, request);
             return response;
         }
         

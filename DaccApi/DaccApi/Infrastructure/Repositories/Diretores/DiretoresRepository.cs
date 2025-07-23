@@ -39,11 +39,11 @@ namespace DaccApi.Infrastructure.Repositories.Diretores
                 {
                     Nome = diretor.Nome,
                     Descricao = diretor.Descricao,
-                    Usuario_id = diretor.Usuario_id,
-                    Diretoria_id = diretor.Diretoria_id,
+                    UsuarioId = diretor.UsuarioId,
+                    DiretoriaId = diretor.DiretoriaId,
                     Email =  diretor.Email,
-                    Github_link = diretor.Github_link,
-                    Linkedin_link = diretor.Linkedin_link
+                    GithubLink = diretor.GithubLink,
+                    LinkedinLink = diretor.LinkedinLink
                     
                 };
 
@@ -79,11 +79,11 @@ namespace DaccApi.Infrastructure.Repositories.Diretores
                 {
                     Nome = diretor.Nome,
                     Descricao = diretor.Descricao,
-                    Imagem_url = diretor.Imagem_url,
-                    Diretoria_id = diretor.Diretoria_id,
+                    ImagemUrl = diretor.ImagemUrl,
+                    DiretoriaId = diretor.DiretoriaId,
                     Email = diretor.Email,
-                    Github_link = diretor.Github_link,
-                    Linkedin_link = diretor.Linkedin_link
+                    GithubLink = diretor.GithubLink,
+                    LinkedinLink = diretor.LinkedinLink
                     
                 };
                 await _repositoryDapper.ExecuteAsync(sql, param);
@@ -99,11 +99,14 @@ namespace DaccApi.Infrastructure.Repositories.Diretores
         {
             try
             {
-                var sql = _repositoryDapper.GetQueryNamed("GetDiretorById");
+                var sql =  _repositoryDapper.GetQueryNamed("GetDiretorById");
+                
+                var param = new { id = id };
 
-                var queryResult = await _repositoryDapper.QueryAsync<Diretor>(sql);
+                var queryResult = await _repositoryDapper.QueryAsync<Diretor>(sql,param);
 
                 var diretor = queryResult.FirstOrDefault();
+
                 return diretor;
             }
             catch (Exception ex)

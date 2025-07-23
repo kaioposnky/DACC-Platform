@@ -2,9 +2,13 @@
 {
     public class Diretor
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public byte[] ImageUrl { get; set; }
-        public int Id { get; set; }
+        public string? Nome { get; set; }
+        public string? Descricao { get; set; }
+        public string? ImagemUrl { get; set; }
+        public int? UsuarioId { get; set; }
+        public int? DiretoriaId { get; set; }
+        public string? Email { get; set; }
+        public string? GithubLink    { get; set; }
+        public string? LinkedinLink   { get; set; }
     }
 }

@@ -7,7 +7,7 @@ namespace DaccApi.Infrastructure.Repositories.Diretores
 
         public Task<List<Diretor>> GetAllDiretores();
 
-        public Task <Diretor?> GetDiretorById(int id);
+        public Task<Diretor?> GetDiretorById(int id);
         public Task CreateDiretor(RequestDiretor diretor);
 
         public Task DeleteDiretor(int id);

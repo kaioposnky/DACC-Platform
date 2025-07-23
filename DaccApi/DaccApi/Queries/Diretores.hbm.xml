@@ -4,11 +4,27 @@
 		SELECT * FROM diretores
 	</query>
 	<query name="CreateDiretor">
-		INSERT INTO diretores (nome,descricao,usuario_id,diretoria_id,email,github_link,linkedin_link)
-		VALUES (@Nome, @Descricao,@Usuario_id,@Diretoria_id, @Email, @Gitgub_link, @Linkedin_link)
+		INSERT INTO diretores
+		(nome,
+		descricao,
+		usuario_id as UsuarioId,
+		diretoria_id as DiretoriaId,
+		email,
+		github_link as GithubLink,
+		linkedin_link as LinkedinLink)
+		VALUES (@Nome, @Descricao,@Usuario_id,@Diretoria_id, @Email, @Github_link, @Linkedin_link)
 	</query>>
 	<query name="GetDiretorById">
-		SELECT FROM diretores WHERE id=@id
+		SELECT
+			nome,
+			descricao,
+			usuario_id as UsuarioId,
+			diretoria_id as DiretoriaId,
+			email,
+			github_link as GithubLink,
+			linkedin_link as LinkedinLink
+		FROM diretores 
+		WHERE id=@id
 	</query>
 	<query name="DeleteDiretor">
 		DELETE FROM diretores WHERE id=@id

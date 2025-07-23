@@ -5,15 +5,15 @@ namespace DaccApi.Services.Diretores
 {
     public interface IDiretoresService
     {
-        public IActionResult GetAllDiretores();
+        public Task<IActionResult> GetAllDiretores();
         
-        public IActionResult CreateDiretor(RequestDiretor diretor);
+        public Task<IActionResult> CreateDiretor(RequestDiretor diretor);
         
-        public IActionResult DeleteDiretor(int id);
+        public Task<IActionResult> DeleteDiretor(int id);
         
-        public  IActionResult GetDiretorById(int id);
+        public  Task <IActionResult> GetDiretorById(int id);
         
-        public IActionResult UpdateDiretor(int id,RequestDiretor diretor);
+        public Task<IActionResult> UpdateDiretor(int id,RequestDiretor diretor);
 
     }
 }

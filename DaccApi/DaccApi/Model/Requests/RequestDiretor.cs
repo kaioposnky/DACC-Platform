@@ -5,12 +5,12 @@
             public string? Nome { get; set; }
             public string? Descricao { get; set; }
             
-            public string? Imagem_url { get; set; }
-            public int? Usuario_id { get; set; }
-            public int? Diretoria_id { get; set; }
+            public string? ImagemUrl { get; set; }
+            public int? UsuarioId { get; set; }
+            public int? DiretoriaId { get; set; }
             public string? Email { get; set; }
-            public string? Github_link    { get; set; }
-            public string? Linkedin_link   { get; set; }
+            public string? GithubLink    { get; set; }
+            public string? LinkedinLink   { get; set; }
     }
     
 }
