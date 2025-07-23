@@ -90,7 +90,7 @@ namespace DaccApi.Services.Auth
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message + ex.StackTrace);
             }
         }
-        
+            
         public async Task<IActionResult> RegisterUser(RequestUsuario request)
         {
             try
@@ -117,7 +117,7 @@ namespace DaccApi.Services.Auth
                         "uma letra maiúscula, uma letra minúscula e um número!");
                 }
                 
-                
+
                 var usuario = new Usuario
                 {
                     Nome = request.Nome,
@@ -127,14 +127,18 @@ namespace DaccApi.Services.Auth
                     Email = request.Email,
                     Telefone = request.Telefone,
                     SenhaHash = request.Senha,
-                    Cargo =  CargoUsuario.Visitante
+                    Cargo = CargoUsuario.Aluno
                 };
 
                 await _usuarioRepository.CreateUser(usuario);
 
                 usuario.SenhaHash = "shhhh";
-                
+
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED.WithData(new { usuario }));
+            }
+            catch (InvalidConstraintException ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, ex.Message);
             }
             catch (Exception ex)
             {

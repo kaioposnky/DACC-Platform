@@ -1,8 +1,11 @@
 ﻿using System.Data;
+using System.Security.Authentication;
 using DaccApi.Enum.UserEnum;
 using DaccApi.Infrastructure.Cryptography;
 using DaccApi.Infrastructure.Dapper;
 using DaccApi.Model;
+using NHibernate.Exceptions;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Storage.ValueConversion;
 using Npgsql;
 
 namespace DaccApi.Infrastructure.Repositories.User
@@ -44,9 +47,6 @@ namespace DaccApi.Infrastructure.Repositories.User
                     throw new Exception("A inserção do usuário falhou ao retornar um ID.");
                 }
 
-                var tokenSql = _repositoryDapper.GetQueryNamed("CreateUserToken");
-                var tokenParam = new { UserId = userId };
-                await _repositoryDapper.ExecuteAsync(tokenSql, tokenParam);
             }
             catch (PostgresException ex)
             {

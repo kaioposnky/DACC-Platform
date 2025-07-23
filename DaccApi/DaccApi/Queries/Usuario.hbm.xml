@@ -6,7 +6,7 @@
 		VALUES (@Nome, @Sobrenome, @Ra, @Curso, @Email, @Telefone, @Senha, @Cargo)
 		RETURNING id;
 	</query>
-
+	
 	<!-- Consulta para obter todos os usuários -->
 	<query name="GetAllUsuarios">
 		SELECT
