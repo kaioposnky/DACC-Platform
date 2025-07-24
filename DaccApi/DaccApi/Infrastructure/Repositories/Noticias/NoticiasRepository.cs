@@ -1,7 +1,11 @@
 ﻿using DaccApi.Infrastructure.Dapper;
 using DaccApi.Model;
 
-namespace DaccApi.Infrastructure.Repositories.Noticias;
+namespace DaccApi.Infrastructure.Repositories.Noticias
+{
+    
+    
+
 
 public class NoticiasRepository : INoticiasRepository
 {
@@ -17,7 +21,7 @@ public class NoticiasRepository : INoticiasRepository
         try
         {
             var sql = _repositoryDapper.GetQueryNamed("GetAllNoticias");
-
+    
             var queryResult = await _repositoryDapper.QueryAsync<Noticia>(sql);
 
             var noticias = queryResult.ToList();
@@ -70,15 +74,18 @@ public class NoticiasRepository : INoticiasRepository
         try
         {
             var sql = _repositoryDapper.GetQueryNamed("GetNoticiaById");
-
-            var queryResult = await _repositoryDapper.QueryAsync<Noticia>(sql);
+            
+            var param = new { id = id };
+            
+            var queryResult = await _repositoryDapper.QueryAsync<Noticia>(sql,param);
 
             var noticias = queryResult.FirstOrDefault();
+            
             return noticias;
         }
         catch (Exception ex)
         {
-            throw new Exception("Erro ao obter a notícia especificada no banco de dados.");
+            throw new Exception("Erro ao obter a notícia.");
         }
     }
 
@@ -92,6 +99,8 @@ public class NoticiasRepository : INoticiasRepository
                 id = id,
                 Titulo = noticia.Titulo,
                 Conteudo = noticia.Conteudo,
+                Categoria = noticia.Categoria,
+                Descricao = noticia.Descricao
             };
             await _repositoryDapper.ExecuteAsync(sql, param);
             
@@ -101,4 +110,5 @@ public class NoticiasRepository : INoticiasRepository
             throw new Exception("Erro ao obter a notícia especificada no banco de dados.");
         };
     }
+ }
 }

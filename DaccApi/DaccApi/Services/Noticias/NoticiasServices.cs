@@ -4,8 +4,9 @@ using DaccApi.Model;
 using Helpers.Response;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DaccApi.Services.Noticias;
-
+namespace DaccApi.Services.Noticias
+{
+    
 public class NoticiasServices : INoticiasServices
 {
     private readonly INoticiasRepository _noticiasRepository;
@@ -15,11 +16,11 @@ public class NoticiasServices : INoticiasServices
         _noticiasRepository = noticiasRepository;
     }
 
-    public IActionResult GetAllNoticias()
+    public async Task<IActionResult> GetAllNoticias()
     {
         try
         {
-            var noticias = _noticiasRepository.GetAllNoticias().Result;
+            var noticias =  await _noticiasRepository.GetAllNoticias();
 
             if (noticias.Count == 0) 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
@@ -28,11 +29,11 @@ public class NoticiasServices : INoticiasServices
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.StackTrace);
         }
     }
 
-    public IActionResult CreateNoticia(RequestNoticia noticia)
+    public async Task<IActionResult> CreateNoticia(RequestNoticia noticia)
     {
         try
         {
@@ -53,12 +54,12 @@ public class NoticiasServices : INoticiasServices
         }
     }
 
-    public IActionResult DeleteNoticia(int id)
+    public async Task<IActionResult> DeleteNoticia(int id)
     {
 
         try
         {
-            var noticia = _noticiasRepository.GetNoticiaById(id).Result;
+            var noticia = await _noticiasRepository.GetNoticiaById(id);
             
             if (noticia == null)
             {
@@ -75,11 +76,11 @@ public class NoticiasServices : INoticiasServices
     }
 
 
-    public IActionResult GetNoticiaById(int id)
+    public async Task<IActionResult> GetNoticiaById(int id)
     {
         try
         {
-            var noticia = _noticiasRepository.GetNoticiaById(id).Result;
+            var noticia =  await _noticiasRepository.GetNoticiaById(id);
 
             if (noticia == null) 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
@@ -88,18 +89,21 @@ public class NoticiasServices : INoticiasServices
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.StackTrace);
         }
     }
 
-    public IActionResult UpdateNoticia(int id,RequestNoticia noticia)
+    public async Task<IActionResult> UpdateNoticia(int id,RequestNoticia noticia)
     {
         try
         {
-            var noticiaQuery = _noticiasRepository.GetNoticiaById(id).Result;
+            var noticiaQuery = await _noticiasRepository.GetNoticiaById(id);
             if (noticiaQuery == null ||
                 String.IsNullOrWhiteSpace(noticia.Categoria) ||
-                String.IsNullOrWhiteSpace(noticia.Descricao))
+                String.IsNullOrWhiteSpace(noticia.Descricao) || 
+                String.IsNullOrWhiteSpace(noticia.Titulo) ||
+                String.IsNullOrWhiteSpace(noticia.Conteudo)
+                )
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
@@ -112,5 +116,5 @@ public class NoticiasServices : INoticiasServices
             return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
         }
     }
-    
+ }
 }

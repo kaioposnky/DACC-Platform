@@ -2,11 +2,15 @@
 {
     public class Noticia
     {
-        public Guid Id { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public string Author { get; set; }
-        public byte[] ImageUrl { get; set; }
+        public int Id { get; set; }
+        public string Titulo { get; set; } = string.Empty;
+        public string Descricao { get; set; } = string.Empty;
+        public string? Conteudo { get; set; }
+        public string? ImagemUrl { get; set; }
+        public int? Autor_Id { get; set; }
+        public string? Categoria { get; set; }
+        public DateTime Data_Atualizacao { get; set; }
+        public DateTime Data_Publicacao { get; set; }
     }
 }
 
