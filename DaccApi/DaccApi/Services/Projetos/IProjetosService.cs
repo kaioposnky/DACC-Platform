@@ -5,14 +5,14 @@ namespace DaccApi.Services.Projetos
 {
     public interface IProjetosService
     {
-        public IActionResult GetAllProjetos();
-        public IActionResult GetProjetoById(int id);
+        public Task<IActionResult> GetAllProjetos();
+        public Task<IActionResult> GetProjetoById(int id);
         
-        public IActionResult CreateProjeto(RequestProjeto projeto);
+        public Task<IActionResult> CreateProjeto(RequestProjeto projeto);
 
-        public IActionResult DeleteProjeto(int id);
+        public Task<IActionResult> DeleteProjeto(int id);
         
-        public IActionResult UpdateProjeto(int id, RequestProjeto projeto);
+        public Task<IActionResult> UpdateProjeto(int id, RequestProjeto projeto);
 
     }
 }

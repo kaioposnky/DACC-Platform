@@ -42,17 +42,20 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
                 {
                     Titulo = projeto.Titulo,
                     Descricao = projeto.Descricao,
-                    Imagem_url = projeto.Imagem_url,
+                    ImagemUrl = projeto.ImagemUrl,
                     Status = projeto.Status,
                     Diretoria = projeto.Diretoria,
-                    Tags = projeto.Tags,
-                };
+                    Tags = projeto.Tags
 
+
+                };
+                Console.WriteLine("SQL: " + sql);
+                Console.WriteLine("Params: " + param);
                 await _repositoryDapper.ExecuteAsync(sql, param);
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao criar projeto.");
+                throw new Exception("Erro ao criar projeto.",ex);
             }
         }
 
@@ -77,12 +80,13 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
                 var sql = _repositoryDapper.GetQueryNamed("UpdateProjeto");
                 var param = new
                 {
+                    id = id,
                     Titulo = projeto.Titulo,
                     Descricao = projeto.Descricao,
-                    Imagem_url = projeto.Imagem_url,
+                    ImagemUrl = projeto.ImagemUrl,
                     Status = projeto.Status,
                     Diretoria = projeto.Diretoria,
-                    Tags = projeto.Tags,
+                    Tags = projeto.Tags
                 };
                 await _repositoryDapper.ExecuteAsync(sql, param);
                 
