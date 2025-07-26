@@ -1,60 +1,80 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Infrastructure.Authentication;
+using DaccApi.Services.Eventos;
+using DaccApi.Responses;
+using DaccApi.Responses.UserResponse;
+using DaccApi.Model;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using DaccApi.Infrastructure.Authentication;
+
+
 
 namespace DaccApi.Controllers.Eventos
 {
     [Authorize]
     [ApiController]
-    [Route("api/events")]
+    [Route("api/[controller]")]
     public class EventosController : ControllerBase
     {
+        private readonly IEventosService _eventosService;
+        
+        public EventosController(IEventosService eventosService)
+        {
+            _eventosService = eventosService;
+        }
         
         [AllowAnonymous]
         [HttpGet("")]
-        public IActionResult GetEventos()
+        public async Task<IActionResult> GetAllEventos()
         {
-            throw new NotImplementedException();
+            var response = await _eventosService.GetAllEventos();
+            return response;
         }
 
         [HttpPost("")]
         [HasPermission(AppPermissions.Eventos.Create)]
-        public IActionResult CreateEvento()
+        public async Task<IActionResult> CreateEvento([FromBody] RequestEvento request)
         {
-            throw new NotImplementedException();
+            var response = await _eventosService.CreateEvento(request);
+            return response;
         }
 
         [AllowAnonymous]
         [HttpGet("{id:int}")]
-        public IActionResult GetEventoById([FromRoute] int id)
+        public async Task<IActionResult> GetEventoById([FromRoute] int id)
         {
-            throw new NotImplementedException();
+            var response = await _eventosService.GetEventoById(id);
+            return response;
         }
 
         [HttpDelete("{id:int}")]
         [HasPermission(AppPermissions.Eventos.Delete)]
-        public IActionResult DeleteEvento([FromRoute] int id)
+        public async Task<IActionResult> DeleteEvento([FromRoute] int id)
         {
-            throw new NotImplementedException();
+            var response = await _eventosService.DeleteEvento(id);
+            return response;
         }
 
         [HttpPatch("{id:int}")]
         [HasPermission(AppPermissions.Eventos.Update)]
-        public IActionResult UpdateEvento([FromRoute] int id)
+        public async Task<IActionResult> UpdateEvento([FromRoute] int id,[FromBody] RequestEvento request)
         {
-            throw new NotImplementedException();
+            var response = await _eventosService.UpdateEvento(id,request);
+            return response;
         }
         
         [HttpPost("{id:int}/register")]
         [HasPermission(AppPermissions.Eventos.Register)]
-        public IActionResult RegisterEvento([FromRoute] int id)
+        public async Task<IActionResult> RegisterEvento([FromRoute] int id)
         {
             throw new NotImplementedException();
         }
         
         [HttpDelete("{id:int}/register")]
         [HasPermission(AppPermissions.Eventos.Register)]
-        public IActionResult UnregisterEvento([FromRoute] int id)
+        public async Task<IActionResult> UnregisterEvento([FromRoute] int id)
         {
             throw new NotImplementedException();
         }
