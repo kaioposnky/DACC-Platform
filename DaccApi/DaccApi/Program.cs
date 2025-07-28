@@ -30,7 +30,9 @@ using DaccApi.Services.Permission;
 using DaccApi.Services.Posts;
 using DaccApi.Services.Projetos;
 using DaccApi.Services.Token;
+using Helpers.Response;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -85,7 +87,25 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddControllers();
+builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var validationErrors = context.ModelState
+            .SelectMany(m => m.Value.Errors
+                .Select(e => new ResponseError.ValidationErrorDetail 
+                {
+                    Field = char.ToLowerInvariant(m.Key[0]) + m.Key[1..],
+                    Message = e.ErrorMessage
+                }))
+            .ToList();
+
+        var responseError = ResponseError.VALIDATION_ERROR.WithDetails(validationErrors.ToArray());
+        
+        var response = new ApiResponse(false, responseError.ErrorInfo);
+        return new ObjectResult(response) { StatusCode = responseError.StatusCode };
+    };
+});
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddMemoryCache();

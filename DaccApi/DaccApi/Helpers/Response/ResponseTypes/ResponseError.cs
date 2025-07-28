@@ -10,7 +10,12 @@ namespace Helpers.Response{
 
         public ResponseError WithDetails(object[]? details)
         {
-            return new ResponseError(this.StatusCode, this.ErrorInfo.Code, this.ErrorInfo.Message, details);
+            return new ResponseError(StatusCode, ErrorInfo.Code, ErrorInfo.Message, details);
+        }
+        
+        public ResponseError WithDetails(ValidationErrorDetail[]? details)
+        {
+            return new ResponseError(StatusCode, ErrorInfo.Code, ErrorInfo.Message, details);
         }
         
         public static ResponseError WithDetails(ResponseError error, params object[]? details)
@@ -47,6 +52,12 @@ namespace Helpers.Response{
                 Details = details;
             }
 
+        }
+        
+        public class ValidationErrorDetail
+        {
+            public string Field { get; set; }
+            public string Message { get; set; }
         }
     }
 }
