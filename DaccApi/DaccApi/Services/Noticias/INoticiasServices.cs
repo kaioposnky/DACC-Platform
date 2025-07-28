@@ -5,10 +5,10 @@ namespace DaccApi.Services.Noticias;
 
 public interface INoticiasServices
 {
-    public IActionResult GetAllNoticias();
-    public IActionResult CreateNoticia(RequestNoticia noticia);
-    public IActionResult DeleteNoticia(int id);
-    public IActionResult GetNoticiaById(int id);
+    public Task<IActionResult> GetAllNoticias();
+    public Task<IActionResult> CreateNoticia(RequestNoticia noticia);
+    public Task<IActionResult> DeleteNoticia(int id);
+    public Task<IActionResult> GetNoticiaById(int id);
     
-    public IActionResult UpdateNoticia(int id, RequestNoticia noticia);
+    public Task<IActionResult> UpdateNoticia(int id, RequestNoticia noticia);
 }

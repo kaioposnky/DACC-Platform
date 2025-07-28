@@ -21,41 +21,41 @@ namespace DaccApi.Controllers.Noticias
 
         [AllowAnonymous]
         [HttpGet("")]
-        public IActionResult GetAllNoticias()
+        public async Task<IActionResult> GetAllNoticias()
         {
-            var response = _noticiasServices.GetAllNoticias();
+            var response = await _noticiasServices.GetAllNoticias();
             return response;
         }
         
         [HttpPost("")]
         [HasPermission(AppPermissions.Noticias.Create)]
-        public IActionResult CreateNoticia([FromBody] RequestNoticia request)
+        public async Task<IActionResult> CreateNoticia([FromBody] RequestNoticia request)
         {
-            var response = _noticiasServices.CreateNoticia(request);
+            var response = await _noticiasServices.CreateNoticia(request);
             return response;
         }
         
         [AllowAnonymous]
         [HttpGet("{id:int}")]
-        public IActionResult GetNoticiaById([FromRoute] int id)
+        public async Task<IActionResult> GetNoticiaById([FromRoute] int id)
         {
-            var response = _noticiasServices.GetNoticiaById(id);
+            var response = await _noticiasServices.GetNoticiaById(id);
             return response;
         }
         
         [HttpDelete("{id:int}")]
         [HasPermission(AppPermissions.Noticias.Delete)]
-        public IActionResult DeleteNoticia([FromRoute] int id)
+        public async Task<IActionResult> DeleteNoticia([FromRoute] int id)
         {
-            var response = _noticiasServices.DeleteNoticia(id);
+            var response = await _noticiasServices.DeleteNoticia(id);
             return response;
         }
         
         [HttpPatch("{id:int}")]
         [HasPermission(AppPermissions.Noticias.Update)]
-        public IActionResult UpdateNoticia([FromRoute] int id, [FromBody] RequestNoticia request)
+        public async Task<IActionResult> UpdateNoticia([FromRoute] int id, [FromBody] RequestNoticia request)
         {
-            var response = _noticiasServices.UpdateNoticia(id, request);
+            var response = await _noticiasServices.UpdateNoticia(id, request);
             return response;
         }
     }
