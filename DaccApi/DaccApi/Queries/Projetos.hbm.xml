@@ -2,17 +2,24 @@
 <queries>
 
 	<query name="GetAllProjetos">
-		SELECT * FROM projeto;
+		SELECT * FROM projeto
 	</query>
 	
 	<query name="GetProjetoById">
-		SELECT FROM projeto WHERE id=@id
+		SELECT * FROM projeto WHERE id=@id
 		
 	</query>
 
 	<query name="CreateProjeto">
-		INSERT INTO projeto(titulo, descricao, imagem_url,status, diretoria, tags)
-		VALUES (@Titulo, @Descricao, @Imagem_url, @Status, @Diretoria, @Tags)
+		INSERT INTO projeto
+			(titulo,
+			descricao,
+			imagem_url,
+			status,
+			diretoria,
+			tags
+			)
+		VALUES (@Titulo, @Descricao, @ImagemUrl, @Status, @Diretoria, @Tags)
 	</query>
 
 
@@ -25,9 +32,9 @@
 		UPDATE projeto
 			SET titulo = @Titulo,
 				descricao = @Descricao,
-				imagem_url = @Imagem_url
-				status = @Status
-				diretoria = @Diretoria
+				imagem_url = @ImagemUrl,
+				status = @Status,
+				diretoria = @Diretoria,
 				tags = @Tags
 			WHERE id=@id
 	</query>

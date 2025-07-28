@@ -22,42 +22,42 @@ namespace DaccApi.Controllers.Projetos
 
         [AllowAnonymous]
         [HttpGet("")]
-        public IActionResult GetAllProjetos()
+        public async Task<IActionResult> GetAllProjetos()
         {
 
-            var response = _projetosService.GetAllProjetos();
+            var response = await _projetosService.GetAllProjetos();
             return response;
         }
 
         [AllowAnonymous]
         [HttpGet("{id:int}")]
-        public IActionResult GetProjetoById(int id)
+        public async Task<IActionResult> GetProjetoById(int id)
         {
-            var response = _projetosService.GetProjetoById(id);
+            var response = await _projetosService.GetProjetoById(id);
             return response;
         }
 
         [HttpPost("")]
         [HasPermission(AppPermissions.Projetos.Create)]
-        public IActionResult CreateProjeto([FromBody] RequestProjeto projeto)
+        public async Task<IActionResult> CreateProjeto([FromBody] RequestProjeto projeto)
         {
-            var response = _projetosService.CreateProjeto(projeto);
+            var response = await _projetosService.CreateProjeto(projeto);
             return response;
         }
 
         [HttpPatch("{id:int}")]
         [HasPermission(AppPermissions.Projetos.Update)]
-        public IActionResult UpdateProjeto([FromRoute] int id, [FromBody] RequestProjeto projeto)
+        public async Task<IActionResult> UpdateProjeto([FromRoute] int id, [FromBody] RequestProjeto projeto)
         {
-            var response = _projetosService.UpdateProjeto(id, projeto);
+            var response = await _projetosService.UpdateProjeto(id, projeto);
             return response;
         }
 
         [HttpDelete("{id:int}")]
         [HasPermission(AppPermissions.Projetos.Delete)]
-        public IActionResult DeleteProjeto([FromRoute] int id)
+        public async Task<IActionResult> DeleteProjeto([FromRoute] int id)
         {
-            var response = _projetosService.DeleteProjeto(id);
+            var response = await _projetosService.DeleteProjeto(id);
             return response;
         }
         

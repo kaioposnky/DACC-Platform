@@ -14,11 +14,11 @@ namespace DaccApi.Services.Projetos
         {
             _projetosRepository = projetosRepository;
         }
-        public IActionResult GetAllProjetos()
+        public async Task<IActionResult> GetAllProjetos()
         {
             try
             {
-                var projetos = _projetosRepository.GetAllProjetos().Result;
+                var projetos = await _projetosRepository.GetAllProjetos();
                 
                 if (projetos.Count == 0)
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
@@ -33,11 +33,11 @@ namespace DaccApi.Services.Projetos
             
         }
 
-        public IActionResult GetProjetoById(int id)
+        public async Task<IActionResult> GetProjetoById(int id)
         {
             try
             {
-                var projeto = _projetosRepository.GetProjetoById(id).Result;
+                var projeto = await _projetosRepository.GetProjetoById(id);
                 if (projeto == null)
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { projetos = projeto}));
@@ -50,35 +50,36 @@ namespace DaccApi.Services.Projetos
         }
 
 
-        public IActionResult CreateProjeto(RequestProjeto projeto)
+        public async Task<IActionResult> CreateProjeto(RequestProjeto projeto)
         {
             try
             {
                 if (String.IsNullOrWhiteSpace(projeto.Titulo) ||
                     String.IsNullOrWhiteSpace(projeto.Descricao) ||
-                    String.IsNullOrWhiteSpace(projeto.Imagem_url) ||
+                    String.IsNullOrWhiteSpace(projeto.ImagemUrl) ||
                     String.IsNullOrWhiteSpace(projeto.Status)||
-                    String.IsNullOrWhiteSpace(projeto.Diretoria) ||
+                    String.IsNullOrWhiteSpace(projeto.Diretoria)||
                     projeto.Tags == null)
+                    
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
             
-                _projetosRepository.CreateProjeto(projeto);
+                await _projetosRepository.CreateProjeto(projeto);
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.StackTrace);
             }
         }
 
-        public IActionResult DeleteProjeto(int id)
+        public async Task<IActionResult> DeleteProjeto(int id)
         {
             try
             {
-                var projeto = _projetosRepository.GetProjetoById(id).Result;
+                var projeto = await _projetosRepository.GetProjetoById(id);
             
                 if (projeto == null)
                 {
@@ -94,17 +95,17 @@ namespace DaccApi.Services.Projetos
             }
         }
 
-        public IActionResult UpdateProjeto(int id, RequestProjeto projeto)
+        public async Task<IActionResult> UpdateProjeto(int id, RequestProjeto projeto)
         {
             try
             {
-                var projetoQuery = _projetosRepository.GetProjetoById(id).Result;
+                var projetoQuery = await _projetosRepository.GetProjetoById(id);
                 if (projetoQuery == null ||
                     String.IsNullOrWhiteSpace(projeto.Titulo) ||
                     String.IsNullOrWhiteSpace(projeto.Descricao) ||
-                    String.IsNullOrWhiteSpace(projeto.Imagem_url) ||
+                    String.IsNullOrWhiteSpace(projeto.ImagemUrl) ||
                     String.IsNullOrWhiteSpace(projeto.Status)||
-                    String.IsNullOrWhiteSpace(projeto.Diretoria) ||
+                    String.IsNullOrWhiteSpace(projeto.Diretoria)||
                     projeto.Tags == null)
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
