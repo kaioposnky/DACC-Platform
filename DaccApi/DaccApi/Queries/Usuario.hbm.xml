@@ -80,23 +80,23 @@
 		DELETE FROM usuario
 		WHERE id = @Id;
 	</query>
-	
+
 	<query name="GetUserTokens">
 		SELECT
-			access_token as AccessToken,
-			refresh_token as RefreshToken
+		access_token as AccessToken,
+		refresh_token as RefreshToken
 		FROM usuario_tokens
 		WHERE usuario_id = @Id;
 	</query>
-	
+
 	<query name="UpdateUserTokens">
 		UPDATE usuario_tokens
 		SET
-			access_token = @AccessToken,
-			refresh_token = @RefreshToken
+		access_token = @AccessToken,
+		refresh_token = @RefreshToken
 		WHERE usuario_id = @Id;
 	</query>
-	
+
 	<query name="CreateUserToken">
 		INSERT INTO usuario_tokens(usuario_id, access_token, refresh_token)
 		VALUES (@UserId, '', '');

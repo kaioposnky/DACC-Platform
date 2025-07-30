@@ -14,6 +14,7 @@ namespace DaccApi.Controllers.Avaliacao
     public class AvaliacaoController : ControllerBase
     {
         private readonly IAvaliacaoService _avaliacaoService;
+
         public AvaliacaoController(IAvaliacaoService avaliacaoService)
         {
             _avaliacaoService = avaliacaoService;
@@ -21,42 +22,64 @@ namespace DaccApi.Controllers.Avaliacao
 
         [HttpGet("")]
         [HasPermission(AppPermissions.Reviews.View)]
-        public IActionResult GetAllAvaliacoes()
+        public async Task<IActionResult> GetAllAvaliacoes()
         {
-            var response = _avaliacaoService.GetAllAvaliacoes();
+            var response = await _avaliacaoService.GetAllAvaliacoes();
             return response;
         }
-        
+
+        [HttpGet("{id:int}")]
+        [HasPermission(AppPermissions.Reviews.View)]
+        public async Task<IActionResult> GetAvaliacaoById([FromRoute] int id)
+        {
+            var response = await _avaliacaoService.GetAvaliacaoById(id);
+            return response;
+        }
+
         [HttpPost("")]
         [HasPermission(AppPermissions.Reviews.Create)]
-        public IActionResult CreateAvaliacao([FromBody] RequestAvaliacao request)
+        public async Task<IActionResult> CreateAvaliacao([FromBody] RequestCreateAvaliacao avaliacao)
         {
-            var response = _avaliacaoService.CreateAvaliacao(request);
+            var response = await _avaliacaoService.CreateAvaliacao(avaliacao);
             return response;
         }
-        
+
         [AllowAnonymous]
-        [HttpGet("products/{id:int}")]
-        public IActionResult GetProductAvaliacoes([FromRoute] int id)
+        [HttpGet("products/{produtoId:guid}")]
+        public async Task<IActionResult> GetAvaliacoesByProductId([FromRoute] Guid produtoId)
         {
-            var response = _avaliacaoService.GetAvaliacoesProductById(id);
+            var response = await _avaliacaoService.GetAvaliacoesByProductId(produtoId);
             return response;
         }
-        
-        [HttpGet("users/{id:int}")]
+
+        [HttpGet("users/{usuarioId:int}")]
         [HasPermission(AppPermissions.Reviews.View)]
-        public IActionResult GetAvaliacoesUser([FromRoute] int id)
+        public async Task<IActionResult> GetAvaliacoesByUserId([FromRoute] int usuarioId)
         {
-            var response = _avaliacaoService.GetAvaliacoesUserById(id);
+            var response = await _avaliacaoService.GetAvaliacoesByUserId(usuarioId);
             return response;
         }
 
         [HttpDelete("{id:int}")]
         [HasPermission(AppPermissions.Reviews.Delete)]
-        public IActionResult DeleteAvaliacao([FromRoute] int id)
+        public async Task<IActionResult> DeleteAvaliacao([FromRoute] int id)
         {
-            throw new NotImplementedException();
+            var response = await _avaliacaoService.DeleteAvaliacao(id);
+            return response;
         }
+        
+        
+        
+        [HttpPatch("{id:int}")]
+        [HasPermission(AppPermissions.Reviews.Update)]
+        public async Task<IActionResult> UpdateAvaliacao([FromRoute] int id,[FromBody] RequestUpdateAvaliacao avaliacao)
+        {
+            var response = await _avaliacaoService.UpdateAvaliacao(id, avaliacao);
+            return response;
+        }
+
+
+
     }
 }
     

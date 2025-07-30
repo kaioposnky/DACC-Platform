@@ -3,21 +3,60 @@
 <queries>
 <!--    Query para criar uma avaliação de um usuário-->
     <query name="CreateAvaliacao">
-        INSERT INTO avaliacoes(usuario_id, produto_id, nota, comentario)
+        INSERT INTO avaliacao(usuario_id, produto_id, nota, comentario)
         VALUES (@UsuarioId, @ProdutoId, @Nota, @Comentario);
     </query>
 <!--    Query para obter todas as avaliações-->
     <query name="GetAllAvaliacoes">
-        SELECT * FROM avaliacoes;
+        SELECT 
+            nota as Nota,
+            usuario_id as UsuarioId,
+            comentario as Comentario,
+            produto_id as ProdutoId,
+            data_criacao as DataPostada
+        FROM avaliacao;
     </query>
+    
+    <query name="GetAvaliacaoById">
+        SELECT
+            nota as Nota,
+            usuario_id as UsuarioId,
+            comentario as Comentario,
+            produto_id as ProdutoId,
+            data_criacao as DataPostada
+        FROM avaliacao WHERE id = @id
+    </query>
+    
 <!--    Query para obter as avaliacoes de um produto especifico-->
-    <query name="GetAvalicoesProductId">
-        SELECT * FROM avaliacoes WHERE produto_id = @Id;
+    <query name="GetAvaliacoesByProductId">
+        SELECT
+            nota as Nota,
+            usuario_id as UsuarioId,
+            comentario as Comentario,
+            produto_id as ProdutoId,
+            data_criacao as DataPostada
+        FROM avaliacao WHERE produto_id = @ProdutoId;
     </query>
 <!--    Query para obter as avaliacoes de um usuario-->
-    <query name="GetProductAvaliacaoUserByUserId">
-        SELECT * FROM avaliacoes WHERE usuario_id = @Id;
+    <query name="GetAvaliacoesByUserId">
+        SELECT
+            nota as Nota,
+            usuario_id as UsuarioId,
+            comentario as Comentario,
+            produto_id as ProdutoId,
+            data_criacao as DataPostada
+        FROM avaliacao WHERE usuario_id = @UsuarioId;
     </query>
+    <query name="DeleteAvaliacao">
+        DELETE FROM avaliacao WHERE id = @id
+    </query>
+    <query name="UpdateAvaliacao">
+        UPDATE avaliacao
+            SET nota = @Nota,
+            comentario = @Comentario,
+            data_atualizacao = CURRENT_TIMESTAMP
+        WHERE id = @id;
+    </query>>
     
 </queries>
 

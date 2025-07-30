@@ -534,7 +534,9 @@ VALUES
 
     -- Permissões de Avaliações de Produtos
     ('reviews.view', 'Visualizar avaliações de um produto'),
-    ('reviews.create', 'Criar uma avaliação para um produto');
+    ('reviews.create', 'Criar uma avaliação para um produto'),
+    ('reviews.update','Atualizar uma avaliação para um produto'),
+    ('reviews.delete', 'Deletar uma avaliação para um produto');
 
 -- Atribuindo Permissões aos Roles (Tipos de Usuário)
 DELETE FROM role_permissoes;
