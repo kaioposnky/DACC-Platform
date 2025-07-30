@@ -1,13 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <queries>
-	<!-- Consulta para inserir um usuário -->
 	<query name="InsertUsuario">
 		INSERT INTO usuario (nome, sobrenome, ra, curso, email, telefone, senha_hash, cargo)
 		VALUES (@Nome, @Sobrenome, @Ra, @Curso, @Email, @Telefone, @Senha, @Cargo)
 		RETURNING id;
 	</query>
 	
-	<!-- Consulta para obter todos os usuários -->
 	<query name="GetAllUsers">
 		SELECT
 			id as Id,
@@ -19,14 +17,13 @@
 			telefone as Telefone,
 			imagem_url as ImagemUrl,
 			ativo as Ativo,
-			newsletterSubscriber as NewsLetterSubscriber,
+			newsletter_subscriber as NewsLetterSubscriber,
 			cargo as Cargo,
 			data_criacao as DataCriacao,
 			data_atualizacao as DataAtualizacao
 		FROM usuario;
 	</query>
 
-	<!-- Consulta para obter um usuário por ID -->
 	<query name="GetUserById">
 		SELECT
 		id as Id,
@@ -38,7 +35,7 @@
 		telefone as Telefone,
 		imagem_url as ImagemUrl,
 		ativo as Ativo,
-		newsletterSubscriber as NewsLetterSubscriber,
+		newsletter_subscriber as NewsLetterSubscriber,
 		cargo as Cargo,
 		data_criacao as DataCriacao,
 		data_atualizacao as DataAtualizacao
@@ -46,7 +43,6 @@
 		WHERE id = @Id;
 	</query>
 	
-	<!-- Consulta para obter um usuário por Email -->
 	<query name="GetUserByEmail">
 		SELECT
 		id as Id,
@@ -59,7 +55,7 @@
 		senha_hash as SenhaHash,
 		imagem_url as ImagemUrl,
 		ativo as Ativo,
-		newsletterSubscriber as NewsLetterSubscriber,
+		newsletter_subscriber as NewsLetterSubscriber,
 		cargo as Cargo,
 		data_criacao as DataCriacao,
 		data_atualizacao as DataAtualizacao
@@ -67,7 +63,6 @@
 		WHERE email = @Email;
 	</query>
 
-	<!-- Consulta para atualizar um usuário -->
 	<query name="UpdateUser">
 		UPDATE usuario
 		SET 
@@ -76,12 +71,11 @@
 			curso = @Curso,
 			telefone = @Telefone,
 			imagem_url = @ImagemUrl,
-			newsletterSubscriber = @NewsLetterSubscriber,
+			newsletter_subscriber = @NewsLetterSubscriber,
 			data_atualizacao = CURRENT_TIMESTAMP
 		WHERE id = @Id;
 	</query>
 
-	<!-- Consulta para deletar um usuário -->
 	<query name="DeleteUser">
 		DELETE FROM usuario
 		WHERE id = @Id;

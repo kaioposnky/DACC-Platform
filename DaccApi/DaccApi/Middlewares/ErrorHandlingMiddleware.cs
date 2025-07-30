@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Net;
 using System.Text.Json;
 using DaccApi.Helpers;
@@ -36,6 +36,10 @@ namespace DaccApi.Middleware
 
         private static async Task HandleExceptionAsync(HttpContext httpContext, Exception ex)
         {
+            if (httpContext.Response.HasStarted)
+            {
+                return;
+            }
             var responseError = ResponseError.INTERNAL_SERVER_ERROR;
             var message = ex.Message;
             await WriteResponseErrorAsync(httpContext, HttpStatusCode.InternalServerError, responseError, message);
@@ -54,7 +58,7 @@ namespace DaccApi.Middleware
 
             await WriteResponseErrorAsync(httpContext, statusCode, responseError);
         }
-        
+
         private static async Task WriteResponseErrorAsync(HttpContext httpContext, HttpStatusCode statusCode, ResponseError responseError, string? message = null)
         {
             var response = (ObjectResult)ResponseHelper.CreateErrorResponse(responseError, message);

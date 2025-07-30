@@ -1,4 +1,4 @@
-﻿using DaccApi.Helpers;
+using DaccApi.Helpers;
 using DaccApi.Model;
 using DaccApi.Responses;
 using DaccApi.Responses.UserResponse;
@@ -23,42 +23,82 @@ namespace DaccApi.Controllers.Produtos
 
         [AllowAnonymous]
         [HttpGet("")]
-        public IActionResult GetAllProducts()
+        public async Task<IActionResult> GetAllProducts()
         {
-            var products = _produtosService.GetAllProducts();
+            var products = await _produtosService.GetAllProductsAsync();
             return products;
         }
 
         [AllowAnonymous]
-        [HttpGet("{id:int}")]
-        public IActionResult GetProductById([FromRoute] int id)
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetProductById([FromRoute] Guid id)
         {
-            var products = _produtosService.GetProductById(id);
+            var products = await _produtosService.GetProductByIdAsync(id);
             return products;
         }
 
-
         [HttpPost("")]
         [HasPermission(AppPermissions.Produtos.Create)]
-        public IActionResult CreateProduct([FromBody] RequestProduto requestProduto)
+        public async Task<IActionResult> CreateProduct([FromBody] RequestCreateProduto requestCreateProduto)
         {
-            var response = _produtosService.CreateProduct(requestProduto);
+            var response = await _produtosService.CreateProductAsync(requestCreateProduto);
             return response;
         }
 
-        [HttpDelete("{id:int}")]
-        [HasPermission(AppPermissions.Produtos.Delete)]
-        public IActionResult RemoveProduct([FromRoute] int id)
+        [AllowAnonymous]
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchProducts([FromQuery] RequestQueryProdutos query)
         {
-            var response = _produtosService.RemoveProductById(id);
+            var response = await _produtosService.SearchProductsAsync(query);
+            return response;
+        }
+
+        [HttpDelete("{id:guid}")]
+        [HasPermission(AppPermissions.Produtos.Delete)]
+        public async Task<IActionResult> RemoveProduct([FromRoute] Guid id)
+        {
+            var response = await _produtosService.RemoveProductByIdAsync(id);
             return response;
         }
         
-        [HttpPatch("{id:int}")]
+        [HttpPatch("{id:guid}")]
         [HasPermission(AppPermissions.Produtos.Update)]
-        public IActionResult UpdateProduct([FromRoute] int id, [FromBody] RequestProduto requestProduto)
+        public async Task<IActionResult> UpdateProduct([FromRoute] Guid id, [FromForm] RequestUpdateProduto requestUpdateProduto)
         {
-            throw new NotImplementedException();
+            var response = await _produtosService.UpdateProductAsync(id, requestUpdateProduto);
+            return response;
+        }
+
+        [HttpPost("{id:guid}/variacoes")]
+        [HasPermission(AppPermissions.Produtos.Create)]
+        public async Task<IActionResult> CreateVariation([FromRoute] Guid id, [FromForm] RequestProdutoVariacaoCreate request)
+        {
+            var response = await _produtosService.CreateVariationAsync(id, request);
+            return response;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{id:guid}/variacoes")]
+        public async Task<IActionResult> GetVariations([FromRoute] Guid id)
+        {
+            var response = await _produtosService.GetVariationsAsync(id);
+            return response;
+        }
+        
+        [HttpPatch("{id:guid}/variacoes/{variationId:guid}")]
+        [HasPermission(AppPermissions.Produtos.Update)]
+        public async Task<IActionResult> UpdateVariation([FromRoute] Guid id, [FromRoute] Guid variationId, [FromForm] RequestUpdateProdutoVariacao request)
+        {
+            var response = await _produtosService.UpdateVariationAsync(id, variationId, request);
+            return response;
+        }
+        
+        [HttpDelete("{id:guid}/variacoes/{variationId:guid}")]
+        [HasPermission(AppPermissions.Produtos.Delete)]
+        public async Task<IActionResult> DeleteVariation([FromRoute] Guid id, [FromRoute] Guid variationId)
+        {
+            var response = await _produtosService.DeleteVariationAsync(id, variationId);
+            return response;
         }
 
     }

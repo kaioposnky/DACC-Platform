@@ -43,25 +43,25 @@ CREATE TABLE categorias_noticia
     nome VARCHAR(50) NOT NULL UNIQUE
 );
 
--- Tabela: Usuários
--- Armazena informações dos usuários do sistema
+-- -- Tabela: Usuários
+-- -- Armazena informações dos usuários do sistema
 DROP TABLE IF EXISTS usuario CASCADE;
 CREATE TABLE usuario
 (
-    id               SERIAL PRIMARY KEY,
-    nome             VARCHAR(100)        NOT NULL,
-    sobrenome        VARCHAR(100)        NOT NULL,
-    email            VARCHAR(150) UNIQUE NOT NULL,
-    ra               VARCHAR(15)  UNIQUE NOT NULL,
-    curso            VARCHAR(200)        NOT NULL,
-    telefone         VARCHAR(15)         NOT NULL,
-    senha_hash       VARCHAR(200)        NOT NULL,
-    imagem_url       VARCHAR(255),
-    ativo            BOOLEAN DEFAULT TRUE,
-    newsletterSubscriber BOOLEAN DEFAULT FALSE,
-    cargo            VARCHAR(50) REFERENCES tipos_usuario (nome),
-    data_criacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id                   SERIAL PRIMARY KEY,
+    nome                 VARCHAR(100)        NOT NULL,
+    sobrenome            VARCHAR(100)        NOT NULL,
+    email                VARCHAR(150) UNIQUE NOT NULL,
+    ra                   VARCHAR(15) UNIQUE  NOT NULL,
+    curso                VARCHAR(200)        NOT NULL,
+    telefone             VARCHAR(15)         NOT NULL,
+    senha_hash           VARCHAR(200)        NOT NULL,
+    imagem_url           VARCHAR(255),
+    ativo                BOOLEAN   DEFAULT TRUE,
+    newsletter_subscriber BOOLEAN   DEFAULT FALSE,
+    cargo                VARCHAR(50) REFERENCES tipos_usuario (nome),
+    data_criacao         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabela: Posts
@@ -70,14 +70,14 @@ DROP TABLE IF EXISTS post CASCADE;
 CREATE TABLE post
 (
     id               SERIAL PRIMARY KEY,
-    titulo           VARCHAR(50) NOT NULL,
-    conteudo         TEXT        NOT NULL,
+    titulo           VARCHAR(50)    NOT NULL,
+    conteudo         TEXT           NOT NULL,
     autor_id         INT REFERENCES usuario (id),
     tags             VARCHAR(255)[] NOT NULL,
-    respondida       BOOLEAN     NOT NULL,
-    visualizacoes    INT         NOT NULL,
-    data_criacao     TIMESTAMP   NOT NULL,
-    data_atualizacao TIMESTAMP   NOT NULL
+    respondida       BOOLEAN        NOT NULL,
+    visualizacoes    INT            NOT NULL,
+    data_criacao     TIMESTAMP      NOT NULL,
+    data_atualizacao TIMESTAMP      NOT NULL
 );
 
 -- Tabela: Votação de Posts
@@ -85,9 +85,9 @@ CREATE TABLE post
 DROP TABLE IF EXISTS votacao_post CASCADE;
 CREATE TABLE votacao_post
 (
-    post_id     INT REFERENCES post (id),
-    usuario_id  INT REFERENCES usuario (id),
-    voto        BOOLEAN NOT NULL,
+    post_id    INT REFERENCES post (id),
+    usuario_id INT REFERENCES usuario (id),
+    voto       BOOLEAN NOT NULL,
     PRIMARY KEY (post_id, usuario_id)
 );
 
@@ -122,20 +122,20 @@ CREATE TABLE comentarios_post
 DROP TABLE IF EXISTS anuncio CASCADE;
 CREATE TABLE anuncio
 (
-    id               SERIAL PRIMARY KEY,
-    titulo           VARCHAR(50) NOT NULL,
-    conteudo         TEXT        NOT NULL,
-    tipo_anuncio     VARCHAR(50) REFERENCES tipos_anuncio (nome),
-    botao_primario_texto VARCHAR(20),
-    botao_primario_link VARCHAR(255),
+    id                     SERIAL PRIMARY KEY,
+    titulo                 VARCHAR(50) NOT NULL,
+    conteudo               TEXT        NOT NULL,
+    tipo_anuncio           VARCHAR(50) REFERENCES tipos_anuncio (nome),
+    botao_primario_texto   VARCHAR(20),
+    botao_primario_link    VARCHAR(255),
     botao_secundario_texto VARCHAR(20),
-    botao_secundario_link VARCHAR(255),
-    imagem_url         VARCHAR(255),
-    imagem_alt         VARCHAR(100),
-    ativo            BOOLEAN     NOT NULL DEFAULT FALSE,
-    autor_id         INT REFERENCES usuario (id),
-    data_criacao     TIMESTAMP   NOT NULL,
-    data_atualizacao TIMESTAMP   NOT NULL
+    botao_secundario_link  VARCHAR(255),
+    imagem_url             VARCHAR(255),
+    imagem_alt             VARCHAR(100),
+    ativo                  BOOLEAN     NOT NULL DEFAULT FALSE,
+    autor_id               INT REFERENCES usuario (id),
+    data_criacao           TIMESTAMP   NOT NULL,
+    data_atualizacao       TIMESTAMP   NOT NULL
 );
 
 -- Tabela: Detalhes de Anúncios
@@ -143,11 +143,11 @@ CREATE TABLE anuncio
 DROP TABLE IF EXISTS anuncio_detalhe CASCADE;
 CREATE TABLE anuncio_detalhe
 (
-    id SERIAL PRIMARY KEY,
-    anuncio_id    INT REFERENCES anuncio (id),
-    ordem         INT DEFAULT 0,
-    imagem_url    VARCHAR(255),
-    conteudo      VARCHAR(255),
+    id         SERIAL PRIMARY KEY,
+    anuncio_id INT REFERENCES anuncio (id),
+    ordem      INT DEFAULT 0,
+    imagem_url VARCHAR(255),
+    conteudo   VARCHAR(255),
     UNIQUE (anuncio_id, ordem)
 );
 
@@ -157,9 +157,9 @@ DROP TABLE IF EXISTS evento CASCADE;
 CREATE TABLE evento
 (
     id               SERIAL PRIMARY KEY,
-    titulo           VARCHAR(50)  NOT NULL,
-    descricao        TEXT         NOT NULL,
-    data             TIMESTAMP    NOT NULL,
+    titulo           VARCHAR(50) NOT NULL,
+    descricao        TEXT        NOT NULL,
+    data             TIMESTAMP   NOT NULL,
     tipo_evento      VARCHAR(50) REFERENCES tipos_evento (nome),
     autor_id         INT REFERENCES usuario (id),
     texto_acao       VARCHAR(20),
@@ -175,7 +175,7 @@ DROP TABLE IF EXISTS diretoria CASCADE;
 CREATE TABLE diretoria
 (
     id        SERIAL PRIMARY KEY,
-    nome    VARCHAR(100) UNIQUE NOT NULL,
+    nome      VARCHAR(100) UNIQUE NOT NULL,
     descricao TEXT
 );
 
@@ -185,32 +185,21 @@ CREATE TABLE diretoria
 DROP TABLE IF EXISTS diretores CASCADE;
 CREATE TABLE diretores
 (
-    id               SERIAL PRIMARY KEY,
-    nome             VARCHAR(100) NOT NULL,
-    descricao        TEXT NOT NULL,
-    imagem_url       VARCHAR(255),
-    usuario_id       INT REFERENCES usuario (id),
-    diretoria_id     INT REFERENCES diretoria (id),
-    email            VARCHAR(150) NOT NULL,
-    github_link      VARCHAR(150) NOT NULL,
-    linkedin_link    VARCHAR(150) NOT NULL
-);
-
--- Tabela: Categorias
--- Armazena categorias para produtos
-DROP TABLE IF EXISTS categorias_produto CASCADE;
-CREATE TABLE categorias_produto
-(
-    id      SERIAL PRIMARY KEY,
-    nome    VARCHAR(100) NOT NULL,
-    subtipo VARCHAR(100),
-    UNIQUE (nome, subtipo)
+    id            SERIAL PRIMARY KEY,
+    nome          VARCHAR(100) NOT NULL,
+    descricao     TEXT         NOT NULL,
+    imagem_url    VARCHAR(255),
+    usuario_id    INT REFERENCES usuario (id),
+    diretoria_id  INT REFERENCES diretoria (id),
+    email         VARCHAR(150) NOT NULL,
+    github_link   VARCHAR(150) NOT NULL,
+    linkedin_link VARCHAR(150) NOT NULL
 );
 
 -- Tabela: Cores
 -- Armazena cores disponíveis para produtos
-DROP TABLE IF EXISTS cores CASCADE;
-CREATE TABLE cores
+DROP TABLE IF EXISTS produto_cor CASCADE;
+CREATE TABLE produto_cor
 (
     id   SERIAL PRIMARY KEY,
     nome VARCHAR(50) NOT NULL UNIQUE
@@ -218,12 +207,40 @@ CREATE TABLE cores
 
 -- Tabela: Tamanhos
 -- Armazena tamanhos disponíveis para produtos
-DROP TABLE IF EXISTS tamanhos CASCADE;
-CREATE TABLE tamanhos
+DROP TABLE IF EXISTS produto_tamanho CASCADE;
+CREATE TABLE produto_tamanho
 (
     id        SERIAL PRIMARY KEY,
     nome      VARCHAR(10) NOT NULL UNIQUE,
     descricao VARCHAR(50)
+);
+
+-- Tabela: Categorias
+-- Armazena categorias para produtos
+DROP TABLE IF EXISTS produto_categoria CASCADE;
+CREATE TABLE produto_categoria
+(
+    id      SERIAL PRIMARY KEY,
+    nome    VARCHAR(100) UNIQUE NOT NULL
+);
+
+-- Tabela: Subcategoria
+-- Armazena as subcategorias de produtos
+DROP TABLE IF EXISTS produto_subcategoria CASCADE;
+CREATE TABLE produto_subcategoria(
+     id      SERIAL PRIMARY KEY,
+     nome    VARCHAR(100) UNIQUE NOT NULL,
+     categoria_id INT REFERENCES produto_categoria (id)
+);
+
+-- Tabela: Tipo Produto
+-- Armazena o tipo do produto
+DROP TABLE IF EXISTS produto_tipo CASCADE;
+CREATE TABLE produto_tipo
+(
+    id   SERIAL PRIMARY KEY,
+    nome VARCHAR(50) NOT NULL UNIQUE,
+    subcategoria_id INT REFERENCES produto_subcategoria (id)
 );
 
 -- Tabela: Produtos
@@ -231,41 +248,45 @@ CREATE TABLE tamanhos
 DROP TABLE IF EXISTS produto CASCADE;
 CREATE TABLE produto
 (
-    id               SERIAL PRIMARY KEY,
-    nome             VARCHAR(150)   NOT NULL,
-    descricao        TEXT           NOT NULL,
-    preco            NUMERIC(10, 2) NOT NULL,
-    preco_original   NUMERIC(10, 2),
-    genero           BOOLEAN,
-    data_criacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    categoria_id     INT REFERENCES categorias_produto (id)  -- Alterado para usar ID em vez de nome
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome                VARCHAR(150) NOT NULL,
+    descricao           TEXT         NOT NULL,
+    preco               NUMERIC(10, 2) NOT NULL,
+    preco_original      NUMERIC(10, 2),
+    subcategoria_id     INT REFERENCES produto_subcategoria (id),
+    ativo               BOOLEAN      NOT NULL DEFAULT TRUE,
+    data_criacao        TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao    TIMESTAMP             DEFAULT CURRENT_TIMESTAMP
 );
 
+
 -- Tabela: Variações de Produto
--- Armazena diferentes variações (cor/tamanho) de produtos
+-- Armazena as variações de cada produto
 DROP TABLE IF EXISTS produto_variacao CASCADE;
 CREATE TABLE produto_variacao
 (
-    id         SERIAL PRIMARY KEY,
-    produto_id INT REFERENCES produto (id),
-    cor        VARCHAR(50) REFERENCES cores (nome),
-    tamanho    VARCHAR(10) REFERENCES tamanhos (nome),
-    estoque    INT NOT NULL DEFAULT 0,
-    padrao     BOOLEAN      DEFAULT FALSE,
-    UNIQUE (produto_id, cor, tamanho)
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    produto_id          UUID REFERENCES produto (id) ON DELETE CASCADE,
+    cor_id              INT REFERENCES produto_cor (id),
+    tamanho_id          INT REFERENCES produto_tamanho (id),
+    estoque             INT            NOT NULL DEFAULT 0,
+    sku                 VARCHAR(100) UNIQUE,
+    ordem               INT          NOT NULL DEFAULT 0,
+    data_criacao        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (produto_id, cor_id, tamanho_id)
 );
 
 -- Tabela: Imagens de Produto
 -- Armazena imagens relacionadas a produtos
-DROP TABLE IF EXISTS imagem_produto CASCADE;
-CREATE TABLE imagem_produto
+DROP TABLE IF EXISTS produto_imagem CASCADE;
+CREATE TABLE produto_imagem
 (
-    id         SERIAL PRIMARY KEY,
-    produto_id INT REFERENCES produto (id),
-    cor        VARCHAR(50) REFERENCES cores (nome),
-    imagem_url VARCHAR(255) NOT NULL,
-    ordem      INT          NOT NULL DEFAULT 0
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    produto_variacao_id UUID REFERENCES produto_variacao (id) ON DELETE CASCADE,
+    imagem_url          VARCHAR(255) NOT NULL,
+    imagem_alt          VARCHAR(100),
+    ordem               INT          NOT NULL DEFAULT 0
 );
 
 -- Tabela: Status de Pedido
@@ -291,11 +312,12 @@ CREATE TABLE metodo_pagamento
 DROP TABLE IF EXISTS pedido CASCADE;
 CREATE TABLE pedido
 (
-    id                  SERIAL PRIMARY KEY,
-    usuario_id          INT REFERENCES usuario (id),
-    data_pedido         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status_pedido       VARCHAR(50) REFERENCES status_pedido (nome),
-    metodo_pagamento    VARCHAR(50) REFERENCES metodo_pagamento (nome)
+    id               SERIAL PRIMARY KEY,
+    usuario_id       INT REFERENCES usuario (id),
+    data_pedido      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status_pedido    VARCHAR(50) REFERENCES status_pedido (nome),
+    metodo_pagamento VARCHAR(50) REFERENCES metodo_pagamento (nome),
+    total_pedido     NUMERIC(10, 2) NOT NULL
 );
 
 -- Tabela: Itens do Pedido
@@ -303,10 +325,11 @@ CREATE TABLE pedido
 DROP TABLE IF EXISTS item_pedido CASCADE;
 CREATE TABLE item_pedido
 (
-    id         SERIAL PRIMARY KEY,
-    pedido_id  INT REFERENCES pedido (id),
-    produto_id INT REFERENCES produto (id),
-    quantidade INT NOT NULL
+    id                  SERIAL PRIMARY KEY,
+    pedido_id           INT REFERENCES pedido (id) ON DELETE CASCADE,
+    produto_variacao_id UUID REFERENCES produto_variacao (id), 
+    quantidade          INT            NOT NULL,
+    preco_unitario      NUMERIC(10, 2) NOT NULL
 );
 
 -- Tabela: Avaliações
@@ -314,13 +337,13 @@ CREATE TABLE item_pedido
 DROP TABLE IF EXISTS avaliacao CASCADE;
 CREATE TABLE avaliacao
 (
-    id             SERIAL PRIMARY KEY,
-    usuario_id     INT REFERENCES usuario (id),
-    produto_id     INT REFERENCES produto (id),
-    nota           INT CHECK (nota BETWEEN 1 AND 5),
-    comentario     TEXT,
-    ativo          BOOLEAN DEFAULT TRUE,
-    data_avaliacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id               SERIAL PRIMARY KEY,
+    usuario_id       INT REFERENCES usuario (id),
+    produto_id       UUID REFERENCES produto (id) ON DELETE CASCADE, 
+    nota             INT CHECK (nota BETWEEN 1 AND 5),
+    comentario       TEXT,
+    ativo            BOOLEAN   DEFAULT TRUE,
+    data_avaliacao   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -329,15 +352,15 @@ CREATE TABLE avaliacao
 DROP TABLE IF EXISTS noticia CASCADE;
 CREATE TABLE noticia
 (
-    id              SERIAL PRIMARY KEY,
-    titulo          VARCHAR(200) NOT NULL,
-    descricao       VARCHAR(255) NOT NULL,
-    conteudo        TEXT,
-    imagem_url      VARCHAR(255),
-    autor_id        INT REFERENCES usuario (id),
-    categoria       VARCHAR(50) REFERENCES categorias_noticia (nome),
+    id               SERIAL PRIMARY KEY,
+    titulo           VARCHAR(200) NOT NULL,
+    descricao        VARCHAR(255) NOT NULL,
+    conteudo         TEXT,
+    imagem_url       VARCHAR(255),
+    autor_id         INT REFERENCES usuario (id),
+    categoria        VARCHAR(50) REFERENCES categorias_noticia (nome),
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_publicacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    data_publicacao  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabela: Projetos
@@ -361,9 +384,9 @@ CREATE TABLE projeto
 DROP TABLE IF EXISTS usuario_tokens CASCADE;
 CREATE TABLE usuario_tokens
 (
-    usuario_id          INT REFERENCES usuario (id),
-    access_token        VARCHAR(10000) NOT NULL,
-    refresh_token       VARCHAR(10000) NOT NULL,
+    usuario_id    INT REFERENCES usuario (id),
+    access_token  VARCHAR(10000) NOT NULL,
+    refresh_token VARCHAR(10000) NOT NULL,
     UNIQUE (usuario_id)
 );
 
@@ -386,6 +409,20 @@ CREATE TABLE role_permissoes
     permissao    VARCHAR(100) REFERENCES permissoes (nome) ON DELETE CASCADE,
     PRIMARY KEY (tipo_usuario, permissao)
 );
+
+-- Cores disponívies de produtos
+INSERT INTO produto_cor(nome)
+VALUES ('azul'),
+       ('vermelho'),
+       ('branco'),
+       ('preto');
+
+-- Tamanhos disponíveis de produtos
+INSERT INTO produto_tamanho(nome)
+VALUES ('P'),
+       ('M'),
+       ('G'),
+       ('GG');
 
 -- Tipos de Usuário
 INSERT INTO tipos_usuario (nome)
@@ -425,12 +462,16 @@ VALUES ('venda física'),
        ('pix');
 
 -- Categorias de Produtos
-INSERT INTO categorias_produto (nome, subtipo)
-VALUES ('roupas', 'camisetas'),
-       ('roupas', 'moletom'),
-       ('outros', 'canecas'),
-       ('outros', 'adesivos'),
-       ('outros', 'acessorios');
+INSERT INTO produto_categoria (nome)
+VALUES ('roupas'), ('outros');
+
+-- Subcategorias de Produtos
+INSERT INTO produto_subcategoria (nome, categoria_id)
+VALUES ( 'camisetas', 1),
+       ( 'moletom', 1),
+       ( 'canecas', 2),
+       ( 'adesivos', 2),
+       ( 'acessorios', 2);
 
 -- Permissões
 INSERT INTO permissoes (nome, descricao)
@@ -441,13 +482,13 @@ VALUES
     ('users.create', 'Criar novos usuários'),
     ('users.update', 'Atualizar informações de usuários'),
     ('users.delete', 'Deletar usuários'),
-    
+
     -- Permissões de Notícias
     ('noticias.view', 'Visualizar notícias'),
     ('noticias.create', 'Criar novas notícias'),
     ('noticias.update', 'Atualizar notícias'),
     ('noticias.delete', 'Deletar notícias'),
-    
+
     -- Permissões de Projetos
     ('projetos.view', 'Visualizar projetos'),
     ('projetos.create', 'Criar novos projetos'),
@@ -461,7 +502,7 @@ VALUES
     ('produtos.create', 'Criar novos produtos na loja'),
     ('produtos.update', 'Atualizar produtos na loja'),
     ('produtos.delete', 'Deletar produtos na loja'),
-    
+
     -- Permissões de Eventos
     ('eventos.view', 'Visualizar eventos'),
     ('eventos.create', 'Criar novos eventos'),
@@ -497,54 +538,65 @@ VALUES
 
 -- Atribuindo Permissões aos Roles (Tipos de Usuário)
 DELETE FROM role_permissoes;
-DO $$
-DECLARE
-    permissao_rec RECORD;
-BEGIN
-    -- Permissões do Aluno
-    INSERT INTO role_permissoes (tipo_usuario, permissao)
-    SELECT 'aluno', p.nome FROM permissoes p WHERE p.nome IN (
-        -- Permissões básicas
-        'noticias.view', 'projetos.view', 'produtos.view', 'eventos.view', 'forum.posts.view', 'faculty.view', 'reviews.view',
-        -- Permissões específicas de Aluno
-        'forum.posts.create', 'forum.posts.update', 'forum.posts.delete', 'forum.posts.vote',
-        'forum.comments.create', 'forum.comments.update', 'forum.comments.delete', 'forum.comments.vote', 'forum.comments.accept',
-        'eventos.register',
-        'reviews.create'
-    );
-
-    -- Permissões do Diretor
-    INSERT INTO role_permissoes (tipo_usuario, permissao)
-    SELECT 'diretor', p.nome FROM permissoes p WHERE p.nome IN (
-        -- Herda permissões de aluno
-        'noticias.view', 
-        'projetos.view', 
-        'produtos.view', 
-        'eventos.view', 
-        'forum.posts.view', 
-        'faculty.view', 
-        'reviews.view',
-        'forum.posts.create', 
-        'forum.posts.update', 
-        'forum.posts.delete', 
-        'forum.posts.vote',
-        'forum.comments.create', 
-        'forum.comments.update', 
-        'forum.comments.delete', 
-        'forum.comments.vote', 
-        'forum.comments.accept',
-        'eventos.register',
-        'reviews.create',
-        -- Permissões específicas de Diretor
-        'noticias.create', 'noticias.update', 'noticias.delete',
-        'projetos.create', 'projetos.update', 'projetos.delete', 'projetos.members.add', 'projetos.members.remove',
-        'eventos.create', 'eventos.update', 'eventos.delete',
-        'users.view'
-    );
-
-    -- Permissões do Administrador (todas)
-    FOR permissao_rec IN SELECT nome FROM permissoes LOOP
+DO
+$$
+    DECLARE
+        permissao_rec RECORD;
+    BEGIN
+        -- Permissões do Aluno
         INSERT INTO role_permissoes (tipo_usuario, permissao)
-        VALUES ('administrador', permissao_rec.nome) ON CONFLICT DO NOTHING;
-    END LOOP;
-END $$;
+        SELECT 'aluno', p.nome
+        FROM permissoes p
+        WHERE p.nome IN (
+            -- Permissões básicas
+                         'noticias.view', 'projetos.view', 'produtos.view', 'eventos.view', 'forum.posts.view',
+                         'faculty.view', 'reviews.view',
+            -- Permissões específicas de Aluno
+                         'forum.posts.create', 'forum.posts.update', 'forum.posts.delete', 'forum.posts.vote',
+                         'forum.comments.create', 'forum.comments.update', 'forum.comments.delete',
+                         'forum.comments.vote', 'forum.comments.accept',
+                         'eventos.register',
+                         'reviews.create'
+            );
+
+        -- Permissões do Diretor
+        INSERT INTO role_permissoes (tipo_usuario, permissao)
+        SELECT 'diretor', p.nome
+        FROM permissoes p
+        WHERE p.nome IN (
+            -- Herda permissões de aluno
+                         'noticias.view',
+                         'projetos.view',
+                         'produtos.view',
+                         'eventos.view',
+                         'forum.posts.view',
+                         'faculty.view',
+                         'reviews.view',
+                         'forum.posts.create',
+                         'forum.posts.update',
+                         'forum.posts.delete',
+                         'forum.posts.vote',
+                         'forum.comments.create',
+                         'forum.comments.update',
+                         'forum.comments.delete',
+                         'forum.comments.vote',
+                         'forum.comments.accept',
+                         'eventos.register',
+                         'reviews.create',
+            -- Permissões específicas de Diretor
+                         'noticias.create', 'noticias.update', 'noticias.delete',
+                         'projetos.create', 'projetos.update', 'projetos.delete', 'projetos.members.add',
+                         'projetos.members.remove',
+                         'eventos.create', 'eventos.update', 'eventos.delete',
+                         'users.view'
+            );
+
+        -- Permissões do Administrador (todas)
+        FOR permissao_rec IN SELECT nome FROM permissoes
+            LOOP
+                INSERT INTO role_permissoes (tipo_usuario, permissao)
+                VALUES ('administrador', permissao_rec.nome)
+                ON CONFLICT DO NOTHING;
+            END LOOP;
+    END
+$$;

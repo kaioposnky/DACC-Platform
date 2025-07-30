@@ -131,6 +131,9 @@ namespace DaccApi.Services.Auth
                     Email = request.Email,
                     Telefone = request.Telefone,
                     SenhaHash = request.Senha,
+                    ImagemUrl = request.ImagemUrl ?? "",
+                    Ativo = true,
+                    NewsLetterSubscriber = request.NewsLetterSubscriber ?? false,
                     Cargo = CargoUsuario.Aluno,
                     DataCriacao = DateTime.Now,
                     DataAtualizacao = DateTime.Now

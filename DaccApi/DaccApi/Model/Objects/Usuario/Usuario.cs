@@ -14,9 +14,9 @@ namespace DaccApi.Model
         public string Curso { get; set; }
         public string Telefone { get; set; }
         public string? SenhaHash { get; set; }
-        public string ImagemUrl { get; set; }
-        public bool? Ativo { get; set; }
-        public bool? NewsLetterSubscriber { get; set; }
+        public string? ImagemUrl { get; set; }
+        public bool Ativo { get; set; } = true;
+        public bool? NewsLetterSubscriber { get; set; } = false;
         public string Cargo {  get; set; }
         public DateTime DataCriacao { get; set; }
         public DateTime DataAtualizacao { get; set; }
