@@ -233,16 +233,6 @@ CREATE TABLE produto_subcategoria(
      categoria_id INT REFERENCES produto_categoria (id)
 );
 
--- Tabela: Tipo Produto
--- Armazena o tipo do produto
-DROP TABLE IF EXISTS produto_tipo CASCADE;
-CREATE TABLE produto_tipo
-(
-    id   SERIAL PRIMARY KEY,
-    nome VARCHAR(50) NOT NULL UNIQUE,
-    subcategoria_id INT REFERENCES produto_subcategoria (id)
-);
-
 -- Tabela: Produtos
 -- Armazena informações sobre produtos
 DROP TABLE IF EXISTS produto CASCADE;

@@ -5,6 +5,7 @@ using DaccApi.Infrastructure.Authentication;
 namespace DaccApi.Controllers.Carrinho
 {
     [Authorize]
+    [NonController]
     [ApiController]
     [Route("api/cart")]
     public class CarrinhoController : ControllerBase
