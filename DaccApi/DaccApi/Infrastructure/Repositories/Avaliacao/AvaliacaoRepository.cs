@@ -11,13 +11,13 @@ public class AvaliacaoRepository : IAvaliacaoRepository
     {
         _repositoryDapper = repositoryDapper;
     }
-    public async void CreateAvaliacaoAsync(AvaliacaoProduto avaliacaoProduto)
+    public async Task CreateAvaliacao(RequestCreateAvaliacao avaliacao)
     {
         try
         {
             var sql = _repositoryDapper.GetQueryNamed("CreateAvaliacao");
 
-            await _repositoryDapper.ExecuteAsync(sql, avaliacaoProduto);
+            await _repositoryDapper.ExecuteAsync(sql, avaliacao);
         }
         catch (Exception ex)
         {
@@ -42,12 +42,33 @@ public class AvaliacaoRepository : IAvaliacaoRepository
         }
     }
 
-    public async Task<List<AvaliacaoProduto>> GetAvaliacoesByProductId(int id)
+    public async Task<AvaliacaoProduto?> GetAvaliacaoById(int id)
     {
         try
         {
-            var sql = _repositoryDapper.GetQueryNamed("GetAvalicoesProductId");
-            var param = new { Id = id };
+            var sql = _repositoryDapper.GetQueryNamed("GetAvaliacaoById");
+            
+            var param = new { id = id };
+
+            var queryResult = await _repositoryDapper.QueryAsync<AvaliacaoProduto>(sql,param);
+
+            var avaliacao = queryResult.FirstOrDefault();
+            
+            return avaliacao;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Erro ao obter avaliações no banco de dados!" + ex.Message);
+        }
+    }
+    
+
+    public async Task<List<AvaliacaoProduto>> GetAvaliacoesByProductId(Guid produtoId)
+    {
+        try
+        {
+            var sql = _repositoryDapper.GetQueryNamed("GetAvaliacoesByProductId");
+            var param = new { produtoId = produtoId };
 
             var queryResult = await _repositoryDapper.QueryAsync<AvaliacaoProduto>(sql, param);
 
@@ -56,19 +77,64 @@ public class AvaliacaoRepository : IAvaliacaoRepository
         }
         catch (Exception ex)
         {
-            throw new Exception("Erro ao obter Produto pelo Id no banco de dados!");
+            throw new Exception("Erro ao obter avaliação pelo Id do produto no banco de dados!"+ ex.Message);
         }
         
     }
 
-    public async Task<List<AvaliacaoProduto>> GetAvaliacoesByUserId(int id)
+    public async Task<List<AvaliacaoProduto>> GetAvaliacoesByUserId(int usuarioId)
     {
-        var sql = _repositoryDapper.GetQueryNamed("GetProductAvaliacaoUserByUserId");
-        var param = new { Id = id };
-        
-        var queryResult = await _repositoryDapper.QueryAsync<AvaliacaoProduto>(sql, param);
+        try
+        {
+            var sql = _repositoryDapper.GetQueryNamed("GetAvaliacoesByUserId");
+            var param = new { usuarioId = usuarioId };
+            
+            var queryResult = await _repositoryDapper.QueryAsync<AvaliacaoProduto>(sql, param);
 
-        var avaliacoes = queryResult.ToList();
-        return avaliacoes;
+            var avaliacoes = queryResult.ToList();
+            return avaliacoes;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Erro ao obter avaliacao pelo Id do usuário no banco de dados!"+ ex.Message + ex);
+        }
+    }
+    
+    public async Task DeleteAvaliacao(int id)
+    {
+        try
+        {
+            var sql = _repositoryDapper.GetQueryNamed("DeleteAvaliacao");
+            var param = new { id = id };
+            await _repositoryDapper.ExecuteAsync(sql, param);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Erro ao deletar avalaicao." +  ex.Message);
+        }
+        
+    }
+
+
+    public async Task UpdateAvaliacao(int id, RequestUpdateAvaliacao avaliacao)
+    {
+        try
+        {
+            var sql = _repositoryDapper.GetQueryNamed("UpdateAvaliacao");
+            var param = new
+            {
+                id = id,
+                Nota = avaliacao.Nota,
+                Comentario = avaliacao.Comentario,
+                   
+            };
+            await _repositoryDapper.ExecuteAsync(sql, param);
+            
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Erro ao atualizar avaliação." + ex.Message);
+        };
+        
     }
 }

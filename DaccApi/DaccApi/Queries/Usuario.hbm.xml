@@ -1,32 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <queries>
-	<!-- Consulta para inserir um usuário -->
 	<query name="InsertUsuario">
 		INSERT INTO usuario (nome, sobrenome, ra, curso, email, telefone, senha_hash, cargo)
 		VALUES (@Nome, @Sobrenome, @Ra, @Curso, @Email, @Telefone, @Senha, @Cargo)
 		RETURNING id;
 	</query>
-	
-	<!-- Consulta para obter todos os usuários -->
+
 	<query name="GetAllUsers">
 		SELECT
-			id as Id,
-			nome as Nome,
-			sobrenome as Sobrenome,
-			ra as Ra,
-			curso as Curso,
-			email as Email,
-			telefone as Telefone,
-			imagem_url as ImagemUrl,
-			ativo as Ativo,
-			newsletterSubscriber as NewsLetterSubscriber,
-			cargo as Cargo,
-			data_criacao as DataCriacao,
-			data_atualizacao as DataAtualizacao
+		id as Id,
+		nome as Nome,
+		sobrenome as Sobrenome,
+		ra as Ra,
+		curso as Curso,
+		email as Email,
+		telefone as Telefone,
+		imagem_url as ImagemUrl,
+		ativo as Ativo,
+		newsletter_subscriber as NewsLetterSubscriber,
+		cargo as Cargo,
+		data_criacao as DataCriacao,
+		data_atualizacao as DataAtualizacao
 		FROM usuario;
 	</query>
 
-	<!-- Consulta para obter um usuário por ID -->
 	<query name="GetUserById">
 		SELECT
 		id as Id,
@@ -38,15 +35,14 @@
 		telefone as Telefone,
 		imagem_url as ImagemUrl,
 		ativo as Ativo,
-		newsletterSubscriber as NewsLetterSubscriber,
+		newsletter_subscriber as NewsLetterSubscriber,
 		cargo as Cargo,
 		data_criacao as DataCriacao,
 		data_atualizacao as DataAtualizacao
 		FROM usuario
 		WHERE id = @Id;
 	</query>
-	
-	<!-- Consulta para obter um usuário por Email -->
+
 	<query name="GetUserByEmail">
 		SELECT
 		id as Id,
@@ -59,7 +55,7 @@
 		senha_hash as SenhaHash,
 		imagem_url as ImagemUrl,
 		ativo as Ativo,
-		newsletterSubscriber as NewsLetterSubscriber,
+		newsletter_subscriber as NewsLetterSubscriber,
 		cargo as Cargo,
 		data_criacao as DataCriacao,
 		data_atualizacao as DataAtualizacao
@@ -67,42 +63,40 @@
 		WHERE email = @Email;
 	</query>
 
-	<!-- Consulta para atualizar um usuário -->
 	<query name="UpdateUser">
 		UPDATE usuario
-		SET 
-			nome = @Nome, 
-			sobrenome = @Sobrenome,
-			curso = @Curso,
-			telefone = @Telefone,
-			imagem_url = @ImagemUrl,
-			newsletterSubscriber = @NewsLetterSubscriber,
-			data_atualizacao = CURRENT_TIMESTAMP
+		SET
+		nome = @Nome,
+		sobrenome = @Sobrenome,
+		curso = @Curso,
+		telefone = @Telefone,
+		imagem_url = @ImagemUrl,
+		newsletter_subscriber = @NewsLetterSubscriber,
+		data_atualizacao = CURRENT_TIMESTAMP
 		WHERE id = @Id;
 	</query>
 
-	<!-- Consulta para deletar um usuário -->
 	<query name="DeleteUser">
 		DELETE FROM usuario
 		WHERE id = @Id;
 	</query>
-	
+
 	<query name="GetUserTokens">
 		SELECT
-			access_token as AccessToken,
-			refresh_token as RefreshToken
+		access_token as AccessToken,
+		refresh_token as RefreshToken
 		FROM usuario_tokens
 		WHERE usuario_id = @Id;
 	</query>
-	
+
 	<query name="UpdateUserTokens">
 		UPDATE usuario_tokens
 		SET
-			access_token = @AccessToken,
-			refresh_token = @RefreshToken
+		access_token = @AccessToken,
+		refresh_token = @RefreshToken
 		WHERE usuario_id = @Id;
 	</query>
-	
+
 	<query name="CreateUserToken">
 		INSERT INTO usuario_tokens(usuario_id, access_token, refresh_token)
 		VALUES (@UserId, '', '');

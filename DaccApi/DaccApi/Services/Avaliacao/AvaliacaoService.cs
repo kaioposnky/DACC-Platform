@@ -1,6 +1,7 @@
 ﻿using DaccApi.Helpers;
 using DaccApi.Infrastructure.Repositories.Avaliacao;
 using DaccApi.Model;
+using Helpers.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.Avaliacao;
@@ -13,87 +14,137 @@ public class AvaliacaoService : IAvaliacaoService
     {
         _avaliacaoRepository = avaliacaoRepository;
     }
-    public IActionResult CreateAvaliacao(RequestAvaliacao requestAvaliacao)
+    public async Task<IActionResult> CreateAvaliacao(RequestCreateAvaliacao avaliacao)
     {
         try
         {
-            
-            if (requestAvaliacao.Nota is <= 0 or >= 5)
+            var newProductRating = new RequestCreateAvaliacao
             {
-                return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequestMessages.INVALID_RATING);
-            }
-            
-            var newProductRating = new AvaliacaoProduto
-            {
-                ProdutoId = requestAvaliacao.ProdutoId,
-                UsuarioId = requestAvaliacao.UsuarioId,
-                Comentario = requestAvaliacao.Comentario,
-                Nota = requestAvaliacao.Nota,
+                ProdutoId = avaliacao.ProdutoId,
+                UsuarioId = avaliacao.UsuarioId,
+                Comentario = avaliacao.Comentario,
+                Nota = avaliacao.Nota,
             };
 
-            _avaliacaoRepository.CreateAvaliacaoAsync(newProductRating);
+            await _avaliacaoRepository.CreateAvaliacao(newProductRating);
                 
-            // Implementar lógica para obter nome de usuário que fez a operação para guardar em banco de dados
-                
-            return ResponseHelper.CreateSuccessResponse("", AvaliacaoResponseMessages.SuccessRequestMessages.GENERIC);
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(AvaliacaoResponseMessages.ErrorRequestMessages.GENERIC + ex);
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message + ex);
         }
     }
 
-    public IActionResult GetAllAvaliacoes()
+    public async Task<IActionResult> GetAllAvaliacoes()
     {
         try
         {
-            var avaliacoes = _avaliacaoRepository.GetAllAvaliacoes().Result;
+            var avaliacoes = await _avaliacaoRepository.GetAllAvaliacoes();
 
-            if (avaliacoes.Count == 0) return ResponseHelper.CreateBadRequestResponse(
-                AvaliacaoResponseMessages.BadRequestMessages.NONE_FOUND);
+            if (avaliacoes.Count == 0) return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
 
-            return ResponseHelper.CreateSuccessResponse(new { Avaliacoes = avaliacoes }, 
-                AvaliacaoResponseMessages.SuccessRequestMessages.GENERIC);
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { avaliacoes = avaliacoes}));
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(AvaliacaoResponseMessages.ErrorRequestMessages.GENERIC + ex);
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message + ex);
         }
     }
-
-    public IActionResult GetAvaliacoesProductById(int productId)
+    
+    
+    public async Task<IActionResult> GetAvaliacaoById(int id)
     {
         try
         {
-            var avaliacoes = _avaliacaoRepository.GetAvaliacoesByProductId(productId).Result;
+            var avaliacao = await _avaliacaoRepository.GetAvaliacaoById(id);
+
+                
+            if (avaliacao == null) 
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { avaliacao = avaliacao}));
+        }
+        catch (Exception ex)
+        {
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message + ex);
+        }
+    }
+    
+    
+
+    public async Task<IActionResult> GetAvaliacoesByProductId(Guid produtoId)
+    {
+        try
+        {
+            var avaliacoes = await _avaliacaoRepository.GetAvaliacoesByProductId(produtoId);
 
             if (avaliacoes.Count == 0) 
-                return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequestMessages.NONE_FOUND);
-        
-            return ResponseHelper.CreateSuccessResponse(new { Avaliacoes = avaliacoes }, 
-                AvaliacaoResponseMessages.SuccessRequestMessages.GENERIC);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { avaliacoes = avaliacoes}));
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(AvaliacaoResponseMessages.SuccessRequestMessages.GENERIC + ex);
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message + ex);
         }
     }
 
-    public IActionResult GetAvaliacoesUserById(int userId)
+    public async Task<IActionResult> GetAvaliacoesByUserId(int usuarioId)
     {
         try
         {
             
-            var avaliacoes = _avaliacaoRepository.GetAvaliacoesByUserId(userId).Result;
+            var avaliacoes = await _avaliacaoRepository.GetAvaliacoesByUserId(usuarioId);
 
             if (avaliacoes.Count == 0)
-                return ResponseHelper.CreateBadRequestResponse(AvaliacaoResponseMessages.BadRequestMessages.NONE_FOUND);
-            return ResponseHelper.CreateSuccessResponse(new { Avaliacoes = avaliacoes },
-                AvaliacaoResponseMessages.SuccessRequestMessages.GENERIC);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { avaliacoes = avaliacoes}));
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(AvaliacaoResponseMessages.ErrorRequestMessages.GENERIC + ex);
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
         }
     }
+
+    public  async Task<IActionResult> DeleteAvaliacao(int id)
+    {
+        try
+        {
+            var avaliacao =  await _avaliacaoRepository.GetAvaliacaoById(id);
+            
+            if (avaliacao == null)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
+            }
+            _avaliacaoRepository.DeleteAvaliacao(id);
+
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
+        }
+        catch (Exception ex)
+        {
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message + ex);
+        }
+    }
+
+    public async Task<IActionResult> UpdateAvaliacao(int id, RequestUpdateAvaliacao avaliacao)
+    {
+        try
+        {
+            var avaliacaoQuery = await _avaliacaoRepository.GetAvaliacaoById(id);
+            if (avaliacaoQuery == null)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
+            }
+            _avaliacaoRepository.UpdateAvaliacao(id, avaliacao);
+
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { avaliacao = avaliacao}));
+        }
+        catch (Exception ex)
+        {
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
+        }
+    }
+
 }

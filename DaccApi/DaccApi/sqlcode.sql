@@ -320,7 +320,7 @@ CREATE TABLE avaliacao
     nota           INT CHECK (nota BETWEEN 1 AND 5),
     comentario     TEXT,
     ativo          BOOLEAN DEFAULT TRUE,
-    data_avaliacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -493,7 +493,9 @@ VALUES
 
     -- Permissões de Avaliações de Produtos
     ('reviews.view', 'Visualizar avaliações de um produto'),
-    ('reviews.create', 'Criar uma avaliação para um produto');
+    ('reviews.create', 'Criar uma avaliação para um produto'),
+    ('reviews.update','Atualizar uma avaliação para um produto'),
+    ('reviews.delete', 'Deletar uma avaliação para um produto');
 
 -- Atribuindo Permissões aos Roles (Tipos de Usuário)
 DELETE FROM role_permissoes;

@@ -5,8 +5,15 @@ namespace DaccApi.Services.Avaliacao;
 
 public interface IAvaliacaoService
 {
-    public IActionResult CreateAvaliacao(RequestAvaliacao requestAvaliacao);
-    public IActionResult GetAllAvaliacoes();
-    public IActionResult GetAvaliacoesProductById(int productId);
-    public IActionResult GetAvaliacoesUserById(int userId);
+    public Task<IActionResult> CreateAvaliacao(RequestCreateAvaliacao avaliacao);
+    public Task<IActionResult> GetAllAvaliacoes();
+    
+    public Task<IActionResult> GetAvaliacaoById(int id);
+    
+    public Task<IActionResult> GetAvaliacoesByProductId(Guid produtoId);
+    public Task<IActionResult> GetAvaliacoesByUserId(int usuarioId);
+
+    public Task<IActionResult> DeleteAvaliacao(int id);
+    
+    public Task<IActionResult> UpdateAvaliacao(int usuarioId,  RequestUpdateAvaliacao avaliacao);
 }

@@ -36,6 +36,11 @@ namespace DaccApi.Middleware
 
         private static async Task HandleExceptionAsync(HttpContext httpContext, Exception ex)
         {
+            if (httpContext.Response.HasStarted)
+            {
+                return;
+            }
+            
             var responseError = ResponseError.INTERNAL_SERVER_ERROR;
             var message = ex.Message;
             await WriteResponseErrorAsync(httpContext, HttpStatusCode.InternalServerError, responseError, message);
