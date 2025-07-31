@@ -98,16 +98,11 @@ public class NoticiasServices : INoticiasServices
         try
         {
             var noticiaQuery = await _noticiasRepository.GetNoticiaById(id);
-            if (noticiaQuery == null ||
-                String.IsNullOrWhiteSpace(noticia.Categoria) ||
-                String.IsNullOrWhiteSpace(noticia.Descricao) || 
-                String.IsNullOrWhiteSpace(noticia.Titulo) ||
-                String.IsNullOrWhiteSpace(noticia.Conteudo)
-                )
+            if (noticiaQuery == null)
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
-            _noticiasRepository.UpdateNoticia(id, noticia);
+            await _noticiasRepository.UpdateNoticia(id, noticia);
 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { noticias = noticia}));
         }
