@@ -29,7 +29,7 @@ namespace DaccApi.Services.Diretores
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
             }
             
         }
@@ -55,7 +55,7 @@ namespace DaccApi.Services.Diretores
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.StackTrace);
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
             }
         }
 
@@ -76,7 +76,7 @@ namespace DaccApi.Services.Diretores
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
             }
         }
 
@@ -95,7 +95,7 @@ namespace DaccApi.Services.Diretores
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.StackTrace);
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
             }
         }
 
@@ -114,7 +114,7 @@ namespace DaccApi.Services.Diretores
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
             }
         }
 

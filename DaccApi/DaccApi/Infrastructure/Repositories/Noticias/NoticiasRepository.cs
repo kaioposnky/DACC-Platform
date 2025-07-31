@@ -29,7 +29,7 @@ public class NoticiasRepository : INoticiasRepository
         }
         catch (Exception ex)
         {
-            throw new Exception("Erro ao obter todas as notícias no banco de dados.");
+            throw new Exception("Erro ao obter todas as notícias no banco de dados." + ex.Message);
         }
     }
 
@@ -50,7 +50,7 @@ public class NoticiasRepository : INoticiasRepository
         }
         catch (Exception ex)
         {
-            throw new Exception("Erro ao criar notícia.");
+            throw new Exception("Erro ao criar notícia." + ex.Message);
         }
     }
 
@@ -65,7 +65,7 @@ public class NoticiasRepository : INoticiasRepository
         }
         catch (Exception ex)
         {
-            throw new Exception("Erro ao deletar notícia.");
+            throw new Exception("Erro ao deletar notícia." + ex.Message);
         }
     }
     
@@ -85,7 +85,7 @@ public class NoticiasRepository : INoticiasRepository
         }
         catch (Exception ex)
         {
-            throw new Exception("Erro ao obter a notícia.");
+            throw new Exception("Erro ao obter a notícia." + ex.Message);
         }
     }
 
@@ -107,7 +107,7 @@ public class NoticiasRepository : INoticiasRepository
         }
         catch (Exception ex)
         {
-            throw new Exception("Erro ao obter a notícia especificada no banco de dados.");
+            throw new Exception("Erro ao obter a notícia especificada no banco de dados." + ex.Message);
         };
     }
  }

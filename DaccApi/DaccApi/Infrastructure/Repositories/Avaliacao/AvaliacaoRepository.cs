@@ -96,7 +96,7 @@ public class AvaliacaoRepository : IAvaliacaoRepository
         }
         catch (Exception ex)
         {
-            throw new Exception("Erro ao obter avaliacao pelo Id do usuário no banco de dados!"+ ex.Message + ex);
+            throw new Exception("Erro ao obter avaliacao pelo Id do usuário no banco de dados!"+ ex.Message);
         }
     }
     

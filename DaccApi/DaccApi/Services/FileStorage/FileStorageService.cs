@@ -54,7 +54,7 @@ namespace DaccApi.Services.FileStorage
                 }
                 catch (Exception ex)
                 {
-                    throw new ArgumentException("Formato de imagem inválido!");
+                    throw new ArgumentException("Formato de imagem inválido!",ex.Message);
                 }
             }
 

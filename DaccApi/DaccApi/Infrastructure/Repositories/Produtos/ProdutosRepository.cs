@@ -71,11 +71,11 @@ namespace DaccApi.Infrastructure.Repositories.Products
                 Console.WriteLine(ex.ConstraintName);
                 Console.WriteLine(ex.Detail);
                 Console.WriteLine(ex.TableName);
-                throw new Exception("Erro ao buscar produtos no banco de dados.",ex);
+                throw new Exception("Erro ao buscar produtos no banco de dados." + ex.Message);
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao buscar produtos no banco de dados.", ex);
+                throw new Exception("Erro ao buscar produtos no banco de dados." + ex.Message);
             }
         }
         
@@ -118,7 +118,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao adicionar produto no banco de dados!", ex);
+                throw new Exception("Erro ao adicionar produto no banco de dados!" + ex.Message);
             }
         }
 
@@ -160,7 +160,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao criar variação do produto no banco de dados!", ex);
+                throw new Exception("Erro ao criar variação do produto no banco de dados!" + ex.Message);
             }
         }
 
@@ -173,7 +173,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao adicionar imagens ao produto no banco de dados!", ex); 
+                throw new Exception("Erro ao adicionar imagens ao produto no banco de dados!" + ex.Message); 
             }
         }
         
@@ -188,7 +188,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao remover produto no banco de dados!", ex);
+                throw new Exception("Erro ao remover produto no banco de dados!" + ex.Message);
             }
         }
 

@@ -55,7 +55,7 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao criar projeto.",ex);
+                throw new Exception("Erro ao criar projeto." + ex.Message);
             }
         }
 
@@ -69,7 +69,7 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao deletar projeto.");
+                throw new Exception("Erro ao deletar projeto." + ex.Message);
             }
         }
 
@@ -94,7 +94,7 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao atualizar projeto.");
+                throw new Exception("Erro ao atualizar projeto." + ex.Message);
             };
         }
         

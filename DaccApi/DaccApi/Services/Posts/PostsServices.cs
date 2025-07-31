@@ -28,7 +28,7 @@ namespace DaccApi.Services.Posts
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
         }
     }
     
@@ -49,7 +49,7 @@ namespace DaccApi.Services.Posts
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
         }
     }
 
@@ -69,7 +69,7 @@ namespace DaccApi.Services.Posts
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
         }
     }
 
@@ -86,7 +86,7 @@ namespace DaccApi.Services.Posts
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
         }
     }
     
@@ -117,7 +117,7 @@ namespace DaccApi.Services.Posts
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
         }
     }
 

@@ -33,7 +33,7 @@ namespace DaccApi.Services.User
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
             }
         }
 
@@ -66,7 +66,7 @@ namespace DaccApi.Services.User
             catch (Exception ex)
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, 
-                    "Erro ao autalizar usuário!" + ex.StackTrace);
+                    "Erro ao autalizar usuário!" + ex.Message);
             }
         }
 
@@ -86,7 +86,7 @@ namespace DaccApi.Services.User
             catch (Exception ex)
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,
-                    "Erro ao deletar usuário!");
+                    "Erro ao deletar usuário!" + ex.Message);
             }
         }
         
@@ -103,7 +103,7 @@ namespace DaccApi.Services.User
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse("Erro ao obter usuário pelo Id! " + ex);
+                return ResponseHelper.CreateErrorResponse("Erro ao obter usuário pelo Id! " + ex.Message);
             }
         }
 
@@ -126,7 +126,7 @@ namespace DaccApi.Services.User
                 return ResponseHelper.CreateSuccessResponse(new { user = usuario.ToResponse() }, "Usuário obtido com sucesso!");
             } catch(Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse("Erro ao obter usuário pelo Email! " + ex);
+                return ResponseHelper.CreateErrorResponse("Erro ao obter usuário pelo Email! " + ex.Message);
             }
             
         }

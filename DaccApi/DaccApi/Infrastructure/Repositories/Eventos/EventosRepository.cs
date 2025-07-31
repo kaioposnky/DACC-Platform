@@ -26,7 +26,7 @@ namespace DaccApi.Infrastructure.Repositories.Eventos
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao obter todos os eventos");
+                throw new Exception("Erro ao obter todos os eventos" + ex.Message);
             }
         }
 
@@ -46,7 +46,7 @@ namespace DaccApi.Infrastructure.Repositories.Eventos
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao obter evento.");
+                throw new Exception("Erro ao obter evento." + ex.Message);
             }
         }
 
@@ -71,7 +71,7 @@ namespace DaccApi.Infrastructure.Repositories.Eventos
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao criar evento." + ex.Message, ex);
+                throw new Exception("Erro ao criar evento." + ex.Message);
             }
         }
 
@@ -85,7 +85,7 @@ namespace DaccApi.Infrastructure.Repositories.Eventos
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao deletar evento.");
+                throw new Exception("Erro ao deletar evento." + ex.Message);
             }
         }
 
@@ -111,7 +111,7 @@ namespace DaccApi.Infrastructure.Repositories.Eventos
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao atualizar evento." + ex.Message, ex);
+                throw new Exception("Erro ao atualizar evento." + ex.Message);
             }; 
         }
 

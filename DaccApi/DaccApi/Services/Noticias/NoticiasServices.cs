@@ -29,7 +29,7 @@ public class NoticiasServices : INoticiasServices
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.StackTrace);
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
         }
     }
 
@@ -50,7 +50,7 @@ public class NoticiasServices : INoticiasServices
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
         }
     }
 
@@ -71,7 +71,7 @@ public class NoticiasServices : INoticiasServices
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
         }
     }
 
@@ -89,7 +89,7 @@ public class NoticiasServices : INoticiasServices
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.StackTrace);
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
         }
     }
 
@@ -113,7 +113,7 @@ public class NoticiasServices : INoticiasServices
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
         }
     }
  }

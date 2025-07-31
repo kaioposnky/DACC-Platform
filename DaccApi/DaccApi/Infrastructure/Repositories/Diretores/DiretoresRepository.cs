@@ -25,7 +25,7 @@ namespace DaccApi.Infrastructure.Repositories.Diretores
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao obter todos os diretores");
+                throw new Exception("Erro ao obter todos os diretores" + ex.Message);
             }
         }
 
@@ -51,7 +51,7 @@ namespace DaccApi.Infrastructure.Repositories.Diretores
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao criar diretor.");
+                throw new Exception("Erro ao criar diretor." + ex.Message);
             }
         }
 
@@ -66,7 +66,7 @@ namespace DaccApi.Infrastructure.Repositories.Diretores
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao deletar diretor.");
+                throw new Exception("Erro ao deletar diretor." + ex.Message);
             }
         }
 
@@ -92,7 +92,7 @@ namespace DaccApi.Infrastructure.Repositories.Diretores
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao atualizar diretor.");
+                throw new Exception("Erro ao atualizar diretor." + ex.Message);
             };
         }
 
@@ -112,7 +112,7 @@ namespace DaccApi.Infrastructure.Repositories.Diretores
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao obter diretor.");
+                throw new Exception("Erro ao obter diretor." + ex.Message);
             }
         }
     }

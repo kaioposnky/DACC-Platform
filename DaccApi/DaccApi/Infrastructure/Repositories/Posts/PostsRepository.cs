@@ -26,7 +26,7 @@ namespace DaccApi.Infrastructure.Repositories.Posts
         }
         catch (Exception ex)
         {
-            throw new Exception("Erro ao obter todas os Posts no banco de dados.");
+            throw new Exception("Erro ao obter todas os Posts no banco de dados." + ex.Message);
         }
   
     }
@@ -48,7 +48,7 @@ namespace DaccApi.Infrastructure.Repositories.Posts
         }
         catch (Exception ex)
         {
-            throw new Exception("Erro ao criar post.");
+            throw new Exception("Erro ao criar post." + ex.Message);
         }
     }
 
@@ -63,7 +63,7 @@ namespace DaccApi.Infrastructure.Repositories.Posts
         }
         catch (Exception ex)
         {
-            throw new Exception("Erro ao deletar post.");
+            throw new Exception("Erro ao deletar post." + ex.Message);
         }
     }
     
@@ -80,7 +80,7 @@ namespace DaccApi.Infrastructure.Repositories.Posts
         }
         catch (Exception ex)
         {
-            throw new Exception("Erro ao obter post especificado no banco de dados.");
+            throw new Exception("Erro ao obter post especificado no banco de dados." + ex.Message);
         }
     }
     
@@ -102,7 +102,7 @@ namespace DaccApi.Infrastructure.Repositories.Posts
         }
         catch (Exception ex)
         {
-            throw new Exception("Erro ao atualizar post no banco de dados.");
+            throw new Exception("Erro ao atualizar post no banco de dados." + ex.Message);
         };
     }
 }
