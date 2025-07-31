@@ -30,7 +30,7 @@ CREATE TABLE tipos_evento
 DROP TABLE IF EXISTS tipos_progresso CASCADE;
 CREATE TABLE tipos_progresso
 (
-    id   SERIAL PRIMARY KEY,
+    id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome VARCHAR(50) NOT NULL UNIQUE
 );
 
@@ -39,7 +39,7 @@ CREATE TABLE tipos_progresso
 DROP TABLE IF EXISTS categorias_noticia CASCADE;
 CREATE TABLE categorias_noticia
 (
-    id   SERIAL PRIMARY KEY,
+    id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome VARCHAR(50) NOT NULL UNIQUE
 );
 
@@ -174,7 +174,7 @@ CREATE TABLE evento
 DROP TABLE IF EXISTS diretoria CASCADE;
 CREATE TABLE diretoria
 (
-    id        SERIAL PRIMARY KEY,
+    id        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome      VARCHAR(100) UNIQUE NOT NULL,
     descricao TEXT
 );
@@ -342,7 +342,7 @@ CREATE TABLE avaliacao
 DROP TABLE IF EXISTS noticia CASCADE;
 CREATE TABLE noticia
 (
-    id               SERIAL PRIMARY KEY,
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     titulo           VARCHAR(200) NOT NULL,
     descricao        VARCHAR(255) NOT NULL,
     conteudo         TEXT,
@@ -358,7 +358,7 @@ CREATE TABLE noticia
 DROP TABLE IF EXISTS projeto CASCADE;
 CREATE TABLE projeto
 (
-    id               SERIAL PRIMARY KEY,
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     titulo           VARCHAR(200) NOT NULL,
     descricao        TEXT         NOT NULL,
     imagem_url       VARCHAR(255) NOT NULL,

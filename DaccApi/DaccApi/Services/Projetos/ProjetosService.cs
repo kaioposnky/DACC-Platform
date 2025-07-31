@@ -33,7 +33,7 @@ namespace DaccApi.Services.Projetos
             
         }
 
-        public async Task<IActionResult> GetProjetoById(int id)
+        public async Task<IActionResult> GetProjetoById(Guid id)
         {
             try
             {
@@ -75,7 +75,7 @@ namespace DaccApi.Services.Projetos
             }
         }
 
-        public async Task<IActionResult> DeleteProjeto(int id)
+        public async Task<IActionResult> DeleteProjeto(Guid id)
         {
             try
             {
@@ -95,7 +95,7 @@ namespace DaccApi.Services.Projetos
             }
         }
 
-        public async Task<IActionResult> UpdateProjeto(int id, RequestProjeto projeto)
+        public async Task<IActionResult> UpdateProjeto(Guid id, RequestProjeto projeto)
         {
             try
             {

@@ -7,8 +7,8 @@ public interface INoticiasServices
 {
     public Task<IActionResult> GetAllNoticias();
     public Task<IActionResult> CreateNoticia(RequestNoticia noticia);
-    public Task<IActionResult> DeleteNoticia(int id);
-    public Task<IActionResult> GetNoticiaById(int id);
+    public Task<IActionResult> DeleteNoticia(Guid id);
+    public Task<IActionResult> GetNoticiaById(Guid id);
     
-    public Task<IActionResult> UpdateNoticia(int id, RequestNoticia noticia);
+    public Task<IActionResult> UpdateNoticia(Guid id, RequestNoticia noticia);
 }

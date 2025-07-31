@@ -2,11 +2,27 @@
 <queries>
 
 	<query name="GetAllProjetos">
-		SELECT * FROM projeto
+		SELECT 
+			id as Id,
+			titulo as Titulo,
+			descricao as Descricao,
+			imagem_url as ImagemUrl,
+			status as Status,
+			diretoria as Diretoria,
+			tags as Tags		
+		FROM projeto
 	</query>
 	
 	<query name="GetProjetoById">
-		SELECT * FROM projeto WHERE id=@id
+		SELECT
+			id as Id,
+			titulo as Titulo,
+			descricao as Descricao,
+			imagem_url as ImagemUrl,
+			status as Status,
+			diretoria as Diretoria,
+			tags as Tags
+		FROM projeto WHERE id=@id
 		
 	</query>
 
