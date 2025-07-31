@@ -234,7 +234,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
             catch (Exception ex)
             {
-                throw new Exception($"Erro ao obter/criar subcategoria de produto '{subCategoriaProduto}'", ex);
+                throw new Exception($"Erro ao obter/criar subcategoria de produto '{subCategoriaProduto}'" + ex.Message);
             }
         }
 

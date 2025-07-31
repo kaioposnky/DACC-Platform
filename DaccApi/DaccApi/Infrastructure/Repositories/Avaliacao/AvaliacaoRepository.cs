@@ -21,7 +21,7 @@ public class AvaliacaoRepository : IAvaliacaoRepository
         }
         catch (Exception ex)
         {
-            throw new Exception("Erro ao adicionar avaliação do produto no banco de dados");
+            throw new Exception("Erro ao adicionar avaliação do produto no banco de dados" + ex.Message);
         }
     }
     
@@ -38,7 +38,7 @@ public class AvaliacaoRepository : IAvaliacaoRepository
         }
         catch (Exception ex)
         {
-            throw new Exception("Erro ao obter todas as avaliações no banco de dados!");
+            throw new Exception("Erro ao obter todas as avaliações no banco de dados!" + ex.Message);
         }
     }
 

@@ -119,7 +119,7 @@ namespace DaccApi.Infrastructure.Repositories.User
                 return usuario;
             } catch(Exception ex)
             {
-                throw new Exception("Erro ao obter usuário pelo Email na banco de dados!");
+                throw new Exception("Erro ao obter usuário pelo Email na banco de dados!" + ex.Message);
             }
 
         }
@@ -145,7 +145,7 @@ namespace DaccApi.Infrastructure.Repositories.User
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao atualizar informações do usuário!", ex);
+                throw new Exception("Erro ao atualizar informações do usuário!" + ex.Message);
             }
         }
 
@@ -161,7 +161,7 @@ namespace DaccApi.Infrastructure.Repositories.User
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao deletar usuário!", ex);
+                throw new Exception("Erro ao deletar usuário!"+ ex.Message);
             }
         }
         
@@ -182,7 +182,7 @@ namespace DaccApi.Infrastructure.Repositories.User
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao obter tokens do usuário!");
+                throw new Exception("Erro ao obter tokens do usuário!" + ex.Message);
             }
         }
 
@@ -206,11 +206,11 @@ namespace DaccApi.Infrastructure.Repositories.User
                 Console.WriteLine(ex.Detail);
                 Console.WriteLine(ex.Message);
                 Console.WriteLine(ex.MessageText);
-                throw new Exception("Erro ao atualizar tokens do usuário!" + ex.StackTrace);
+                throw new Exception("Erro ao atualizar tokens do usuário!" + ex.Message);
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao atualizar tokens do usuário!" + ex.StackTrace);
+                throw new Exception("Erro ao atualizar tokens do usuário!" + ex.Message);
             }
         }
     }
