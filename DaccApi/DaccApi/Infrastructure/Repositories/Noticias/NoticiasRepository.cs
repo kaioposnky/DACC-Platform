@@ -100,7 +100,8 @@ public class NoticiasRepository : INoticiasRepository
                 Titulo = noticia.Titulo,
                 Conteudo = noticia.Conteudo,
                 Categoria = noticia.Categoria,
-                Descricao = noticia.Descricao
+                Descricao = noticia.Descricao,
+                ImagemUrl = noticia.ImagemUrl
             };
             await _repositoryDapper.ExecuteAsync(sql, param);
             
