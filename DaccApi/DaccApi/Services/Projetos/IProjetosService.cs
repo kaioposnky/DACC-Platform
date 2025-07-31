@@ -6,13 +6,13 @@ namespace DaccApi.Services.Projetos
     public interface IProjetosService
     {
         public Task<IActionResult> GetAllProjetos();
-        public Task<IActionResult> GetProjetoById(int id);
+        public Task<IActionResult> GetProjetoById(Guid id);
         
         public Task<IActionResult> CreateProjeto(RequestProjeto projeto);
 
-        public Task<IActionResult> DeleteProjeto(int id);
+        public Task<IActionResult> DeleteProjeto(Guid id);
         
-        public Task<IActionResult> UpdateProjeto(int id, RequestProjeto projeto);
+        public Task<IActionResult> UpdateProjeto(Guid id, RequestProjeto projeto);
 
     }
 }

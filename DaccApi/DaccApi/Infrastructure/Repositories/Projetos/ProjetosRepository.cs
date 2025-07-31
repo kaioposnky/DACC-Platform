@@ -22,11 +22,11 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
             return projetos;
         }
 
-        public async Task<Projeto?> GetProjetoById(int id)
+        public async Task<Projeto?> GetProjetoById(Guid id)
         {
             var sql = _repositoryDapper.GetQueryNamed("GetProjetoById");
             
-            var queryResult = await _repositoryDapper.QueryAsync<Projeto>(sql, new { Id = id });
+            var queryResult = await _repositoryDapper.QueryAsync<Projeto>(sql, new { id = id });
             
             var projeto = queryResult.FirstOrDefault();
             return projeto;
@@ -59,7 +59,7 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
             }
         }
 
-        public async Task DeleteProjeto(int id)
+        public async Task DeleteProjeto(Guid id)
         {
             try
             {
@@ -73,7 +73,7 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
             }
         }
 
-        public async Task UpdateProjeto(int id, RequestProjeto projeto)
+        public async Task UpdateProjeto(Guid id, RequestProjeto projeto)
         {
             try
             {
