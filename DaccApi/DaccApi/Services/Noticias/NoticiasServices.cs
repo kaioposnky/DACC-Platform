@@ -54,7 +54,7 @@ public class NoticiasServices : INoticiasServices
         }
     }
 
-    public async Task<IActionResult> DeleteNoticia(int id)
+    public async Task<IActionResult> DeleteNoticia(Guid id)
     {
 
         try
@@ -76,7 +76,7 @@ public class NoticiasServices : INoticiasServices
     }
 
 
-    public async Task<IActionResult> GetNoticiaById(int id)
+    public async Task<IActionResult> GetNoticiaById(Guid id)
     {
         try
         {
@@ -93,7 +93,7 @@ public class NoticiasServices : INoticiasServices
         }
     }
 
-    public async Task<IActionResult> UpdateNoticia(int id,RequestNoticia noticia)
+    public async Task<IActionResult> UpdateNoticia(Guid id,RequestNoticia noticia)
     {
         try
         {

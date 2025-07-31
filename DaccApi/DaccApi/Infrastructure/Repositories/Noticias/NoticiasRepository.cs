@@ -54,7 +54,7 @@ public class NoticiasRepository : INoticiasRepository
         }
     }
 
-    public async Task DeleteNoticia(int id)
+    public async Task DeleteNoticia(Guid id)
     {
         try
         {
@@ -69,7 +69,7 @@ public class NoticiasRepository : INoticiasRepository
         }
     }
     
-    public async Task<Noticia?> GetNoticiaById(int id)
+    public async Task<Noticia?> GetNoticiaById(Guid id)
     {
         try
         {
@@ -89,7 +89,7 @@ public class NoticiasRepository : INoticiasRepository
         }
     }
 
-    public async Task UpdateNoticia(int id, RequestNoticia noticia)
+    public async Task UpdateNoticia(Guid id, RequestNoticia noticia)
     {
         try
         {

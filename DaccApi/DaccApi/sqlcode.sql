@@ -39,7 +39,7 @@ CREATE TABLE tipos_progresso
 DROP TABLE IF EXISTS categorias_noticia CASCADE;
 CREATE TABLE categorias_noticia
 (
-    id   SERIAL PRIMARY KEY,
+    id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome VARCHAR(50) NOT NULL UNIQUE
 );
 
@@ -342,7 +342,7 @@ CREATE TABLE avaliacao
 DROP TABLE IF EXISTS noticia CASCADE;
 CREATE TABLE noticia
 (
-    id               SERIAL PRIMARY KEY,
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     titulo           VARCHAR(200) NOT NULL,
     descricao        VARCHAR(255) NOT NULL,
     conteudo         TEXT,
