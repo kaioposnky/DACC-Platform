@@ -31,8 +31,8 @@ namespace DaccApi.Controllers.Diretores
             var response = await _diretoresService.GetAllDiretores();
             return response;
         }
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetDiretorById([FromRoute] int id)
+        [HttpGet("{id:Guid}")]
+        public async Task<IActionResult> GetDiretorById([FromRoute] Guid id)
         {
             var response = await _diretoresService.GetDiretorById(id);
             return response;
@@ -47,16 +47,16 @@ namespace DaccApi.Controllers.Diretores
         }
         
 
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> DeleteDiretor([FromRoute] int id)
+        [HttpDelete("{id:Guid}")]
+        public async Task<IActionResult> DeleteDiretor([FromRoute] Guid id)
         {
             var response = await _diretoresService.DeleteDiretor(id);
             return response;
         }
         
-        [HttpPatch("{id:int}")]
+        [HttpPatch("{id:Guid}")]
 
-        public async Task<IActionResult> UpdateDiretor([FromRoute] int id, [FromBody] RequestDiretor request)
+        public async Task<IActionResult> UpdateDiretor([FromRoute] Guid id, [FromBody] RequestDiretor request)
         {
             var response = await _diretoresService.UpdateDiretor(id, request);
             return response;

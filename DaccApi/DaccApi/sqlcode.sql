@@ -185,12 +185,12 @@ CREATE TABLE diretoria
 DROP TABLE IF EXISTS diretores CASCADE;
 CREATE TABLE diretores
 (
-    id            SERIAL PRIMARY KEY,
+    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome          VARCHAR(100) NOT NULL,
     descricao     TEXT         NOT NULL,
     imagem_url    VARCHAR(255),
     usuario_id    INT REFERENCES usuario (id),
-    diretoria_id  INT REFERENCES diretoria (id),
+    diretoria_id  UUID REFERENCES diretoria (id),
     email         VARCHAR(150) NOT NULL,
     github_link   VARCHAR(150) NOT NULL,
     linkedin_link VARCHAR(150) NOT NULL
