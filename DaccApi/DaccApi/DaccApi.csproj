@@ -6,6 +6,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<DocumentationFile>bin\Debug\net7.0\DaccApi.xml</DocumentationFile>
+		<UserSecretsId>de8bfb10-6285-4eb9-a739-042754207b33</UserSecretsId>
 		<!-- Ajuste o caminho conforme necessário -->
 	</PropertyGroup>
 
@@ -18,6 +19,7 @@
 		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.3.1" />
 		<PackageReference Include="NHibernate" Version="5.5.2" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.0" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.10" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.3.1" />
 	</ItemGroup>

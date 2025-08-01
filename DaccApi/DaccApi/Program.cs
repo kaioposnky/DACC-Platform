@@ -11,9 +11,30 @@ using System.Text;
 using System.Data;
 using Npgsql;
 using Microsoft.OpenApi.Models;
-using DaccApi;
+using DaccApi.Infrastructure.Authentication;
+using DaccApi.Infrastructure.Repositories.Avaliacao;
+using DaccApi.Infrastructure.Repositories.Carrinhos;
 using DaccApi.Services.Products;
 using DaccApi.Infrastructure.Repositories.Products;
+using DaccApi.Services.Diretores;
+using DaccApi.Infrastructure.Repositories.Diretores;
+using DaccApi.Infrastructure.Repositories.Noticias;
+using DaccApi.Infrastructure.Repositories.Permission;
+using DaccApi.Infrastructure.Repositories.Posts;
+using DaccApi.Infrastructure.Repositories.Projetos;
+using DaccApi.Infrastructure.Repositories.Eventos;
+using DaccApi.Middleware;
+using DaccApi.Services.Avaliacao;
+using DaccApi.Services.Eventos;
+using DaccApi.Services.FileStorage;
+using DaccApi.Services.Noticias;
+using DaccApi.Services.Permission;
+using DaccApi.Services.Posts;
+using DaccApi.Services.Projetos;
+using DaccApi.Services.Token;
+using Helpers.Response;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,11 +43,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true, 
-            ValidateAudience = true, 
-            ValidateLifetime = true, 
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key.secret)), 
-            ClockSkew = TimeSpan.Zero 
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+            ClockSkew = TimeSpan.Zero
         };
     });
 
@@ -64,9 +88,29 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var validationErrors = context.ModelState
+            .SelectMany(m => m.Value.Errors
+                .Select(e => new ResponseError.ValidationErrorDetail 
+                {
+                    Field = char.ToLowerInvariant(m.Key[0]) + m.Key[1..],
+                    Message = e.ErrorMessage
+                }))
+            .ToList();
+
+        var responseError = ResponseError.VALIDATION_ERROR.WithDetails(validationErrors.ToArray());
+        
+        var response = new ApiResponse(false, responseError.ErrorInfo);
+        return new ObjectResult(response) { StatusCode = responseError.StatusCode };
+    };
+});
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddMemoryCache();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -75,15 +119,35 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IDbConnection>(sp =>
     new NpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IRepositoryDapper, RepositoryDapper>();
-builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IArgon2Utility, Argon2Utility>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-//builder.Services.AddScoped<IProductService, ProductService>();
-//builder.Services.AddScoped<IProductRepository, ProductRepository>();
-
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IProdutosService, ProdutosService>();
+builder.Services.AddScoped<IProdutosRepository, ProdutosRepository>();
+builder.Services.AddScoped<IDiretoresService, DiretoresService>();
+builder.Services.AddScoped<IDiretoresRepository, DiretoresRepository>();
+builder.Services.AddScoped<IProjetosService, ProjetosService>();
+builder.Services.AddScoped<IProjetosRepository, ProjetosRepository>();
+builder.Services.AddScoped<IAvaliacaoService, AvaliacaoService>();
+builder.Services.AddScoped<IEventosService, EventosService>();
+builder.Services.AddScoped<IEventosRepository, EventosRepository>();
+builder.Services.AddScoped<IAvaliacaoRepository, AvaliacaoRepository>();
+builder.Services.AddScoped<INoticiasRepository, NoticiasRepository>();
+builder.Services.AddScoped<INoticiasServices, NoticiasServices>();
+builder.Services.AddScoped<ICarrinhoRepository, CarrinhoRepository>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
+builder.Services.AddScoped<IPermissionService, PermissionService>();
+builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
+builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+builder.Services.AddScoped<IPostsServices, PostsServices>();
+builder.Services.AddScoped<IPostsRepository, PostsRepository>();
+builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 
 var app = builder.Build();
+
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
@@ -93,8 +157,35 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthentication(); 
-app.UseAuthorization();  
+app.UseAuthorization();
+
+
+app.UseStaticFiles();
+
+var contentRootPath = builder.Environment.ContentRootPath;
+var webRootPath = Path.Combine(contentRootPath, "wwwroot");
+
+if (!Directory.Exists(webRootPath)){
+    Directory.CreateDirectory(webRootPath);
+}
+
+var uploadFilesSubfolder = builder.Configuration["UploadFilesSubfolder"]!;
+var uploadsPath = Path.Combine(app.Environment.WebRootPath, uploadFilesSubfolder);
+
+if (!Directory.Exists(uploadsPath))
+{
+    Directory.CreateDirectory(uploadsPath);
+}
+
+app.UseFileServer(new FileServerOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(uploadsPath),
+    RequestPath = $"/{uploadFilesSubfolder}",
+    EnableDirectoryBrowsing = false
+});
 
 app.MapControllers();
 
+
 app.Run();
+

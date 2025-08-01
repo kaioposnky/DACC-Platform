@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<queries>
+    <query name="GetAllNoticias">
+        SELECT 
+            id as Id,
+            titulo as Titulo,
+            descricao as Descricao,
+            conteudo as Conteudo,
+            imagem_url as ImagemUrl,
+            autor_id as AutorId,
+            categoria as Categoria,
+            data_atualizacao as DataAtualizacao,
+            data_publicacao as DataPublicacao
+        FROM noticia
+    </query>
+    <query name="CreateNoticia">
+        INSERT INTO noticia(titulo, descricao, conteudo)
+        VALUES (@Titulo, @Descricao, @Conteudo)
+    </query>
+    <query name="DeleteNoticia">
+        DELETE FROM noticia WHERE id=@id
+    </query>
+    <query name="GetNoticiaById">
+        SELECT
+            id as Id,
+            titulo as Titulo,
+            descricao as Descricao,
+            conteudo as Conteudo,
+            imagem_url as ImagemUrl,
+            autor_id as AutorId,
+            categoria as Categoria,
+            data_atualizacao as DataAtualizacao,
+            data_publicacao as DataPublicacao
+        FROM noticia WHERE id=@id
+    </query>
+    <query name="UpdateNoticia">
+        UPDATE noticia
+            SET titulo = @Titulo,
+                imagem_url = @ImagemUrl,
+                conteudo = @Conteudo,
+                descricao = @Descricao,
+                categoria = @Categoria,
+                data_atualizacao = CURRENT_TIMESTAMP
+            WHERE id=@id
+    </query>    
+</queries>

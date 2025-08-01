@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<queries>
+
+	<query name="GetAllProjetos">
+		SELECT 
+			id as Id,
+			titulo as Titulo,
+			descricao as Descricao,
+			imagem_url as ImagemUrl,
+			status as Status,
+			diretoria as Diretoria,
+			tags as Tags		
+		FROM projeto
+	</query>
+	
+	<query name="GetProjetoById">
+		SELECT
+			id as Id,
+			titulo as Titulo,
+			descricao as Descricao,
+			imagem_url as ImagemUrl,
+			status as Status,
+			diretoria as Diretoria,
+			tags as Tags
+		FROM projeto WHERE id=@id
+		
+	</query>
+
+	<query name="CreateProjeto">
+		INSERT INTO projeto
+			(titulo,
+			descricao,
+			imagem_url,
+			status,
+			diretoria,
+			tags
+			)
+		VALUES (@Titulo, @Descricao, @ImagemUrl, @Status, @Diretoria, @Tags)
+	</query>
+
+
+
+	<query name="DeleteProjeto">
+		DELETE FROM projeto WHERE id=@id
+	</query>
+
+	<query name="UpdateProjeto">
+		UPDATE projeto
+			SET titulo = @Titulo,
+				descricao = @Descricao,
+				imagem_url = @ImagemUrl,
+				status = @Status,
+				diretoria = @Diretoria,
+				tags = @Tags
+			WHERE id=@id
+	</query>
+</queries>

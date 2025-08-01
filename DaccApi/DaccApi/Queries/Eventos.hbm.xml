@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<queries>
+    <query name="GetAllEventos">
+        SELECT * FROM evento
+    </query>
+    <query name="CreateEvento">
+        INSERT INTO evento
+            (titulo,
+            descricao,
+            data,
+            tipo_evento,
+            autor_id,
+            texto_acao,
+            link_acao
+            )
+        VALUES (@Titulo, @Descricao,@Data,@TipoEvento,@AutorId, @TextoAcao, @LinkAcao)
+    </query>>
+    <query name="GetEventoById">
+        SELECT * FROM evento WHERE id=@id
+    </query>
+    <query name="DeleteEvento">
+        DELETE FROM evento WHERE id=@id
+    </query>
+    <query name="UpdateEvento">
+        UPDATE evento
+        SET titulo = @Titulo,
+            descricao = @Descricao,
+            data = @Data,
+            tipo_evento = @TipoEvento,
+            autor_id = @AutorId,
+            texto_acao = @TextoAcao,
+            link_acao = @LinkAcao
+        WHERE id=@id
+    </query>
+</queries>

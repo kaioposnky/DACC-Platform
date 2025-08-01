@@ -1,10 +1,12 @@
 ﻿using DaccApi.Model;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.Auth
 {
     public interface IAuthService
     {
-        string GenerateToken(object request);
-        bool ValidateCredentials(RequestUsuario request);
+        Task<IActionResult> LoginUser(RequestLogin request);
+        Task<IActionResult> RegisterUser(RequestUsuario request);
+        Task<IActionResult> RefreshUserToken(string refreshToken);
     }
 }
