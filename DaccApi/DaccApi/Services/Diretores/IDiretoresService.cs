@@ -9,11 +9,11 @@ namespace DaccApi.Services.Diretores
         
         public Task<IActionResult> CreateDiretor(RequestDiretor diretor);
         
-        public Task<IActionResult> DeleteDiretor(int id);
+        public Task<IActionResult> DeleteDiretor(Guid id);
         
-        public  Task <IActionResult> GetDiretorById(int id);
+        public  Task <IActionResult> GetDiretorById(Guid id);
         
-        public Task<IActionResult> UpdateDiretor(int id,RequestDiretor diretor);
+        public Task<IActionResult> UpdateDiretor(Guid id,RequestDiretor diretor);
 
     }
 }

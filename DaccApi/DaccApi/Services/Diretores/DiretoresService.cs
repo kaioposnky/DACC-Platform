@@ -59,7 +59,7 @@ namespace DaccApi.Services.Diretores
             }
         }
 
-        public async Task<IActionResult> DeleteDiretor(int id)
+        public async Task<IActionResult> DeleteDiretor(Guid id)
         {
 
             try
@@ -81,7 +81,7 @@ namespace DaccApi.Services.Diretores
         }
 
 
-        public async Task<IActionResult> GetDiretorById(int id)
+        public async Task<IActionResult> GetDiretorById(Guid id)
         {
             try
             {
@@ -99,7 +99,7 @@ namespace DaccApi.Services.Diretores
             }
         }
 
-        public async Task<IActionResult> UpdateDiretor(int id,RequestDiretor diretor)
+        public async Task<IActionResult> UpdateDiretor(Guid id,RequestDiretor diretor)
         {
             try
             {
