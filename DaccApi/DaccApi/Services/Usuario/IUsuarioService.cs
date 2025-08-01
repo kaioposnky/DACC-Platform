@@ -5,10 +5,10 @@ namespace DaccApi.Services.User
 {
     public interface IUsuarioService
     {
-        public IActionResult GetUserById(int id);
+        public IActionResult GetUserById(Guid id);
         public IActionResult GetUserByEmail(string email);
         Task<IActionResult> GetAllUsers();
-        Task<IActionResult> UpdateUser(int id, RequestUpdateUsuario newUserData);
-        Task<IActionResult> DeleteUser(int id);
+        Task<IActionResult> UpdateUser(Guid id, RequestUpdateUsuario newUserData);
+        Task<IActionResult> DeleteUser(Guid id);
     }
 }

@@ -39,13 +39,9 @@ namespace DaccApi.Infrastructure.Repositories.User
 
             try
             {
-                var userIdResult = await _repositoryDapper.QueryAsync<int>(insertSql, param);
+                var userIdResult = await _repositoryDapper.QueryAsync<Guid>(insertSql, param);
                 var userId = userIdResult.SingleOrDefault();
-
-                if (userId == 0) 
-                {
-                    throw new Exception("A inserção do usuário falhou ao retornar um ID.");
-                }
+                
 
             }
             catch (PostgresException ex)
@@ -84,7 +80,7 @@ namespace DaccApi.Infrastructure.Repositories.User
             }
         }
 
-        public async Task<Usuario?> GetUserById(int id)
+        public async Task<Usuario?> GetUserById(Guid id)
         {
             try
             {
@@ -149,7 +145,7 @@ namespace DaccApi.Infrastructure.Repositories.User
             }
         }
 
-        public async Task<int> DeleteUser(int id)
+        public async Task<int> DeleteUser(Guid id)
         {
             try
             {
@@ -165,7 +161,7 @@ namespace DaccApi.Infrastructure.Repositories.User
             }
         }
         
-        public async Task<TokensUsuario> GetUserTokens(int id)
+        public async Task<TokensUsuario> GetUserTokens(Guid id)
         {
             try
             {
@@ -186,7 +182,7 @@ namespace DaccApi.Infrastructure.Repositories.User
             }
         }
 
-        public async Task UpdateUserTokens(int id, TokensUsuario tokensUsuario)
+        public async Task UpdateUserTokens(Guid id, TokensUsuario tokensUsuario)
         {
             try
             {

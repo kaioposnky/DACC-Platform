@@ -159,7 +159,7 @@ namespace DaccApi.Services.Auth
         {
             try
             {
-                var userId = int.Parse(new JwtSecurityToken(refreshToken).Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value);
+                var userId = Guid.Parse(new JwtSecurityToken(refreshToken).Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value);
                 var user = await _usuarioRepository.GetUserById(userId);
                 
                 var validRefreshToken = await _tokenService.ValidateRefreshToken(userId, refreshToken);

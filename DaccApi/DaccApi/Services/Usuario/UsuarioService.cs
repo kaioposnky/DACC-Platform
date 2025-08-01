@@ -37,7 +37,7 @@ namespace DaccApi.Services.User
             }
         }
 
-        public async Task<IActionResult> UpdateUser(int id, RequestUpdateUsuario newUserData)
+        public async Task<IActionResult> UpdateUser(Guid id, RequestUpdateUsuario newUserData)
         {
             try
             {
@@ -70,7 +70,7 @@ namespace DaccApi.Services.User
             }
         }
 
-        public async Task<IActionResult> DeleteUser(int id)
+        public async Task<IActionResult> DeleteUser(Guid id)
         {
             try
             {
@@ -90,7 +90,7 @@ namespace DaccApi.Services.User
             }
         }
         
-        public IActionResult GetUserById(int id)
+        public IActionResult GetUserById(Guid id)
         {
             try
             {

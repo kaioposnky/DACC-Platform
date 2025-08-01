@@ -3,7 +3,7 @@
 DROP TABLE IF EXISTS tipos_usuario CASCADE;
 CREATE TABLE tipos_usuario
 (
-    id   SERIAL PRIMARY KEY,
+    id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome VARCHAR(50) NOT NULL UNIQUE
 );
 
@@ -12,7 +12,7 @@ CREATE TABLE tipos_usuario
 DROP TABLE IF EXISTS tipos_anuncio CASCADE;
 CREATE TABLE tipos_anuncio
 (
-    id   SERIAL PRIMARY KEY,
+    id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome VARCHAR(50) NOT NULL UNIQUE
 );
 
@@ -48,7 +48,7 @@ CREATE TABLE categorias_noticia
 DROP TABLE IF EXISTS usuario CASCADE;
 CREATE TABLE usuario
 (
-    id                   SERIAL PRIMARY KEY,
+    id                   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome                 VARCHAR(100)        NOT NULL,
     sobrenome            VARCHAR(100)        NOT NULL,
     email                VARCHAR(150) UNIQUE NOT NULL,
@@ -69,10 +69,10 @@ CREATE TABLE usuario
 DROP TABLE IF EXISTS post CASCADE;
 CREATE TABLE post
 (
-    id               SERIAL PRIMARY KEY,
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     titulo           VARCHAR(50)    NOT NULL,
     conteudo         TEXT           NOT NULL,
-    autor_id         INT REFERENCES usuario (id),
+    autor_id         UUID REFERENCES usuario (id),
     tags             VARCHAR(255)[] NOT NULL,
     respondida       BOOLEAN        NOT NULL,
     visualizacoes    INT            NOT NULL,
@@ -85,8 +85,8 @@ CREATE TABLE post
 DROP TABLE IF EXISTS votacao_post CASCADE;
 CREATE TABLE votacao_post
 (
-    post_id    INT REFERENCES post (id),
-    usuario_id INT REFERENCES usuario (id),
+    post_id    UUID REFERENCES post (id),
+    usuario_id UUID REFERENCES usuario (id),
     voto       BOOLEAN NOT NULL,
     PRIMARY KEY (post_id, usuario_id)
 );
@@ -96,9 +96,9 @@ CREATE TABLE votacao_post
 DROP TABLE IF EXISTS comentario CASCADE;
 CREATE TABLE comentario
 (
-    id               SERIAL PRIMARY KEY,
-    post_id          INT REFERENCES post (id),
-    autor_id         INT REFERENCES usuario (id),
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    post_id          UUID REFERENCES post (id),
+    autor_id         UUID REFERENCES usuario (id),
     conteudo         TEXT      NOT NULL,
     aceito           BOOLEAN   NOT NULL,
     upvotes          INT       NOT NULL,
@@ -112,9 +112,9 @@ CREATE TABLE comentario
 DROP TABLE IF EXISTS comentarios_post CASCADE;
 CREATE TABLE comentarios_post
 (
-    id            SERIAL PRIMARY KEY,
-    post_id       INT REFERENCES post (id),
-    comentario_id INT REFERENCES comentario (id)
+    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    post_id       UUID REFERENCES post (id),
+    comentario_id UUID REFERENCES comentario (id)
 );
 
 -- Tabela: Anúncios
@@ -122,7 +122,7 @@ CREATE TABLE comentarios_post
 DROP TABLE IF EXISTS anuncio CASCADE;
 CREATE TABLE anuncio
 (
-    id                     SERIAL PRIMARY KEY,
+    id                     UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     titulo                 VARCHAR(50) NOT NULL,
     conteudo               TEXT        NOT NULL,
     tipo_anuncio           VARCHAR(50) REFERENCES tipos_anuncio (nome),
@@ -133,7 +133,7 @@ CREATE TABLE anuncio
     imagem_url             VARCHAR(255),
     imagem_alt             VARCHAR(100),
     ativo                  BOOLEAN     NOT NULL DEFAULT FALSE,
-    autor_id               INT REFERENCES usuario (id),
+    autor_id               UUID REFERENCES usuario (id),
     data_criacao           TIMESTAMP   NOT NULL,
     data_atualizacao       TIMESTAMP   NOT NULL
 );
@@ -143,8 +143,8 @@ CREATE TABLE anuncio
 DROP TABLE IF EXISTS anuncio_detalhe CASCADE;
 CREATE TABLE anuncio_detalhe
 (
-    id         SERIAL PRIMARY KEY,
-    anuncio_id INT REFERENCES anuncio (id),
+    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    anuncio_id UUID REFERENCES anuncio (id),
     ordem      INT DEFAULT 0,
     imagem_url VARCHAR(255),
     conteudo   VARCHAR(255),
@@ -161,7 +161,7 @@ CREATE TABLE evento
     descricao        TEXT        NOT NULL,
     data             TIMESTAMP   NOT NULL,
     tipo_evento      VARCHAR(50) REFERENCES tipos_evento (nome),
-    autor_id         INT REFERENCES usuario (id),
+    autor_id         UUID REFERENCES usuario (id),
     texto_acao       VARCHAR(20),
     link_acao        VARCHAR(255),
     data_criacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -189,7 +189,7 @@ CREATE TABLE diretores
     nome          VARCHAR(100) NOT NULL,
     descricao     TEXT         NOT NULL,
     imagem_url    VARCHAR(255),
-    usuario_id    INT REFERENCES usuario (id),
+    usuario_id    UUID REFERENCES usuario (id),
     diretoria_id  UUID REFERENCES diretoria (id),
     email         VARCHAR(150) NOT NULL,
     github_link   VARCHAR(150) NOT NULL,
@@ -201,7 +201,7 @@ CREATE TABLE diretores
 DROP TABLE IF EXISTS produto_cor CASCADE;
 CREATE TABLE produto_cor
 (
-    id   SERIAL PRIMARY KEY,
+    id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome VARCHAR(50) NOT NULL UNIQUE
 );
 
@@ -210,7 +210,7 @@ CREATE TABLE produto_cor
 DROP TABLE IF EXISTS produto_tamanho CASCADE;
 CREATE TABLE produto_tamanho
 (
-    id        SERIAL PRIMARY KEY,
+    id        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome      VARCHAR(10) NOT NULL UNIQUE,
     descricao VARCHAR(50)
 );
@@ -257,8 +257,8 @@ CREATE TABLE produto_variacao
 (
     id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     produto_id          UUID REFERENCES produto (id) ON DELETE CASCADE,
-    cor_id              INT REFERENCES produto_cor (id),
-    tamanho_id          INT REFERENCES produto_tamanho (id),
+    cor_id              UUID REFERENCES produto_cor (id),
+    tamanho_id          UUID REFERENCES produto_tamanho (id),
     estoque             INT            NOT NULL DEFAULT 0,
     sku                 VARCHAR(100) UNIQUE,
     ordem               INT          NOT NULL DEFAULT 0,
@@ -284,7 +284,7 @@ CREATE TABLE produto_imagem
 DROP TABLE IF EXISTS status_pedido CASCADE;
 CREATE TABLE status_pedido
 (
-    id   SERIAL PRIMARY KEY,
+    id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome VARCHAR(50) NOT NULL UNIQUE
 );
 
@@ -293,7 +293,7 @@ CREATE TABLE status_pedido
 DROP TABLE IF EXISTS metodo_pagamento CASCADE;
 CREATE TABLE metodo_pagamento
 (
-    id   SERIAL PRIMARY KEY,
+    id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome VARCHAR(50) NOT NULL UNIQUE
 );
 
@@ -302,8 +302,8 @@ CREATE TABLE metodo_pagamento
 DROP TABLE IF EXISTS pedido CASCADE;
 CREATE TABLE pedido
 (
-    id               SERIAL PRIMARY KEY,
-    usuario_id       INT REFERENCES usuario (id),
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    usuario_id       UUID REFERENCES usuario (id),
     data_pedido      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status_pedido    VARCHAR(50) REFERENCES status_pedido (nome),
     metodo_pagamento VARCHAR(50) REFERENCES metodo_pagamento (nome),
@@ -315,8 +315,8 @@ CREATE TABLE pedido
 DROP TABLE IF EXISTS item_pedido CASCADE;
 CREATE TABLE item_pedido
 (
-    id                  SERIAL PRIMARY KEY,
-    pedido_id           INT REFERENCES pedido (id) ON DELETE CASCADE,
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    pedido_id           UUID REFERENCES pedido (id) ON DELETE CASCADE,
     produto_variacao_id UUID REFERENCES produto_variacao (id), 
     quantidade          INT            NOT NULL,
     preco_unitario      NUMERIC(10, 2) NOT NULL
@@ -328,7 +328,7 @@ DROP TABLE IF EXISTS avaliacao CASCADE;
 CREATE TABLE avaliacao
 (
     id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    usuario_id       INT REFERENCES usuario (id),
+    usuario_id       UUID REFERENCES usuario (id),
     produto_id       UUID REFERENCES produto (id) ON DELETE CASCADE, 
     nota             INT CHECK (nota BETWEEN 1 AND 5),
     comentario       TEXT,
@@ -347,7 +347,7 @@ CREATE TABLE noticia
     descricao        VARCHAR(255) NOT NULL,
     conteudo         TEXT,
     imagem_url       VARCHAR(255),
-    autor_id         INT REFERENCES usuario (id),
+    autor_id         UUID REFERENCES usuario (id),
     categoria        VARCHAR(50) REFERENCES categorias_noticia (nome),
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_publicacao  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -374,7 +374,7 @@ CREATE TABLE projeto
 DROP TABLE IF EXISTS usuario_tokens CASCADE;
 CREATE TABLE usuario_tokens
 (
-    usuario_id    INT REFERENCES usuario (id),
+    usuario_id    UUID REFERENCES usuario (id),
     access_token  VARCHAR(10000) NOT NULL,
     refresh_token VARCHAR(10000) NOT NULL,
     UNIQUE (usuario_id)
@@ -385,7 +385,7 @@ CREATE TABLE usuario_tokens
 DROP TABLE IF EXISTS permissoes CASCADE;
 CREATE TABLE permissoes
 (
-    id        SERIAL PRIMARY KEY,
+    id        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome      VARCHAR(100) NOT NULL UNIQUE,
     descricao TEXT
 );
@@ -457,11 +457,11 @@ VALUES ('roupas'), ('outros');
 
 -- Subcategorias de Produtos
 INSERT INTO produto_subcategoria (nome, categoria_id)
-VALUES ( 'camisetas', 1),
-       ( 'moletom', 1),
-       ( 'canecas', 2),
-       ( 'adesivos', 2),
-       ( 'acessorios', 2);
+VALUES ( 'camisetas', 'cf65395f-0045-4209-a98c-d868a32b8ae9'),
+       ( 'moletom', 'cf65395f-0045-4209-a98c-d868a32b8ae9'),
+       ( 'canecas', '07f48467-7a28-4a34-8580-9242bf5b436a'),
+       ( 'adesivos', '07f48467-7a28-4a34-8580-9242bf5b436a'),
+       ( 'acessorios', '07f48467-7a28-4a34-8580-9242bf5b436a');
 
 -- Permissões
 INSERT INTO permissoes (nome, descricao)

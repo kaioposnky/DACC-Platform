@@ -90,7 +90,7 @@ public class AvaliacaoService : IAvaliacaoService
         }
     }
 
-    public async Task<IActionResult> GetAvaliacoesByUserId(int usuarioId)
+    public async Task<IActionResult> GetAvaliacoesByUserId(Guid usuarioId)
     {
         try
         {

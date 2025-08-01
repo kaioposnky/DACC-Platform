@@ -54,7 +54,7 @@ namespace DaccApi.Controllers.Avaliacao
 
         [HttpGet("users/{usuarioId:int}")]
         [HasPermission(AppPermissions.Reviews.View)]
-        public async Task<IActionResult> GetAvaliacoesByUserId([FromRoute] int usuarioId)
+        public async Task<IActionResult> GetAvaliacoesByUserId([FromRoute] Guid usuarioId)
         {
             var response = await _avaliacaoService.GetAvaliacoesByUserId(usuarioId);
             return response;

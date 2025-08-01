@@ -11,7 +11,7 @@ public interface IAvaliacaoService
     public Task<IActionResult> GetAvaliacaoById(Guid id);
     
     public Task<IActionResult> GetAvaliacoesByProductId(Guid produtoId);
-    public Task<IActionResult> GetAvaliacoesByUserId(int usuarioId);
+    public Task<IActionResult> GetAvaliacoesByUserId(Guid usuarioId);
 
     public Task<IActionResult> DeleteAvaliacao(Guid id);
     

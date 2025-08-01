@@ -8,7 +8,7 @@ public class RequestEvento
     
     public DateTime? Data { get; set; }
     public string? TipoEvento { get; set; }
-    public int? AutorId { get; set; }
+    public Guid? AutorId { get; set; }
     public string? TextoAcao { get; set; }
     public string? LinkAcao { get; set; }
 

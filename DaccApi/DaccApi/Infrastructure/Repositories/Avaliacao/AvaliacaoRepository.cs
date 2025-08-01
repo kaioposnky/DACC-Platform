@@ -82,7 +82,7 @@ public class AvaliacaoRepository : IAvaliacaoRepository
         
     }
 
-    public async Task<List<AvaliacaoProduto>> GetAvaliacoesByUserId(int usuarioId)
+    public async Task<List<AvaliacaoProduto>> GetAvaliacoesByUserId(Guid usuarioId)
     {
         try
         {
