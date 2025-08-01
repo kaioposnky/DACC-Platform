@@ -42,14 +42,14 @@ namespace DaccApi.Controllers.Eventos
         }
 
         [AllowAnonymous]
-        [HttpGet("{id:Guid}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetEventoById([FromRoute] Guid id)
         {
             var response = await _eventosService.GetEventoById(id);
             return response;
         }
 
-        [HttpDelete("{id:Guid}")]
+        [HttpDelete("{id:guid}")]
         [HasPermission(AppPermissions.Eventos.Delete)]
         public async Task<IActionResult> DeleteEvento([FromRoute] Guid id)
         {
@@ -57,7 +57,7 @@ namespace DaccApi.Controllers.Eventos
             return response;
         }
 
-        [HttpPatch("{id:Guid")]
+        [HttpPatch("{id:guid}")]
         [HasPermission(AppPermissions.Eventos.Update)]
         public async Task<IActionResult> UpdateEvento([FromRoute] Guid id,[FromBody] RequestEvento request)
         {
@@ -66,14 +66,14 @@ namespace DaccApi.Controllers.Eventos
         }
         
 
-        [HttpPost("{id:Guid}/register")]
+        [HttpPost("{id:guid}/register")]
         [HasPermission(AppPermissions.Eventos.Register)]
         public async Task<IActionResult> RegisterEvento([FromRoute] Guid id)
         {
             throw new NotImplementedException();
         }
         
-        [HttpDelete("{id:Guid}/register")]
+        [HttpDelete("{id:guid}/register")]
         [HasPermission(AppPermissions.Eventos.Register)]
         public async Task<IActionResult> UnregisterEvento([FromRoute] Guid id)
         {

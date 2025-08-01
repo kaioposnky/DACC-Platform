@@ -42,7 +42,7 @@ public class AvaliacaoRepository : IAvaliacaoRepository
         }
     }
 
-    public async Task<AvaliacaoProduto?> GetAvaliacaoById(int id)
+    public async Task<AvaliacaoProduto?> GetAvaliacaoById(Guid id)
     {
         try
         {
@@ -100,7 +100,7 @@ public class AvaliacaoRepository : IAvaliacaoRepository
         }
     }
     
-    public async Task DeleteAvaliacao(int id)
+    public async Task DeleteAvaliacao(Guid id)
     {
         try
         {
@@ -116,7 +116,7 @@ public class AvaliacaoRepository : IAvaliacaoRepository
     }
 
 
-    public async Task UpdateAvaliacao(int id, RequestUpdateAvaliacao avaliacao)
+    public async Task UpdateAvaliacao(Guid id, RequestUpdateAvaliacao avaliacao)
     {
         try
         {

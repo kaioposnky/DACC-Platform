@@ -28,9 +28,9 @@ namespace DaccApi.Controllers.Avaliacao
             return response;
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:guid}")]
         [HasPermission(AppPermissions.Reviews.View)]
-        public async Task<IActionResult> GetAvaliacaoById([FromRoute] int id)
+        public async Task<IActionResult> GetAvaliacaoById([FromRoute] Guid id)
         {
             var response = await _avaliacaoService.GetAvaliacaoById(id);
             return response;
@@ -60,9 +60,9 @@ namespace DaccApi.Controllers.Avaliacao
             return response;
         }
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:guid}")]
         [HasPermission(AppPermissions.Reviews.Delete)]
-        public async Task<IActionResult> DeleteAvaliacao([FromRoute] int id)
+        public async Task<IActionResult> DeleteAvaliacao([FromRoute] Guid id)
         {
             var response = await _avaliacaoService.DeleteAvaliacao(id);
             return response;
@@ -70,9 +70,9 @@ namespace DaccApi.Controllers.Avaliacao
         
         
         
-        [HttpPatch("{id:int}")]
+        [HttpPatch("{id:guid}")]
         [HasPermission(AppPermissions.Reviews.Update)]
-        public async Task<IActionResult> UpdateAvaliacao([FromRoute] int id,[FromBody] RequestUpdateAvaliacao avaliacao)
+        public async Task<IActionResult> UpdateAvaliacao([FromRoute] Guid id,[FromBody] RequestUpdateAvaliacao avaliacao)
         {
             var response = await _avaliacaoService.UpdateAvaliacao(id, avaliacao);
             return response;

@@ -30,7 +30,7 @@ namespace DaccApi.Controllers.Projetos
         }
 
         [AllowAnonymous]
-        [HttpGet("{id:Guid}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetProjetoById(Guid id)
         {
             var response = await _projetosService.GetProjetoById(id);
@@ -45,7 +45,7 @@ namespace DaccApi.Controllers.Projetos
             return response;
         }
 
-        [HttpPatch("{id:Guid}")]
+        [HttpPatch("{id:guid}")]
         [HasPermission(AppPermissions.Projetos.Update)]
         public async Task<IActionResult> UpdateProjeto([FromRoute] Guid id, [FromBody] RequestProjeto projeto)
         {
@@ -53,7 +53,7 @@ namespace DaccApi.Controllers.Projetos
             return response;
         }
 
-        [HttpDelete("{id:Guid}")]
+        [HttpDelete("{id:guid}")]
         [HasPermission(AppPermissions.Projetos.Delete)]
         public async Task<IActionResult> DeleteProjeto([FromRoute] Guid id)
         {

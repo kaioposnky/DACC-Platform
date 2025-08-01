@@ -220,7 +220,7 @@ CREATE TABLE produto_tamanho
 DROP TABLE IF EXISTS produto_categoria CASCADE;
 CREATE TABLE produto_categoria
 (
-    id      SERIAL PRIMARY KEY,
+    id      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome    VARCHAR(100) UNIQUE NOT NULL
 );
 
@@ -228,9 +228,9 @@ CREATE TABLE produto_categoria
 -- Armazena as subcategorias de produtos
 DROP TABLE IF EXISTS produto_subcategoria CASCADE;
 CREATE TABLE produto_subcategoria(
-     id      SERIAL PRIMARY KEY,
+     id      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
      nome    VARCHAR(100) UNIQUE NOT NULL,
-     categoria_id INT REFERENCES produto_categoria (id)
+     categoria_id UUID REFERENCES produto_categoria (id)
 );
 
 -- Tabela: Produtos
@@ -243,7 +243,7 @@ CREATE TABLE produto
     descricao           TEXT         NOT NULL,
     preco               NUMERIC(10, 2) NOT NULL,
     preco_original      NUMERIC(10, 2),
-    subcategoria_id     INT REFERENCES produto_subcategoria (id),
+    subcategoria_id     UUID REFERENCES produto_subcategoria (id),
     ativo               BOOLEAN      NOT NULL DEFAULT TRUE,
     data_criacao        TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
     data_atualizacao    TIMESTAMP             DEFAULT CURRENT_TIMESTAMP
@@ -327,7 +327,7 @@ CREATE TABLE item_pedido
 DROP TABLE IF EXISTS avaliacao CASCADE;
 CREATE TABLE avaliacao
 (
-    id               SERIAL PRIMARY KEY,
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     usuario_id       INT REFERENCES usuario (id),
     produto_id       UUID REFERENCES produto (id) ON DELETE CASCADE, 
     nota             INT CHECK (nota BETWEEN 1 AND 5),
