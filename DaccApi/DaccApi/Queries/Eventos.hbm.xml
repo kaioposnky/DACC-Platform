@@ -1,7 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <queries>
     <query name="GetAllEventos">
-        SELECT * FROM evento
+        SELECT 
+            id as Id,
+            titulo as Titulo,
+            descricao as Descricao,
+            data as Data,
+            tipo_evento as TipoEvento,
+            autor_id as AutorId,
+            texto_acao as TextoAcao,
+            link_acao as LinkAcao        
+        FROM evento
     </query>
     <query name="CreateEvento">
         INSERT INTO evento
@@ -16,7 +25,16 @@
         VALUES (@Titulo, @Descricao,@Data,@TipoEvento,@AutorId, @TextoAcao, @LinkAcao)
     </query>>
     <query name="GetEventoById">
-        SELECT * FROM evento WHERE id=@id
+        SELECT
+            id as Id,
+            titulo as Titulo,
+            descricao as Descricao,
+            data as Data,
+            tipo_evento as TipoEvento,
+            autor_id as AutorId,
+            texto_acao as TextoAcao,
+            link_acao as LinkAcao
+        FROM evento WHERE id=@id
     </query>
     <query name="DeleteEvento">
         DELETE FROM evento WHERE id=@id

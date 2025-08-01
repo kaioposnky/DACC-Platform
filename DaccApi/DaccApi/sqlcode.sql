@@ -21,7 +21,7 @@ CREATE TABLE tipos_anuncio
 DROP TABLE IF EXISTS tipos_evento CASCADE;
 CREATE TABLE tipos_evento
 (
-    id   SERIAL PRIMARY KEY,
+    id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome VARCHAR(50) NOT NULL UNIQUE
 );
 
@@ -156,7 +156,7 @@ CREATE TABLE anuncio_detalhe
 DROP TABLE IF EXISTS evento CASCADE;
 CREATE TABLE evento
 (
-    id               SERIAL PRIMARY KEY,
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     titulo           VARCHAR(50) NOT NULL,
     descricao        TEXT        NOT NULL,
     data             TIMESTAMP   NOT NULL,
