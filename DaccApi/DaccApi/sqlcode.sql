@@ -103,8 +103,8 @@ CREATE TABLE comentario
     aceito           BOOLEAN   NOT NULL,
     upvotes          INT       NOT NULL,
     downvotes        INT       NOT NULL,
-    data_criacao     TIMESTAMP NOT NULL,
-    data_atualizacao TIMESTAMP NOT NULL
+    data_criacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabela: Comentários de Posts
@@ -134,8 +134,8 @@ CREATE TABLE anuncio
     imagem_alt             VARCHAR(100),
     ativo                  BOOLEAN     NOT NULL DEFAULT FALSE,
     autor_id               UUID REFERENCES usuario (id),
-    data_criacao           TIMESTAMP   NOT NULL,
-    data_atualizacao       TIMESTAMP   NOT NULL
+    data_criacao           TIMESTAMP DEFAULT  CURRENT_TIMESTAMP NOT NULL,
+    data_atualizacao       TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 -- Tabela: Detalhes de Anúncios
