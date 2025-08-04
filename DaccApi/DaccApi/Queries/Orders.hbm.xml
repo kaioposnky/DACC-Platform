@@ -59,7 +59,6 @@
     <query name="UpdateOrderPaymentInfo">
         UPDATE pedido
         SET mercadopago_pagamento_id = @MercadoPagoPaymentId,
-        preference_id = @PreferenceId,
         metodo_pagamento = @PaymentMethod,
         status_pedido = @Status
         WHERE id = @Id;

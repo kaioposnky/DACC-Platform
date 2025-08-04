@@ -1,5 +1,7 @@
 using DaccApi.Helpers;
+using DaccApi.Infrastructure.MercadoPago.Constants;
 using DaccApi.Infrastructure.MercadoPago.Models;
+using DaccApi.Infrastructure.Services.MercadoPago;
 using DaccApi.Model.Requests;
 using DaccApi.Services.Orders;
 using Helpers.Response;
@@ -14,10 +16,12 @@ namespace DaccApi.Controllers.Orders
     public class OrdersController : ControllerBase
     {
         private readonly IOrdersService _ordersService;
+        private readonly IMercadoPagoService _mercadoPagoService;
 
-        public OrdersController(IOrdersService ordersService)
+        public OrdersController(IOrdersService ordersService, IMercadoPagoService mercadoPagoService)
         {
             _ordersService = ordersService;
+            _mercadoPagoService = mercadoPagoService;
         }
 
         [HttpPost("")]
@@ -32,8 +36,8 @@ namespace DaccApi.Controllers.Orders
                 }
                 
                 var userId = ClaimsHelper.GetUserId(User);
-                var orderId = await _ordersService.CreateOrderWithPayment(userId, request);
-                return ResponseHelper.CreateSuccessResponse(new { OrderId = orderId });
+                var orderResponse = await _ordersService.CreateOrderWithPayment(userId, request);
+                return ResponseHelper.CreateSuccessResponse(new { orderResponse });
             }
             catch (Exception ex)
             {
@@ -96,5 +100,48 @@ namespace DaccApi.Controllers.Orders
             }
         }
 
+        // Precisa deixar anonimo para liberar a API do mercadopago mandar o webhook
+        [AllowAnonymous]
+        [HttpPost("webhook")]
+        public async Task<IActionResult> ProcessWebhook([FromBody] MercadoPagoWebHookRequest request)
+        {
+            try
+            {
+                var webhookSignatue = Request.Headers["x-signature"].FirstOrDefault();
+
+                if (string.IsNullOrEmpty(webhookSignatue))
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.INVALID_WEBHOOK, 
+                        "Falha na validação da assinatura do webhook!");
+                }
+
+                // Retorna o body do webhook
+                Request.Body.Position = 0;
+                var webhookBody = await new StreamReader(Request.Body).ReadToEndAsync();
+
+                var isValidWebhook = await _mercadoPagoService.ValidateWebhookSignatureAsync(
+                    webhookBody, webhookSignatue);
+
+                if (!isValidWebhook)
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.INVALID_CREDENTIALS, 
+                        "Falha na validação da assinatura do webhook!");
+                }
+
+                if (request.Type != MercadoPagoConstants.WebhookTypes.Payment)
+                {
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
+                }
+
+                var paymentId = long.Parse(request.Data.Id);
+                await _ordersService.ProcessWebhookPayment(paymentId);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK, "Pagamento realizado com sucesso!");
+
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK, ex.Message);
+            }
+        }
     }
 }

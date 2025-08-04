@@ -11,6 +11,6 @@ namespace DaccApi.Infrastructure.Repositories.Orders
         Task<List<OrderItem>> GetOrderItemsByOrderId(Guid orderId);
         Task<List<Order>> GetOrdersByUserId(Guid userId);
         Task UpdateOrderStatus(Guid id, string status);
-        Task UpdateOrderPaymentInfo(Guid orderId, long paymentId, Guid preferenceId, string paymentMethod, string status);
+        Task UpdateOrderPaymentInfo(Guid orderId, long paymentId, string paymentMethod, string status);
     }
 }

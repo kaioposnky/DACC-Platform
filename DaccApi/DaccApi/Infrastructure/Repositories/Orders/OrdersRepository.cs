@@ -22,11 +22,11 @@ namespace DaccApi.Infrastructure.Repositories.Orders
                 { 
                     Id = order.Id,
                     UserId = order.UserId, 
-                    OrderDate = DateTime.UtcNow, 
+                    OrderDate = order.OrderDate, 
                     Status = "created", 
                     TotalAmount = order.TotalAmount,
-                    MercadoPagoPaymentId = order.MercadoPagoPaymentId,
                     PreferenceId = order.PreferenceId,  
+                    MercadoPagoPaymentId = (long?)null, // Será definido mais tarde
                     PaymentMethod = (string?)null // Será definido mais tarde 
                 };
                 
@@ -118,7 +118,7 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
 
-        public async Task UpdateOrderPaymentInfo(Guid orderId, long paymentId, Guid preferenceId, string paymentMethod, string status)
+        public async Task UpdateOrderPaymentInfo(Guid orderId, long paymentId, string paymentMethod, string status)
         {
             try
             {
@@ -127,7 +127,6 @@ namespace DaccApi.Infrastructure.Repositories.Orders
                 { 
                     Id = orderId,
                     MercadoPagoPaymentId = paymentId,
-                    PreferenceId = preferenceId,
                     PaymentMethod = paymentMethod,
                     Status = status
                 };

@@ -1,3 +1,5 @@
+using DaccApi.Infrastructure.MercadoPago.Constants;
+using DaccApi.Infrastructure.MercadoPago.Models;
 using DaccApi.Infrastructure.Repositories.Orders;
 using DaccApi.Infrastructure.Services.MercadoPago;
 using DaccApi.Model.Objects.Order;
@@ -9,30 +11,48 @@ namespace DaccApi.Services.Orders
     public class OrdersService : IOrdersService
     {
         private readonly IOrdersRepository _ordersRepository;
+        private readonly IMercadoPagoService _mercadoPagoService;
 
-        public OrdersService(IOrdersRepository ordersRepository)
+        public OrdersService(IOrdersRepository ordersRepository, IMercadoPagoService mercadoPagoService)
         {
             _ordersRepository = ordersRepository;
+            _mercadoPagoService = mercadoPagoService;
         }
 
-        public async Task<Guid> CreateOrderWithPayment(Guid userId, CreateOrderRequest request)
+        public async Task<CreateOrderResponse> CreateOrderWithPayment(Guid userId, CreateOrderRequest request)
         {
 
-            var order = new Order()
+            var order = new Order
             {
                 Id = Guid.NewGuid(),
+                UserId = userId,
                 TotalAmount = request.TotalAmount,
                 OrderItems = OrderItem.FromRequestList(request.OrderItems),
+                OrderDate = DateTime.UtcNow
             };
+
+            var preference = await _mercadoPagoService.CreatePreferenceAsync(order);
+
+            order.PreferenceId = preference.PreferenceId;
             
-            var orderId = await _ordersRepository.CreateOrder(order);
+            // Cria o pedido no banco
+            await _ordersRepository.CreateOrder(order);
             
             foreach (var item in request.OrderItems)
             {
-                await _ordersRepository.CreateOrderItem(orderId, item);
+                await _ordersRepository.CreateOrderItem(order.Id, item);
             }
 
-            return orderId;
+            return new CreateOrderResponse
+            {
+                Id = order.Id,
+                UserId = order.UserId,
+                PaymentUrl = preference.PaymentUrl,
+                OrderItems = order.OrderItems,
+                Status = MercadoPagoConstants.PaymentStatus.Pending,
+                TotalAmount = order.TotalAmount,
+                OrderDate = order.OrderDate
+            };
         }
 
         public async Task<OrderResponse> GetOrderById(Guid id)
@@ -71,6 +91,29 @@ namespace DaccApi.Services.Orders
         public async Task UpdateOrderStatus(Guid id, string status)
         {
             await _ordersRepository.UpdateOrderStatus(id, status);
+        }
+        
+        public async Task ProcessWebhookPayment(long paymentId)
+        {
+            try
+            {
+                var paymentStatus = await _mercadoPagoService.GetPaymentStatusAsync(paymentId);
+
+                // O externalreference salvo no pagamento é o orderId
+                var orderId = paymentStatus.ExternalReference;
+
+                // Atualiza os dados do pedido com as informações do pagamento recebidas
+                await _ordersRepository.UpdateOrderPaymentInfo(
+                    orderId,
+                    paymentStatus.PaymentId,
+                    paymentStatus.PaymentMethod!,
+                    paymentStatus.Status
+                );
+            }
+            catch (Exception ex)
+            {
+                // engole o choro e faz o L
+            }
         }
     }
 }

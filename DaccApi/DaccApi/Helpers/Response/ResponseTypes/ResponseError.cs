@@ -40,7 +40,9 @@ namespace Helpers.Response{
         public static ResponseError INTERNAL_SERVER_ERROR = new ResponseError(500, "INTERNAL_SERVER_ERROR", "Erro interno do servidor", null);
         public static ResponseError BAD_REQUEST = new ResponseError(400, "BAD_REQUEST", "Dados inválidos na requisição", null);
         public static ResponseError CONTENT_TOO_LARGE = new ResponseError(413, "CONTENT_TOO_LARGE", "O arquivo enviado não pode ter mais de 5MB de tamanho.", null);
-
+        public static readonly ResponseError PAYMENT_FAILED = new(400, "PAYMENT_FAILED", "Falha no processamento do pagamento");
+        public static readonly ResponseError INVALID_WEBHOOK = new(400, "INVALID_WEBHOOK", "Webhook inválido");
+        
         public class Error{
             public string Code { get; set; }
             public string Message { get; set; }

@@ -25,6 +25,7 @@ using DaccApi.Infrastructure.Repositories.Projetos;
 using DaccApi.Infrastructure.Repositories.Eventos;
 using DaccApi.Infrastructure.Repositories.Anuncio;
 using DaccApi.Infrastructure.Repositories.Orders;
+using DaccApi.Infrastructure.Services.MercadoPago;
 using DaccApi.Middleware;
 using DaccApi.Services.Avaliacao;
 using DaccApi.Services.Eventos;
@@ -152,6 +153,7 @@ builder.Services.AddScoped<IPostsRepository, PostsRepository>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<IOrdersRepository, OrdersRepository>();
 builder.Services.AddScoped<IOrdersService, OrdersService>();
+builder.Services.AddScoped<IMercadoPagoService, MercadoPagoService>();
 
 var app = builder.Build();
 
