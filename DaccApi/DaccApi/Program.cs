@@ -24,6 +24,7 @@ using DaccApi.Infrastructure.Repositories.Posts;
 using DaccApi.Infrastructure.Repositories.Projetos;
 using DaccApi.Infrastructure.Repositories.Eventos;
 using DaccApi.Infrastructure.Repositories.Anuncio;
+using DaccApi.Infrastructure.Repositories.Orders;
 using DaccApi.Middleware;
 using DaccApi.Services.Avaliacao;
 using DaccApi.Services.Eventos;
@@ -34,6 +35,7 @@ using DaccApi.Services.Posts;
 using DaccApi.Services.Projetos;
 using DaccApi.Services.Token;
 using DaccApi.Services.Anuncio;
+using DaccApi.Services.Orders;
 using Helpers.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -148,6 +150,8 @@ builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProv
 builder.Services.AddScoped<IPostsServices, PostsServices>();
 builder.Services.AddScoped<IPostsRepository, PostsRepository>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+builder.Services.AddScoped<IOrdersRepository, OrdersRepository>();
+builder.Services.AddScoped<IOrdersService, OrdersService>();
 
 var app = builder.Build();
 

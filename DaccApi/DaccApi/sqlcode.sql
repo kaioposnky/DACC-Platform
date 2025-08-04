@@ -302,12 +302,14 @@ CREATE TABLE metodo_pagamento
 DROP TABLE IF EXISTS pedido CASCADE;
 CREATE TABLE pedido
 (
-    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    usuario_id       UUID REFERENCES usuario (id),
-    data_pedido      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status_pedido    VARCHAR(50) REFERENCES status_pedido (nome),
-    metodo_pagamento VARCHAR(50) REFERENCES metodo_pagamento (nome),
-    total_pedido     NUMERIC(10, 2) NOT NULL
+    id                       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    usuario_id               UUID REFERENCES usuario (id),
+    data_pedido              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status_pedido            VARCHAR(50) REFERENCES status_pedido (nome),
+    mercadopago_pagamento_id BIGINT NULL,
+    preference_id            UUID NULL,
+    metodo_pagamento         VARCHAR(50) REFERENCES metodo_pagamento (nome) NULL,
+    total_pedido             NUMERIC(10, 2) NOT NULL
 );
 
 -- Tabela: Itens do Pedido
@@ -440,11 +442,12 @@ VALUES ('planejado'),
 
 -- Status de Pedido
 INSERT INTO status_pedido (nome)
-VALUES ('aguardando pagamento'),
-       ('pago'),
-       ('enviado'),
-       ('entregue'),
-       ('cancelado');
+VALUES ('created'),
+       ('pending'),
+       ('approved'),
+       ('rejected'),
+       ('delivered'),
+       ('cancelled');
 
 -- Métodos de Pagamento
 INSERT INTO metodo_pagamento (nome)
