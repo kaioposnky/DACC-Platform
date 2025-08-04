@@ -7,8 +7,8 @@
     </query>
 
     <query name="CreateOrderItem">
-        INSERT INTO item_pedido (pedido_id, produto_id, quantidade, preco_unitario)
-        VALUES (@OrderId, @ProductId, @Quantity, @UnitPrice);
+        INSERT INTO item_pedido (pedido_id, produto_id, produto_variacao_id, quantidade, preco_unitario)
+        VALUES (@OrderId, @ProductId, @ProductVariationId, @Quantity, @UnitPrice);
     </query>
 
     <query name="GetOrderById">
@@ -31,6 +31,7 @@
         pedido_id as OrderId,
         produto_id as ProductId,
         quantidade as Quantity,
+        produto_variacao_id as ProductVariationId,
         preco_unitario as UnitPrice
         FROM item_pedido
         WHERE pedido_id = @OrderId;

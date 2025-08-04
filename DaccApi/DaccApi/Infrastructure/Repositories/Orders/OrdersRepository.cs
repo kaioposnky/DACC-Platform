@@ -48,6 +48,7 @@ namespace DaccApi.Infrastructure.Repositories.Orders
                 {
                     OrderId = orderId, 
                     ProductId = item.ProductId, 
+                    ProductVariationId = item.ProductVariationId, 
                     Quantity = item.Quantity, 
                     UnitPrice = item.UnitPrice
                 };

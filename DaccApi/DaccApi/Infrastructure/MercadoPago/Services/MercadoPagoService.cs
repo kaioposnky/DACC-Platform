@@ -21,7 +21,7 @@ namespace DaccApi.Infrastructure.Services.MercadoPago
     private readonly IProdutosRepository _produtosRepository;
     private readonly IUsuarioRepository _usuarioRepository;
     private readonly string _webhookSecret;
-    private readonly string _applicationURL;
+    private readonly string _applicationUrl;
     private readonly bool _sandboxMode;
 
     public MercadoPagoService(
@@ -31,7 +31,7 @@ namespace DaccApi.Infrastructure.Services.MercadoPago
     {
         MercadoPagoConfig.AccessToken = configuration["MercadoPago:AccessToken"];
         _webhookSecret = configuration["MercadoPago:WebhookSecret"]!;
-        _applicationURL = configuration["ApplicationURL"]!;
+        _applicationUrl = configuration["ApplicationURL"]!;
         _sandboxMode = configuration["MercadoPago:UseSandbox"] == "true"; // Se vai usar dados reais ou de teste
         
         _produtosRepository = produtosRepository;
@@ -46,10 +46,14 @@ namespace DaccApi.Infrastructure.Services.MercadoPago
         try
         {
             var user = await _usuarioRepository.GetUserById(order.UserId);
+            
             // Pega todos os produtos da order
-            var products = new List<Produto>(order.OrderItems.Select( item =>
-                _produtosRepository.GetProductByIdAsync(item.ProductId).Result)!);
-    
+            var variationIds = order.OrderItems.Select(item => item.ProductVariationId).ToList();
+            var variations = await _produtosRepository.GetVariationsWithProductByIdsAsync(variationIds);
+            
+            // Dict com variações para ser O(1)
+            var variationDict = variations.ToDictionary(v => v.VariationId, v => v);
+
             // Uma preference determina:
             // O que vai ser pago: produtos, quantidades, preços
             // Quem vai pagar: email do comprador
@@ -58,21 +62,20 @@ namespace DaccApi.Infrastructure.Services.MercadoPago
             // Outras configurações: parcelas, desconto, etc.
             var preferenceRequest = new PreferenceRequest
             {
-                // ISSO TÁ MUITO BAGUNÇADO MEU DEUS
-                // Retorna os items do preference/pedido
+                // 4. Criar items sem loops aninhados
                 Items = order.OrderItems.Select(item =>
                 {
-                    var product = products.FirstOrDefault(product => product.Id == item.ProductId);
+                    var variation = variationDict[item.ProductVariationId];
+                
                     return new PreferenceItemRequest
                     {
-                        Id = product.Id.ToString(),
-                        Title = product.Nome,
+                        Id = variation.VariationId.ToString(),
+                        Title = $"{variation.ProductName} - {variation.ColorName} {variation.SizeName}",
                         Quantity = item.Quantity,
                         CurrencyId = "BRL",
                         UnitPrice = item.UnitPrice,
                     };
-                }
-                ).ToList(),
+                }).ToList(),
                 
                 Payer = new PreferencePayerRequest
                 {
@@ -82,14 +85,14 @@ namespace DaccApi.Infrastructure.Services.MercadoPago
                 ExternalReference = order.Id.ToString(),
                 
                 // URL onde o Webhook do pagamento será disparado
-                NotificationUrl = $"{_applicationURL}/api/orders/webhook",
+                NotificationUrl = $"{_applicationUrl}/api/orders/webhook",
                 
                 BackUrls = new PreferenceBackUrlsRequest
                 {
                     // URL de redirecionamento para cada resposta do pagamento
-                    Success = $"{_applicationURL}/api/orders/success",
-                    Failure = $"{_applicationURL}/api/orders/failure",
-                    Pending = $"{_applicationURL}/api/orders/pending"
+                    Success = $"{_applicationUrl}/api/payments/success",
+                    Failure = $"{_applicationUrl}/api/payments/failure",
+                    Pending = $"{_applicationUrl}/api/payments/pending"
                 },
                 
                 // Retorna automaticamente para o site
@@ -103,12 +106,11 @@ namespace DaccApi.Infrastructure.Services.MercadoPago
                     
                     // Número máximo de parcelas no cartão de crédito
                     Installments = 6
-                }
+                },
+                // Data de expiração para realizar o pagamento (1h para realizar o pagamento)
+                ExpirationDateFrom = DateTime.UtcNow,
+                ExpirationDateTo = DateTime.Now + TimeSpan.FromHours(1)
             };
-
-            // Data de expiração para realizar o pagamento (1h para realizar o pagamento)
-            preferenceRequest.ExpirationDateFrom = DateTime.UtcNow;
-            preferenceRequest.ExpirationDateTo = DateTime.Now + TimeSpan.FromHours(1);
 
 
             // Cria a preferência pelo MercadoPago

@@ -595,3 +595,44 @@ $$
             END LOOP;
     END
 $$;
+
+
+--- PROCEDURES
+
+-- Remover produtos do estoque e se não tiver estoque retornar erro
+CREATE OR REPLACE FUNCTION remove_multiple_products_stock(
+    variation_ids UUID[],
+    quantities INTEGER[]
+) RETURNS TABLE(success BOOLEAN, error_message TEXT) AS $$
+DECLARE
+    i INTEGER;
+    current_stock INTEGER;
+    product_name TEXT;
+BEGIN
+    -- Verificar se todos têm estoque suficiente
+    FOR i IN 1..array_length(variation_ids, 1) LOOP
+            SELECT pv.estoque, p.nome
+            INTO current_stock, product_name
+            FROM produto_variacao pv
+                     INNER JOIN produto p ON pv.produto_id = p.id
+            WHERE pv.id = variation_ids[i];
+
+            IF current_stock < quantities[i] THEN
+                RETURN QUERY SELECT FALSE,
+                                    'Produto ' || product_name || ' sem estoque suficiente. Disponível: ' ||
+                                    current_stock || ', Solicitado: ' || quantities[i];
+                RETURN;
+            END IF;
+        END LOOP;
+
+    -- Se chegou até aqui, todos têm estoque suficiente
+    -- Atualizar o estoque
+    FOR i IN 1..array_length(variation_ids, 1) LOOP
+            UPDATE produto_variacao
+            SET estoque = estoque - quantities[i]
+            WHERE id = variation_ids[i];
+        END LOOP;
+
+    RETURN QUERY SELECT TRUE, ''::TEXT;
+END;
+$$ LANGUAGE plpgsql;

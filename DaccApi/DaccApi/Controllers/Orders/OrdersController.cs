@@ -1,3 +1,4 @@
+using DaccApi.Exceptions;
 using DaccApi.Helpers;
 using DaccApi.Infrastructure.MercadoPago.Constants;
 using DaccApi.Infrastructure.MercadoPago.Models;
@@ -111,7 +112,7 @@ namespace DaccApi.Controllers.Orders
 
                 if (string.IsNullOrEmpty(webhookSignatue))
                 {
-                    return ResponseHelper.CreateErrorResponse(ResponseError.INVALID_WEBHOOK, 
+                    return ResponseHelper.CreateErrorResponse(ResponseError.INVALID_WEBHOOK,
                         "Falha na validação da assinatura do webhook!");
                 }
 
@@ -124,7 +125,7 @@ namespace DaccApi.Controllers.Orders
 
                 if (!isValidWebhook)
                 {
-                    return ResponseHelper.CreateErrorResponse(ResponseError.INVALID_CREDENTIALS, 
+                    return ResponseHelper.CreateErrorResponse(ResponseError.INVALID_CREDENTIALS,
                         "Falha na validação da assinatura do webhook!");
                 }
 
@@ -137,6 +138,10 @@ namespace DaccApi.Controllers.Orders
                 await _ordersService.ProcessWebhookPayment(paymentId);
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK, "Pagamento realizado com sucesso!");
 
+            }
+            catch (ProductOutOfStockException ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.PRODUCT_OUT_OF_STOCK, ex.Message);
             }
             catch (Exception ex)
             {

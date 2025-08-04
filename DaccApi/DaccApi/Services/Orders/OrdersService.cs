@@ -1,6 +1,8 @@
+using DaccApi.Exceptions;
 using DaccApi.Infrastructure.MercadoPago.Constants;
 using DaccApi.Infrastructure.MercadoPago.Models;
 using DaccApi.Infrastructure.Repositories.Orders;
+using DaccApi.Infrastructure.Repositories.Products;
 using DaccApi.Infrastructure.Services.MercadoPago;
 using DaccApi.Model.Objects.Order;
 using DaccApi.Model.Requests;
@@ -12,47 +14,68 @@ namespace DaccApi.Services.Orders
     {
         private readonly IOrdersRepository _ordersRepository;
         private readonly IMercadoPagoService _mercadoPagoService;
+        private readonly IProdutosRepository _produtosRepository;
 
-        public OrdersService(IOrdersRepository ordersRepository, IMercadoPagoService mercadoPagoService)
+        public OrdersService(IOrdersRepository ordersRepository, IMercadoPagoService mercadoPagoService, IProdutosRepository produtosRepository)
         {
             _ordersRepository = ordersRepository;
             _mercadoPagoService = mercadoPagoService;
+            _produtosRepository = produtosRepository;
         }
 
         public async Task<CreateOrderResponse> CreateOrderWithPayment(Guid userId, CreateOrderRequest request)
         {
-
-            var order = new Order
+            try
             {
-                Id = Guid.NewGuid(),
-                UserId = userId,
-                TotalAmount = request.TotalAmount,
-                OrderItems = OrderItem.FromRequestList(request.OrderItems),
-                OrderDate = DateTime.UtcNow
-            };
+                var variationIds = request.OrderItems.Select(item => item.ProductVariationId).ToList();
+                var quantities = request.OrderItems.Select(item => item.Quantity).ToList();
 
-            var preference = await _mercadoPagoService.CreatePreferenceAsync(order);
 
-            order.PreferenceId = preference.PreferenceId;
-            
-            // Cria o pedido no banco
-            await _ordersRepository.CreateOrder(order);
-            
-            foreach (var item in request.OrderItems)
-            {
-                await _ordersRepository.CreateOrderItem(order.Id, item);
+                // Se não tiver produtos em estoque o bastante da throw em ProductOutOfStockException
+                var stockRemoved = await _produtosRepository.RemoveMultipleProductsStockAsync(variationIds, quantities);
+
+
+
+                var order = new Order
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = userId,
+                    TotalAmount = request.TotalAmount,
+                    OrderItems = OrderItem.FromRequestList(request.OrderItems),
+                    OrderDate = DateTime.UtcNow
+                };
+
+                var preference = await _mercadoPagoService.CreatePreferenceAsync(order);
+
+                order.PreferenceId = preference.PreferenceId;
+
+                // Cria o pedido no banco
+                await _ordersRepository.CreateOrder(order);
+
+                foreach (var item in request.OrderItems)
+                {
+                    await _ordersRepository.CreateOrderItem(order.Id, item);
+                }
+
+                return new CreateOrderResponse
+                {
+                    Id = order.Id,
+                    UserId = order.UserId,
+                    PaymentUrl = preference.PaymentUrl,
+                    OrderItems = order.OrderItems,
+                    Status = MercadoPagoConstants.PaymentStatus.Pending,
+                    TotalAmount = order.TotalAmount,
+                    OrderDate = order.OrderDate
+                };
             }
-
-            return new CreateOrderResponse
+            catch (ProductOutOfStockException ex)
             {
-                Id = order.Id,
-                UserId = order.UserId,
-                PaymentUrl = preference.PaymentUrl,
-                OrderItems = order.OrderItems,
-                Status = MercadoPagoConstants.PaymentStatus.Pending,
-                TotalAmount = order.TotalAmount,
-                OrderDate = order.OrderDate
-            };
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao criar pedido! " + ex.Message, ex);
+            }
         }
 
         public async Task<OrderResponse> GetOrderById(Guid id)

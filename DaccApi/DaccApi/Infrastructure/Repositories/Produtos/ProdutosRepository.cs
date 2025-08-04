@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using DaccApi.Exceptions;
 using DaccApi.Infrastructure.Dapper;
 using DaccApi.Model;
 using Npgsql;
@@ -439,6 +440,91 @@ namespace DaccApi.Infrastructure.Repositories.Products
             catch (Exception ex)
             {
                 throw new Exception($"Erro ao atualizar produto no banco de dados. Erro original: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<bool> RemoveProductVariationStockAsync(Guid productVariationId, int amount = 1)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("RemoveProductStockAmount");
+                var param = new
+                {
+                    Id = productVariationId,
+                    Amount = amount
+                };
+                var rowsAffected = await _repositoryDapper.ExecuteAsync(sql, param);
+        
+                // rowsAffected = 0 → Estoque insuficiente
+                // rowsAffected = 1 → Estoque reduzido com sucesso
+                return rowsAffected > 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao remover estoque de produto: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<int> CheckProductVariationStock(Guid productVariationId)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("CheckProductStock");
+                var param = new { Id = productVariationId };
+                var result = await _repositoryDapper.QueryAsync<int>(sql, param);
+                
+                return result.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao obter estoque da variação do produto!" + ex.Message, ex);
+            }
+        }
+        
+        public async Task<List<ProdutoVariacaoInfo>> GetVariationsWithProductByIdsAsync(List<Guid> variationIds)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("GetVariationsWithProductByIds");
+                var parameters = new { VariationIds = variationIds };
+        
+                var variations = await _repositoryDapper.QueryAsync<ProdutoVariacaoInfo>(sql, parameters);
+                return variations.ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao buscar variações com produtos.", ex);
+            }
+        }
+        
+        public async Task<bool> RemoveMultipleProductsStockAsync(List<Guid> variationIds, List<int> quantities)
+        {
+            try
+            {
+                var parameters = new 
+                { 
+                    VariationIds = variationIds.ToArray(),
+                    Quantities = quantities.ToArray()
+                };
+        
+                var result = (await _repositoryDapper.
+                    QueryProcedureAsync<(bool success, string error_message)>
+                        ("remove_multiple_products_stock", parameters)).FirstOrDefault();
+        
+                if (!result.success)
+                {
+                    throw new ProductOutOfStockException(result.error_message);
+                }
+        
+                return true;
+            }
+            catch (ProductOutOfStockException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao remover estoque dos produtos.", ex);
             }
         }
     }

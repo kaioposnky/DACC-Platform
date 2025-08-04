@@ -7,6 +7,7 @@ namespace DaccApi.Model.Objects.Order
     {
         public Guid Id { get; set; }
         public Guid ProductId { get; set; }
+        public Guid ProductVariationId { get; set; }
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
 
@@ -21,6 +22,7 @@ namespace DaccApi.Model.Objects.Order
             return new OrderItem()
             {
                 Id = Guid.Empty,
+                ProductVariationId = request.ProductVariationId,
                 Quantity = request.Quantity,
                 ProductId = request.ProductId,
                 UnitPrice = request.UnitPrice

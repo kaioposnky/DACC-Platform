@@ -242,4 +242,35 @@
         WHERE produto_variacao_id = @VariationId
         ORDER BY ordem;
     </query>
+
+    <!-- Query para remover uma quantidade de produtos do estoque-->
+    <query name="RemoveProductStockAmount">
+        UPDATE produto_variacao
+        SET estoque = estoque - @Amount
+        WHERE id = @Id
+        AND estoque >= @Amount;
+    </query>
+
+    <!-- Query para checar quantidade de produtos em estoque-->
+    <query name="CheckProductStock">
+        SELECT estoque
+        FROM produto_variacao
+        WHERE id = @Id
+    </query>
+
+    <!-- Obter produto + variacoes de forma mais otimizada-->
+    <query name="GetVariationsWithProductByIds">
+        SELECT
+        pv.id as VariationId,
+        pv.produto_id as ProductId,
+        p.nome as ProductName,
+        pc.nome as ColorName,
+        pt.nome as SizeName,
+        pv.estoque as Stock
+        FROM produto_variacao pv
+        INNER JOIN produto p ON pv.produto_id = p.id
+        LEFT JOIN produto_cor pc ON pv.cor_id = pc.id
+        LEFT JOIN produto_tamanho pt ON pv.tamanho_id = pt.id
+        WHERE pv.id = ANY(@VariationIds);
+    </query>
 </queries>
