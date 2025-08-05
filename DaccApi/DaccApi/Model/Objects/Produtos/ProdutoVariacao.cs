@@ -8,13 +8,13 @@ namespace DaccApi.Model
         
         public Guid ProdutoId { get; set; }
         
-        public int CorId { get; set; }
+        public Guid CorId { get; set; }
         
         [Required]
         [StringLength(50)]
         public string Cor { get; set; } = string.Empty;
         
-        public int TamanhoId { get; set; }
+        public Guid TamanhoId { get; set; }
         
         [Required]
         [StringLength(20)]

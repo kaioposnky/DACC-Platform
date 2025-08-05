@@ -80,19 +80,19 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
         }
         
-        private async Task<int?> GetSubcategoryIdByNameAsync(string subcategoryName)
+        private async Task<Guid?> GetSubcategoryIdByNameAsync(string subcategoryName)
         {
             var sql = _repositoryDapper.GetQueryNamed("GetSubcategoryIdByName");
             var param = new { Nome = subcategoryName };
-            var subcategoryId = await _repositoryDapper.QueryAsync<int?>(sql, param);
+            var subcategoryId = await _repositoryDapper.QueryAsync<Guid?>(sql, param);
             return subcategoryId.FirstOrDefault();
         }
         
-        private async Task<int?> GetCategoryIdByNameAsync(string categoryName)
+        private async Task<Guid?> GetCategoryIdByNameAsync(string categoryName)
         {
             var sql = _repositoryDapper.GetQueryNamed("GetCategoryIdByName");
             var param = new { Nome = categoryName };
-            var categoryId = await _repositoryDapper.QueryAsync<int?>(sql, param);
+            var categoryId = await _repositoryDapper.QueryAsync<Guid?>(sql, param);
             return categoryId.FirstOrDefault();
         }
 
@@ -193,21 +193,21 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
         }
 
-        private async Task<int> GetOrCreateProductCategoryAsync(string categoriaProduto)
+        private async Task<Guid> GetOrCreateProductCategoryAsync(string categoriaProduto)
         {
             try
             {
                 var sql = _repositoryDapper.GetQueryNamed("AddProductCategory");
                 var param = new { Nome = categoriaProduto };
 
-                var categoryId = await _repositoryDapper.QueryAsync<int>(sql, param);
+                var categoryId = await _repositoryDapper.QueryAsync<Guid>(sql, param);
                 return categoryId.FirstOrDefault();
             }
             catch (PostgresException ex) when (ex.SqlState == "23505" && ex.ConstraintName == "produto_categoria_nome_key")
             {
                 var sql = _repositoryDapper.GetQueryNamed("GetCategoryIdByName");
                 var param = new { Nome = categoriaProduto };
-                var categoryId = await _repositoryDapper.QueryAsync<int>(sql, param);
+                var categoryId = await _repositoryDapper.QueryAsync<Guid>(sql, param);
                 return categoryId.FirstOrDefault();
             }
             catch (Exception ex)
@@ -216,21 +216,21 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
         }
 
-        private async Task<int> GetOrCreateProductSubCategoryAsync(string subCategoriaProduto, int categoryId)
+        private async Task<Guid> GetOrCreateProductSubCategoryAsync(string subCategoriaProduto, Guid categoryId)
         {
             try
             {
                 var sql = _repositoryDapper.GetQueryNamed("AddProductSubCategory");
                 var param = new { Nome = subCategoriaProduto, CategoriaId = categoryId };
 
-                var subcategoryId = await _repositoryDapper.QueryAsync<int>(sql, param);
+                var subcategoryId = await _repositoryDapper.QueryAsync<Guid>(sql, param);
                 return subcategoryId.FirstOrDefault();
             }
             catch (PostgresException ex) when (ex.SqlState == "23505" && ex.ConstraintName == "produto_subcategoria_nome_key")
             {
                 var sql = _repositoryDapper.GetQueryNamed("GetSubcategoryIdByName");
                 var param = new { Nome = subCategoriaProduto };
-                var subCategoryId = await _repositoryDapper.QueryAsync<int>(sql, param);
+                var subCategoryId = await _repositoryDapper.QueryAsync<Guid>(sql, param);
                 return subCategoryId.FirstOrDefault();
             }
             catch (Exception ex)
@@ -239,16 +239,16 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
         }
 
-        private async Task<int> GetOrCreateColorAsync(string colorName)
+        private async Task<Guid> GetOrCreateColorAsync(string colorName)
         {
             try
             {
                 var sql = _repositoryDapper.GetQueryNamed("AddProductColor");
                 var param = new { Nome = colorName.ToLower() };
-                var colorId = await _repositoryDapper.QueryAsync<int>(sql, param);
+                var colorId = await _repositoryDapper.QueryAsync<Guid>(sql, param);
                 var result = colorId.FirstOrDefault();
                 
-                if (result <= 0)
+                if (result == Guid.Empty)
                     throw new Exception($"Falha ao criar cor '{colorName}' - ID inválido retornado");
                     
                 return result;
@@ -257,10 +257,10 @@ namespace DaccApi.Infrastructure.Repositories.Products
             {
                 var sql = _repositoryDapper.GetQueryNamed("GetColorIdByName");
                 var param = new { Nome = colorName.ToLower() };
-                var colorId = await _repositoryDapper.QueryAsync<int>(sql, param);
+                var colorId = await _repositoryDapper.QueryAsync<Guid>(sql, param);
                 var result = colorId.FirstOrDefault();
                 
-                if (result <= 0)
+                if (result == Guid.Empty)
                     throw new Exception($"Cor '{colorName}' existe mas não foi possível obter o ID");
                     
                 return result;
@@ -271,29 +271,28 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
         }
 
-        private async Task<int> GetOrCreateSizeAsync(string sizeName)
+        private async Task<Guid> GetOrCreateSizeAsync(string sizeName)
         {
             try
             {
                 var sql = _repositoryDapper.GetQueryNamed("AddProductSize");
                 var param = new { Nome = sizeName.ToUpper(), Descricao = sizeName };
-                var sizeId = await _repositoryDapper.QueryAsync<int>(sql, param);
+                var sizeId = await _repositoryDapper.QueryAsync<Guid>(sql, param);
                 var result = sizeId.FirstOrDefault();
                 
-                if (result <= 0)
+                if (result == Guid.Empty)
                     throw new Exception($"Falha ao criar tamanho '{sizeName}' - ID inválido retornado");
                     
                 return result;
             }
             catch (PostgresException ex) when (ex.SqlState == "23505")
             {
-                // Tamanho já existe, buscar o ID
                 var sql = _repositoryDapper.GetQueryNamed("GetSizeIdByName");
                 var param = new { Nome = sizeName.ToUpper() };
-                var sizeId = await _repositoryDapper.QueryAsync<int>(sql, param);
+                var sizeId = await _repositoryDapper.QueryAsync<Guid>(sql, param);
                 var result = sizeId.FirstOrDefault();
                 
-                if (result <= 0)
+                if (result == Guid.Empty)
                     throw new Exception($"Tamanho '{sizeName}' existe mas não foi possível obter o ID");
                     
                 return result;
