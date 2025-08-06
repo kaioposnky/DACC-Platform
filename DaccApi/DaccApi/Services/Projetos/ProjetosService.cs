@@ -3,16 +3,19 @@ using DaccApi.Infrastructure.Repositories.Projetos;
 using Helpers.Response;
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Model;
+using DaccApi.Services.FileStorage;
 
 namespace DaccApi.Services.Projetos
 {
     public class ProjetosService : IProjetosService
     {
         private readonly IProjetosRepository _projetosRepository;
+        private readonly IFileStorageService _fileStorageService;
 
-        public ProjetosService(IProjetosRepository projetosRepository)
+        public ProjetosService(IProjetosRepository projetosRepository, IFileStorageService fileStorageService)
         {
             _projetosRepository = projetosRepository;
+            _fileStorageService = fileStorageService;
         }
         public async Task<IActionResult> GetAllProjetos()
         {
@@ -65,8 +68,20 @@ namespace DaccApi.Services.Projetos
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
+                
+                
+                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile!);
 
-
+                var projeto = new Projeto()
+                {
+                    ImagemUrl = imageUrl,
+                    Titulo = request.Titulo,
+                    Descricao = request.Descricao,
+                    Status = request.Status,
+                    Diretoria = request.Diretoria,
+                    Tags = request.Tags,
+                };
+                
                 await _projetosRepository.CreateProjeto(projeto);
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
@@ -87,7 +102,7 @@ namespace DaccApi.Services.Projetos
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
                 }
-                _projetosRepository.DeleteProjeto(id);
+                await _projetosRepository.DeleteProjeto(id);
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
             }
@@ -97,24 +112,36 @@ namespace DaccApi.Services.Projetos
             }
         }
 
-        public async Task<IActionResult> UpdateProjeto(Guid id, RequestProjeto projeto)
+        public async Task<IActionResult> UpdateProjeto(Guid id, RequestProjeto request)
         {
             try
             {
                 var projetoQuery = await _projetosRepository.GetProjetoById(id);
                 if (projetoQuery == null ||
-                    String.IsNullOrWhiteSpace(projeto.Titulo) ||
-                    String.IsNullOrWhiteSpace(projeto.Descricao) ||
-                    projeto.ImageFile == null ||
-                    String.IsNullOrWhiteSpace(projeto.Status)||
-                    String.IsNullOrWhiteSpace(projeto.Diretoria)||
-                    projeto.Tags == null)
+                    String.IsNullOrWhiteSpace(request.Titulo) ||
+                    String.IsNullOrWhiteSpace(request.Descricao) ||
+                    request.ImageFile == null ||
+                    String.IsNullOrWhiteSpace(request.Status)||
+                    String.IsNullOrWhiteSpace(request.Diretoria)||
+                    request.Tags == null)
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
-                _projetosRepository.UpdateProjeto(id, projeto);
+                
+                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile!);
 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { projetos = projeto}));
+                var projeto = new Projeto()
+                {
+                    Titulo = request.Titulo,
+                    Descricao = request.Descricao,
+                    Status = request.Status,
+                    Diretoria = request.Diretoria,
+                    Tags = request.Tags,
+                    ImagemUrl = imageUrl,
+                };
+                await _projetosRepository.UpdateProjeto(id, projeto);
+
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { projetos = request}));
             }
             catch (Exception ex)
             {

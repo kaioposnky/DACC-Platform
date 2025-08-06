@@ -97,7 +97,7 @@ namespace DaccApi.Infrastructure.Repositories.Anuncio
                     Titulo = anuncio.Titulo,
                     Conteudo = anuncio.Conteudo,
                     TipoAnuncio = anuncio.TipoAnuncio,
-                    ImagemUrl = anuncio.ImageFile,
+                    ImagemUrl = anuncio.ImagemUrl,
                     ImagemAlt = anuncio.ImagemAlt,
                     Ativo = anuncio.Ativo,
                     AutorId = anuncio.AutorId

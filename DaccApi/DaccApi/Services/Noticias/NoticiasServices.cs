@@ -1,6 +1,7 @@
 ﻿using DaccApi.Helpers;
 using DaccApi.Infrastructure.Repositories.Noticias;
 using DaccApi.Model;
+using DaccApi.Services.FileStorage;
 using Helpers.Response;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,10 +11,12 @@ namespace DaccApi.Services.Noticias
 public class NoticiasServices : INoticiasServices
 {
     private readonly INoticiasRepository _noticiasRepository;
+    private readonly IFileStorageService _fileStorageService;   
 
-    public NoticiasServices(INoticiasRepository noticiasRepository)
+    public NoticiasServices(INoticiasRepository noticiasRepository, IFileStorageService fileStorageService)
     {
         _noticiasRepository = noticiasRepository;
+        _fileStorageService = fileStorageService;   
     }
 
     public async Task<IActionResult> GetAllNoticias()
@@ -33,18 +36,29 @@ public class NoticiasServices : INoticiasServices
         }
     }
 
-    public async Task<IActionResult> CreateNoticia(RequestNoticia noticia)
+    public async Task<IActionResult> CreateNoticia(Guid autorId, RequestNoticia request)
     {
         try
         {
-            if (String.IsNullOrWhiteSpace(noticia.Titulo) ||
-                String.IsNullOrWhiteSpace(noticia.Categoria) ||
-                String.IsNullOrWhiteSpace(noticia.Descricao))
+            if (String.IsNullOrWhiteSpace(request.Titulo) ||
+                String.IsNullOrWhiteSpace(request.Categoria) ||
+                String.IsNullOrWhiteSpace(request.Descricao))
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
+
+            var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile!);
             
-            _noticiasRepository.CreateNoticia(noticia);
+            var noticia = new Noticia()
+            {
+                Categoria = request.Categoria,
+                Descricao = request.Descricao,
+                Titulo = request.Titulo,
+                ImagemUrl = imageUrl,
+                AutorId = autorId,
+            };
+            
+            await _noticiasRepository.CreateNoticia(noticia);
 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
         }
@@ -93,7 +107,7 @@ public class NoticiasServices : INoticiasServices
         }
     }
 
-    public async Task<IActionResult> UpdateNoticia(Guid id,RequestNoticia noticia)
+    public async Task<IActionResult> UpdateNoticia(Guid id,RequestNoticia request)
     {
         try
         {
@@ -102,9 +116,20 @@ public class NoticiasServices : INoticiasServices
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
+            
+            var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile!);
+
+            var noticia = new Noticia()
+            {
+                Titulo = request.Titulo,
+                Descricao = request.Descricao,
+                Categoria = request.Categoria,
+                ImagemUrl = imageUrl,
+            };
+            
             await _noticiasRepository.UpdateNoticia(id, noticia);
 
-            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { noticias = noticia}));
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { noticias = request}));
         }
         catch (Exception ex)
         {

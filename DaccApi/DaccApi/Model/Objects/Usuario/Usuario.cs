@@ -45,8 +45,7 @@ namespace DaccApi.Model
                 Email = request.Email,
                 Curso = request.Curso,
                 Telefone = request.Telefone,
-                ImagemUrl = request.ImagemUrl,
-                NewsLetterSubscriber = request.NewsLetterSubscriber
+                InscritoNoticia = request.InscritoNoticia
             };
         }
 

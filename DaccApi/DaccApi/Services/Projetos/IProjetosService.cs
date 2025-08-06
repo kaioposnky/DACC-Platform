@@ -12,7 +12,7 @@ namespace DaccApi.Services.Projetos
 
         public Task<IActionResult> DeleteProjeto(Guid id);
         
-        public Task<IActionResult> UpdateProjeto(Guid id, RequestProjeto projeto);
+        public Task<IActionResult> UpdateProjeto(Guid id, RequestProjeto request);
 
     }
 }
