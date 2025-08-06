@@ -159,22 +159,12 @@ namespace DaccApi.Services.Products
 
                 await _produtosRepository.CreateProductVariationAsync(variation);
 
-                if (request.Imagens.Length > 0)
-                {
-                    var imageProcessingResult = await ProcessVariationImagesAsync(variationId, request.Imagens, request.ImagensAlt);
-                    if (imageProcessingResult != null)
-                    {
-                        await _produtosRepository.DeleteVariationAsync(variationId);
-                        return imageProcessingResult;
-                    }
-                }
-
                 var createdVariation = await _produtosRepository.GetVariationByIdAsync(variationId);
                 var response = Produto.MapToResponseVariacao(createdVariation ?? variation);
                 
                 return ResponseHelper.CreateSuccessResponse(
                     ResponseSuccess.CREATED.WithData(new { variation = response }),
-                    "Variação criada com sucesso!");
+                    "Variação criada com sucesso! Use o endpoint de imagens para adicionar fotos.");
             }
             catch (ArgumentException ex)
             {
@@ -263,16 +253,6 @@ namespace DaccApi.Services.Products
                 existingVariation.DataAtualizacao = DateTime.UtcNow;
 
                 await _produtosRepository.UpdateVariationAsync(existingVariation);
-
-                if (request.Imagens != null && request.Imagens.Length > 0)
-                {
-                    await _produtosRepository.DeleteVariationImagesAsync(variationId);
-                    var imageProcessingResult = await ProcessVariationImagesAsync(variationId, request.Imagens, request.ImagensAlt);
-                    if (imageProcessingResult != null)
-                    {
-                        return imageProcessingResult;
-                    }
-                }
 
                 var updatedVariation = await _produtosRepository.GetVariationByIdAsync(variationId);
                 var response = Produto.MapToResponseVariacao(updatedVariation ?? existingVariation);
@@ -404,62 +384,134 @@ namespace DaccApi.Services.Products
             }
         }
         
-        private async Task<IActionResult?> ProcessVariationImagesAsync(Guid variationId, IFormFile[] images, string[]? imageAlts)
+        public async Task<IActionResult> CreateVariationImageAsync(Guid productId, Guid variationId,
+            RequestCreateProdutoImagem request)
         {
             try
             {
-                for (var i = 0; i < images.Length; i++)
+                var product = await _produtosRepository.GetProductByIdAsync(productId);
+                if (product == null)
                 {
-                    var image = images[i];
-                    
-                    if (image.Length == 0)
-                    {
-                        return ResponseHelper.CreateErrorResponse(ResponseError.VALIDATION_ERROR,
-                            $"Arquivo '{image.FileName}' está vazio");
-                    }
-
-                    try
-                    {
-                        var imageUrl = await _fileStorageService.SaveImageFileAsync(image);
-
-                        var altText = imageAlts != null && i < imageAlts.Length ? imageAlts[i] : null;
-
-                        if (!string.IsNullOrEmpty(altText) && altText.Length > 255)
-                        {
-                            return ResponseHelper.CreateErrorResponse(ResponseError.VALIDATION_ERROR,
-                                $"Texto alternativo da imagem {i + 1} deve ter no máximo 255 caracteres");
-                        }
-
-                        var produtoImagem = new ProdutoImagem
-                        {
-                            Id = Guid.NewGuid(),
-                            ProdutoVariacaoId = variationId,
-                            ImagemUrl = imageUrl,
-                            ImagemAlt = altText?.Trim(),
-                            Ordem = i,
-                        };
-
-                        await _produtosRepository.AddProductImagesAsync(produtoImagem);
-                    }
-                    catch (ArgumentException ex)
-                    {
-                        return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, ex.Message);
-                    }
-                    catch (Exception ex)
-                    {
-                        return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,
-                            $"Falha no upload da imagem '{image.FileName}': {ex.Message}");
-                    }
+                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND,
+                        "Produto não encontrado!");
                 }
 
-                return null;
+                var variation = await _produtosRepository.GetVariationByIdAsync(variationId);
+                if (variation == null || variation.ProdutoId != productId)
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND,
+                        "Variação não encontrada para este produto!");
+                }
+
+                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
+                var produtoImagem = new ProdutoImagem
+                {
+                    Id = Guid.NewGuid(),
+                    ProdutoVariacaoId = variationId,
+                    ImagemUrl = imageUrl,
+                    ImagemAlt = request.ImagemAlt?.Trim(),
+                    Ordem = request.Order,
+                };
+
+                await _produtosRepository.AddProductImagesAsync(produtoImagem);
+                
+                return ResponseHelper.CreateSuccessResponse(
+                    ResponseSuccess.CREATED.WithData(new { image = produtoImagem }), 
+                    "Imagem adicionada com sucesso!");
+            }
+            catch (ArgumentException ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, 
+                    $"Erro ao adicionar imagem: {ex.Message}");
+            }
+        }
+
+        public async Task<IActionResult> GetImageAsync(Guid imageId)
+        {
+            try
+            {
+                var image = await _produtosRepository.GetImageByIdAsync(imageId);
+                if (image == null)
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND,
+                        "Imagem não encontrada!");
+                }
+
+                return ResponseHelper.CreateSuccessResponse(
+                    ResponseSuccess.OK.WithData(new { image }),
+                    "Imagem obtida com sucesso!");
             }
             catch (Exception ex)
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,
-                    $"Erro no processamento das imagens: {ex.Message}");
+                    $"Erro ao obter imagem: {ex.Message}");
             }
         }
 
+        public async Task<IActionResult> UpdateImageAsync(Guid imageId, RequestUpdateProdutoImagem request)
+        {
+            try
+            {
+                var existingImage = await _produtosRepository.GetImageByIdAsync(imageId);
+                if (existingImage == null)
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND,
+                        "Imagem não encontrada!");
+                }
+
+                if (request.ImageFile != null)
+                {
+                    existingImage.ImagemUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
+                }
+
+                if (request.Order.HasValue)
+                {
+                    existingImage.Ordem = request.Order.Value;
+                }
+
+                if (request.ImagemAlt != null)
+                {
+                    existingImage.ImagemAlt = request.ImagemAlt.Trim();
+                }
+
+                await _produtosRepository.UpdateProductImageAsync(existingImage);
+
+                return ResponseHelper.CreateSuccessResponse(
+                    ResponseSuccess.OK.WithData(new { image = existingImage }),
+                    "Imagem atualizada com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,
+                    $"Erro ao atualizar imagem: {ex.Message}");
+            }
+        }
+
+        public async Task<IActionResult> DeleteImageAsync(Guid imageId)
+        {
+            try
+            {
+                var existingImage = await _produtosRepository.GetImageByIdAsync(imageId);
+                if (existingImage == null)
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND,
+                        "Imagem não encontrada!");
+                }
+
+                await _produtosRepository.DeleteImageAsync(imageId);
+
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK,
+                    "Imagem removida com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,
+                    $"Erro ao remover imagem: {ex.Message}");
+            }
+        }
     }
 }

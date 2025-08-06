@@ -178,6 +178,21 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
         }
         
+        public async Task UpdateProductImageAsync(ProdutoImagem imagem)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("UpdateProductImage");
+                var param = new { Id = imagem.Id, ImagemUrl = imagem.ImagemUrl, Order = imagem.Ordem};
+                
+                await _repositoryDapper.ExecuteAsync(sql, param);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao atualizar imagem do produto no banco de dados!" + ex.Message); 
+            }
+        }
+        
         public async Task RemoveProductByIdAsync(Guid id)
         {
             try
@@ -524,6 +539,50 @@ namespace DaccApi.Infrastructure.Repositories.Products
             catch (Exception ex)
             {
                 throw new Exception("Erro ao remover estoque dos produtos.", ex);
+            }
+        }
+
+        public async Task<ProdutoImagem?> GetImageByIdAsync(Guid imageId)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("GetImageById");
+                var param = new { Id = imageId };
+                var result = await _repositoryDapper.QueryAsync<ProdutoImagem>(sql, param);
+                return result.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao obter imagem pelo ID no banco de dados. Erro original: {ex.Message}", ex);
+            }
+        }
+
+        public async Task DeleteImageAsync(Guid imageId)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("DeleteImageById");
+                var param = new { Id = imageId };
+                await _repositoryDapper.ExecuteAsync(sql, param);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao deletar imagem no banco de dados. Erro original: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<Produto?> GetProductByProductVariationIdAsync(Guid productVariationId)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("GetProductByProductVariationId");
+                var param = new { ProductVariationId = productVariationId };
+                var result = await _repositoryDapper.QueryAsync<Produto>(sql, param);
+                return result.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao obter produto pelo id de sua variação no banco de dados. Erro original: {ex.Message}", ex);
             }
         }
     }

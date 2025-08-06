@@ -69,6 +69,16 @@
         VALUES (@Id, @ProdutoVariacaoId, @ImagemUrl, @ImagemAlt, @Ordem);
     </query>
 
+    <!-- Query para atualizar uma imagem de produto -->
+    <query name="UpdateProductImage">
+        UPDATE produto_imagem
+        SET
+            ordem = @Ordem,
+            imagem_url = @ImagemUrl,
+            imagem_alt = @ImagemAlt
+        WHERE id = @Id;
+    </query>
+
     <!-- Query para remover um produto e suas dependências -->
     <query name="DeleteProductById">
         DELETE FROM produto WHERE id = @Id;
@@ -264,6 +274,7 @@
         pv.id as VariationId,
         pv.produto_id as ProductId,
         p.nome as ProductName,
+        p.Preco as Preco,
         pc.nome as ColorName,
         pt.nome as SizeName,
         pv.estoque as Stock
@@ -272,5 +283,42 @@
         LEFT JOIN produto_cor pc ON pv.cor_id = pc.id
         LEFT JOIN produto_tamanho pt ON pv.tamanho_id = pt.id
         WHERE pv.id = ANY(@VariationIds);
+    </query>
+
+    <!-- Query para obter uma imagem específica por ID -->
+    <query name="GetImageById">
+        SELECT 
+            id AS Id,
+            produto_variacao_id AS ProdutoVariacaoId,
+            imagem_url AS ImagemUrl,
+            imagem_alt AS ImagemAlt,
+            ordem AS Ordem
+        FROM produto_imagem 
+        WHERE id = @Id;
+    </query>
+
+    <!-- Query para deletar uma imagem específica -->
+    <query name="DeleteImageById">
+        DELETE FROM produto_imagem WHERE id = @Id;
+    </query>
+    
+    <!-- Query para obter produto pelo id de sua variação-->
+    <query name="GetProductByProductVariationId">
+        SELECT
+            p.id AS Id,
+            p.nome AS Nome,
+            p.descricao AS Descricao,
+            p.preco AS Preco,
+            p.preco_original AS PrecoOriginal,
+            p.ativo AS Ativo,
+            COALESCE(pc.nome, '') AS Categoria,
+            COALESCE(ps.nome, '') AS Subcategoria,
+            p.ativo AS Ativo,
+            p.data_criacao AS DataCriacao,
+            p.data_atualizacao AS DataAtualizacao
+        FROM produto p
+        LEFT JOIN produto_variacao pv ON pv.produto_id = @Id 
+        LEFT JOIN produto_subcategoria ps ON p.subcategoria_id = ps.id
+        LEFT JOIN produto_categoria pc ON ps.categoria_id = pc.id;
     </query>
 </queries>

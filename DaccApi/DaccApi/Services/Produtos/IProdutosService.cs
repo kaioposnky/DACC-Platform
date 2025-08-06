@@ -15,5 +15,9 @@ namespace DaccApi.Services.Products
         public Task<IActionResult> GetVariationsAsync(Guid productId);
         public Task<IActionResult> UpdateVariationAsync(Guid productId, Guid variationId, RequestUpdateProdutoVariacao request);
         public Task<IActionResult> DeleteVariationAsync(Guid productId, Guid variationId);
+        public Task<IActionResult> CreateVariationImageAsync(Guid productId, Guid variationId, RequestCreateProdutoImagem request);
+        public Task<IActionResult> GetImageAsync(Guid imageId);
+        public Task<IActionResult> UpdateImageAsync(Guid imageId, RequestUpdateProdutoImagem request);
+        public Task<IActionResult> DeleteImageAsync(Guid imageId);
     }
 }

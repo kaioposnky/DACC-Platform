@@ -6,7 +6,7 @@ namespace DaccApi.Model.Responses
         
         public Guid ProdutoVariacaoId { get; set; }
         
-        public string ImagemUrl { get; set; } = string.Empty;
+        public string? ImagemUrl { get; set; } = string.Empty;
         public string? ImagemAlt { get; set; }
         public int Ordem { get; set; }
     }

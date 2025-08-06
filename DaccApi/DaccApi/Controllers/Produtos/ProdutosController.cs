@@ -1,7 +1,4 @@
-using DaccApi.Helpers;
 using DaccApi.Model;
-using DaccApi.Responses;
-using DaccApi.Responses.UserResponse;
 using DaccApi.Services.Products;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -69,7 +66,7 @@ namespace DaccApi.Controllers.Produtos
             return response;
         }
 
-        [HttpPost("{id:guid}/variacoes")]
+        [HttpPost("{id:guid}/variations")]
         [HasPermission(AppPermissions.Produtos.Create)]
         public async Task<IActionResult> CreateVariation([FromRoute] Guid id, [FromForm] RequestProdutoVariacaoCreate request)
         {
@@ -78,14 +75,14 @@ namespace DaccApi.Controllers.Produtos
         }
 
         [AllowAnonymous]
-        [HttpGet("{id:guid}/variacoes")]
+        [HttpGet("{id:guid}/variations")]
         public async Task<IActionResult> GetVariations([FromRoute] Guid id)
         {
             var response = await _produtosService.GetVariationsAsync(id);
             return response;
         }
         
-        [HttpPatch("{id:guid}/variacoes/{variationId:guid}")]
+        [HttpPatch("{id:guid}/variations/{variationId:guid}")]
         [HasPermission(AppPermissions.Produtos.Update)]
         public async Task<IActionResult> UpdateVariation([FromRoute] Guid id, [FromRoute] Guid variationId, [FromForm] RequestUpdateProdutoVariacao request)
         {
@@ -93,7 +90,7 @@ namespace DaccApi.Controllers.Produtos
             return response;
         }
         
-        [HttpDelete("{id:guid}/variacoes/{variationId:guid}")]
+        [HttpDelete("{id:guid}/variations/{variationId:guid}")]
         [HasPermission(AppPermissions.Produtos.Delete)]
         public async Task<IActionResult> DeleteVariation([FromRoute] Guid id, [FromRoute] Guid variationId)
         {
@@ -101,5 +98,39 @@ namespace DaccApi.Controllers.Produtos
             return response;
         }
 
+        [HttpPost("{productId:guid}/variations/{variationId:guid}/images")]
+        [HasPermission(AppPermissions.Produtos.Create)]
+        public async Task<IActionResult> CreateVariationImage(
+            [FromRoute] Guid productId, [FromRoute] Guid variationId, 
+            [FromForm] RequestCreateProdutoImagem request)
+        {
+            var response = await _produtosService.CreateVariationImageAsync(productId, variationId, request);
+            return response;
+        }
+        
+        [HttpGet("images/{imageId:guid}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetImage([FromRoute] Guid imageId)
+        {
+            var response = await _produtosService.GetImageAsync(imageId);
+            return response;
+        }
+        
+        [HttpPatch("images/{imageId:guid}")]
+        [HasPermission(AppPermissions.Produtos.Update)]
+        public async Task<IActionResult> UpdateImage(
+            [FromRoute] Guid imageId, [FromForm] RequestUpdateProdutoImagem request)
+        {
+            var response = await _produtosService.UpdateImageAsync(imageId, request);
+            return response;
+        }
+        
+        [HttpDelete("images/{imageId:guid}")]
+        [HasPermission(AppPermissions.Produtos.Delete)]
+        public async Task<IActionResult> DeleteImage([FromRoute] Guid imageId)
+        {
+            var response = await _produtosService.DeleteImageAsync(imageId);
+            return response;
+        }
     }
 }

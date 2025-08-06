@@ -1,4 +1,4 @@
-﻿namespace DaccApi.Model
+namespace DaccApi.Model
 {
     public class ProdutoVariacaoInfo
     {
@@ -7,6 +7,7 @@
         public string ProductName { get; set; }
         public string? ColorName { get; set; }
         public string? SizeName { get; set; }
+        public decimal Preco { get; set; }
         public int Stock { get; set; }
     }
 }

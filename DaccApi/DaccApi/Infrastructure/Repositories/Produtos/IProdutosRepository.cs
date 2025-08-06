@@ -24,5 +24,9 @@ namespace DaccApi.Infrastructure.Repositories.Products
         Task<bool> RemoveProductVariationStockAsync(Guid productVariationId, int amount);
         Task<List<ProdutoVariacaoInfo>> GetVariationsWithProductByIdsAsync(List<Guid> variationIds);
         Task<bool> RemoveMultipleProductsStockAsync(List<Guid> variationIds, List<int> quantities);
+        Task<ProdutoImagem?> GetImageByIdAsync(Guid imageId);
+        Task UpdateProductImageAsync(ProdutoImagem imagem);
+        Task DeleteImageAsync(Guid imageId);
+        Task<Produto?> GetProductByProductVariationIdAsync(Guid productVariationId);
     }
 }

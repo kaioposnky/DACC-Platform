@@ -10,7 +10,7 @@ namespace DaccApi.Model
         
         [Required]
         [Url]
-        public string ImagemUrl { get; set; } = string.Empty;
+        public string? ImagemUrl { get; set; } = string.Empty;
         
         [StringLength(255)]
         public string? ImagemAlt { get; set; }
