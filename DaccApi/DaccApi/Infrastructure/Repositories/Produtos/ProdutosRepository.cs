@@ -52,14 +52,14 @@ namespace DaccApi.Infrastructure.Repositories.Products
                 
                 var queryParams = new
                 {
-                    query.Page,
-                    query.Limit,
-                    SearchPattern = string.IsNullOrWhiteSpace(query.SearchPattern) ? null : $"%{query.SearchPattern}%",
+                    Page = query.Pagina,
+                    Limit = query.Limite,
+                    SearchPattern = string.IsNullOrWhiteSpace(query.Pesquisa) ? null : $"%{query.Pesquisa}%",
                     CategoriaID = categoriaId,
                     SubcategoriaID = subcategoriaId,
-                    query.MinPrice,
-                    query.MaxPrice,
-                    query.SortBy
+                    MinPrice = query.PrecoMinimo,
+                    MaxPrice = query.PrecoMaximo,
+                    SortBy = query.OrdenarPor
                 };
                 
                 var products = await _repositoryDapper.QueryAsync<Produto>(sql, queryParams);

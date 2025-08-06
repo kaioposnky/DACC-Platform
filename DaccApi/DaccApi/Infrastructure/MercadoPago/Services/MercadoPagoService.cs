@@ -48,7 +48,7 @@ namespace DaccApi.Infrastructure.Services.MercadoPago
             var user = await _usuarioRepository.GetUserById(order.UserId);
             
             // Pega todos os produtos da order
-            var variationIds = order.OrderItems.Select(item => item.ProductVariationId).ToList();
+            var variationIds = order.OrderItems.Select(item => item.ProdutoVariacaoId).ToList();
             var variations = await _produtosRepository.GetVariationsWithProductByIdsAsync(variationIds);
             
             // Dict com variações para ser O(1)
@@ -65,15 +65,15 @@ namespace DaccApi.Infrastructure.Services.MercadoPago
                 // 4. Criar items sem loops aninhados
                 Items = order.OrderItems.Select(item =>
                 {
-                    var variation = variationDict[item.ProductVariationId];
+                    var variation = variationDict[item.ProdutoVariacaoId];
                 
                     return new PreferenceItemRequest
                     {
                         Id = variation.VariationId.ToString(),
                         Title = $"{variation.ProductName} - {variation.ColorName} {variation.SizeName}",
-                        Quantity = item.Quantity,
+                        Quantity = item.Quantidade,
                         CurrencyId = "BRL",
-                        UnitPrice = item.UnitPrice,
+                        UnitPrice = item.PrecoUnitario,
                     };
                 }).ToList(),
                 
