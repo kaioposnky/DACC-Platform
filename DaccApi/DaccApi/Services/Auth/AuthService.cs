@@ -133,7 +133,7 @@ namespace DaccApi.Services.Auth
                     SenhaHash = request.Senha,
                     ImagemUrl = request.ImagemUrl ?? "",
                     Ativo = true,
-                    NewsLetterSubscriber = request.NewsLetterSubscriber ?? false,
+                    InscritoNoticia = request.InscritoNoticia ?? false,
                     Cargo = CargoUsuario.Aluno,
                     DataCriacao = DateTime.Now,
                     DataAtualizacao = DateTime.Now

@@ -13,7 +13,7 @@ namespace DaccApi.Model
         public string? Telefone { get; set; }
         public string? Senha { get; set; }
         public string? ImagemUrl { get; set; }
-        public bool? NewsLetterSubscriber { get; set; }
+        public bool? InscritoNoticia { get; set; }
         [CargoValido]
         public string? Cargo {  get; set; }
     }

@@ -56,7 +56,7 @@ namespace DaccApi.Services.User
                     Sobrenome = newUserData.Sobrenome ?? userData.Sobrenome,
                     Curso = newUserData.Curso ?? userData.Curso,
                     Telefone = newUserData.Telefone ?? userData.Telefone,
-                    NewsLetterSubscriber = newUserData.NewsLetterSubscriber ?? userData.NewsLetterSubscriber,
+                    InscritoNoticia = newUserData.InscritoNoticia ?? userData.InscritoNoticia,
                 };
                 
                 await _usuarioRepository.UpdateUser(user);

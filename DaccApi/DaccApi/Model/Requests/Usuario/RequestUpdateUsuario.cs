@@ -11,6 +11,6 @@ namespace DaccApi.Model
         public string? Curso { get; set; }
         public string? Telefone { get; set; }
         public string? ImagemUrl { get; set; }
-        public bool? NewsLetterSubscriber { get; set; }
+        public bool? InscritoNoticia { get; set; }
     }
 }

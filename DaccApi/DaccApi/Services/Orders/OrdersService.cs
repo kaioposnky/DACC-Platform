@@ -27,8 +27,8 @@ namespace DaccApi.Services.Orders
         {
             try
             {
-                var variationIds = request.OrderItems.Select(item => item.ProductVariationId).ToList();
-                var quantities = request.OrderItems.Select(item => item.Quantity).ToList();
+                var variationIds = request.OrderItems.Select(item => item.ProdutoVariacaoId).ToList();
+                var quantities = request.OrderItems.Select(item => item.Quantidade).ToList();
 
                 var productVariationInfo = await _produtosRepository.GetVariationsWithProductByIdsAsync(variationIds);
 
@@ -49,20 +49,20 @@ namespace DaccApi.Services.Orders
 
                 foreach (var item in request.OrderItems)
                 {
-                    if (!productDict.TryGetValue(item.ProductVariationId, out var product))
+                    if (!productDict.TryGetValue(item.ProdutoVariacaoId, out var product))
                     {
-                        throw new ArgumentException($"Produto {item.ProductVariationId} não encontrado!");
+                        throw new ArgumentException($"Produto {item.ProdutoVariacaoId} não encontrado!");
                     }
 
                     var unitPrice = product.Preco;
-                    totalAmount += unitPrice * item.Quantity;
+                    totalAmount += unitPrice * item.Quantidade;
 
                     orderItems.Add(new OrderItem
                     {
-                        UnitPrice = unitPrice,
-                        ProductId = product.ProductId,
-                        ProductVariationId = product.VariationId,
-                        Quantity = item.Quantity
+                        PrecoUnitario = unitPrice,
+                        ProdutoId = product.ProductId,
+                        ProdutoVariacaoId = product.VariationId,
+                        Quantidade = item.Quantidade
                     });
                 }
 
