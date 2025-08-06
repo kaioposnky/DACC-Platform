@@ -25,24 +25,24 @@ namespace DaccApi.Controllers.Usuario
         }
 
         [HasPermission(AppPermissions.Users.View)]
-        [HttpGet("{id:int}")]
-        public IActionResult GetUser([FromRoute] int id)
+        [HttpGet("{id:guid}")]
+        public IActionResult GetUser([FromRoute] Guid id)
         {
             var response = _usuarioService.GetUserById(id);
             return response;
         }
         
         [HasPermission(AppPermissions.Users.Update)]
-        [HttpPatch("{id:int}")]
-        public async Task<IActionResult> UpdateUser([FromRoute] int id, [FromBody] RequestUpdateUsuario request)
+        [HttpPatch("{id:guid}")]
+        public async Task<IActionResult> UpdateUser([FromRoute] Guid id, [FromBody] RequestUpdateUsuario request)
         {
             var response = await _usuarioService.UpdateUser(id, request);
             return response;
         }
 
         [HasPermission(AppPermissions.Users.Delete)]
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> DeleteUser([FromRoute] int id)
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> DeleteUser([FromRoute] Guid id)
         {
             var response = await _usuarioService.DeleteUser(id);
             return response;

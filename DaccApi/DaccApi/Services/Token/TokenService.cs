@@ -87,7 +87,7 @@ namespace DaccApi.Services.Token
             return _tokenHandler.WriteToken(tokenOptions);
         }
         
-        public async Task<bool> ValidateRefreshToken(int userId, string refreshToken)
+        public async Task<bool> ValidateRefreshToken(Guid userId, string refreshToken)
         {
             var userTokensOld = await _usuarioRepository.GetUserTokens(userId);
             var oldRefeshToken = userTokensOld.RefreshToken;

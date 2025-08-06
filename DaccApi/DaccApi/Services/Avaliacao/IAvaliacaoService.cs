@@ -8,12 +8,12 @@ public interface IAvaliacaoService
     public Task<IActionResult> CreateAvaliacao(RequestCreateAvaliacao avaliacao);
     public Task<IActionResult> GetAllAvaliacoes();
     
-    public Task<IActionResult> GetAvaliacaoById(int id);
+    public Task<IActionResult> GetAvaliacaoById(Guid id);
     
     public Task<IActionResult> GetAvaliacoesByProductId(Guid produtoId);
-    public Task<IActionResult> GetAvaliacoesByUserId(int usuarioId);
+    public Task<IActionResult> GetAvaliacoesByUserId(Guid usuarioId);
 
-    public Task<IActionResult> DeleteAvaliacao(int id);
+    public Task<IActionResult> DeleteAvaliacao(Guid id);
     
-    public Task<IActionResult> UpdateAvaliacao(int usuarioId,  RequestUpdateAvaliacao avaliacao);
+    public Task<IActionResult> UpdateAvaliacao(Guid usuarioId,  RequestUpdateAvaliacao avaliacao);
 }

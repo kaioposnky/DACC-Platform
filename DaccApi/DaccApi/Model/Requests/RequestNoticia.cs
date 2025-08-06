@@ -9,7 +9,7 @@
         
         public string? ImagemUrl { get; set; }
         
-        public int? AutorId { get; set; }
+        public Guid? AutorId { get; set; }
         public string? Categoria { get; set; }
         
         public DateTime? DataAtualizacao { get; set; }

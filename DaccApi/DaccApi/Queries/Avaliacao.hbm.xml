@@ -9,6 +9,7 @@
 <!--    Query para obter todas as avaliações-->
     <query name="GetAllAvaliacoes">
         SELECT 
+            id as Id,
             nota as Nota,
             usuario_id as UsuarioId,
             comentario as Comentario,
@@ -19,6 +20,7 @@
     
     <query name="GetAvaliacaoById">
         SELECT
+            id as Id,
             nota as Nota,
             usuario_id as UsuarioId,
             comentario as Comentario,
@@ -30,6 +32,7 @@
 <!--    Query para obter as avaliacoes de um produto especifico-->
     <query name="GetAvaliacoesByProductId">
         SELECT
+            id as Id,
             nota as Nota,
             usuario_id as UsuarioId,
             comentario as Comentario,
@@ -40,6 +43,7 @@
 <!--    Query para obter as avaliacoes de um usuario-->
     <query name="GetAvaliacoesByUserId">
         SELECT
+            id as Id,
             nota as Nota,
             usuario_id as UsuarioId,
             comentario as Comentario,

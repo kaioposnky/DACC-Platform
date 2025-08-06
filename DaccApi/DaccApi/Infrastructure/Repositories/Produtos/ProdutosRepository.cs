@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using DaccApi.Exceptions;
 using DaccApi.Infrastructure.Dapper;
 using DaccApi.Model;
 using Npgsql;
@@ -79,19 +80,19 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
         }
         
-        private async Task<int?> GetSubcategoryIdByNameAsync(string subcategoryName)
+        private async Task<Guid?> GetSubcategoryIdByNameAsync(string subcategoryName)
         {
             var sql = _repositoryDapper.GetQueryNamed("GetSubcategoryIdByName");
             var param = new { Nome = subcategoryName };
-            var subcategoryId = await _repositoryDapper.QueryAsync<int?>(sql, param);
+            var subcategoryId = await _repositoryDapper.QueryAsync<Guid?>(sql, param);
             return subcategoryId.FirstOrDefault();
         }
         
-        private async Task<int?> GetCategoryIdByNameAsync(string categoryName)
+        private async Task<Guid?> GetCategoryIdByNameAsync(string categoryName)
         {
             var sql = _repositoryDapper.GetQueryNamed("GetCategoryIdByName");
             var param = new { Nome = categoryName };
-            var categoryId = await _repositoryDapper.QueryAsync<int?>(sql, param);
+            var categoryId = await _repositoryDapper.QueryAsync<Guid?>(sql, param);
             return categoryId.FirstOrDefault();
         }
 
@@ -177,6 +178,21 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
         }
         
+        public async Task UpdateProductImageAsync(ProdutoImagem imagem)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("UpdateProductImage");
+                var param = new { Id = imagem.Id, ImagemUrl = imagem.ImagemUrl, Order = imagem.Ordem};
+                
+                await _repositoryDapper.ExecuteAsync(sql, param);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao atualizar imagem do produto no banco de dados!" + ex.Message); 
+            }
+        }
+        
         public async Task RemoveProductByIdAsync(Guid id)
         {
             try
@@ -192,21 +208,21 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
         }
 
-        private async Task<int> GetOrCreateProductCategoryAsync(string categoriaProduto)
+        private async Task<Guid> GetOrCreateProductCategoryAsync(string categoriaProduto)
         {
             try
             {
                 var sql = _repositoryDapper.GetQueryNamed("AddProductCategory");
                 var param = new { Nome = categoriaProduto };
 
-                var categoryId = await _repositoryDapper.QueryAsync<int>(sql, param);
+                var categoryId = await _repositoryDapper.QueryAsync<Guid>(sql, param);
                 return categoryId.FirstOrDefault();
             }
             catch (PostgresException ex) when (ex.SqlState == "23505" && ex.ConstraintName == "produto_categoria_nome_key")
             {
                 var sql = _repositoryDapper.GetQueryNamed("GetCategoryIdByName");
                 var param = new { Nome = categoriaProduto };
-                var categoryId = await _repositoryDapper.QueryAsync<int>(sql, param);
+                var categoryId = await _repositoryDapper.QueryAsync<Guid>(sql, param);
                 return categoryId.FirstOrDefault();
             }
             catch (Exception ex)
@@ -215,21 +231,21 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
         }
 
-        private async Task<int> GetOrCreateProductSubCategoryAsync(string subCategoriaProduto, int categoryId)
+        private async Task<Guid> GetOrCreateProductSubCategoryAsync(string subCategoriaProduto, Guid categoryId)
         {
             try
             {
                 var sql = _repositoryDapper.GetQueryNamed("AddProductSubCategory");
                 var param = new { Nome = subCategoriaProduto, CategoriaId = categoryId };
 
-                var subcategoryId = await _repositoryDapper.QueryAsync<int>(sql, param);
+                var subcategoryId = await _repositoryDapper.QueryAsync<Guid>(sql, param);
                 return subcategoryId.FirstOrDefault();
             }
             catch (PostgresException ex) when (ex.SqlState == "23505" && ex.ConstraintName == "produto_subcategoria_nome_key")
             {
                 var sql = _repositoryDapper.GetQueryNamed("GetSubcategoryIdByName");
                 var param = new { Nome = subCategoriaProduto };
-                var subCategoryId = await _repositoryDapper.QueryAsync<int>(sql, param);
+                var subCategoryId = await _repositoryDapper.QueryAsync<Guid>(sql, param);
                 return subCategoryId.FirstOrDefault();
             }
             catch (Exception ex)
@@ -238,16 +254,16 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
         }
 
-        private async Task<int> GetOrCreateColorAsync(string colorName)
+        private async Task<Guid> GetOrCreateColorAsync(string colorName)
         {
             try
             {
                 var sql = _repositoryDapper.GetQueryNamed("AddProductColor");
                 var param = new { Nome = colorName.ToLower() };
-                var colorId = await _repositoryDapper.QueryAsync<int>(sql, param);
+                var colorId = await _repositoryDapper.QueryAsync<Guid>(sql, param);
                 var result = colorId.FirstOrDefault();
                 
-                if (result <= 0)
+                if (result == Guid.Empty)
                     throw new Exception($"Falha ao criar cor '{colorName}' - ID inválido retornado");
                     
                 return result;
@@ -256,10 +272,10 @@ namespace DaccApi.Infrastructure.Repositories.Products
             {
                 var sql = _repositoryDapper.GetQueryNamed("GetColorIdByName");
                 var param = new { Nome = colorName.ToLower() };
-                var colorId = await _repositoryDapper.QueryAsync<int>(sql, param);
+                var colorId = await _repositoryDapper.QueryAsync<Guid>(sql, param);
                 var result = colorId.FirstOrDefault();
                 
-                if (result <= 0)
+                if (result == Guid.Empty)
                     throw new Exception($"Cor '{colorName}' existe mas não foi possível obter o ID");
                     
                 return result;
@@ -270,29 +286,28 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
         }
 
-        private async Task<int> GetOrCreateSizeAsync(string sizeName)
+        private async Task<Guid> GetOrCreateSizeAsync(string sizeName)
         {
             try
             {
                 var sql = _repositoryDapper.GetQueryNamed("AddProductSize");
                 var param = new { Nome = sizeName.ToUpper(), Descricao = sizeName };
-                var sizeId = await _repositoryDapper.QueryAsync<int>(sql, param);
+                var sizeId = await _repositoryDapper.QueryAsync<Guid>(sql, param);
                 var result = sizeId.FirstOrDefault();
                 
-                if (result <= 0)
+                if (result == Guid.Empty)
                     throw new Exception($"Falha ao criar tamanho '{sizeName}' - ID inválido retornado");
                     
                 return result;
             }
             catch (PostgresException ex) when (ex.SqlState == "23505")
             {
-                // Tamanho já existe, buscar o ID
                 var sql = _repositoryDapper.GetQueryNamed("GetSizeIdByName");
                 var param = new { Nome = sizeName.ToUpper() };
-                var sizeId = await _repositoryDapper.QueryAsync<int>(sql, param);
+                var sizeId = await _repositoryDapper.QueryAsync<Guid>(sql, param);
                 var result = sizeId.FirstOrDefault();
                 
-                if (result <= 0)
+                if (result == Guid.Empty)
                     throw new Exception($"Tamanho '{sizeName}' existe mas não foi possível obter o ID");
                     
                 return result;
@@ -439,6 +454,135 @@ namespace DaccApi.Infrastructure.Repositories.Products
             catch (Exception ex)
             {
                 throw new Exception($"Erro ao atualizar produto no banco de dados. Erro original: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<bool> RemoveProductVariationStockAsync(Guid productVariationId, int amount = 1)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("RemoveProductStockAmount");
+                var param = new
+                {
+                    Id = productVariationId,
+                    Amount = amount
+                };
+                var rowsAffected = await _repositoryDapper.ExecuteAsync(sql, param);
+        
+                // rowsAffected = 0 → Estoque insuficiente
+                // rowsAffected = 1 → Estoque reduzido com sucesso
+                return rowsAffected > 0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao remover estoque de produto: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<int> CheckProductVariationStock(Guid productVariationId)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("CheckProductStock");
+                var param = new { Id = productVariationId };
+                var result = await _repositoryDapper.QueryAsync<int>(sql, param);
+                
+                return result.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao obter estoque da variação do produto!" + ex.Message, ex);
+            }
+        }
+        
+        public async Task<List<ProdutoVariacaoInfo>> GetVariationsWithProductByIdsAsync(List<Guid> variationIds)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("GetVariationsWithProductByIds");
+                var parameters = new { VariationIds = variationIds };
+        
+                var variations = await _repositoryDapper.QueryAsync<ProdutoVariacaoInfo>(sql, parameters);
+                return variations.ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao buscar variações com produtos.", ex);
+            }
+        }
+        
+        public async Task<bool> RemoveMultipleProductsStockAsync(List<Guid> variationIds, List<int> quantities)
+        {
+            try
+            {
+                var parameters = new 
+                { 
+                    VariationIds = variationIds.ToArray(),
+                    Quantities = quantities.ToArray()
+                };
+        
+                var result = (await _repositoryDapper.
+                    QueryProcedureAsync<(bool success, string error_message)>
+                        ("remove_multiple_products_stock", parameters)).FirstOrDefault();
+        
+                if (!result.success)
+                {
+                    throw new ProductOutOfStockException(result.error_message);
+                }
+        
+                return true;
+            }
+            catch (ProductOutOfStockException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao remover estoque dos produtos.", ex);
+            }
+        }
+
+        public async Task<ProdutoImagem?> GetImageByIdAsync(Guid imageId)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("GetImageById");
+                var param = new { Id = imageId };
+                var result = await _repositoryDapper.QueryAsync<ProdutoImagem>(sql, param);
+                return result.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao obter imagem pelo ID no banco de dados. Erro original: {ex.Message}", ex);
+            }
+        }
+
+        public async Task DeleteImageAsync(Guid imageId)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("DeleteImageById");
+                var param = new { Id = imageId };
+                await _repositoryDapper.ExecuteAsync(sql, param);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao deletar imagem no banco de dados. Erro original: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<Produto?> GetProductByProductVariationIdAsync(Guid productVariationId)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("GetProductByProductVariationId");
+                var param = new { ProductVariationId = productVariationId };
+                var result = await _repositoryDapper.QueryAsync<Produto>(sql, param);
+                return result.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao obter produto pelo id de sua variação no banco de dados. Erro original: {ex.Message}", ex);
             }
         }
     }

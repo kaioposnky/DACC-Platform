@@ -36,14 +36,14 @@ namespace DaccApi.Controllers.Noticias
         }
         
         [AllowAnonymous]
-        [HttpGet("{id:Guid}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetNoticiaById([FromRoute] Guid id)
         {
             var response = await _noticiasServices.GetNoticiaById(id);
             return response;
         }
         
-        [HttpDelete("{id:Guid}")]
+        [HttpDelete("{id:guid}")]
         [HasPermission(AppPermissions.Noticias.Delete)]
         public async Task<IActionResult> DeleteNoticia([FromRoute] Guid id)
         {
@@ -51,7 +51,7 @@ namespace DaccApi.Controllers.Noticias
             return response;
         }
         
-        [HttpPatch("{id:Guid}")]
+        [HttpPatch("{id:guid}")]
         [HasPermission(AppPermissions.Noticias.Update)]
         public async Task<IActionResult> UpdateNoticia([FromRoute] Guid id, [FromBody] RequestNoticia request)
         {

@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<queries>
+    <query name="CreateOrder">
+        INSERT INTO pedido (id, usuario_id, data_pedido, status_pedido, total_pedido, mercadopago_pagamento_id, preference_id, metodo_pagamento)
+        VALUES (@Id, @UserId, @OrderDate, @Status, @TotalAmount, @MercadoPagoPaymentId, @PreferenceId, @PaymentMethod)
+        RETURNING id;
+    </query>
+
+    <query name="CreateOrderItem">
+        INSERT INTO item_pedido (pedido_id, produto_id, produto_variacao_id, quantidade, preco_unitario)
+        VALUES (@OrderId, @ProductId, @ProductVariationId, @Quantity, @UnitPrice);
+    </query>
+
+    <query name="CreateOrderItems">
+        INSERT INTO item_pedido (pedido_id, produto_id, produto_variacao_id, quantidade, preco_unitario)
+        VALUES (@OrderId, @ProductId, @ProductVariationId, @Quantity, @UnitPrice);
+    </query>
+
+    <query name="GetOrderById">
+        SELECT
+        id as Id,
+        usuario_id as UserId,
+        data_pedido as OrderDate,
+        status_pedido as Status,
+        total_pedido as TotalAmount,
+        mercadopago_pagamento_id as MercadoPagoPaymentId,-
+        preference_id as PreferenceId,
+        metodo_pagamento as PaymentMethod
+        FROM pedido
+        WHERE id = @Id;
+    </query>
+
+    <query name="GetOrderItemsByOrderId">
+        SELECT
+        id as Id,
+        pedido_id as OrderId,
+        produto_id as ProductId,
+        quantidade as Quantity,
+        produto_variacao_id as ProductVariationId,
+        preco_unitario as UnitPrice
+        FROM item_pedido
+        WHERE pedido_id = @OrderId;
+    </query>
+
+    <query name="GetOrdersByUserId">
+        SELECT
+        id as Id,
+        usuario_id as UserId,
+        data_pedido as OrderDate,
+        status_pedido as Status,
+        total_pedido as TotalAmount,
+        mercadopago_pagamento_id as MercadoPagoPaymentId,
+        preference_id as PreferenceId,
+        metodo_pagamento as PaymentMethod
+        FROM pedido
+        WHERE usuario_id = @UserId;
+    </query>
+
+    <query name="UpdateOrderStatus">
+        UPDATE pedido
+        SET status_pedido = @Status
+        WHERE id = @Id;
+    </query>
+
+    <query name="UpdateOrderPaymentInfo">
+        UPDATE pedido
+        SET mercadopago_pagamento_id = @MercadoPagoPaymentId,
+        metodo_pagamento = @PaymentMethod,
+        status_pedido = @Status
+        WHERE id = @Id;
+    </query>
+</queries>

@@ -42,39 +42,40 @@ namespace DaccApi.Controllers.Eventos
         }
 
         [AllowAnonymous]
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetEventoById([FromRoute] int id)
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetEventoById([FromRoute] Guid id)
         {
             var response = await _eventosService.GetEventoById(id);
             return response;
         }
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:guid}")]
         [HasPermission(AppPermissions.Eventos.Delete)]
-        public async Task<IActionResult> DeleteEvento([FromRoute] int id)
+        public async Task<IActionResult> DeleteEvento([FromRoute] Guid id)
         {
             var response = await _eventosService.DeleteEvento(id);
             return response;
         }
 
-        [HttpPatch("{id:int}")]
+        [HttpPatch("{id:guid}")]
         [HasPermission(AppPermissions.Eventos.Update)]
-        public async Task<IActionResult> UpdateEvento([FromRoute] int id,[FromBody] RequestEvento request)
+        public async Task<IActionResult> UpdateEvento([FromRoute] Guid id,[FromBody] RequestEvento request)
         {
             var response = await _eventosService.UpdateEvento(id,request);
             return response;
         }
         
-        [HttpPost("{id:int}/register")]
+
+        [HttpPost("{id:guid}/register")]
         [HasPermission(AppPermissions.Eventos.Register)]
-        public async Task<IActionResult> RegisterEvento([FromRoute] int id)
+        public async Task<IActionResult> RegisterEvento([FromRoute] Guid id)
         {
             throw new NotImplementedException();
         }
         
-        [HttpDelete("{id:int}/register")]
+        [HttpDelete("{id:guid}/register")]
         [HasPermission(AppPermissions.Eventos.Register)]
-        public async Task<IActionResult> UnregisterEvento([FromRoute] int id)
+        public async Task<IActionResult> UnregisterEvento([FromRoute] Guid id)
         {
             throw new NotImplementedException();
         }

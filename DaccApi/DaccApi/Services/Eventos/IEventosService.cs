@@ -9,9 +9,9 @@ public interface IEventosService
         
     public Task<IActionResult> CreateEvento(RequestEvento evento);
         
-    public Task<IActionResult> DeleteEvento(int id);
+    public Task<IActionResult> DeleteEvento(Guid id);
         
-    public Task <IActionResult> GetEventoById(int id);
+    public Task <IActionResult> GetEventoById(Guid id);
         
-    public Task<IActionResult> UpdateEvento(int id,RequestEvento evento);
+    public Task<IActionResult> UpdateEvento(Guid id,RequestEvento evento);
 }

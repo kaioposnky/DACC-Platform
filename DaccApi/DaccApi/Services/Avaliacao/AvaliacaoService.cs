@@ -53,7 +53,7 @@ public class AvaliacaoService : IAvaliacaoService
     }
     
     
-    public async Task<IActionResult> GetAvaliacaoById(int id)
+    public async Task<IActionResult> GetAvaliacaoById(Guid id)
     {
         try
         {
@@ -90,7 +90,7 @@ public class AvaliacaoService : IAvaliacaoService
         }
     }
 
-    public async Task<IActionResult> GetAvaliacoesByUserId(int usuarioId)
+    public async Task<IActionResult> GetAvaliacoesByUserId(Guid usuarioId)
     {
         try
         {
@@ -108,7 +108,7 @@ public class AvaliacaoService : IAvaliacaoService
         }
     }
 
-    public  async Task<IActionResult> DeleteAvaliacao(int id)
+    public  async Task<IActionResult> DeleteAvaliacao(Guid id)
     {
         try
         {
@@ -128,7 +128,7 @@ public class AvaliacaoService : IAvaliacaoService
         }
     }
 
-    public async Task<IActionResult> UpdateAvaliacao(int id, RequestUpdateAvaliacao avaliacao)
+    public async Task<IActionResult> UpdateAvaliacao(Guid id, RequestUpdateAvaliacao avaliacao)
     {
         try
         {

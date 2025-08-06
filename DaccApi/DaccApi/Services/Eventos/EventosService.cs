@@ -64,7 +64,7 @@ namespace DaccApi.Services.Eventos
                 }
             }
 
-            public async Task<IActionResult> DeleteEvento(int id)
+            public async Task<IActionResult> DeleteEvento(Guid id)
             {
 
                 try
@@ -86,7 +86,7 @@ namespace DaccApi.Services.Eventos
             }
 
 
-            public async Task<IActionResult> GetEventoById(int id)
+            public async Task<IActionResult> GetEventoById(Guid id)
             {
                 try
                 {
@@ -104,7 +104,7 @@ namespace DaccApi.Services.Eventos
                 }
             }
 
-            public async Task<IActionResult> UpdateEvento(int id, RequestEvento evento)
+            public async Task<IActionResult> UpdateEvento(Guid id, RequestEvento evento)
             {
                 try
                 {
