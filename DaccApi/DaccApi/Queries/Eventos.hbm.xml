@@ -45,7 +45,6 @@
             descricao = @Descricao,
             data = @Data,
             tipo_evento = @TipoEvento,
-            autor_id = @AutorId,
             texto_acao = @TextoAcao,
             link_acao = @LinkAcao
         WHERE id=@id

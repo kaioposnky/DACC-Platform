@@ -5,7 +5,7 @@ namespace DaccApi.Infrastructure.Repositories.Avaliacao;
 
 public interface IAvaliacaoRepository
 {
-    public Task CreateAvaliacao(RequestCreateAvaliacao avaliacao);
+    public Task CreateAvaliacao(AvaliacaoProduto avaliacao);
     public Task<List<AvaliacaoProduto>> GetAllAvaliacoes();
     
     public Task <AvaliacaoProduto?> GetAvaliacaoById(Guid id);

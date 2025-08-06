@@ -1,13 +1,10 @@
-﻿
-
-
-using DaccApi.Helpers;
+﻿using DaccApi.Helpers;
 using DaccApi.Infrastructure.Repositories.Anuncio;
 using DaccApi.Model;
 using Helpers.Response;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DaccApi.Services.Anuncio
+namespace DaccApi.Services.Anuncios
 {
     public class AnuncioService : IAnuncioService
     {
@@ -98,19 +95,29 @@ namespace DaccApi.Services.Anuncio
             }
         }
         
-        
-        public async Task<IActionResult> UpdateAnuncio(Guid id,RequestAnuncio anuncio)
+        // TODO: Substituir RequestAnuncio por DTO para atualização de anuncio
+        public async Task<IActionResult> UpdateAnuncio(Guid id, RequestAnuncio request)
         {
             try
             {
                 var anuncioQuery = await _anuncioRepository.GetAnuncioById(id);
                 if (anuncioQuery == null)
                 {
-                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
+                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Anúncio não encontrado!");
                 }
+
+                var anuncio = new Anuncio()
+                {
+                   Titulo = request.Titulo,
+                   Conteudo = request.Conteudo,
+                   ImagemAlt = request.ImagemAlt,
+                   ImagemUrl = request.ImagemUrl, // TODO: Obter URL pelo FileStorageService
+                   TipoAnuncio = request.TipoAnuncio,
+                   Ativo = request.Ativo
+                };
                 await _anuncioRepository.UpdateAnuncio(id, anuncio);
 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { anuncio = anuncio}));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { anuncio = request}));
             }
             catch (Exception ex)
             {

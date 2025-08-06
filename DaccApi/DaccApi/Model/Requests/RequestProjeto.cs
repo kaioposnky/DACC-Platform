@@ -11,8 +11,5 @@
         
         public string? Diretoria { get; set; }
         public string[]? Tags { get; set; }
-        
     }
-    
-    
 }

@@ -1,4 +1,5 @@
-﻿using DaccApi.Model;
+﻿using DaccApi.Helpers;
+using DaccApi.Model;
 using DaccApi.Responses;
 using DaccApi.Responses.UserResponse;
 using DaccApi.Services.Avaliacao;
@@ -40,7 +41,8 @@ namespace DaccApi.Controllers.Avaliacao
         [HasPermission(AppPermissions.Reviews.Create)]
         public async Task<IActionResult> CreateAvaliacao([FromBody] RequestCreateAvaliacao avaliacao)
         {
-            var response = await _avaliacaoService.CreateAvaliacao(avaliacao);
+            var userId = ClaimsHelper.GetUserId(User);
+            var response = await _avaliacaoService.CreateAvaliacao(userId, avaliacao);
             return response;
         }
 

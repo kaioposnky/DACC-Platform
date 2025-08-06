@@ -403,7 +403,7 @@ namespace DaccApi.Services.Products
                         "Variação não encontrada para este produto!");
                 }
 
-                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
+                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.Imagem);
                 var produtoImagem = new ProdutoImagem
                 {
                     Id = Guid.NewGuid(),

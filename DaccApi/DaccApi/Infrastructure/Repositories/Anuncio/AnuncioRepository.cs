@@ -13,13 +13,13 @@ namespace DaccApi.Infrastructure.Repositories.Anuncio
             _repositoryDapper = repositoryDapper;
         }
 
-        public async Task<List<Anunci>> GetAllAnuncio()
+        public async Task<List<Model.Anuncio>> GetAllAnuncio()
         {
             try
             {
                 var sql = _repositoryDapper.GetQueryNamed("GetAllAnuncio");
 
-                var queryResult = await _repositoryDapper.QueryAsync<Anunci>(sql);
+                var queryResult = await _repositoryDapper.QueryAsync<Model.Anuncio>(sql);
 
                 var anuncios = queryResult.ToList();
                 return anuncios;
@@ -32,7 +32,7 @@ namespace DaccApi.Infrastructure.Repositories.Anuncio
         }
         
         
-        public async Task<Anunci?> GetAnuncioById(Guid id)
+        public async Task<Model.Anuncio> GetAnuncioById(Guid id)
         {
             try
             {
@@ -40,7 +40,7 @@ namespace DaccApi.Infrastructure.Repositories.Anuncio
                 
                 var param = new { id = id };
 
-                var queryResult = await _repositoryDapper.QueryAsync<Anunci>(sql,param);
+                var queryResult = await _repositoryDapper.QueryAsync<Model.Anuncio>(sql,param);
 
                 var anuncio = queryResult.FirstOrDefault();
 
@@ -86,7 +86,7 @@ namespace DaccApi.Infrastructure.Repositories.Anuncio
         }
         
         
-        public async Task UpdateAnuncio(Guid id, RequestAnuncio anuncio)
+        public async Task UpdateAnuncio(Guid id, Model.Anuncio anuncio)
         {
             try
             {

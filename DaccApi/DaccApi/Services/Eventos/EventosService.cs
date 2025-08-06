@@ -35,25 +35,30 @@ namespace DaccApi.Services.Eventos
             }
         }
         
-        
-        
-        
-        public async Task<IActionResult> CreateEvento(RequestEvento evento)
+        public async Task<IActionResult> CreateEvento(Guid autorId, RequestEvento request)
             {
                 try
                 {
                     if (
-                        String.IsNullOrWhiteSpace(evento.Titulo) ||
-                        String.IsNullOrWhiteSpace(evento.Descricao) ||
-                        String.IsNullOrWhiteSpace(evento.TipoEvento) ||
-                        evento.AutorId == null ||
-                        String.IsNullOrWhiteSpace(evento.TextoAcao)||
-                        String.IsNullOrWhiteSpace(evento.LinkAcao)
+                        String.IsNullOrWhiteSpace(request.Titulo) ||
+                        String.IsNullOrWhiteSpace(request.Descricao) ||
+                        String.IsNullOrWhiteSpace(request.TipoEvento) ||
+                        String.IsNullOrWhiteSpace(request.TextoAcao)||
+                        String.IsNullOrWhiteSpace(request.LinkAcao)
                         )
                     {
                         return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                     }
-                
+
+                    var evento = new Evento()
+                    {
+                        Titulo = request.Titulo,
+                        AutorId = autorId,
+                        Descricao = request.Descricao,
+                        LinkAcao = request.LinkAcao,
+                        TextoAcao = request.TextoAcao,
+                        TipoEvento = request.TipoEvento
+                    };
                     await _eventosRepository.CreateEvento(evento);
 
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
@@ -104,7 +109,8 @@ namespace DaccApi.Services.Eventos
                 }
             }
 
-            public async Task<IActionResult> UpdateEvento(Guid id, RequestEvento evento)
+            // TODO: Criar RequestUpdateEvento ao invés de usar RequestEvento e colocar tudo menos AutorId
+            public async Task<IActionResult> UpdateEvento(Guid id, RequestEvento request)
             {
                 try
                 {
@@ -114,9 +120,19 @@ namespace DaccApi.Services.Eventos
                         return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                     }
 
-                   await _eventosRepository.UpdateEvento(id, evento);
+                    var evento = new Evento()
+                    {
+                        Titulo = request.Titulo,
+                        TextoAcao = request.TextoAcao,
+                        Descricao = request.Descricao,
+                        LinkAcao = request.LinkAcao,
+                        TipoEvento = request.TipoEvento,
+                        Data = request.Data,
+                    };
+                    
+                    await _eventosRepository.UpdateEvento(id, evento);
 
-                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { evento = evento }));
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { evento = request }));
                 }
                 catch (Exception ex)
                 {

@@ -11,7 +11,7 @@ public class AvaliacaoRepository : IAvaliacaoRepository
     {
         _repositoryDapper = repositoryDapper;
     }
-    public async Task CreateAvaliacao(RequestCreateAvaliacao avaliacao)
+    public async Task CreateAvaliacao(AvaliacaoProduto avaliacao)
     {
         try
         {

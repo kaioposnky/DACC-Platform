@@ -1,8 +1,9 @@
 ﻿using DaccApi.Model;
-using DaccApi.Services.Anuncio;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using DaccApi.Infrastructure.Authentication;
+using DaccApi.Services.Anuncios;
+
 namespace DaccApi.Controllers.Anuncio
 {
 
@@ -11,8 +12,6 @@ namespace DaccApi.Controllers.Anuncio
     [Authorize]
     [ApiController]
     [Route("api/announcements")]
-
-
     public class AnuncioController : ControllerBase
     {
         private readonly IAnuncioService _anuncioService;

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DaccApi.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Infrastructure.Authentication;
 using DaccApi.Services.Eventos;
@@ -37,7 +38,8 @@ namespace DaccApi.Controllers.Eventos
         [HasPermission(AppPermissions.Eventos.Create)]
         public async Task<IActionResult> CreateEvento([FromBody] RequestEvento request)
         {
-            var response = await _eventosService.CreateEvento(request);
+            var userId = ClaimsHelper.GetUserId(User);
+            var response = await _eventosService.CreateEvento(userId, request);
             return response;
         }
 

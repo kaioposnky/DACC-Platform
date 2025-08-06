@@ -50,7 +50,7 @@ namespace DaccApi.Infrastructure.Repositories.Eventos
             }
         }
 
-        public async Task CreateEvento(RequestEvento evento)
+        public async Task CreateEvento(Evento evento)
         {
             try
             {
@@ -89,7 +89,7 @@ namespace DaccApi.Infrastructure.Repositories.Eventos
             }
         }
 
-        public async Task UpdateEvento(Guid id,RequestEvento evento)
+        public async Task UpdateEvento(Guid id, Evento evento)
         {
             try
             {
