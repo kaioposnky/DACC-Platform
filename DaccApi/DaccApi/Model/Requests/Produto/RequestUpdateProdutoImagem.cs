@@ -10,6 +10,6 @@ namespace DaccApi.Model
         public string? ImagemAlt { get; set; }
 
         [Range(0, int.MaxValue, ErrorMessage = "Ordem deve ser um valor positivo")]
-        public int? Order { get; set; }
+        public int? Ordem { get; set; }
     }
 }

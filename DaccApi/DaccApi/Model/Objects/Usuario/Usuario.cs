@@ -16,7 +16,7 @@ namespace DaccApi.Model
         public string? SenhaHash { get; set; }
         public string? ImagemUrl { get; set; }
         public bool Ativo { get; set; } = true;
-        public bool? NewsLetterSubscriber { get; set; } = false;
+        public bool? InscritoNoticia { get; set; } = false;
         public string Cargo {  get; set; }
         public DateTime DataCriacao { get; set; }
         public DateTime DataAtualizacao { get; set; }
@@ -32,7 +32,7 @@ namespace DaccApi.Model
                 Telefone = request.Telefone,
                 ImagemUrl = request.ImagemUrl,
                 Cargo = request.Cargo,
-                NewsLetterSubscriber = request.NewsLetterSubscriber,
+                InscritoNoticia = request.InscritoNoticia,
                 SenhaHash = request.Senha,
                 Curso = request.Curso
             };
@@ -48,7 +48,7 @@ namespace DaccApi.Model
                 Curso = request.Curso,
                 Telefone = request.Telefone,
                 ImagemUrl = request.ImagemUrl,
-                NewsLetterSubscriber = request.NewsLetterSubscriber
+                InscritoNoticia = request.InscritoNoticia
             };
         }
 

@@ -410,7 +410,7 @@ namespace DaccApi.Services.Products
                     ProdutoVariacaoId = variationId,
                     ImagemUrl = imageUrl,
                     ImagemAlt = request.ImagemAlt?.Trim(),
-                    Ordem = request.Order,
+                    Ordem = request.Ordem,
                 };
 
                 await _produtosRepository.AddProductImagesAsync(produtoImagem);
@@ -468,9 +468,9 @@ namespace DaccApi.Services.Products
                     existingImage.ImagemUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
                 }
 
-                if (request.Order.HasValue)
+                if (request.Ordem.HasValue)
                 {
-                    existingImage.Ordem = request.Order.Value;
+                    existingImage.Ordem = request.Ordem.Value;
                 }
 
                 if (request.ImagemAlt != null)

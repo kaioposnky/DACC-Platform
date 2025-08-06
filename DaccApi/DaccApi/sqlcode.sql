@@ -401,6 +401,246 @@ CREATE TABLE role_permissoes
     permissao    VARCHAR(100) REFERENCES permissoes (nome) ON DELETE CASCADE,
     PRIMARY KEY (tipo_usuario, permissao)
 );
+-- Diretorias do DACC
+INSERT INTO diretoria(nome,descricao)
+VALUES ('Comercial','Responsável por arrecadar dinheiro e conectar os alunos da FEI do DACC'),
+       ('Produtos','Responsável por cuidar da parte de produtos do DACC'),
+       ('E-sports','Responsável pela parte esportiva do DACC '),
+       ('Projeto','Responsável por criar projetos que visam unir os alunos da FEI do DACC'),
+       ('Marketing','Responsável pela identidade visual e das redes sociais do DACC'),
+       ('Acadêmico','Responsável por criar projetos que visam ensinar os alunos da FEI do DACC'),
+       ('RH/Comunicação','Responsável pela parte interna do DACC'),
+       ('Chapa','Responsável por representar o nome do DACC na FEI')
+RETURNING id;
+
+-- Anuncios do site
+INSERT INTO anuncio (
+    titulo, conteudo, tipo_anuncio, imagem_url, imagem_alt, ativo, autor_id
+) VALUES ('Anuncio sobre Abacaxi',
+          'Este é um anúncio fictício sobre os incríveis benefícios do abacaxi.',
+          'evento',
+          'https://exemplo.com/imagens/abacaxi.jpg',
+          'Imagem de um abacaxi suculento',
+          true,
+          '6cd5a583-86ea-436f-8f27-f07a89e64b9f' 
+         ),
+         ('Anuncio sobre Empresas',
+          'Este é um anúncio fictício sobre os incríveis empresas de tecnologia.',
+          'importante',
+          'https://exemplo.com/imagens/google.jpg',
+          'Imagem da maior empresa do mundo',
+          true,
+          '6cd5a583-86ea-436f-8f27-f07a89e64b9f'
+         ),
+         ('Anuncio sobre Guerra de Canudos',
+          'Este é um anúncio fictício sobre os os impactos da guerra de canudos.',
+          'noticia',
+          'https://exemplo.com/imagens/canudos.jpg',
+          'Imagem do pior crime ocorrido na guerra: o canudo de papel',
+          true,
+          '6cd5a583-86ea-436f-8f27-f07a89e64b9f'
+         )
+RETURNING id;
+
+-- Anuncio Detalhe
+INSERT INTO anuncio_detalhe (
+    anuncio_id, ordem, imagem_url, conteudo
+) VALUES ('ac0525cc-6f69-48d2-a7e6-5a46c84111e4',
+          1,
+          'https://exemplo.com/imagens/abacaxi.jpg',
+          'Abacaxi é 8/80 - muito docinho natural ou muito azedo, porém com mais chance de ser azedo'
+                   ),
+         ('048d17d3-82cd-47e6-bd81-3bedf6becfde',
+          2,
+          'https://exemplo.com/imagens/google.jpg',
+          'Aqui vai um longo texto explicando nada com nada.'
+                  ),
+         ('e625ee53-3f6b-46e0-ad86-b1836775a314',
+          3,
+          'https://exemplo.com/imagens/canudos.jpg',
+          'O porquê que você deveria usar canudos de plástico e não de papel: Motivo 1...... Motivo 10000: Porque sim'
+         )
+RETURNING id;
+
+
+-- Produtos
+INSERT INTO produto(nome, descricao, preco, preco_original, subcategoria_id, ativo)
+VALUES ('Moletom Super Nerd',
+        'É um moletom de nerdola',
+        140,
+        170,
+        'f1cc47d9-0534-400b-b1d6-65fae5a210c8',
+        true),
+       ('Camiseta Supremerge',
+        'É camiseta escrito Supremerge',
+        50,
+        50,
+        '5e2e026e-ddfd-4b86-a732-ea84ae0d35ec',
+        false),
+       ('Caneca Azul',
+        'É uma caneta azul',
+        20,
+        25,
+        '25df1b92-1bc3-4bb3-8375-85f98d9e4544',
+        true),
+       ('Acessório Chaveiro',
+        'É um chaveiro bacana',
+        5,
+        7,
+        '482f9703-e851-4fe7-bff0-4ba9c249bf5d',
+        false),
+       ('Adesivo ChupaENG',
+        'É um adesivo',
+        3,
+        5,
+        '0498db86-8a3e-4ba0-9bde-a36dbbb676c6',
+        true)
+RETURNING id;
+
+-- Avaliacao
+INSERT INTO avaliacao(usuario_id, produto_id, nota, comentario, ativo)
+VALUES ('6cd5a583-86ea-436f-8f27-f07a89e64b9f',
+        'a0464fbe-562f-4b0c-8d35-e462e94705b2',
+        5,
+        'Lindo',
+        true),
+       ('6cd5a583-86ea-436f-8f27-f07a89e64b9f',
+        'ed1f6f0c-da13-4c3c-8d77-63e02644bebe',
+        2,
+        'Não gostei',
+        true),
+       ('6cd5a583-86ea-436f-8f27-f07a89e64b9f',
+        '10533069-a6f6-4e56-bfc0-f5dce790ac57',
+        5,
+        'É de fato uma caneca',
+        true),
+       ('6cd5a583-86ea-436f-8f27-f07a89e64b9f',
+        '10533069-a6f6-4e56-bfc0-f5dce790ac57',
+        5,
+        'É de fato uma caneca',
+        true),
+       ('6cd5a583-86ea-436f-8f27-f07a89e64b9f',
+        '9cdd26eb-e48d-4934-91e9-e3be69dacae2',
+        3,
+        'De fato bacana',
+        true),
+       ('6cd5a583-86ea-436f-8f27-f07a89e64b9f',
+        'b4579a0b-2fc6-4fad-9d06-8ca32924e30f',
+        1,
+        'Po, muito feio odeio cc bleee',
+        false);
+
+
+
+INSERT INTO categorias_noticia(nome)
+VALUES ('Comida'),
+       ('Veiculo'),
+       ('Música'),
+       ('Tecnologia');
+
+--Noticia
+INSERT INTO noticia(titulo, descricao, conteudo, imagem_url, autor_id,categoria)
+VALUES ('Noticia sobre Peixe',
+        'Peixe Peixe Peixe',
+        'Peixe',
+        'Peixe.png',
+        '6cd5a583-86ea-436f-8f27-f07a89e64b9f',
+        'Comida'),
+       ('Noticia sobre Pao',
+        'Pao Pao Pao',
+        'Pao',
+        'Pao.png',
+        '6cd5a583-86ea-436f-8f27-f07a89e64b9f',
+        'Comida'),
+       ('Noticia sobre carro',
+        'carro carro carro',
+        'carro',
+        'carro.png',
+        '6cd5a583-86ea-436f-8f27-f07a89e64b9f',
+        'Veiculo'),
+       ('Noticia sobre ukulele',
+        'ukulele ukulele ukulele',
+        'ukulele',
+        'ukulele.png',
+        '6cd5a583-86ea-436f-8f27-f07a89e64b9f',
+        'Música')
+RETURNING id;
+
+-- Diretores
+INSERT INTO diretores(nome,descricao,imagem_url,usuario_id,diretoria_id,email,github_link,linkedin_link)
+VALUES ('Guilherme',
+        'Fudido da vida',
+        'eu.png',
+        '6cd5a583-86ea-436f-8f27-f07a89e64b9f',
+        'e4108f7a-4d4b-4b46-8405-d018cc265704',
+        'gui@gmail.com',
+        'github/gui',
+        'link/gui'        
+       ),
+       ('Bianca',
+        'Tem o nome de Bianca',
+        'binca.png',
+        '6cd5a583-86ea-436f-8f27-f07a89e64b9f',
+        '146e8a16-11df-47b4-9068-3806d5eff38b',
+        'bi@gmail.com',
+        'github/bi',
+        'link/bi'
+       ),
+       ('Tobias',
+        'Tem o nome de Tobias',
+        'Tobias.png',
+        '6cd5a583-86ea-436f-8f27-f07a89e64b9f',
+        'c376780d-ee05-4b2f-aadb-9c9db75f09fe',
+        'to@gmail.com',
+        'github/to',
+        'link/to'
+       ),
+        ('Breno',
+          'Fudido da vida',
+          'eu.png',
+          '6cd5a583-86ea-436f-8f27-f07a89e64b9f',
+          'e4108f7a-4d4b-4b46-8405-d018cc265704',
+          'gui@gmail.com',
+          'github/gui',
+          'link/gui'
+       ),
+       ('Bruna',
+        'Tem o nome de Bianca',
+        'binca.png',
+        '6cd5a583-86ea-436f-8f27-f07a89e64b9f',
+        '5fe50ad5-6a0e-4d97-bd1a-29dfe7ed4a10',
+        'bi@gmail.com',
+        'github/bi',
+        'link/bi'
+       ),
+       ('Bruno',
+        'Tem o nome de Tobias',
+        'Tobias.png',
+        '6cd5a583-86ea-436f-8f27-f07a89e64b9f',
+        '21617389-62d6-4d1f-89f4-54e8b25ca914',
+        'to@gmail.com',
+        'github/to',
+        'link/to'
+       )
+        ,('Pedro',
+          'Fudido da vida',
+          'eu.png',
+          '6cd5a583-86ea-436f-8f27-f07a89e64b9f',
+          '09960d63-73f0-4210-814c-a54398b7047c',
+          'gui@gmail.com',
+          'github/gui',
+          'link/gui'
+       ),
+       ('Mariana',
+        'Tem o nome de Bianca',
+        'binca.png',
+        '6cd5a583-86ea-436f-8f27-f07a89e64b9f',
+        'f5af5590-3c08-4ba9-bba1-31f73645b888',
+        'bi@gmail.com',
+        'github/bi',
+        'link/bi'
+       )
+RETURNING id;
 
 -- Cores disponívies de produtos
 INSERT INTO produto_cor(nome)

@@ -134,7 +134,7 @@ namespace DaccApi.Infrastructure.Repositories.User
                     Curso = user.Curso,
                     Telefone = user.Telefone,
                     ImagemUrl = user.ImagemUrl,
-                    NewsletterSubscriber = user.NewsLetterSubscriber
+                    InscritoNoticia = user.InscritoNoticia
                 };
 
                 return await _repositoryDapper.ExecuteAsync(sql, param);
