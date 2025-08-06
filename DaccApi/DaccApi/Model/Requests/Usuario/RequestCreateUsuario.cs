@@ -3,7 +3,7 @@ using DaccApi.Model.Validation;
 
 namespace DaccApi.Model
 {
-    public class RequestUsuario
+    public class RequestCreateUsuario
     {
         public string? Nome { get; set; }
         public string? Sobrenome { get; set; }
@@ -12,9 +12,7 @@ namespace DaccApi.Model
         public string? Curso { get; set; }
         public string? Telefone { get; set; }
         public string? Senha { get; set; }
-        public string? ImagemUrl { get; set; }
         public bool? NewsLetterSubscriber { get; set; }
-        [CargoValido]
-        public string? Cargo {  get; set; }
+
     }
 }

@@ -5,7 +5,7 @@
         public string? Titulo { get; set; }
         public string? Descricao { get; set; }
         
-        public string? ImagemUrl { get; set; }
+        public IFormFile? ImageFile { get; set; }
         
         public string? Status { get; set; }
         

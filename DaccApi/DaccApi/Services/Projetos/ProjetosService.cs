@@ -50,21 +50,23 @@ namespace DaccApi.Services.Projetos
         }
 
 
-        public async Task<IActionResult> CreateProjeto(RequestProjeto projeto)
+        public async Task<IActionResult> CreateProjeto(RequestProjeto request)
         {
             try
             {
-                if (String.IsNullOrWhiteSpace(projeto.Titulo) ||
-                    String.IsNullOrWhiteSpace(projeto.Descricao) ||
-                    String.IsNullOrWhiteSpace(projeto.ImagemUrl) ||
-                    String.IsNullOrWhiteSpace(projeto.Status)||
-                    String.IsNullOrWhiteSpace(projeto.Diretoria)||
-                    projeto.Tags == null)
+                
+                if (String.IsNullOrWhiteSpace(request.Titulo) ||
+                    String.IsNullOrWhiteSpace(request.Descricao) ||
+                    request.ImageFile == null ||
+                    String.IsNullOrWhiteSpace(request.Status)||
+                    String.IsNullOrWhiteSpace(request.Diretoria)||
+                    request.Tags == null)
                     
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
-            
+
+
                 await _projetosRepository.CreateProjeto(projeto);
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
@@ -103,7 +105,7 @@ namespace DaccApi.Services.Projetos
                 if (projetoQuery == null ||
                     String.IsNullOrWhiteSpace(projeto.Titulo) ||
                     String.IsNullOrWhiteSpace(projeto.Descricao) ||
-                    String.IsNullOrWhiteSpace(projeto.ImagemUrl) ||
+                    projeto.ImageFile == null ||
                     String.IsNullOrWhiteSpace(projeto.Status)||
                     String.IsNullOrWhiteSpace(projeto.Diretoria)||
                     projeto.Tags == null)

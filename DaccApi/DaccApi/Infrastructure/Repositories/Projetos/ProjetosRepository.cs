@@ -32,10 +32,11 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
             return projeto;
         }
 
-        public async Task CreateProjeto(RequestProjeto projeto)
+        public async Task CreateProjeto(Projeto projeto)
         {
             try
             {
+                
                 var sql = _repositoryDapper.GetQueryNamed("CreateProjeto");
             
                 var param = new
@@ -73,7 +74,7 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
             }
         }
 
-        public async Task UpdateProjeto(Guid id, RequestProjeto projeto)
+        public async Task UpdateProjeto(Guid id, Projeto projeto)
         {
             try
             {
