@@ -29,7 +29,7 @@ namespace DaccApi.Infrastructure.Repositories.Diretores
             }
         }
 
-        public async Task CreateDiretor(RequestDiretor diretor)
+        public async Task CreateDiretor(Diretor diretor)
         {
             try
             {
@@ -70,7 +70,7 @@ namespace DaccApi.Infrastructure.Repositories.Diretores
             }
         }
 
-        public async Task UpdateDiretor(Guid id, RequestDiretor diretor)
+        public async Task UpdateDiretor(Guid id, Diretor diretor)
         {
             try
             {

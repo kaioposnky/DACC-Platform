@@ -33,7 +33,7 @@ public class NoticiasRepository : INoticiasRepository
         }
     }
 
-    public async Task CreateNoticia(RequestNoticia noticia)
+    public async Task CreateNoticia(Noticia noticia)
     {
         try
         {
@@ -89,7 +89,7 @@ public class NoticiasRepository : INoticiasRepository
         }
     }
 
-    public async Task UpdateNoticia(Guid id, RequestNoticia noticia)
+    public async Task UpdateNoticia(Guid id, Noticia noticia)
     {
         try
         {

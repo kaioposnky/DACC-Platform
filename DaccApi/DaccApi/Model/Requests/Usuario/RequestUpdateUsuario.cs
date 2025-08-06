@@ -10,7 +10,7 @@ namespace DaccApi.Model
         public string? Email { get; set; }
         public string? Curso { get; set; }
         public string? Telefone { get; set; }
-        public string? ImagemUrl { get; set; }
+        public IFormFile? ImageFile { get; set; }
         public bool? InscritoNoticia { get; set; }
     }
 }

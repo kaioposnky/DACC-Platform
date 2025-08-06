@@ -8,11 +8,11 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
         
         public Task<Projeto?> GetProjetoById(Guid id);
 
-        public Task CreateProjeto(RequestProjeto projeto);
+        public Task CreateProjeto(Projeto projeto);
 
         public Task DeleteProjeto(Guid id);
         
-        public Task  UpdateProjeto(Guid id, RequestProjeto projeto);
+        public Task  UpdateProjeto(Guid id, Projeto projeto);
 
     }
 }

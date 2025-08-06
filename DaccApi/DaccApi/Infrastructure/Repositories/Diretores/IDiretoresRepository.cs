@@ -8,10 +8,10 @@ namespace DaccApi.Infrastructure.Repositories.Diretores
         public Task<List<Diretor>> GetAllDiretores();
 
         public Task<Diretor?> GetDiretorById(Guid id);
-        public Task CreateDiretor(RequestDiretor diretor);
+        public Task CreateDiretor(Diretor diretor);
 
         public Task DeleteDiretor(Guid id);
-        public Task UpdateDiretor(Guid id, RequestDiretor diretor);
+        public Task UpdateDiretor(Guid id, Diretor diretor);
 
 
 

@@ -91,30 +91,30 @@ namespace DaccApi.Services.Auth
             }
         }
             
-        public async Task<IActionResult> RegisterUser(RequestUsuario request)
+        public async Task<IActionResult> RegisterUser(RequestCreateUsuario requestCreate)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(request.Nome) ||
-                    string.IsNullOrWhiteSpace(request.Sobrenome) ||
-                    string.IsNullOrWhiteSpace(request.Telefone) ||
-                    string.IsNullOrWhiteSpace(request.Curso))
+                if (string.IsNullOrWhiteSpace(requestCreate.Nome) ||
+                    string.IsNullOrWhiteSpace(requestCreate.Sobrenome) ||
+                    string.IsNullOrWhiteSpace(requestCreate.Telefone) ||
+                    string.IsNullOrWhiteSpace(requestCreate.Curso))
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
 
-                if (!IsValidRa(request.Ra))
+                if (!IsValidRa(requestCreate.Ra))
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, 
                         "RA inválido! Seu RA deve conter 9 dígitos numéricos");
                 }
                 
-                if (!IsValidEmail(request.Email))
+                if (!IsValidEmail(requestCreate.Email))
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "Formato de email inválido!");
                 }
 
-                if (!IsValidPassword(request.Senha))
+                if (!IsValidPassword(requestCreate.Senha))
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, 
                         "Senha muito fraca! A senha deve ter ao menos 8 caracteres, " +
@@ -124,16 +124,15 @@ namespace DaccApi.Services.Auth
 
                 var usuario = new Usuario
                 {
-                    Nome = request.Nome,
-                    Sobrenome = request.Sobrenome,
-                    Ra = request.Ra,
-                    Curso = request.Curso,
-                    Email = request.Email,
-                    Telefone = request.Telefone,
-                    SenhaHash = request.Senha,
-                    ImagemUrl = request.ImagemUrl ?? "",
+                    Nome = requestCreate.Nome,
+                    Sobrenome = requestCreate.Sobrenome,
+                    Ra = requestCreate.Ra,
+                    Curso = requestCreate.Curso,
+                    Email = requestCreate.Email,
+                    Telefone = requestCreate.Telefone,
+                    SenhaHash = requestCreate.Senha,
                     Ativo = true,
-                    InscritoNoticia = request.InscritoNoticia ?? false,
+                    InscritoNoticia = requestCreate.InscritoNoticia ?? false,
                     Cargo = CargoUsuario.Aluno,
                     DataCriacao = DateTime.Now,
                     DataAtualizacao = DateTime.Now

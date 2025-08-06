@@ -8,7 +8,7 @@ namespace DaccApi.Services.Projetos
         public Task<IActionResult> GetAllProjetos();
         public Task<IActionResult> GetProjetoById(Guid id);
         
-        public Task<IActionResult> CreateProjeto(RequestProjeto projeto);
+        public Task<IActionResult> CreateProjeto(RequestProjeto request);
 
         public Task<IActionResult> DeleteProjeto(Guid id);
         

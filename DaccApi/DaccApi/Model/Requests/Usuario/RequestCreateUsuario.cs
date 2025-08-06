@@ -3,7 +3,7 @@ using DaccApi.Model.Validation;
 
 namespace DaccApi.Model
 {
-    public class RequestUsuario
+    public class RequestCreateUsuario
     {
         public string? Nome { get; set; }
         public string? Sobrenome { get; set; }

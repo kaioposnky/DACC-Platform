@@ -21,20 +21,18 @@ namespace DaccApi.Model
         public DateTime DataCriacao { get; set; }
         public DateTime DataAtualizacao { get; set; }
 
-        public Usuario FromRequest(RequestUsuario request)
+        public Usuario FromRequest(RequestCreateUsuario requestCreate)
         {
             return new Usuario()
             {
-                Nome = request.Nome,
-                Sobrenome = request.Sobrenome,
-                Ra = request.Ra,
-                Email = request.Email,
-                Telefone = request.Telefone,
-                ImagemUrl = request.ImagemUrl,
-                Cargo = request.Cargo,
-                InscritoNoticia = request.InscritoNoticia,
-                SenhaHash = request.Senha,
-                Curso = request.Curso
+                Nome = requestCreate.Nome,
+                Sobrenome = requestCreate.Sobrenome,
+                Ra = requestCreate.Ra,
+                Email = requestCreate.Email,
+                Telefone = requestCreate.Telefone,
+                InscritoNoticia = requestCreate.InscritoNoticia,
+                SenhaHash = requestCreate.Senha,
+                Curso = requestCreate.Curso
             };
         }
 
@@ -48,7 +46,7 @@ namespace DaccApi.Model
                 Curso = request.Curso,
                 Telefone = request.Telefone,
                 ImagemUrl = request.ImagemUrl,
-                InscritoNoticia = request.InscritoNoticia
+                NewsLetterSubscriber = request.NewsLetterSubscriber
             };
         }
 
