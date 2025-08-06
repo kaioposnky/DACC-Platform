@@ -1,9 +1,11 @@
 using System.ComponentModel.DataAnnotations;
+using DaccApi.Model.Validation;
 
 namespace DaccApi.Model
 {
     public class RequestUpdateProdutoImagem
     {
+        [ImageValidation]
         public IFormFile? Imagem { get; set; }
 
         [StringLength(255, ErrorMessage = "Texto alternativo deve ter no máximo 255 caracteres")]
