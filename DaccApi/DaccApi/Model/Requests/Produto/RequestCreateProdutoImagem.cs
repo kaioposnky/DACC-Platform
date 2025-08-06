@@ -5,7 +5,7 @@ namespace DaccApi.Model
     public class RequestCreateProdutoImagem
     {
         [Required(ErrorMessage = "Arquivo de imagem é obrigatório")]
-        public IFormFile ImageFile { get; set; }
+        public IFormFile Imagem { get; set; }
 
         [StringLength(255, ErrorMessage = "Texto alternativo deve ter no máximo 255 caracteres")]
         public string? ImagemAlt { get; set; }

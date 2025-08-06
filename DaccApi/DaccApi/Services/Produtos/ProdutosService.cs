@@ -463,9 +463,9 @@ namespace DaccApi.Services.Products
                         "Imagem não encontrada!");
                 }
 
-                if (request.ImageFile != null)
+                if (request.Imagem != null)
                 {
-                    existingImage.ImagemUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
+                    existingImage.ImagemUrl = await _fileStorageService.SaveImageFileAsync(request.Imagem);
                 }
 
                 if (request.Ordem.HasValue)

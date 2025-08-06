@@ -52,9 +52,9 @@ namespace DaccApi.Infrastructure.Repositories.Products
                 
                 var queryParams = new
                 {
-                    Page = query.Paginas,
+                    Page = query.Pagina,
                     Limit = query.Limite,
-                    SearchPattern = string.IsNullOrWhiteSpace(query.PadraoPesquisa) ? null : $"%{query.PadraoPesquisa}%",
+                    SearchPattern = string.IsNullOrWhiteSpace(query.Pesquisa) ? null : $"%{query.Pesquisa}%",
                     CategoriaID = categoriaId,
                     SubcategoriaID = subcategoriaId,
                     MinPrice = query.PrecoMinimo,
