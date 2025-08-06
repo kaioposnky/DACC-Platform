@@ -6,7 +6,8 @@ namespace DaccApi.Infrastructure.Repositories.Orders
     public interface IOrdersRepository
     {
         Task<Guid> CreateOrder(Order order);
-        Task CreateOrderItem(Guid orderId, OrderItemRequest item);
+        Task CreateOrderItem(Guid orderId, OrderItem item);
+        Task CreateOrderItems(Guid orderId, List<OrderItem> items); // Novo método bulk
         Task<Order?> GetOrderById(Guid id);
         Task<List<OrderItem>> GetOrderItemsByOrderId(Guid orderId);
         Task<List<Order>> GetOrdersByUserId(Guid userId);

@@ -139,6 +139,10 @@ namespace DaccApi.Controllers.Orders
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK, "Pagamento realizado com sucesso!");
 
             }
+            catch (ArgumentException ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, ex.Message);
+            }
             catch (ProductOutOfStockException ex)
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.PRODUCT_OUT_OF_STOCK, ex.Message);

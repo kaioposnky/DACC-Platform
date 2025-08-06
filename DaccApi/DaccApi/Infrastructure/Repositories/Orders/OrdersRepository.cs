@@ -39,7 +39,7 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
 
-        public async Task CreateOrderItem(Guid orderId, OrderItemRequest item)
+        public async Task CreateOrderItem(Guid orderId, OrderItem item)
         {
             try
             {
@@ -57,6 +57,28 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             catch (Exception ex)
             {
                 throw new Exception("Erro ao criar item de pedido no banco de dados.", ex);
+            }
+        }
+
+        public async Task CreateOrderItems(Guid orderId, List<OrderItem> items)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("CreateOrderItems");
+                var parameters = items.Select(item => new
+                {
+                    OrderId = orderId,
+                    ProductId = item.ProductId,
+                    ProductVariationId = item.ProductVariationId,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.UnitPrice
+                }).ToArray();
+                
+                await _repositoryDapper.ExecuteAsync(sql, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao criar itens de pedido no banco de dados.", ex);
             }
         }
 

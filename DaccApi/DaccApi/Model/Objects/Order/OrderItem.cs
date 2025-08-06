@@ -25,7 +25,7 @@ namespace DaccApi.Model.Objects.Order
                 ProductVariationId = request.ProductVariationId,
                 Quantity = request.Quantity,
                 ProductId = request.ProductId,
-                UnitPrice = request.UnitPrice
+                UnitPrice = 0
             };
         }
     }

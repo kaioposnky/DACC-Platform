@@ -30,17 +30,47 @@ namespace DaccApi.Services.Orders
                 var variationIds = request.OrderItems.Select(item => item.ProductVariationId).ToList();
                 var quantities = request.OrderItems.Select(item => item.Quantity).ToList();
 
+                var productVariationInfo = await _produtosRepository.GetVariationsWithProductByIdsAsync(variationIds);
+
+                if (productVariationInfo.Count != request.OrderItems.Count)
+                {
+                    throw new ArgumentException("Um ou mais produtos estão indisponíveis!");
+                }
 
                 // Se não tiver produtos em estoque o bastante da throw em ProductOutOfStockException
-                var stockRemoved = await _produtosRepository.RemoveMultipleProductsStockAsync(variationIds, quantities);
+                await _produtosRepository.RemoveMultipleProductsStockAsync(variationIds, quantities);
 
+                var productDict = productVariationInfo.ToDictionary(p => p.VariationId, p => p);
+                ;
 
+                // Soma todos o preço de todos os produtos junto com a quantidade para calcular o preço total
+                decimal totalAmount = 0;
+                var orderItems = new List<OrderItem>();
+
+                foreach (var item in request.OrderItems)
+                {
+                    if (!productDict.TryGetValue(item.ProductVariationId, out var product))
+                    {
+                        throw new ArgumentException($"Produto {item.ProductVariationId} não encontrado!");
+                    }
+
+                    var unitPrice = product.Preco;
+                    totalAmount += unitPrice * item.Quantity;
+
+                    orderItems.Add(new OrderItem
+                    {
+                        UnitPrice = unitPrice,
+                        ProductId = product.ProductId,
+                        ProductVariationId = product.VariationId,
+                        Quantity = item.Quantity
+                    });
+                }
 
                 var order = new Order
                 {
                     Id = Guid.NewGuid(),
                     UserId = userId,
-                    TotalAmount = request.TotalAmount,
+                    TotalAmount = totalAmount,
                     OrderItems = OrderItem.FromRequestList(request.OrderItems),
                     OrderDate = DateTime.UtcNow
                 };
@@ -52,10 +82,8 @@ namespace DaccApi.Services.Orders
                 // Cria o pedido no banco
                 await _ordersRepository.CreateOrder(order);
 
-                foreach (var item in request.OrderItems)
-                {
-                    await _ordersRepository.CreateOrderItem(order.Id, item);
-                }
+                // Cria os itens do pedido no banco
+                await _ordersRepository.CreateOrderItems(order.Id, orderItems);
 
                 return new CreateOrderResponse
                 {
@@ -68,7 +96,11 @@ namespace DaccApi.Services.Orders
                     OrderDate = order.OrderDate
                 };
             }
-            catch (ProductOutOfStockException ex)
+            catch (ArgumentException)
+            {
+                throw;
+            }
+            catch (ProductOutOfStockException)
             {
                 throw;
             }

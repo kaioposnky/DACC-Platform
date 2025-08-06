@@ -11,6 +11,11 @@
         VALUES (@OrderId, @ProductId, @ProductVariationId, @Quantity, @UnitPrice);
     </query>
 
+    <query name="CreateOrderItems">
+        INSERT INTO item_pedido (pedido_id, produto_id, produto_variacao_id, quantidade, preco_unitario)
+        VALUES (@OrderId, @ProductId, @ProductVariationId, @Quantity, @UnitPrice);
+    </query>
+
     <query name="GetOrderById">
         SELECT
         id as Id,
@@ -18,7 +23,7 @@
         data_pedido as OrderDate,
         status_pedido as Status,
         total_pedido as TotalAmount,
-        mercadopago_pagamento_id as MercadoPagoPaymentId,
+        mercadopago_pagamento_id as MercadoPagoPaymentId,-
         preference_id as PreferenceId,
         metodo_pagamento as PaymentMethod
         FROM pedido
