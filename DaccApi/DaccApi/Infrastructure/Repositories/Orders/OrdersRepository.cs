@@ -47,10 +47,10 @@ namespace DaccApi.Infrastructure.Repositories.Orders
                 var parameters = new
                 {
                     OrderId = orderId, 
-                    ProdutoId = item.ProdutoId, 
-                    ProdutoVariacaoId = item.ProdutoVariacaoId, 
-                    Quantidade = item.Quantidade, 
-                    PrecoUnitario = item.PrecoUnitario
+                    ProductId = item.ProdutoId, 
+                    ProductVariationId = item.ProdutoVariacaoId, 
+                    Quantity = item.Quantidade, 
+                    UnitPrice = item.PrecoUnitario
                 };
                 await _repositoryDapper.ExecuteAsync(sql, parameters);
             }
@@ -68,10 +68,10 @@ namespace DaccApi.Infrastructure.Repositories.Orders
                 var parameters = items.Select(item => new
                 {
                     OrderId = orderId, 
-                    ProdutoId = item.ProdutoId, 
-                    ProdutoVariacaoId = item.ProdutoVariacaoId, 
-                    Quantidade = item.Quantidade, 
-                    PrecoUnitario = item.PrecoUnitario
+                    ProductId = item.ProdutoId, 
+                    ProductVariationId = item.ProdutoVariacaoId, 
+                    Quantity = item.Quantidade, 
+                    UnitPrice = item.PrecoUnitario
                 }).ToArray();
                 
                 await _repositoryDapper.ExecuteAsync(sql, parameters);
