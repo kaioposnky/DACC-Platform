@@ -1,11 +1,10 @@
-using System.Diagnostics;
 using System.Net;
 using System.Text.Json;
 using DaccApi.Helpers;
 using Helpers.Response;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DaccApi.Middleware
+namespace DaccApi.Middlewares
 {
     public class ErrorHandlingMiddleware
     {
