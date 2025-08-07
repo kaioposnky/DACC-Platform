@@ -50,8 +50,6 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
 
 
                 };
-                Console.WriteLine("SQL: " + sql);
-                Console.WriteLine("Params: " + param);
                 await _repositoryDapper.ExecuteAsync(sql, param);
             }
             catch (Exception ex)

@@ -67,11 +67,6 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
             catch (PostgresException ex)
             {
-                Console.WriteLine(ex.MessageText);
-                Console.WriteLine(ex.ColumnName);
-                Console.WriteLine(ex.ConstraintName);
-                Console.WriteLine(ex.Detail);
-                Console.WriteLine(ex.TableName);
                 throw new Exception("Erro ao buscar produtos no banco de dados." + ex.Message);
             }
             catch (Exception ex)
@@ -155,9 +150,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
             catch (PostgresException ex)
             {
-                Console.WriteLine(ex.MessageText);
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.Detail);
+                throw new Exception("Erro ao criar variação do produto no banco de dados!" + ex.Message);
             }
             catch (Exception ex)
             {
@@ -511,30 +504,57 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
         }
         
-        public async Task<bool> RemoveMultipleProductsStockAsync(List<Guid> variationIds, List<int> quantities)
+        public async Task<bool> CheckMultipleProductsStockAsync(List<Guid> variationIds, List<int> quantities)
         {
             try
             {
-                var parameters = new 
-                { 
+                var sql = _repositoryDapper.GetQueryNamed("CheckMultipleProductsStock");
+                
+                var parameters = new
+                {
                     VariationIds = variationIds.ToArray(),
                     Quantities = quantities.ToArray()
                 };
-        
-                var result = (await _repositoryDapper.
-                    QueryProcedureAsync<(bool success, string error_message)>
-                        ("remove_multiple_products_stock", parameters)).FirstOrDefault();
-        
+
+                var result = (await _repositoryDapper.QueryAsync<(bool success, string error_message)>(sql, parameters)).FirstOrDefault();
+
                 if (!result.success)
                 {
                     throw new ProductOutOfStockException(result.error_message);
                 }
-        
+
                 return true;
             }
             catch (ProductOutOfStockException)
             {
                 throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao verificar estoque dos produtos.", ex);
+            }
+        }
+
+        public async Task<bool> RemoveMultipleProductsStockDirectAsync(List<Guid> variationIds, List<int> quantities)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("RemoveMultipleProductsStockDirect");
+                
+                var parameters = new
+                {
+                    VariationIds = variationIds.ToArray(),
+                    Quantities = quantities.ToArray()
+                };
+
+                var result = (await _repositoryDapper.QueryAsync<(bool success, string error_message)>(sql, parameters)).FirstOrDefault();
+
+                if (!result.success)
+                {
+                    throw new Exception(result.error_message);
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
