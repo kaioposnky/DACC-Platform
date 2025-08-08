@@ -1,6 +1,7 @@
+using System.Data;
 using DaccApi.Infrastructure.Dapper;
 using DaccApi.Model.Objects.Order;
-using DaccApi.Model.Requests;
+using Npgsql;
 
 namespace DaccApi.Infrastructure.Repositories.Orders
 {
@@ -13,7 +14,7 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             _repositoryDapper = repositoryDapper;
         }
 
-        public async Task<Guid> CreateOrder(Order order)
+        public async Task<Guid> CreateOrder(Order order, IDbTransaction? transaction = null)
         {
             try
             {
@@ -25,12 +26,20 @@ namespace DaccApi.Infrastructure.Repositories.Orders
                     OrderDate = order.OrderDate, 
                     Status = "created", 
                     TotalAmount = order.TotalAmount,
-                    PreferenceId = order.PreferenceId,  
                     MercadoPagoPaymentId = (long?)null, // Será definido mais tarde
                     PaymentMethod = (string?)null // Será definido mais tarde 
                 };
                 
-                var orderId = await _repositoryDapper.QueryAsync<Guid>(sql, parameters);
+                IEnumerable<Guid> orderId;
+                if (transaction != null)
+                {
+                    orderId = await _repositoryDapper.QueryAsync<Guid>(sql, parameters, transaction);
+                }
+                else
+                {
+                    orderId = await _repositoryDapper.QueryAsync<Guid>(sql, parameters);
+                }
+                
                 return orderId.FirstOrDefault();
             }
             catch (Exception ex)
@@ -39,7 +48,7 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
 
-        public async Task CreateOrderItem(Guid orderId, OrderItem item)
+        public async Task CreateOrderItem(Guid orderId, OrderItem item, IDbTransaction? transaction = null)
         {
             try
             {
@@ -52,7 +61,15 @@ namespace DaccApi.Infrastructure.Repositories.Orders
                     Quantity = item.Quantidade, 
                     UnitPrice = item.PrecoUnitario
                 };
-                await _repositoryDapper.ExecuteAsync(sql, parameters);
+                
+                if (transaction != null)
+                {
+                    await _repositoryDapper.ExecuteAsync(sql, parameters, transaction);
+                }
+                else
+                {
+                    await _repositoryDapper.ExecuteAsync(sql, parameters);
+                }
             }
             catch (Exception ex)
             {
@@ -60,21 +77,32 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
 
-        public async Task CreateOrderItems(Guid orderId, List<OrderItem> items)
+        public async Task CreateOrderItems(Guid orderId, List<OrderItem> items, IDbTransaction? transaction = null)
         {
             try
             {
                 var sql = _repositoryDapper.GetQueryNamed("CreateOrderItems");
                 var parameters = items.Select(item => new
                 {
-                    OrderId = orderId, 
-                    ProductId = item.ProdutoId, 
-                    ProductVariationId = item.ProdutoVariacaoId, 
-                    Quantity = item.Quantidade, 
+                    OrderId = orderId,
+                    ProductId = item.ProdutoId,
+                    ProductVariationId = item.ProdutoVariacaoId,
+                    Quantity = item.Quantidade,
                     UnitPrice = item.PrecoUnitario
                 }).ToArray();
-                
-                await _repositoryDapper.ExecuteAsync(sql, parameters);
+
+                if (transaction != null)
+                {
+                    await _repositoryDapper.ExecuteAsync(sql, parameters, transaction);
+                }
+                else
+                {
+                    await _repositoryDapper.ExecuteAsync(sql, parameters);
+                }
+            }
+            catch (PostgresException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -97,14 +125,24 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
 
-        public async Task<List<OrderItem>> GetOrderItemsByOrderId(Guid orderId)
+        public async Task<List<OrderItem>> GetOrderItemsByOrderId(Guid orderId, IDbTransaction? transaction = null)
         {
             try
             {
                 var sql = _repositoryDapper.GetQueryNamed("GetOrderItemsByOrderId");
                 var parameters = new { OrderId = orderId };
-                var orderItems = (await _repositoryDapper.QueryAsync<OrderItem>(sql, parameters)).ToList();
-                return orderItems;
+                
+                IEnumerable<OrderItem> orderItems;
+                if (transaction != null)
+                {
+                    orderItems = await _repositoryDapper.QueryAsync<OrderItem>(sql, parameters, transaction);
+                }
+                else
+                {
+                    orderItems = await _repositoryDapper.QueryAsync<OrderItem>(sql, parameters);
+                }
+                
+                return orderItems.ToList();
             }
             catch (Exception ex)
             {
@@ -127,13 +165,21 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
 
-        public async Task UpdateOrderStatus(Guid id, string status)
+        public async Task UpdateOrderStatus(Guid id, string status, IDbTransaction? transaction = null)
         {
             try
             {
                 var sql = _repositoryDapper.GetQueryNamed("UpdateOrderStatus");
                 var parameters = new { Id = id, Status = status };
-                await _repositoryDapper.ExecuteAsync(sql, parameters);
+                
+                if (transaction != null)
+                {
+                    await _repositoryDapper.ExecuteAsync(sql, parameters, transaction);
+                }
+                else
+                {
+                    await _repositoryDapper.ExecuteAsync(sql, parameters);
+                }
             }
             catch (Exception ex)
             {
@@ -141,7 +187,7 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
 
-        public async Task UpdateOrderPaymentInfo(Guid orderId, long paymentId, string paymentMethod, string status)
+        public async Task UpdateOrderPaymentInfo(Guid orderId, long paymentId, string paymentMethod, string status, IDbTransaction? transaction = null)
         {
             try
             {
@@ -153,11 +199,45 @@ namespace DaccApi.Infrastructure.Repositories.Orders
                     PaymentMethod = paymentMethod,
                     Status = status
                 };
-                await _repositoryDapper.ExecuteAsync(sql, parameters);
+                
+                if (transaction != null)
+                {
+                    await _repositoryDapper.ExecuteAsync(sql, parameters, transaction);
+                }
+                else
+                {
+                    await _repositoryDapper.ExecuteAsync(sql, parameters);
+                }
             }
             catch (Exception ex)
             {
                 throw new Exception("Erro ao atualizar informações de pagamento do pedido.", ex);
+            }
+        }
+        
+        public async Task UpdateOrderPreferenceId(Guid orderId, string preferenceId, IDbTransaction? transaction = null)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("UpdateOrderPreferenceId");
+                var parameters = new 
+                { 
+                    Id = orderId,
+                    PreferenceId = preferenceId
+                };
+                
+                if (transaction != null)
+                {
+                    await _repositoryDapper.ExecuteAsync(sql, parameters, transaction);
+                }
+                else
+                {
+                    await _repositoryDapper.ExecuteAsync(sql, parameters);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao atualizar preferência da order! do pedido.", ex);
             }
         }
     }

@@ -12,6 +12,7 @@ using System.Data;
 using Npgsql;
 using Microsoft.OpenApi.Models;
 using DaccApi.Infrastructure.Authentication;
+using DaccApi.Infrastructure.MercadoPago.Services;
 using DaccApi.Infrastructure.Repositories.Avaliacao;
 using DaccApi.Services.Products;
 using DaccApi.Infrastructure.Repositories.Products;
@@ -24,8 +25,9 @@ using DaccApi.Infrastructure.Repositories.Projetos;
 using DaccApi.Infrastructure.Repositories.Eventos;
 using DaccApi.Infrastructure.Repositories.Anuncio;
 using DaccApi.Infrastructure.Repositories.Orders;
+using DaccApi.Infrastructure.Repositories.Reservas;
 using DaccApi.Infrastructure.Services.MercadoPago;
-using DaccApi.Middleware;
+using DaccApi.Middlewares;
 using DaccApi.Services.Anuncios;
 using DaccApi.Services.Avaliacao;
 using DaccApi.Services.Eventos;
@@ -39,7 +41,6 @@ using DaccApi.Services.Orders;
 using Helpers.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -152,9 +153,11 @@ builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<IOrdersRepository, OrdersRepository>();
 builder.Services.AddScoped<IOrdersService, OrdersService>();
 builder.Services.AddScoped<IMercadoPagoService, MercadoPagoService>();
+builder.Services.AddScoped<IReservaRepository, ReservaRepository>();
 
 var app = builder.Build();
 
+app.UseMiddleware<LoggerMiddleware>();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())

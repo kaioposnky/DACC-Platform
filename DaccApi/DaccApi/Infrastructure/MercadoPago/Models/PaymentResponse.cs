@@ -2,8 +2,8 @@
 {
     public class PaymentResponse
     {
-        public Guid PreferenceId { get; set; }
-        public string PaymentUrl { get; set; } 
-        public string Status { get; set; } 
+        public required string PreferenceId { get; set; }
+        public required string PaymentUrl { get; set; } 
+        public required string Status { get; set; } 
     }
 }

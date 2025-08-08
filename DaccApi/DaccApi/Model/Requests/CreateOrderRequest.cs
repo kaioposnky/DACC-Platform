@@ -2,7 +2,7 @@ namespace DaccApi.Model.Requests
 {
     public class CreateOrderRequest
     {
-        public List<OrderItemRequest> OrderItems { get; set; }
+        public List<OrderItemRequest> ItensPedido { get; set; }
     }
 
     public class OrderItemRequest

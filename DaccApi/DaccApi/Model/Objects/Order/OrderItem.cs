@@ -1,5 +1,4 @@
 using DaccApi.Model.Requests;
-using NHibernate.Mapping;
 
 namespace DaccApi.Model.Objects.Order
 {
@@ -14,10 +13,10 @@ namespace DaccApi.Model.Objects.Order
         public static List<OrderItem> FromRequestList(IEnumerable<OrderItemRequest> requestList)
         {
             // Seleciona todos os elementos passa eles para FromRequest e retorna o resultado adicionando eles na lista
-            return requestList.Select(FromRequest).ToList();
+            return requestList.Select(request => FromRequest(request)).ToList();
         }
         
-        public static OrderItem FromRequest(OrderItemRequest request)
+        public static OrderItem FromRequest(OrderItemRequest request, decimal precoUnitario = 0)
         {
             return new OrderItem()
             {
@@ -25,7 +24,7 @@ namespace DaccApi.Model.Objects.Order
                 ProdutoVariacaoId = request.ProdutoVariacaoId,
                 Quantidade = request.Quantidade,
                 ProdutoId = request.ProdutoId,
-                PrecoUnitario = 0
+                PrecoUnitario = precoUnitario
             };
         }
     }

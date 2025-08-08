@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+using System.Data;
 using DaccApi.Exceptions;
 using DaccApi.Infrastructure.Dapper;
 using DaccApi.Model;
@@ -535,7 +535,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
         }
 
-        public async Task<bool> RemoveMultipleProductsStockDirectAsync(List<Guid> variationIds, List<int> quantities)
+        public async Task<bool> RemoveMultipleProductsStockDirectAsync(List<Guid> variationIds, List<int> quantities, IDbTransaction? transaction = null)
         {
             try
             {
@@ -547,11 +547,20 @@ namespace DaccApi.Infrastructure.Repositories.Products
                     Quantities = quantities.ToArray()
                 };
 
-                var result = (await _repositoryDapper.QueryAsync<(bool success, string error_message)>(sql, parameters)).FirstOrDefault();
-
-                if (!result.success)
+                IEnumerable<(bool success, string error_message)> result;
+                if (transaction != null)
                 {
-                    throw new Exception(result.error_message);
+                    result = await _repositoryDapper.QueryAsync<(bool success, string error_message)>(sql, parameters, transaction);
+                }
+                else
+                {
+                    result = await _repositoryDapper.QueryAsync<(bool success, string error_message)>(sql, parameters);
+                }
+
+                var firstResult = result.FirstOrDefault();
+                if (!firstResult.success)
+                {
+                    throw new Exception(firstResult.error_message);
                 }
 
                 return true;

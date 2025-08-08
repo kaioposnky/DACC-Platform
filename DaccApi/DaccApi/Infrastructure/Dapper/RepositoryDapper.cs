@@ -9,7 +9,7 @@ namespace DaccApi.Infrastructure.Dapper
     {
         private Dictionary<string, string> _queriesCache = new Dictionary<string, string>();
         private readonly string _connectionString;
-        private readonly string _queriesFilePath;
+
         private IDbConnection? _connection;
 
         public RepositoryDapper(IConfiguration configuration)
@@ -47,6 +47,36 @@ namespace DaccApi.Infrastructure.Dapper
             }
         }
 
+        public async Task<int> ExecuteProcedureAsync(string procedureName, object? parameters, IDbTransaction transaction)
+        {
+            return await transaction.Connection!.ExecuteAsync(procedureName, parameters, transaction, commandType: CommandType.StoredProcedure);
+        }
+
+        public async Task<IEnumerable<T>> QueryProcedureAsync<T>(string procedureName, object? parameters, IDbTransaction transaction)
+        {
+            return await transaction.Connection!.QueryAsync<T>(procedureName, parameters, transaction, commandType: CommandType.StoredProcedure);
+        }
+
+        public async Task<T> QueryProcedureFirstAsync<T>(string procedureName, object? parameters, IDbTransaction transaction)
+        {
+            return await transaction.Connection!.QueryFirstAsync<T>(procedureName, parameters, transaction, commandType: CommandType.StoredProcedure);
+        }
+        
+        public async Task<int> ExecuteAsync(string sql, object? parameters, IDbTransaction transaction)
+        {
+            return await transaction.Connection!.ExecuteAsync(sql, parameters, transaction);
+        }
+        
+        public async Task<IEnumerable<T>> QueryAsync<T>(string sql, object? parameters, IDbTransaction transaction)
+        {
+            return await transaction.Connection!.QueryAsync<T>(sql, parameters, transaction);
+        }
+
+        public IDbTransaction BeginTransactionAsync()
+        {
+            return GetConnection().BeginTransaction();
+        }
+
         public async Task<int> ExecuteAsync(string sql, object? parameters = null)
         {
             return await GetConnection().ExecuteAsync(sql, parameters);
@@ -61,7 +91,12 @@ namespace DaccApi.Infrastructure.Dapper
         {
             return await GetConnection().QueryAsync<T>(sql, parameters);
         }
-        
+
+        public async Task<IEnumerable<T>> QueryFirstAsync<T>(string sql, object? parameters = null)
+        {
+            return await GetConnection().QueryAsync<T>(sql, parameters);
+        }
+
         public async Task<IEnumerable<T>> QueryProcedureAsync<T>(string procedureName, object? parameters = null)
         {
             return await GetConnection().QueryAsync<T>(procedureName, parameters, commandType: CommandType.StoredProcedure);
