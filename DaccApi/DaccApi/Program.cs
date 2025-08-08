@@ -12,6 +12,7 @@ using System.Data;
 using Npgsql;
 using Microsoft.OpenApi.Models;
 using DaccApi.Infrastructure.Authentication;
+using DaccApi.Infrastructure.BackgroundServices;
 using DaccApi.Infrastructure.MercadoPago.Services;
 using DaccApi.Infrastructure.Repositories.Avaliacao;
 using DaccApi.Services.Products;
@@ -152,6 +153,8 @@ builder.Services.AddScoped<IOrdersRepository, OrdersRepository>();
 builder.Services.AddScoped<IOrdersService, OrdersService>();
 builder.Services.AddScoped<IMercadoPagoService, MercadoPagoService>();
 builder.Services.AddScoped<IReservaRepository, ReservaRepository>();
+
+builder.Services.AddHostedService<ReservationCleanupService>();
 
 var app = builder.Build();
 
