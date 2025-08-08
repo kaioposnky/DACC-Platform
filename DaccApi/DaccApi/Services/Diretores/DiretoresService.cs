@@ -2,8 +2,8 @@
 using DaccApi.Infrastructure.Repositories.Products;
 using DaccApi.Infrastructure.Repositories.Diretores;
 using DaccApi.Helpers;
+using DaccApi.Responses;
 using DaccApi.Services.Diretores;
-using Helpers.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.Diretores

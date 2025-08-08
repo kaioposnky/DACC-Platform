@@ -1,7 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using DaccApi.Helpers;
-using Helpers.Response;
+using DaccApi.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Middlewares

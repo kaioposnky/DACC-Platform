@@ -9,8 +9,8 @@ using DaccApi.Infrastructure.Cryptography;
 using DaccApi.Infrastructure.Repositories.Permission;
 using DaccApi.Infrastructure.Repositories.User;
 using DaccApi.Model.Responses;
+using DaccApi.Responses;
 using DaccApi.Services.Token;
-using Helpers.Response;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -148,9 +148,8 @@ namespace DaccApi.Services.Auth
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse(
-                    "Ocorreu um erro ao tentar cadastrar o usuário, favor relatar ao suporte pelo: contato.daccfei@gmail.com " +
-                    ex.StackTrace);
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,
+                    "Ocorreu um erro ao tentar cadastrar o usuário, favor relatar ao suporte pelo: contato.daccfei@gmail.com ");
             }
         }
 

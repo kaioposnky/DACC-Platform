@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using DaccApi.Infrastructure.Authentication;
 using DaccApi.Services.Eventos;
 using DaccApi.Responses;
-using DaccApi.Responses.UserResponse;
 using DaccApi.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

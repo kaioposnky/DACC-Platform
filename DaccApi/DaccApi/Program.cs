@@ -28,6 +28,7 @@ using DaccApi.Infrastructure.Repositories.Orders;
 using DaccApi.Infrastructure.Repositories.Reservas;
 using DaccApi.Infrastructure.Services.MercadoPago;
 using DaccApi.Middlewares;
+using DaccApi.Responses;
 using DaccApi.Services.Anuncios;
 using DaccApi.Services.Avaliacao;
 using DaccApi.Services.Eventos;
@@ -38,7 +39,6 @@ using DaccApi.Services.Posts;
 using DaccApi.Services.Projetos;
 using DaccApi.Services.Token;
 using DaccApi.Services.Orders;
-using Helpers.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 var builder = WebApplication.CreateBuilder(args);
@@ -108,9 +108,7 @@ builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
             .ToList();
 
         var responseError = ResponseError.VALIDATION_ERROR.WithDetails(validationErrors.ToArray());
-        
-        var response = new ApiResponse(false, responseError.ErrorInfo);
-        return new ObjectResult(response) { StatusCode = responseError.StatusCode };
+        return new ObjectResult(responseError) { StatusCode = responseError.StatusCode };
     };
 });
 builder.Services.AddEndpointsApiExplorer();

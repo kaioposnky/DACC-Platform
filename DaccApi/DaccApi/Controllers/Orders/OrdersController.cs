@@ -5,10 +5,10 @@ using DaccApi.Infrastructure.MercadoPago.Models;
 using DaccApi.Infrastructure.Services.MercadoPago;
 using DaccApi.Model.Requests;
 using DaccApi.Services.Orders;
-using Helpers.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using DaccApi.Responses;
 
 namespace DaccApi.Controllers.Orders
 {

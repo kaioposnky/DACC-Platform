@@ -1,7 +1,6 @@
 ﻿using DaccApi.Helpers;
 using DaccApi.Model;
 using DaccApi.Responses;
-using DaccApi.Responses.UserResponse;
 using DaccApi.Services.Avaliacao;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

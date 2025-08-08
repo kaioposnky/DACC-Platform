@@ -1,5 +1,4 @@
 ﻿using DaccApi.Responses;
-using DaccApi.Responses.UserResponse;
 using DaccApi.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,9 +22,9 @@ namespace DaccApi.Controllers.Diretores
 
         [HttpGet("")]
         [HasPermission(AppPermissions.Faculty.View)]
-        [ProducesResponseType(typeof(ResponseRequest), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BadRequest), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ErrorRequest), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ResponseError), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseError), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ResponseError), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllDiretores()
         {
             var response = await _diretoresService.GetAllDiretores();

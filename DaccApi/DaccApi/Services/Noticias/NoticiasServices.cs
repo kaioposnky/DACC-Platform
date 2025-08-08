@@ -1,8 +1,8 @@
 ﻿using DaccApi.Helpers;
 using DaccApi.Infrastructure.Repositories.Noticias;
 using DaccApi.Model;
+using DaccApi.Responses;
 using DaccApi.Services.FileStorage;
-using Helpers.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.Noticias
