@@ -1,4 +1,5 @@
-﻿using DaccApi.Infrastructure.Dapper;
+﻿using System.Data;
+using DaccApi.Infrastructure.Dapper;
 using DaccApi.Model;
 
 namespace DaccApi.Infrastructure.Repositories.Reservas
