@@ -10,7 +10,7 @@ namespace DaccApi.Controllers.Avaliacao
 {
     [Authorize]
     [ApiController]
-    [Route("api/ratings")]
+    [Route("v1/api/ratings")]
     public class AvaliacaoController : ControllerBase
     {
         private readonly IAvaliacaoService _avaliacaoService;

@@ -11,7 +11,7 @@ namespace DaccApi.Controllers.Anuncio
 
     [Authorize]
     [ApiController]
-    [Route("api/announcements")]
+    [Route("v1/api/announcements")]
     public class AnuncioController : ControllerBase
     {
         private readonly IAnuncioService _anuncioService;

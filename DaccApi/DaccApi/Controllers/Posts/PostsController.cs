@@ -9,7 +9,7 @@ namespace DaccApi.Controllers.Posts
     [Authorize]
     [ApiController]
     [NonController]
-    [Route("api/[controller]")]
+    [Route("v1/api/[controller]")]
     public class PostsController : ControllerBase
     {
         private readonly IPostsServices _postsServices;

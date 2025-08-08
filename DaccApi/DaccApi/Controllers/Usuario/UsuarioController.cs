@@ -6,7 +6,7 @@ using DaccApi.Services.User;
 namespace DaccApi.Controllers.Usuario
 {
     [ApiController]
-    [Route("api/users")]
+    [Route("v1/api/users")]
     public class UsuarioController : ControllerBase
     {
         private readonly IUsuarioService _usuarioService;

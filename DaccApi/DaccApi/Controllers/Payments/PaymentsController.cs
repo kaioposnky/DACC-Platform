@@ -7,7 +7,7 @@ namespace DaccApi.Controllers.Payments
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("v1/api/[controller]")]
     public class PaymentsController : ControllerBase
     {
         [HttpGet("success")]

@@ -9,7 +9,7 @@ namespace DaccApi.Controllers.Diretores
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("v1/api/[controller]")]
 
     public class DiretoresController : ControllerBase
     {

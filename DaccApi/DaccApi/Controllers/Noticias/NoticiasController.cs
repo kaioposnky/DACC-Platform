@@ -10,7 +10,7 @@ namespace DaccApi.Controllers.Noticias
 {
     [Authorize]
     [ApiController]
-    [Route("api/news")]
+    [Route("v1/api/news")]
     public class NoticiasController : ControllerBase
     {
         private readonly INoticiasServices _noticiasServices;

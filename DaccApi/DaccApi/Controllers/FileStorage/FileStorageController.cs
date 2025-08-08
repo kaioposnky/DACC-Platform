@@ -8,7 +8,7 @@ namespace DaccApi.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("v1/api/[controller]")]
     public class FileStorageController : ControllerBase
     {
         private readonly IFileStorageService _storageService;

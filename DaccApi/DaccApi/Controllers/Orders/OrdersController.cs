@@ -14,7 +14,7 @@ namespace DaccApi.Controllers.Orders
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("v1/api/[controller]")]
     public class OrdersController : ControllerBase
     {
         private readonly IOrdersService _ordersService;

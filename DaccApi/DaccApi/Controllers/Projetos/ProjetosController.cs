@@ -9,7 +9,7 @@ namespace DaccApi.Controllers.Projetos
 {
     [Authorize]
     [ApiController]
-    [Route("api/projects")]
+    [Route("v1/api/projects")]
     public class ProjetosController : ControllerBase
     {
         private readonly IProjetosService _projetosService;

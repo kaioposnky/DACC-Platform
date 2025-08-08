@@ -8,7 +8,7 @@ namespace DaccApi.Controllers.Auth
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("v1/api/[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
