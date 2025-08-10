@@ -1,4 +1,6 @@
-﻿using DaccApi.Responses;
+﻿using System.Net;
+using System.Text.Json;
+using DaccApi.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Helpers
@@ -44,6 +46,15 @@ namespace DaccApi.Helpers
             }
             
             return new ObjectResult(successResponse) { StatusCode = successResponse.StatusCode };
+        }
+        
+        public static async Task WriteResponseErrorAsync(HttpContext httpContext, HttpStatusCode statusCode, ResponseError responseError, string? message = null)
+        {
+            var response = (ObjectResult)ResponseHelper.CreateErrorResponse(responseError, message);
+            httpContext.Response.ContentType = "application/json";
+            httpContext.Response.StatusCode = (int)statusCode;
+            // Escreve o body da resposta que será enviada
+            await httpContext.Response.WriteAsync(JsonSerializer.Serialize(response.Value));
         }
     }
 }

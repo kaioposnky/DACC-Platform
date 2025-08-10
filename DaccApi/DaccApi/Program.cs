@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Data;
+using System.Net;
+using System.Threading.RateLimiting;
+using DaccApi.Helpers;
 using Npgsql;
 using Microsoft.OpenApi.Models;
 using DaccApi.Infrastructure.Authentication;
@@ -42,6 +45,8 @@ using DaccApi.Services.Token;
 using DaccApi.Services.Orders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -112,6 +117,34 @@ builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
         return new ObjectResult(responseError) { StatusCode = responseError.StatusCode };
     };
 });
+
+builder.Services.AddRateLimiter(options =>
+{
+    var rateLimitInterval = builder.Configuration.GetValue<int>("RateLimit:IntervalMinutes", 2);
+    var rateLimitMaxRequests = builder.Configuration.GetValue<int>("RateLimit:MaxRequests", 100);
+    
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, IPAddress>(context =>
+    {
+        var clientIp = context.Connection.RemoteIpAddress ?? IPAddress.Loopback;
+        return RateLimitPartition.GetFixedWindowLimiter(clientIp, _ => 
+            new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = rateLimitMaxRequests,
+                Window = TimeSpan.FromMinutes(rateLimitInterval),
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit = 0
+            });
+    });
+
+    options.OnRejected = async (context, rateLimiterRule) =>
+    {
+        context.HttpContext.Response.StatusCode = 429;
+        var response = ResponseError.RATE_LIMIT_EXCEEDED;
+        await ResponseHelper.WriteResponseErrorAsync(context.HttpContext, HttpStatusCode.TooManyRequests, response);
+    };
+
+});
+
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddMemoryCache();
@@ -168,6 +201,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRateLimiter();
 app.UseAuthentication(); 
 app.UseAuthorization();
 
