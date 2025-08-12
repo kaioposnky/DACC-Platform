@@ -228,9 +228,9 @@ CREATE TABLE produto_categoria
 -- Armazena as subcategorias de produtos
 DROP TABLE IF EXISTS produto_subcategoria CASCADE;
 CREATE TABLE produto_subcategoria(
-     id      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-     nome    VARCHAR(100) UNIQUE NOT NULL,
-     categoria_id UUID REFERENCES produto_categoria (id)
+                                     id      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                                     nome    VARCHAR(100) UNIQUE NOT NULL,
+                                     categoria_id UUID REFERENCES produto_categoria (id)
 );
 
 -- Tabela: Produtos
@@ -279,6 +279,19 @@ CREATE TABLE produto_imagem
     ordem               INT          NOT NULL DEFAULT 0
 );
 
+-- Tabela: Reservas de produto
+-- Cria uma reserva de quantidade de produto para ser alterado no pedido
+DROP TABLE IF EXISTS reserva_produto CASCADE;
+CREATE TABLE reserva_produto (
+                                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                                 produto_variacao_id UUID REFERENCES produto_variacao(id),
+                                 pedido_id UUID REFERENCES produto(id),
+                                 quantidade INT NOT NULL,
+                                 ativo BOOLEAN DEFAULT true,
+                                 data_expira TIMESTAMP NOT NULL,
+                                 data_criacao TIMESTAMP DEFAULT NOW()
+);
+
 -- Tabela: Status de Pedido
 -- Define os diferentes estados possíveis para um pedido
 DROP TABLE IF EXISTS status_pedido CASCADE;
@@ -307,7 +320,7 @@ CREATE TABLE pedido
     data_pedido              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status_pedido            VARCHAR(50) REFERENCES status_pedido (nome),
     mercadopago_pagamento_id BIGINT NULL,
-    preference_id            UUID NULL,
+    preference_id            VARCHAR(100) NULL,
     metodo_pagamento         VARCHAR(50) REFERENCES metodo_pagamento (nome) NULL,
     total_pedido             NUMERIC(10, 2) NOT NULL
 );
@@ -319,7 +332,8 @@ CREATE TABLE item_pedido
 (
     id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     pedido_id           UUID REFERENCES pedido (id) ON DELETE CASCADE,
-    produto_variacao_id UUID REFERENCES produto_variacao (id), 
+    produto_id          UUID REFERENCES produto (id),
+    produto_variacao_id UUID REFERENCES produto_variacao (id),
     quantidade          INT            NOT NULL,
     preco_unitario      NUMERIC(10, 2) NOT NULL
 );
@@ -331,7 +345,7 @@ CREATE TABLE avaliacao
 (
     id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     usuario_id       UUID REFERENCES usuario (id),
-    produto_id       UUID REFERENCES produto (id) ON DELETE CASCADE, 
+    produto_id       UUID REFERENCES produto (id) ON DELETE CASCADE,
     nota             INT CHECK (nota BETWEEN 1 AND 5),
     comentario       TEXT,
     ativo            BOOLEAN   DEFAULT TRUE,
@@ -599,38 +613,68 @@ $$;
 
 --- PROCEDURES
 
--- Remover produtos do estoque e se não tiver estoque retornar erro
-CREATE OR REPLACE FUNCTION remove_multiple_products_stock(
-    variation_ids UUID[],
-    quantities INTEGER[]
+-- Função para verificar se há estoque suficiente para múltiplos produtos
+CREATE OR REPLACE FUNCTION check_multiple_products_stock(
+    VariationIds UUID[],
+    Quantities INTEGER[]
 ) RETURNS TABLE(success BOOLEAN, error_message TEXT) AS $$
 DECLARE
     i INTEGER;
     current_stock INTEGER;
     product_name TEXT;
+    product_cor TEXT;
+    product_tamanho TEXT;
 BEGIN
     -- Verificar se todos têm estoque suficiente
-    FOR i IN 1..array_length(variation_ids, 1) LOOP
-            SELECT pv.estoque, p.nome
-            INTO current_stock, product_name
+    FOR i IN 1..array_length(VariationIds, 1) LOOP
+            SELECT pv.estoque, p.nome, pc.nome, pt.nome
+            INTO current_stock, product_name, product_cor, product_tamanho
             FROM produto_variacao pv
                      INNER JOIN produto p ON pv.produto_id = p.id
-            WHERE pv.id = variation_ids[i];
+                     INNER JOIN produto_cor pc ON pv.cor_id = pc.id
+                     INNER JOIN produto_tamanho pt ON pv.tamanho_id = pt.id
+            WHERE pv.id = VariationIds[i];
 
-            IF current_stock < quantities[i] THEN
+            IF current_stock IS NULL THEN
+                RETURN QUERY SELECT FALSE, 'Produto com ID ' || VariationIds[i] || ' não encontrado';
+                RETURN;
+            END IF;
+
+            IF current_stock < Quantities[i] THEN
                 RETURN QUERY SELECT FALSE,
-                                    'Produto ' || product_name || ' sem estoque suficiente. Disponível: ' ||
-                                    current_stock || ', Solicitado: ' || quantities[i];
+                                    'Produto ' || product_name || 'cor ' || product_cor || ' tamanho ' || product_tamanho
+                                        || ' sem estoque suficiente. Disponível: ' ||
+                                    current_stock || ', Solicitado: ' || Quantities[i];
                 RETURN;
             END IF;
         END LOOP;
 
     -- Se chegou até aqui, todos têm estoque suficiente
-    -- Atualizar o estoque
-    FOR i IN 1..array_length(variation_ids, 1) LOOP
+    RETURN QUERY SELECT TRUE, ''::TEXT;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Função para remover estoque de múltiplos produtos (sem verificação)
+CREATE OR REPLACE FUNCTION remove_multiple_products_stock_direct(
+    VariationIds UUID[],
+    Quantities INTEGER[]
+) RETURNS TABLE(success BOOLEAN, error_message TEXT) AS $$
+DECLARE
+    i INTEGER;
+    rows_affected INTEGER;
+BEGIN
+    -- Atualizar o estoque de todos os produtos
+    FOR i IN 1..array_length(VariationIds, 1) LOOP
             UPDATE produto_variacao
-            SET estoque = estoque - quantities[i]
-            WHERE id = variation_ids[i];
+            SET estoque = estoque - Quantities[i]
+            WHERE id = VariationIds[i];
+
+            GET DIAGNOSTICS rows_affected = ROW_COUNT;
+
+            IF rows_affected = 0 THEN
+                RETURN QUERY SELECT FALSE, 'Falha ao atualizar estoque do produto com ID ' || VariationIds[i];
+                RETURN;
+            END IF;
         END LOOP;
 
     RETURN QUERY SELECT TRUE, ''::TEXT;

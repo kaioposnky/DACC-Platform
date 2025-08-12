@@ -32,10 +32,11 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
             return projeto;
         }
 
-        public async Task CreateProjeto(RequestProjeto projeto)
+        public async Task CreateProjeto(Projeto projeto)
         {
             try
             {
+                
                 var sql = _repositoryDapper.GetQueryNamed("CreateProjeto");
             
                 var param = new
@@ -49,8 +50,6 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
 
 
                 };
-                Console.WriteLine("SQL: " + sql);
-                Console.WriteLine("Params: " + param);
                 await _repositoryDapper.ExecuteAsync(sql, param);
             }
             catch (Exception ex)
@@ -73,7 +72,7 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
             }
         }
 
-        public async Task UpdateProjeto(Guid id, RequestProjeto projeto)
+        public async Task UpdateProjeto(Guid id, Projeto projeto)
         {
             try
             {

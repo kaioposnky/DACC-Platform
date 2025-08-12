@@ -5,7 +5,7 @@ namespace DaccApi.Services.Avaliacao;
 
 public interface IAvaliacaoService
 {
-    public Task<IActionResult> CreateAvaliacao(RequestCreateAvaliacao avaliacao);
+    public Task<IActionResult> CreateAvaliacao(Guid userId, RequestCreateAvaliacao avaliacao);
     public Task<IActionResult> GetAllAvaliacoes();
     
     public Task<IActionResult> GetAvaliacaoById(Guid id);

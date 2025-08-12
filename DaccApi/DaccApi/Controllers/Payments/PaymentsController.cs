@@ -1,5 +1,5 @@
 ﻿using DaccApi.Helpers;
-using Helpers.Response;
+using DaccApi.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,7 +7,7 @@ namespace DaccApi.Controllers.Payments
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("v1/api/[controller]")]
     public class PaymentsController : ControllerBase
     {
         [HttpGet("success")]

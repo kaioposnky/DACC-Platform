@@ -2,7 +2,7 @@
 using DaccApi.Infrastructure.Cryptography;
 using DaccApi.Infrastructure.Repositories.User;
 using DaccApi.Model;
-using Helpers.Response;
+using DaccApi.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.User
@@ -56,7 +56,7 @@ namespace DaccApi.Services.User
                     Sobrenome = newUserData.Sobrenome ?? userData.Sobrenome,
                     Curso = newUserData.Curso ?? userData.Curso,
                     Telefone = newUserData.Telefone ?? userData.Telefone,
-                    NewsLetterSubscriber = newUserData.NewsLetterSubscriber ?? userData.NewsLetterSubscriber,
+                    InscritoNoticia = newUserData.InscritoNoticia ?? userData.InscritoNoticia,
                 };
                 
                 await _usuarioRepository.UpdateUser(user);
@@ -97,13 +97,13 @@ namespace DaccApi.Services.User
                 var usuario = _usuarioRepository.GetUserById(id).Result;
 
                 if (usuario == null)
-                    return ResponseHelper.CreateBadRequestResponse("Usuário não encontrado!");
+                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Usuário não encontrado!");
                 
-                return ResponseHelper.CreateSuccessResponse(new { user = usuario }, "Usuário obtido com sucesso!");
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(usuario.ToResponse()), "Usuário obtido com sucesso!");
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse("Erro ao obter usuário pelo Id! " + ex.Message);
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, "Erro ao obter usuário pelo Id! " + ex.Message);
             }
         }
 
@@ -113,20 +113,20 @@ namespace DaccApi.Services.User
             {
                 if (string.IsNullOrEmpty(email))
                 {
-                    return ResponseHelper.CreateBadRequestResponse("Requisição inválida. O Email não pode ser nulo!");
+                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "O Email não pode estar vazio!");
                 }
 
                 var usuario = _usuarioRepository.GetUserByEmail(email).Result;
 
                 if (usuario == null)
                 {
-                    return ResponseHelper.CreateBadRequestResponse("Usuário não encontrado!");
+                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Usuário não encontrado!");
                 }
 
-                return ResponseHelper.CreateSuccessResponse(new { user = usuario.ToResponse() }, "Usuário obtido com sucesso!");
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(usuario.ToResponse()), "Usuário obtido com sucesso!");
             } catch(Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse("Erro ao obter usuário pelo Email! " + ex.Message);
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, "Erro ao obter usuário pelo Email! " + ex.Message);
             }
             
         }

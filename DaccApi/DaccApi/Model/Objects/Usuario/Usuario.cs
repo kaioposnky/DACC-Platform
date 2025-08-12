@@ -16,25 +16,23 @@ namespace DaccApi.Model
         public string? SenhaHash { get; set; }
         public string? ImagemUrl { get; set; }
         public bool Ativo { get; set; } = true;
-        public bool? NewsLetterSubscriber { get; set; } = false;
+        public bool? InscritoNoticia { get; set; } = false;
         public string Cargo {  get; set; }
         public DateTime DataCriacao { get; set; }
         public DateTime DataAtualizacao { get; set; }
 
-        public Usuario FromRequest(RequestUsuario request)
+        public Usuario FromRequest(RequestCreateUsuario requestCreate)
         {
             return new Usuario()
             {
-                Nome = request.Nome,
-                Sobrenome = request.Sobrenome,
-                Ra = request.Ra,
-                Email = request.Email,
-                Telefone = request.Telefone,
-                ImagemUrl = request.ImagemUrl,
-                Cargo = request.Cargo,
-                NewsLetterSubscriber = request.NewsLetterSubscriber,
-                SenhaHash = request.Senha,
-                Curso = request.Curso
+                Nome = requestCreate.Nome,
+                Sobrenome = requestCreate.Sobrenome,
+                Ra = requestCreate.Ra,
+                Email = requestCreate.Email,
+                Telefone = requestCreate.Telefone,
+                InscritoNoticia = requestCreate.InscritoNoticia,
+                SenhaHash = requestCreate.Senha,
+                Curso = requestCreate.Curso
             };
         }
 
@@ -47,8 +45,7 @@ namespace DaccApi.Model
                 Email = request.Email,
                 Curso = request.Curso,
                 Telefone = request.Telefone,
-                ImagemUrl = request.ImagemUrl,
-                NewsLetterSubscriber = request.NewsLetterSubscriber
+                InscritoNoticia = request.InscritoNoticia
             };
         }
 

@@ -1,6 +1,6 @@
-﻿using DaccApi.Model;
+﻿using DaccApi.Helpers;
+using DaccApi.Model;
 using DaccApi.Responses;
-using DaccApi.Responses.UserResponse;
 using DaccApi.Services.Noticias;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +10,7 @@ namespace DaccApi.Controllers.Noticias
 {
     [Authorize]
     [ApiController]
-    [Route("api/news")]
+    [Route("v1/api/news")]
     public class NoticiasController : ControllerBase
     {
         private readonly INoticiasServices _noticiasServices;
@@ -31,7 +31,8 @@ namespace DaccApi.Controllers.Noticias
         [HasPermission(AppPermissions.Noticias.Create)]
         public async Task<IActionResult> CreateNoticia([FromBody] RequestNoticia request)
         {
-            var response = await _noticiasServices.CreateNoticia(request);
+            var autorId = ClaimsHelper.GetUserId(User);
+            var response = await _noticiasServices.CreateNoticia(autorId, request);
             return response;
         }
         

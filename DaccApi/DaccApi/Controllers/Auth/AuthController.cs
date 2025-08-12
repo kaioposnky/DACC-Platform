@@ -8,7 +8,7 @@ namespace DaccApi.Controllers.Auth
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("v1/api/[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
@@ -28,9 +28,9 @@ namespace DaccApi.Controllers.Auth
         
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterUser([FromBody] RequestUsuario request)
+        public async Task<IActionResult> RegisterUser([FromBody] RequestCreateUsuario requestCreate)
         {
-            var response = await _authService.RegisterUser(request);
+            var response = await _authService.RegisterUser(requestCreate);
             return response;
         }
         

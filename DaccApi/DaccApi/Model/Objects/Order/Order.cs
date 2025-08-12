@@ -10,7 +10,7 @@ namespace DaccApi.Model.Objects.Order
         public string Status { get; set; }
         public decimal TotalAmount { get; set; }
         public long? MercadoPagoPaymentId { get; set; }
-        public Guid? PreferenceId { get; set; }
+        public string? PreferenceId { get; set; }
         public string? PaymentMethod { get; set; }
         public List<OrderItem> OrderItems { get; set; } = new();
         

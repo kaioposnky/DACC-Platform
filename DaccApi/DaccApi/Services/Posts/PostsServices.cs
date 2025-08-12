@@ -1,7 +1,7 @@
 ﻿using DaccApi.Helpers;
 using DaccApi.Infrastructure.Repositories.Posts;
 using DaccApi.Model;
-using Helpers.Response;
+using DaccApi.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.Posts

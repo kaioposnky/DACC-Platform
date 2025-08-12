@@ -1,7 +1,7 @@
 ﻿using DaccApi.Helpers;
 using DaccApi.Infrastructure.Repositories.Avaliacao;
 using DaccApi.Model;
-using Helpers.Response;
+using DaccApi.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.Avaliacao;
@@ -14,14 +14,14 @@ public class AvaliacaoService : IAvaliacaoService
     {
         _avaliacaoRepository = avaliacaoRepository;
     }
-    public async Task<IActionResult> CreateAvaliacao(RequestCreateAvaliacao avaliacao)
+    public async Task<IActionResult> CreateAvaliacao(Guid userId, RequestCreateAvaliacao avaliacao)
     {
         try
         {
-            var newProductRating = new RequestCreateAvaliacao
+            var newProductRating = new AvaliacaoProduto()
             {
                 ProdutoId = avaliacao.ProdutoId,
-                UsuarioId = avaliacao.UsuarioId,
+                UsuarioId = userId,
                 Comentario = avaliacao.Comentario,
                 Nota = avaliacao.Nota,
             };

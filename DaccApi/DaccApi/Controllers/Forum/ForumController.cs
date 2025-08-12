@@ -9,7 +9,7 @@ namespace DaccApi.Controllers.Forum
     [Authorize]
     [ApiController]
     [NonController]
-    [Route("api/[controller]")]
+    [Route("v1/api/[controller]")]
     public class ForumController : ControllerBase
     {
         [AllowAnonymous]

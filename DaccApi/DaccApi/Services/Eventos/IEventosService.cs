@@ -6,12 +6,12 @@ namespace DaccApi.Services.Eventos;
 public interface IEventosService
 {
     public Task<IActionResult> GetAllEventos();
-        
-    public Task<IActionResult> CreateEvento(RequestEvento evento);
+
+    public Task<IActionResult> CreateEvento(Guid autorId, RequestEvento request);
         
     public Task<IActionResult> DeleteEvento(Guid id);
         
     public Task <IActionResult> GetEventoById(Guid id);
         
-    public Task<IActionResult> UpdateEvento(Guid id,RequestEvento evento);
+    public Task<IActionResult> UpdateEvento(Guid id,RequestEvento request);
 }

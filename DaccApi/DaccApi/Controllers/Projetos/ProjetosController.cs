@@ -1,6 +1,5 @@
 ﻿using DaccApi.Model;
 using DaccApi.Responses;
-using DaccApi.Responses.UserResponse;
 using DaccApi.Services.Projetos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +9,7 @@ namespace DaccApi.Controllers.Projetos
 {
     [Authorize]
     [ApiController]
-    [Route("api/projects")]
+    [Route("v1/api/projects")]
     public class ProjetosController : ControllerBase
     {
         private readonly IProjetosService _projetosService;

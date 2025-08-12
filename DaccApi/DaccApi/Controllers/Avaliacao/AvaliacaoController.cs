@@ -1,6 +1,6 @@
-﻿using DaccApi.Model;
+﻿using DaccApi.Helpers;
+using DaccApi.Model;
 using DaccApi.Responses;
-using DaccApi.Responses.UserResponse;
 using DaccApi.Services.Avaliacao;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +10,7 @@ namespace DaccApi.Controllers.Avaliacao
 {
     [Authorize]
     [ApiController]
-    [Route("api/ratings")]
+    [Route("v1/api/ratings")]
     public class AvaliacaoController : ControllerBase
     {
         private readonly IAvaliacaoService _avaliacaoService;
@@ -40,7 +40,8 @@ namespace DaccApi.Controllers.Avaliacao
         [HasPermission(AppPermissions.Reviews.Create)]
         public async Task<IActionResult> CreateAvaliacao([FromBody] RequestCreateAvaliacao avaliacao)
         {
-            var response = await _avaliacaoService.CreateAvaliacao(avaliacao);
+            var userId = ClaimsHelper.GetUserId(User);
+            var response = await _avaliacaoService.CreateAvaliacao(userId, avaliacao);
             return response;
         }
 

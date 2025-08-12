@@ -4,7 +4,7 @@ using DaccApi.Infrastructure.Repositories.Products;
 using DaccApi.Services.FileStorage;
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Helpers;
-using Helpers.Response;
+using DaccApi.Responses;
 
 namespace DaccApi.Services.Products
 {
@@ -300,7 +300,7 @@ namespace DaccApi.Services.Products
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Warning: Failed to delete variation images: {ex.Message}");
+                    return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, "Erro ao deletar variação de produto!");
                 }
                 
                 await _produtosRepository.DeleteVariationAsync(variationId);
@@ -403,14 +403,14 @@ namespace DaccApi.Services.Products
                         "Variação não encontrada para este produto!");
                 }
 
-                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
+                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.Imagem);
                 var produtoImagem = new ProdutoImagem
                 {
                     Id = Guid.NewGuid(),
                     ProdutoVariacaoId = variationId,
                     ImagemUrl = imageUrl,
                     ImagemAlt = request.ImagemAlt?.Trim(),
-                    Ordem = request.Order,
+                    Ordem = request.Ordem,
                 };
 
                 await _produtosRepository.AddProductImagesAsync(produtoImagem);
@@ -463,14 +463,14 @@ namespace DaccApi.Services.Products
                         "Imagem não encontrada!");
                 }
 
-                if (request.ImageFile != null)
+                if (request.Imagem != null)
                 {
-                    existingImage.ImagemUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
+                    existingImage.ImagemUrl = await _fileStorageService.SaveImageFileAsync(request.Imagem);
                 }
 
-                if (request.Order.HasValue)
+                if (request.Ordem.HasValue)
                 {
-                    existingImage.Ordem = request.Order.Value;
+                    existingImage.Ordem = request.Ordem.Value;
                 }
 
                 if (request.ImagemAlt != null)

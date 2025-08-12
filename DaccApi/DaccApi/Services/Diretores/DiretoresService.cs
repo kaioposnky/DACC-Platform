@@ -2,8 +2,8 @@
 using DaccApi.Infrastructure.Repositories.Products;
 using DaccApi.Infrastructure.Repositories.Diretores;
 using DaccApi.Helpers;
+using DaccApi.Responses;
 using DaccApi.Services.Diretores;
-using Helpers.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.Diretores
@@ -34,21 +34,32 @@ namespace DaccApi.Services.Diretores
             
         }
 
-        public async Task<IActionResult> CreateDiretor(RequestDiretor diretor)
+        public async Task<IActionResult> CreateDiretor(RequestDiretor request)
         {
             try
             {
-                if (String.IsNullOrWhiteSpace(diretor.Nome) ||
-                    String.IsNullOrWhiteSpace(diretor.Descricao) ||
-                    String.IsNullOrWhiteSpace(diretor.GithubLink)||
-                    String.IsNullOrWhiteSpace(diretor.LinkedinLink)||
-                    String.IsNullOrWhiteSpace(diretor.Email)||
-                    diretor.DiretoriaId == null||
-                    diretor.UsuarioId == null)
+                if (String.IsNullOrWhiteSpace(request.Nome) ||
+                    String.IsNullOrWhiteSpace(request.Descricao) ||
+                    String.IsNullOrWhiteSpace(request.GithubLink)||
+                    String.IsNullOrWhiteSpace(request.LinkedinLink)||
+                    String.IsNullOrWhiteSpace(request.Email)||
+                    request.DiretoriaId == null||
+                    request.UsuarioId == null)
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
-            
+
+                var diretor = new Diretor()
+                {
+                    Nome = request.Nome,
+                    Descricao = request.Descricao,
+                    GithubLink = request.GithubLink,
+                    LinkedinLink = request.LinkedinLink,
+                    Email = request.Email,
+                    DiretoriaId = request.DiretoriaId,
+                    UsuarioId = request.UsuarioId,
+                };
+                
                 await _diretoresRepository.CreateDiretor(diretor);
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
@@ -99,7 +110,7 @@ namespace DaccApi.Services.Diretores
             }
         }
 
-        public async Task<IActionResult> UpdateDiretor(Guid id,RequestDiretor diretor)
+        public async Task<IActionResult> UpdateDiretor(Guid id, RequestDiretor request)
         {
             try
             {
@@ -108,9 +119,21 @@ namespace DaccApi.Services.Diretores
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
-                _diretoresRepository.UpdateDiretor(id, diretor);
+                
+                var diretor = new Diretor()
+                {
+                    Nome = request.Nome,
+                    Descricao = request.Descricao,
+                    GithubLink = request.GithubLink,
+                    LinkedinLink = request.LinkedinLink,
+                    Email = request.Email,
+                    DiretoriaId = request.DiretoriaId,
+                    UsuarioId = request.UsuarioId,
+                };
+                
+                await _diretoresRepository.UpdateDiretor(id, diretor);
 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { diretor = diretor}));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { diretor = request}));
             }
             catch (Exception ex)
             {

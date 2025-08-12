@@ -1,6 +1,6 @@
 using DaccApi.Helpers;
+using DaccApi.Responses;
 using DaccApi.Services.FileStorage;
-using Helpers.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +8,7 @@ namespace DaccApi.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("v1/api/[controller]")]
     public class FileStorageController : ControllerBase
     {
         private readonly IFileStorageService _storageService;

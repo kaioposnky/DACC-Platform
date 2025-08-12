@@ -3,7 +3,6 @@
 namespace DaccApi.Model
 
 {
-    
     public class RequestUpdateAvaliacao
     {
         [Range(1, 5, ErrorMessage = "A nota deve ser de 1 a 5!")]
@@ -11,5 +10,4 @@ namespace DaccApi.Model
         public string? Comentario { get; set; }
 
     }
-    
 }

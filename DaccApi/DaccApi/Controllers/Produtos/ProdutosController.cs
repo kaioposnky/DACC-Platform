@@ -8,7 +8,7 @@ namespace DaccApi.Controllers.Produtos
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("v1/api/[controller]")]
     public class ProdutosController : ControllerBase
     {
         private readonly IProdutosService _produtosService;

@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DaccApi.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Infrastructure.Authentication;
 using DaccApi.Services.Eventos;
 using DaccApi.Responses;
-using DaccApi.Responses.UserResponse;
 using DaccApi.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +15,7 @@ namespace DaccApi.Controllers.Eventos
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("v1/api/[controller]")]
     public class EventosController : ControllerBase
     {
         private readonly IEventosService _eventosService;
@@ -37,7 +37,8 @@ namespace DaccApi.Controllers.Eventos
         [HasPermission(AppPermissions.Eventos.Create)]
         public async Task<IActionResult> CreateEvento([FromBody] RequestEvento request)
         {
-            var response = await _eventosService.CreateEvento(request);
+            var userId = ClaimsHelper.GetUserId(User);
+            var response = await _eventosService.CreateEvento(userId, request);
             return response;
         }
 
