@@ -101,7 +101,7 @@ namespace DaccApi.Services.Orders
 
                 PaymentResponse preference;
                 // Inicia uma transação no banco, se der algo de errado ele cancela tudo
-                using var transaction = _dapper.BeginTransactionAsync();
+                using var transaction = _dapper.BeginTransaction();
                 try
                 {
                     // Função Thread-Safe para prevenir Race Conditions
@@ -239,7 +239,7 @@ namespace DaccApi.Services.Orders
 
         private async Task ProcessPendingOrder(Guid orderId, PaymentStatusResponse paymentStatus)
         {
-            using var transaction = _dapper.BeginTransactionAsync();
+            using var transaction = _dapper.BeginTransaction();
             try
             {
                 // Atualiza os dados do pedido com as informações do pagamento recebidas
@@ -273,7 +273,7 @@ namespace DaccApi.Services.Orders
         
         private async Task CancelOrder(Guid orderId)
         {
-            using var transaction = _dapper.BeginTransactionAsync();
+            using var transaction = _dapper.BeginTransaction();
             try
             {
                 await _ordersRepository.UpdateOrderStatus(orderId,
