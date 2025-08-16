@@ -29,7 +29,7 @@ namespace DaccApi.Controllers.Noticias
         
         [HttpPost("")]
         [HasPermission(AppPermissions.Noticias.Create)]
-        public async Task<IActionResult> CreateNoticia([FromBody] RequestNoticia request)
+        public async Task<IActionResult> CreateNoticia([FromForm] RequestNoticia request)
         {
             var autorId = ClaimsHelper.GetUserId(User);
             var response = await _noticiasServices.CreateNoticia(autorId, request);
@@ -54,7 +54,7 @@ namespace DaccApi.Controllers.Noticias
         
         [HttpPatch("{id:guid}")]
         [HasPermission(AppPermissions.Noticias.Update)]
-        public async Task<IActionResult> UpdateNoticia([FromRoute] Guid id, [FromBody] RequestNoticia request)
+        public async Task<IActionResult> UpdateNoticia([FromRoute] Guid id, [FromForm] RequestNoticia request)
         {
             var response = await _noticiasServices.UpdateNoticia(id, request);
             return response;
