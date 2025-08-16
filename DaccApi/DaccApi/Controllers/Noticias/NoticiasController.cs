@@ -29,7 +29,7 @@ namespace DaccApi.Controllers.Noticias
         
         [HttpPost("")]
         [HasPermission(AppPermissions.Noticias.Create)]
-        public async Task<IActionResult> CreateNoticia([FromForm] RequestNoticia request)
+        public async Task<IActionResult> CreateNoticia([FromBody] RequestNoticia request)
         {
             var autorId = ClaimsHelper.GetUserId(User);
             var response = await _noticiasServices.CreateNoticia(autorId, request);

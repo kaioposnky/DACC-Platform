@@ -36,7 +36,7 @@ namespace DaccApi.Controllers.Anuncio
         }
 
         [HttpPost("")]
-        public async Task<IActionResult> CreateAnuncio([FromForm] RequestAnuncio anuncio)
+        public async Task<IActionResult> CreateAnuncio([FromBody] RequestAnuncio anuncio)
         {
             var response = await _anuncioService.CreateAnuncio(anuncio);
             return response;

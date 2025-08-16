@@ -38,7 +38,7 @@ namespace DaccApi.Controllers.Projetos
 
         [HttpPost("")]
         [HasPermission(AppPermissions.Projetos.Create)]
-        public async Task<IActionResult> CreateProjeto([FromForm] RequestProjeto projeto)
+        public async Task<IActionResult> CreateProjeto([FromBody] RequestProjeto projeto)
         {
             var response = await _projetosService.CreateProjeto(projeto);
             return response;
