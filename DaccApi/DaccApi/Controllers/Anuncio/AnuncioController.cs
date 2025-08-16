@@ -50,7 +50,7 @@ namespace DaccApi.Controllers.Anuncio
         }
 
         [HttpPatch("{id:guid}")]
-        public async Task<IActionResult> UpdateAnuncio([FromRoute] Guid id, [FromBody] RequestAnuncio anuncio)
+        public async Task<IActionResult> UpdateAnuncio([FromRoute] Guid id, [FromForm] RequestAnuncio anuncio)
         {
             var response = await _anuncioService.UpdateAnuncio(id, anuncio);
             return response;
