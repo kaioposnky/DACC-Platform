@@ -130,7 +130,7 @@ namespace DaccApi.Services.Auth
                     Curso = requestCreate.Curso,
                     Email = requestCreate.Email,
                     Telefone = requestCreate.Telefone,
-                    SenhaHash = requestCreate.Senha,
+                    SenhaHash = _argon2Utility.HashPassword(requestCreate.Senha),
                     Ativo = true,
                     InscritoNoticia = requestCreate.InscritoNoticia ?? false,
                     Cargo = CargoUsuario.Aluno,
@@ -149,7 +149,7 @@ namespace DaccApi.Services.Auth
             catch (Exception ex)
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,
-                    "Ocorreu um erro ao tentar cadastrar o usuário, favor relatar ao suporte pelo: contato.daccfei@gmail.com ");
+                    "Ocorreu um erro ao tentar cadastrar o usuário, favor relatar ao suporte pelo: contato.daccfei@gmail.com " + ex.Message);
             }
         }
 
