@@ -1,4 +1,5 @@
-﻿using DaccApi.Infrastructure.Authentication;
+﻿using DaccApi.Helpers;
+using DaccApi.Infrastructure.Authentication;
 using DaccApi.Model;
 using DaccApi.Services.Auth;
 using DaccApi.Helpers.Attributes;
@@ -46,9 +47,11 @@ namespace DaccApi.Controllers.Auth
         [AuthenticatedDeleteResponses]
         [HasPermission(AppPermissions.Users.Logout)]
         [HttpPost("logout")]
-        public IActionResult LogoutUser()
+        public async Task <IActionResult> LogoutUser()
         {
-            throw new NotImplementedException();
+            var userId = ClaimsHelper.GetUserId(User);
+            var response = await _authService.Logout(userId);
+            return response;
         }
         
     }
