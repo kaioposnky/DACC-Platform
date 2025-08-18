@@ -38,7 +38,7 @@ namespace DaccApi.Controllers.Usuario
         [AuthenticatedPatchResponses]
         [HasPermission(AppPermissions.Users.Update)]
         [HttpPatch("{id:guid}")]
-        public async Task<IActionResult> UpdateUser([FromRoute] Guid id, [FromBody] RequestUpdateUsuario request)
+        public async Task<IActionResult> UpdateUser([FromRoute] Guid id, [FromForm] RequestUpdateUsuario request)
         {
             var response = await _usuarioService.UpdateUser(id, request);
             return response;

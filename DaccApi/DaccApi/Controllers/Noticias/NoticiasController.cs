@@ -60,7 +60,7 @@ namespace DaccApi.Controllers.Noticias
         [AuthenticatedPatchResponses]
         [HttpPatch("{id:guid}")]
         [HasPermission(AppPermissions.Noticias.Update)]
-        public async Task<IActionResult> UpdateNoticia([FromRoute] Guid id, [FromBody] RequestNoticia request)
+        public async Task<IActionResult> UpdateNoticia([FromRoute] Guid id, [FromForm] RequestNoticia request)
         {
             var response = await _noticiasServices.UpdateNoticia(id, request);
             return response;
