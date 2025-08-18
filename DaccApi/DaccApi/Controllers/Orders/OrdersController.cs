@@ -1,5 +1,6 @@
 using DaccApi.Exceptions;
 using DaccApi.Helpers;
+using DaccApi.Helpers.Attributes;
 using DaccApi.Infrastructure.MercadoPago.Constants;
 using DaccApi.Infrastructure.MercadoPago.Models;
 using DaccApi.Infrastructure.Services.MercadoPago;
@@ -26,6 +27,7 @@ namespace DaccApi.Controllers.Orders
             _mercadoPagoService = mercadoPagoService;
         }
 
+        [AuthenticatedPostResponses]
         [HttpPost("")]
         public async Task<IActionResult> CreateOrderWithPayment([FromBody] CreateOrderRequest request)
         {
@@ -55,6 +57,7 @@ namespace DaccApi.Controllers.Orders
             }
         }
 
+        [AuthenticatedGetResponses]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetOrderById([FromRoute] Guid id)
         {
@@ -74,6 +77,7 @@ namespace DaccApi.Controllers.Orders
             }
         }
 
+        [PublicGetResponses]
         [HttpGet("user/{userId:guid}")]
         public async Task<IActionResult> GetOrdersByUserId([FromRoute] Guid userId)
         {
@@ -92,6 +96,7 @@ namespace DaccApi.Controllers.Orders
             }
         }
 
+        [AuthenticatedPatchResponses]
         [HttpPut("{id:guid}/status")]
         public async Task<IActionResult> UpdateOrderStatus([FromRoute] Guid id, [FromBody] string status)
         {

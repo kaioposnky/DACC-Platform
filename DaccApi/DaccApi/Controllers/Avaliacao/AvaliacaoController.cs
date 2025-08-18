@@ -1,6 +1,6 @@
 ﻿using DaccApi.Helpers;
+using DaccApi.Helpers.Attributes;
 using DaccApi.Model;
-using DaccApi.Responses;
 using DaccApi.Services.Avaliacao;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +20,7 @@ namespace DaccApi.Controllers.Avaliacao
             _avaliacaoService = avaliacaoService;
         }
 
+        [AuthenticatedGetResponses]
         [HttpGet("")]
         [HasPermission(AppPermissions.Reviews.View)]
         public async Task<IActionResult> GetAllAvaliacoes()
@@ -28,6 +29,7 @@ namespace DaccApi.Controllers.Avaliacao
             return response;
         }
 
+        [AuthenticatedGetResponses]
         [HttpGet("{id:guid}")]
         [HasPermission(AppPermissions.Reviews.View)]
         public async Task<IActionResult> GetAvaliacaoById([FromRoute] Guid id)
@@ -36,6 +38,7 @@ namespace DaccApi.Controllers.Avaliacao
             return response;
         }
 
+        [AuthenticatedPostResponses]
         [HttpPost("")]
         [HasPermission(AppPermissions.Reviews.Create)]
         public async Task<IActionResult> CreateAvaliacao([FromBody] RequestCreateAvaliacao avaliacao)
@@ -45,6 +48,7 @@ namespace DaccApi.Controllers.Avaliacao
             return response;
         }
 
+        [PublicGetResponses]
         [AllowAnonymous]
         [HttpGet("products/{produtoId:guid}")]
         public async Task<IActionResult> GetAvaliacoesByProductId([FromRoute] Guid produtoId)
@@ -53,6 +57,7 @@ namespace DaccApi.Controllers.Avaliacao
             return response;
         }
 
+        [AuthenticatedGetResponses]
         [HttpGet("users/{usuarioId:int}")]
         [HasPermission(AppPermissions.Reviews.View)]
         public async Task<IActionResult> GetAvaliacoesByUserId([FromRoute] Guid usuarioId)
@@ -61,6 +66,7 @@ namespace DaccApi.Controllers.Avaliacao
             return response;
         }
 
+        [AuthenticatedDeleteResponses]
         [HttpDelete("{id:guid}")]
         [HasPermission(AppPermissions.Reviews.Delete)]
         public async Task<IActionResult> DeleteAvaliacao([FromRoute] Guid id)
@@ -69,18 +75,14 @@ namespace DaccApi.Controllers.Avaliacao
             return response;
         }
         
-        
-        
+        [AuthenticatedPatchResponses]
         [HttpPatch("{id:guid}")]
         [HasPermission(AppPermissions.Reviews.Update)]
-        public async Task<IActionResult> UpdateAvaliacao([FromRoute] Guid id,[FromBody] RequestUpdateAvaliacao avaliacao)
+        public async Task<IActionResult> UpdateAvaliacao([FromRoute] Guid id, [FromBody] RequestUpdateAvaliacao avaliacao)
         {
             var response = await _avaliacaoService.UpdateAvaliacao(id, avaliacao);
             return response;
         }
-
-
-
     }
 }
     

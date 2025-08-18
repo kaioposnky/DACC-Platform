@@ -1,6 +1,7 @@
 ﻿using DaccApi.Infrastructure.Authentication;
 using DaccApi.Model;
 using DaccApi.Services.Auth;
+using DaccApi.Helpers.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,6 +43,7 @@ namespace DaccApi.Controllers.Auth
             return response;
         }
         
+        [AuthenticatedDeleteResponses]
         [HasPermission(AppPermissions.Users.Logout)]
         [HttpPost("logout")]
         public IActionResult LogoutUser()

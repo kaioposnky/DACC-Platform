@@ -1,4 +1,5 @@
 ﻿using DaccApi.Helpers;
+using DaccApi.Helpers.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Infrastructure.Authentication;
@@ -25,6 +26,7 @@ namespace DaccApi.Controllers.Eventos
             _eventosService = eventosService;
         }
         
+        [PublicGetResponses]
         [AllowAnonymous]
         [HttpGet("")]
         public async Task<IActionResult> GetAllEventos()
@@ -33,6 +35,7 @@ namespace DaccApi.Controllers.Eventos
             return response;
         }
 
+        [AuthenticatedPostResponses]
         [HttpPost("")]
         [HasPermission(AppPermissions.Eventos.Create)]
         public async Task<IActionResult> CreateEvento([FromBody] RequestEvento request)
@@ -42,6 +45,7 @@ namespace DaccApi.Controllers.Eventos
             return response;
         }
 
+        [PublicGetResponses]
         [AllowAnonymous]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetEventoById([FromRoute] Guid id)
@@ -50,6 +54,7 @@ namespace DaccApi.Controllers.Eventos
             return response;
         }
 
+        [AuthenticatedDeleteResponses]
         [HttpDelete("{id:guid}")]
         [HasPermission(AppPermissions.Eventos.Delete)]
         public async Task<IActionResult> DeleteEvento([FromRoute] Guid id)
@@ -58,6 +63,7 @@ namespace DaccApi.Controllers.Eventos
             return response;
         }
 
+        [AuthenticatedPatchResponses]
         [HttpPatch("{id:guid}")]
         [HasPermission(AppPermissions.Eventos.Update)]
         public async Task<IActionResult> UpdateEvento([FromRoute] Guid id,[FromBody] RequestEvento request)
@@ -66,19 +72,5 @@ namespace DaccApi.Controllers.Eventos
             return response;
         }
         
-
-        [HttpPost("{id:guid}/register")]
-        [HasPermission(AppPermissions.Eventos.Register)]
-        public async Task<IActionResult> RegisterEvento([FromRoute] Guid id)
-        {
-            throw new NotImplementedException();
-        }
-        
-        [HttpDelete("{id:guid}/register")]
-        [HasPermission(AppPermissions.Eventos.Register)]
-        public async Task<IActionResult> UnregisterEvento([FromRoute] Guid id)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

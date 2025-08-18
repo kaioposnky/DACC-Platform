@@ -1,4 +1,5 @@
 ﻿using DaccApi.Helpers;
+using DaccApi.Helpers.Attributes;
 using DaccApi.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ namespace DaccApi.Controllers.Payments
     [Route("v1/api/[controller]")]
     public class PaymentsController : ControllerBase
     {
+        [WebhookResponses]
         [HttpGet("success")]
         [AllowAnonymous]
         public IActionResult Success([FromQuery] string external_reference)
@@ -18,6 +20,7 @@ namespace DaccApi.Controllers.Payments
                 "Pagamento realizado com sucesso!");
         }
 
+        [WebhookResponses]
         [HttpGet("failure")]
         [AllowAnonymous]
         public IActionResult Failure([FromQuery] string external_reference)
@@ -26,6 +29,7 @@ namespace DaccApi.Controllers.Payments
                 "Pagamento falhou. Tente novamente.");
         }
 
+        [WebhookResponses]
         [HttpGet("pending")]
         [AllowAnonymous]
         public IActionResult Pending([FromQuery] string external_reference)
