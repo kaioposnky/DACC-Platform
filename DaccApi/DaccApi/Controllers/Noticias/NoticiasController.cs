@@ -6,6 +6,7 @@ using DaccApi.Services.Noticias;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Infrastructure.Authentication;
+using DaccApi.Model.Requests;
 
 namespace DaccApi.Controllers.Noticias
 {
@@ -36,6 +37,14 @@ namespace DaccApi.Controllers.Noticias
         {
             var autorId = ClaimsHelper.GetUserId(User);
             var response = await _noticiasServices.CreateNoticia(autorId, request);
+            return response;
+        }
+
+        [HttpPost("{id:guid}")]
+        [HasPermission(AppPermissions.Noticias.Update)]
+        public async Task<IActionResult> AddNoticiaImage([FromRoute] Guid id, [FromForm] ImageRequest request)
+        {
+            var response = await _noticiasServices.AddNoticiaImage(id, request);
             return response;
         }
         

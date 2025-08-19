@@ -8,8 +8,6 @@ namespace DaccApi.Model
         public string Titulo { get; set; } = string.Empty;
         public string Descricao { get; set; } = string.Empty;
         public string? Conteudo { get; set; }
-        [ImageValidation]
-        public IFormFile? ImageFile { get; set; }
         public Guid? AutorId { get; set; }
         public string? Categoria { get; set; }
         public DateTime? DataAtualizacao { get; set; }

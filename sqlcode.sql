@@ -363,6 +363,7 @@ CREATE TABLE noticia
     descricao        VARCHAR(255) NOT NULL,
     conteudo         TEXT,
     imagem_url       VARCHAR(255),
+    imagem_alt       VARCHAR(255),
     autor_id         UUID REFERENCES usuario (id),
     categoria        VARCHAR(50) REFERENCES categorias_noticia (nome),
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
