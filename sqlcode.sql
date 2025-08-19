@@ -485,7 +485,7 @@ INSERT INTO permissoes (nome, descricao)
 VALUES
     -- Permissões de Usuários
     ('users.view', 'Visualizar um usuário'),
-    ('user.viewall', 'Visualizar todos os usuários'),
+    ('users.viewall', 'Visualizar todos os usuários'),
     ('users.create', 'Criar novos usuários'),
     ('users.update', 'Atualizar informações de usuários'),
     ('users.delete', 'Deletar usuários'),
