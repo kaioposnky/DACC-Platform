@@ -1,16 +1,18 @@
-# Documentação da API DaccApi
-
-Documentação API BETA
+# Documentação da API - DACC
 
 ## Visão Geral
 
-A DaccApi é uma API REST completa construída em .NET 7.0 para gerenciar uma plataforma digital acadêmica do Diretório Acadêmico de Ciência da Computação (DACC) da FEI. A API oferece funcionalidades integradas de gestão acadêmica, e-commerce e gestão de conteúdo.
+A DaccApi é uma API REST completa construída em .NET 7.0 para gerenciar uma plataforma digital acadêmica do Diretório Acadêmico de Ciência da Computação (DACC). A API oferece funcionalidades integradas de gestão acadêmica, e-commerce e gestão de conteúdo.
 
-**Base URL:** `https://api.dacc.com`
+## Base URL
+
+```
+https://api.dacc.com/v1
+```
 
 ## Autenticação
 
-Esta API utiliza **JSON Web Tokens (JWT)** para autenticação. Para acessar endpoints protegidos, inclua o token no header Authorization:
+A API utiliza **JSON Web Tokens (JWT)** para autenticação. O token deve ser enviado no header `Authorization` com o prefixo `Bearer`:
 
 ```
 Authorization: Bearer <seu_jwt_token>
@@ -18,41 +20,50 @@ Authorization: Bearer <seu_jwt_token>
 
 ## Estrutura de Resposta Padronizada
 
-Todas as respostas da API seguem o formato `ApiResponse`:
+Todas as respostas da API seguem o padrão `ApiResponse`:
 
-### Respostas de Sucesso
+### Formato de Sucesso
 ```json5
 {
   "success": true,
-  "response": {
-    "message": "Requisição bem-sucedida",
-    "data": { /* dados retornados */ }
-  }
+  "code": "OK",
+  "message": "Requisição bem-sucedida",
+  "data": { /* dados retornados */ }
 }
 ```
 
-### Respostas de Erro
+### Formato de Erro
 ```json5
 {
   "success": false,
-  "response": {
-    "code": "ERROR_CODE",
-    "message": "Descrição do erro",
-    "details": [ 
-      {field: "id", message: "Id é obrigatório!"}
-      /* detalhes adicionais se aplicável */ 
-    ]
-  }
+  "code": "ERROR_CODE",
+  "message": "Descrição do erro",
+  "details": [ /* detalhes adicionais se aplicável */ ]
 }
 ```
 
+## Códigos de Status HTTP
+
+- **200 OK**: Requisição bem-sucedida
+- **201 Created**: Recurso criado com sucesso
+- **204 No Content**: Requisição bem-sucedida, sem conteúdo para retornar
+- **400 Bad Request**: Dados inválidos na requisição
+- **401 Unauthorized**: Token inválido ou expirado
+- **403 Forbidden**: Permissões insuficientes
+- **404 Not Found**: Recurso não encontrado
+- **409 Conflict**: Recurso já existe
+- **413 Payload Too Large**: Arquivo maior que 5MB
+- **429 Too Many Requests**: Limite de requisições excedido
+- **500 Internal Server Error**: Erro interno do servidor
+
 ---
 
-## Endpoints
+# Endpoints da API
+## Autenticação
 
 ### **POST /api/auth/login**
 
-* **Descrição:** Autentica um usuário e retorna tokens de acesso
+* **Descrição:** Realiza login do usuário e retorna token JWT
 * **Autorização:** Público
 
 * **Parâmetros da Requisição:**
@@ -65,7 +76,7 @@ Todas as respostas da API seguem o formato `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/api/auth/login \
+    curl -X POST https://api.dacc.com/v1/api/auth/login \
     -H "Content-Type: application/json" \
     -d '{
       "email": "usuario@exemplo.com",
@@ -78,11 +89,16 @@ Todas as respostas da API seguem o formato `ApiResponse`:
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Login realizado com sucesso",
-            "data": {
-              "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-              "refreshToken": "refresh_token_string"
+          "code": "OK",
+          "message": "Login realizado com sucesso",
+          "data": {
+            "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "refreshToken": "refresh_token_string",
+            "expiresIn": 3600,
+            "user": {
+              "id": "12345678-1234-1234-1234-123456789012",
+              "nome": "João Silva",
+              "email": "usuario@exemplo.com"
             }
           }
         }
@@ -91,15 +107,12 @@ Todas as respostas da API seguem o formato `ApiResponse`:
         ```json
         {
           "success": false,
-          "response": {
-            "code": "INVALID_CREDENTIALS",
-            "message": "Credenciais inválidas"
-          }
+          "code": "INVALID_CREDENTIALS",
+          "message": "Credenciais inválidas"
         }
         ```
 
----###
- **POST /api/auth/register**
+### **POST /api/auth/register**
 
 * **Descrição:** Registra um novo usuário no sistema
 * **Autorização:** Público
@@ -107,22 +120,22 @@ Todas as respostas da API seguem o formato `ApiResponse`:
 * **Parâmetros da Requisição:**
     * **Body (`application/json`)**
 
-        | Campo                  | Tipo      | Obrigatório | Descrição                             |
-        |------------------------|-----------|-------------|---------------------------------------|
-        | `nome`                 | `string`  | Não         | Nome do usuário                       |
-        | `sobrenome`            | `string`  | Não         | Sobrenome do usuário                  |
-        | `email`                | `string`  | Não         | E-mail único do usuário               |
-        | `ra`                   | `string`  | Não         | Registro Acadêmico                    |
-        | `curso`                | `string`  | Não         | Curso do usuário                      |
-        | `telefone`             | `string`  | Não         | Telefone de contato                   |
-        | `senha`                | `string`  | Não         | Senha do usuário                      |
-        | `imagemUrl`            | `string`  | Não         | URL da imagem de perfil               |
-        | `newsLetterSubscriber` | `boolean` | Não         | Inscrição na newsletter               |
-        | `cargo`                | `string`  | Não         | Cargo (aluno, diretor, administrador) |
+        | Campo             | Tipo      | Obrigatório | Descrição                    |
+        |-------------------|-----------|-------------|------------------------------|
+        | `nome`            | `string`  | Não         | Nome do usuário              |
+        | `sobrenome`       | `string`  | Não         | Sobrenome do usuário         |
+        | `email`           | `string`  | Não         | E-mail do usuário            |
+        | `ra`              | `string`  | Não         | Registro Acadêmico           |
+        | `curso`           | `string`  | Não         | Curso do usuário             |
+        | `telefone`        | `string`  | Não         | Telefone do usuário          |
+        | `senha`           | `string`  | Não         | Senha do usuário             |
+        | `imagemUrl`       | `string`  | Não         | URL da imagem de perfil      |
+        | `inscritoNoticia` | `boolean` | Não         | Inscrição em newsletter      |
+        | `cargo`           | `string`  | Não         | Cargo (aluno/diretor/admin)  |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/api/auth/register \
+    curl -X POST https://api.dacc.com/v1/api/auth/register \
     -H "Content-Type: application/json" \
     -d '{
       "nome": "João",
@@ -130,28 +143,22 @@ Todas as respostas da API seguem o formato `ApiResponse`:
       "email": "joao.silva@exemplo.com",
       "ra": "123456789",
       "curso": "Ciência da Computação",
-      "telefone": "(11) 99999-9999",
       "senha": "minhasenha123",
-      "cargo": "aluno",
-      "newsLetterSubscriber": true
+      "cargo": "aluno"
     }'
     ```
 
 * **Respostas:**
-    * **`201 Created` - Usuário Criado**
+    * **`201 Created` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Usuário registrado com sucesso",
-            "data": {
-              "id": "550e8400-e29b-41d4-a716-446655440000",
-              "nome": "João",
-              "sobrenome": "Silva",
-              "email": "joao.silva@exemplo.com",
-              "ra": "123456789",
-              "cargo": "aluno"
-            }
+          "code": "CREATED",
+          "message": "Usuário registrado com sucesso",
+          "data": {
+            "id": "12345678-1234-1234-1234-123456789012",
+            "nome": "João Silva",
+            "email": "joao.silva@exemplo.com"
           }
         }
         ```
@@ -159,51 +166,47 @@ Todas as respostas da API seguem o formato `ApiResponse`:
         ```json
         {
           "success": false,
-          "response": {
-            "code": "VALIDATION_ERROR",
-            "message": "Erro de validação dos dados",
-            "details": [
-              {
-                "field": "email",
-                "message": "E-mail já está em uso"
-              }
-            ]
-          }
+          "code": "VALIDATION_ERROR",
+          "message": "Erro de validação dos dados",
+          "details": [
+            {
+              "field": "email",
+              "message": "E-mail já está em uso"
+            }
+          ]
         }
         ```
 
----
-
 ### **POST /api/auth/refresh**
 
-* **Descrição:** Renova o token de acesso usando refresh token
+* **Descrição:** Renova o token JWT usando refresh token
 * **Autorização:** Público
 
 * **Parâmetros da Requisição:**
     * **Body (`application/x-www-form-urlencoded`)**
 
-        | Campo          | Tipo     | Obrigatório | Descrição          |
-        |----------------|----------|-------------|--------------------|
-        | `refreshToken` | `string` | Sim         | Token de renovação |
+        | Campo          | Tipo     | Obrigatório | Descrição     |
+        |----------------|----------|-------------|---------------|
+        | `refreshToken` | `string` | Sim         | Refresh token |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/api/auth/refresh \
+    curl -X POST https://api.dacc.com/v1/api/auth/refresh \
     -H "Content-Type: application/x-www-form-urlencoded" \
-    -d 'refreshToken=your_refresh_token_here'
+    -d 'refreshToken=refresh_token_string'
     ```
 
 * **Respostas:**
-    * **`200 OK` - Token Renovado**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Token renovado com sucesso",
-            "data": {
-              "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-              "refreshToken": "new_refresh_token_string"
-            }
+          "code": "OK",
+          "message": "Token renovado com sucesso",
+          "data": {
+            "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "refreshToken": "new_refresh_token_string",
+            "expiresIn": 3600
           }
         }
         ```
@@ -211,104 +214,69 @@ Todas as respostas da API seguem o formato `ApiResponse`:
         ```json
         {
           "success": false,
-          "response": {
-            "code": "AUTH_TOKEN_INVALID",
-            "message": "Token JWT inválido"
-          }
+          "code": "AUTH_TOKEN_INVALID",
+          "message": "Token JWT inválido"
         }
         ```
-
----
 
 ### **POST /api/auth/logout**
 
 * **Descrição:** Realiza logout do usuário (não implementado)
 * **Autorização:** Requer permissão `users.logout`
 
-* **Parâmetros da Requisição:**
-    * **Headers**
-
-        | Nome            | Tipo     | Descrição    |
-        |-----------------|----------|--------------|
-        | `Authorization` | `string` | Bearer token |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X POST https://api.dacc.com/api/auth/logout \
-    -H "Authorization: Bearer <seu_token>"
-    ```
-
 * **Respostas:**
     * **`501 Not Implemented` - Não Implementado**
         ```json
         {
           "success": false,
-          "response": {
-            "code": "NOT_IMPLEMENTED",
-            "message": "Funcionalidade não implementada"
-          }
+          "code": "NOT_IMPLEMENTED",
+          "message": "Funcionalidade não implementada"
         }
         ```
-
----
+## Usuários
 
 ### **GET /api/users**
 
 * **Descrição:** Lista todos os usuários do sistema
 * **Autorização:** Requer permissão `users.viewall`
 
-* **Parâmetros da Requisição:**
-    * **Headers**
-
-        | Nome            | Tipo     | Descrição    |
-        |-----------------|----------|--------------|
-        | `Authorization` | `string` | Bearer token |
-
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/api/users \
-    -H "Authorization: Bearer <seu_token>"
+    curl -X GET https://api.dacc.com/v1/api/users \
+    -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Lista de Usuários**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Usuários obtidos com sucesso",
-            "data": [
-              {
-                "id": "550e8400-e29b-41d4-a716-446655440000",
-                "nome": "João",
-                "sobrenome": "Silva",
-                "ra": "123456789",
-                "email": "joao.silva@exemplo.com",
-                "telefone": "(11) 99999-9999",
-                "cargo": "aluno",
-                "dataCriacao": "2024-01-15T10:30:00Z",
-                "dataAtualizacao": "2024-01-15T10:30:00Z"
-              }
-            ]
-          }
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": [
+            {
+              "id": "12345678-1234-1234-1234-123456789012",
+              "nome": "João Silva",
+              "email": "joao.silva@exemplo.com",
+              "ra": "123456789",
+              "curso": "Ciência da Computação",
+              "cargo": "aluno"
+            }
+          ]
         }
         ```
     * **`403 Forbidden` - Permissões Insuficientes**
         ```json
         {
           "success": false,
-          "response": {
-            "code": "AUTH_INSUFFICIENT_PERMISSIONS",
-            "message": "Permissões insuficientes"
-          }
+          "code": "AUTH_INSUFFICIENT_PERMISSIONS",
+          "message": "Permissões insuficientes"
         }
         ```
 
----
-
 ### **GET /api/users/{id}**
 
-* **Descrição:** Obtém um usuário específico por ID
+* **Descrição:** Obtém informações de um usuário específico
 * **Autorização:** Requer permissão `users.view`
 
 * **Parâmetros da Requisição:**
@@ -318,36 +286,28 @@ Todas as respostas da API seguem o formato `ApiResponse`:
         |------|--------|---------------------|
         | `id` | `uuid` | ID único do usuário |
 
-    * **Headers**
-
-        | Nome            | Tipo     | Descrição    |
-        |-----------------|----------|--------------|
-        | `Authorization` | `string` | Bearer token |
-
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/api/users/550e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>"
+    curl -X GET https://api.dacc.com/v1/api/users/12345678-1234-1234-1234-123456789012 \
+    -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Usuário Encontrado**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Usuário obtido com sucesso",
-            "data": {
-              "id": "550e8400-e29b-41d4-a716-446655440000",
-              "nome": "João",
-              "sobrenome": "Silva",
-              "ra": "123456789",
-              "email": "joao.silva@exemplo.com",
-              "telefone": "(11) 99999-9999",
-              "cargo": "aluno",
-              "dataCriacao": "2024-01-15T10:30:00Z",
-              "dataAtualizacao": "2024-01-15T10:30:00Z"
-            }
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": {
+            "id": "12345678-1234-1234-1234-123456789012",
+            "nome": "João Silva",
+            "email": "joao.silva@exemplo.com",
+            "ra": "123456789",
+            "curso": "Ciência da Computação",
+            "cargo": "aluno",
+            "telefone": "(11) 99999-9999",
+            "inscritoNoticia": true
           }
         }
         ```
@@ -355,18 +315,14 @@ Todas as respostas da API seguem o formato `ApiResponse`:
         ```json
         {
           "success": false,
-          "response": {
-            "code": "RESOURCE_NOT_FOUND",
-            "message": "Usuário não encontrado"
-          }
+          "code": "RESOURCE_NOT_FOUND",
+          "message": "Recurso não encontrado"
         }
         ```
 
----
-
 ### **PATCH /api/users/{id}**
 
-* **Descrição:** Atualiza dados de um usuário específico
+* **Descrição:** Atualiza informações de um usuário
 * **Autorização:** Requer permissão `users.update`
 
 * **Parâmetros da Requisição:**
@@ -376,54 +332,54 @@ Todas as respostas da API seguem o formato `ApiResponse`:
         |------|--------|---------------------|
         | `id` | `uuid` | ID único do usuário |
 
-    * **Headers**
+    * **Body (`multipart/form-data`)**
 
-        | Nome            | Tipo     | Descrição    |
-        |-----------------|----------|--------------|
-        | `Authorization` | `string` | Bearer token |
-
-    * **Body (`application/json`)**
-
-        | Campo                  | Tipo      | Obrigatório | Descrição                 |
-        |------------------------|-----------|-------------|---------------------------|
-        | `nome`                 | `string`  | Não         | Nome do usuário           |
-        | `sobrenome`            | `string`  | Não         | Sobrenome do usuário      |
-        | `email`                | `string`  | Não         | E-mail do usuário         |
-        | `curso`                | `string`  | Não         | Curso do usuário          |
-        | `telefone`             | `string`  | Não         | Telefone de contato       |
-        | `imagemUrl`            | `string`  | Não         | URL da imagem de perfil   |
-        | `newsLetterSubscriber` | `boolean` | Não         | Inscrição na newsletter   |
+        | Campo             | Tipo        | Obrigatório | Descrição                |
+        |-------------------|-------------|-------------|--------------------------|
+        | `nome`            | `string`    | Não         | Nome do usuário          |
+        | `sobrenome`       | `string`    | Não         | Sobrenome do usuário     |
+        | `email`           | `string`    | Não         | E-mail do usuário        |
+        | `curso`           | `string`    | Não         | Curso do usuário         |
+        | `telefone`        | `string`    | Não         | Telefone do usuário      |
+        | `imageFile`       | `file`      | Não         | Arquivo de imagem        |
+        | `inscritoNoticia` | `boolean`   | Não         | Inscrição em newsletter  |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X PATCH https://api.dacc.com/api/users/550e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "nome": "João Carlos",
-      "telefone": "(11) 88888-8888"
-    }'
+    curl -X PATCH https://api.dacc.com/v1/api/users/12345678-1234-1234-1234-123456789012 \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -F "nome=João Santos" \
+    -F "telefone=(11) 88888-8888"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Usuário Atualizado**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Usuário atualizado com sucesso",
-            "data": {
-              "id": "550e8400-e29b-41d4-a716-446655440000",
-              "nome": "João Carlos",
-              "sobrenome": "Silva",
-              "telefone": "(11) 88888-8888",
-              "dataAtualizacao": "2024-01-16T14:20:00Z"
-            }
+          "code": "OK",
+          "message": "Usuário atualizado com sucesso",
+          "data": {
+            "id": "12345678-1234-1234-1234-123456789012",
+            "nome": "João Santos",
+            "telefone": "(11) 88888-8888"
           }
         }
         ```
-
----
+    * **`400 Bad Request` - Erro de Validação**
+        ```json
+        {
+          "success": false,
+          "code": "VALIDATION_ERROR",
+          "message": "Erro de validação dos dados",
+          "details": [
+            {
+              "field": "email",
+              "message": "E-mail inválido"
+            }
+          ]
+        }
+        ```
 
 ### **DELETE /api/users/{id}**
 
@@ -433,126 +389,107 @@ Todas as respostas da API seguem o formato `ApiResponse`:
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome      | Tipo      | Descrição            |
-        |-----------|-----------|----------------------|
-        | `id`      | `uuid`    | ID único do usuário  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
+        | Nome | Tipo   | Descrição           |
+        |------|--------|---------------------|
+        | `id` | `uuid` | ID único do usuário |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X DELETE https://api.dacc.com/api/users/550e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>"
+    curl -X DELETE https://api.dacc.com/v1/api/users/12345678-1234-1234-1234-123456789012 \
+    -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Usuário Removido**
+    * **`204 No Content` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Usuário removido com sucesso"
-          }
+          "code": "NO_CONTENT",
+          "message": "Usuário removido com sucesso"
         }
         ```
+    * **`404 Not Found` - Usuário Não Encontrado**
+        ```json
+        {
+          "success": false,
+          "code": "RESOURCE_NOT_FOUND",
+          "message": "Recurso não encontrado"
+        }
+        ```
+      
+## Produtos
 
----### **G
-ET /api/produtos**
+### **GET /api/produtos**
 
 * **Descrição:** Lista todos os produtos disponíveis
 * **Autorização:** Público
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/api/produtos
+    curl -X GET https://api.dacc.com/v1/api/produtos
     ```
 
 * **Respostas:**
-    * **`200 OK` - Lista de Produtos**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Produtos obtidos com sucesso",
-            "data": {
-              "products": [
-                {
-                  "id": "550e8400-e29b-41d4-a716-446655440000",
-                  "nome": "Camiseta DACC",
-                  "descricao": "Camiseta oficial do DACC",
-                  "preco": 35.90,
-                  "categoria": "roupas",
-                  "subcategoria": "camisetas",
-                  "variacoes": [
-                    {
-                      "id": "660e8400-e29b-41d4-a716-446655440000",
-                      "cor": "azul",
-                      "tamanho": "M",
-                      "estoque": 10
-                    }
-                  ],
-                  "dataCriacao": "2024-01-15T10:30:00Z"
-                }
-              ]
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": [
+            {
+              "id": "12345678-1234-1234-1234-123456789012",
+              "nome": "Camiseta DACC",
+              "descricao": "Camiseta oficial do DACC",
+              "categoria": "roupas",
+              "subcategoria": "camisetas",
+              "preco": 29.90,
+              "precoOriginal": 39.90
             }
-          }
+          ]
         }
         ```
 
----
-
 ### **GET /api/produtos/{id}**
 
-* **Descrição:** Obtém detalhes de um produto específico
+* **Descrição:** Obtém informações detalhadas de um produto específico
 * **Autorização:** Público
 
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome      | Tipo      | Descrição            |
-        |-----------|-----------|----------------------|
-        | `id`      | `uuid`    | ID único do produto  |
+        | Nome | Tipo   | Descrição           |
+        |------|--------|---------------------|
+        | `id` | `uuid` | ID único do produto |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/api/produtos/550e8400-e29b-41d4-a716-446655440000
+    curl -X GET https://api.dacc.com/v1/api/produtos/12345678-1234-1234-1234-123456789012
     ```
 
 * **Respostas:**
-    * **`200 OK` - Produto Encontrado**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Produto obtido com sucesso",
-            "data": {
-              "product": {
-                "id": "550e8400-e29b-41d4-a716-446655440000",
-                "nome": "Camiseta DACC",
-                "descricao": "Camiseta oficial do DACC em algodão 100%",
-                "preco": 35.90,
-                "categoria": "roupas",
-                "subcategoria": "camisetas",
-                "variacoes": [
-                  {
-                    "id": "660e8400-e29b-41d4-a716-446655440000",
-                    "cor": "azul",
-                    "tamanho": "M",
-                    "estoque": 10,
-                    "imagens": [
-                      {
-                        "url": "https://exemplo.com/imagem1.jpg",
-                        "altText": "Camiseta DACC azul frente"
-                      }
-                    ]
-                  }
-                ],
-                "dataCriacao": "2024-01-15T10:30:00Z"
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": {
+            "id": "12345678-1234-1234-1234-123456789012",
+            "nome": "Camiseta DACC",
+            "descricao": "Camiseta oficial do DACC com logo bordado",
+            "categoria": "roupas",
+            "subcategoria": "camisetas",
+            "preco": 29.90,
+            "precoOriginal": 39.90,
+            "variacoes": [
+              {
+                "id": "87654321-4321-4321-4321-210987654321",
+                "cor": "azul",
+                "tamanho": "M",
+                "estoque": 10
               }
-            }
+            ]
           }
         }
         ```
@@ -560,14 +497,69 @@ ET /api/produtos**
         ```json
         {
           "success": false,
-          "response": {
-            "code": "RESOURCE_NOT_FOUND",
-            "message": "Nenhum produto foi encontrado com esse id"
-          }
+          "code": "RESOURCE_NOT_FOUND",
+          "message": "Recurso não encontrado"
         }
         ```
 
----
+### **POST /api/produtos**
+
+* **Descrição:** Cria um novo produto
+* **Autorização:** Requer permissão `produtos.create`
+
+* **Parâmetros da Requisição:**
+    * **Body (`application/json`)**
+
+        | Campo          | Tipo     | Obrigatório | Descrição                            |
+        |----------------|----------|-------------|--------------------------------------|
+        | `nome`         | `string` | Sim         | Nome do produto (3-50 caracteres)    |
+        | `descricao`    | `string` | Sim         | Descrição (10-1000 caracteres)       |
+        | `categoria`    | `string` | Sim         | Categoria do produto                 |
+        | `subcategoria` | `string` | Sim         | Subcategoria do produto              |
+        | `preco`        | `number` | Sim         | Preço do produto (maior que zero)    |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X POST https://api.dacc.com/v1/api/produtos \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "nome": "Camiseta DACC",
+      "descricao": "Camiseta oficial do DACC com logo bordado",
+      "categoria": "roupas",
+      "subcategoria": "camisetas",
+      "preco": 29.90
+    }'
+    ```
+
+* **Respostas:**
+    * **`201 Created` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "CREATED",
+          "message": "Produto criado com sucesso",
+          "data": {
+            "id": "12345678-1234-1234-1234-123456789012",
+            "nome": "Camiseta DACC",
+            "preco": 29.90
+          }
+        }
+        ```
+    * **`400 Bad Request` - Erro de Validação**
+        ```json
+        {
+          "success": false,
+          "code": "VALIDATION_ERROR",
+          "message": "Erro de validação dos dados",
+          "details": [
+            {
+              "field": "nome",
+              "message": "Nome é obrigatório"
+            }
+          ]
+        }
+        ```
 
 ### **GET /api/produtos/search**
 
@@ -577,215 +569,115 @@ ET /api/produtos**
 * **Parâmetros da Requisição:**
     * **Query**
 
-        | Nome             | Tipo      | Padrão    | Descrição                                        |
-        |------------------|-----------|-----------|--------------------------------------------------|
-        | `page`           | `number`  | `1`       | Número da página                                 |
-        | `limit`          | `number`  | `16`      | Itens por página (máx: 100)                      |
-        | `searchPattern`  | `string`  | -         | Padrão de busca no nome/descrição                |
-        | `categoria`      | `string`  | -         | Filtro por categoria                             |
-        | `subcategoria`   | `string`  | -         | Filtro por subcategoria                          |
-        | `minPrice`       | `number`  | -         | Preço mínimo                                     |
-        | `maxPrice`       | `number`  | -         | Preço máximo                                     |
-        | `sortBy`         | `string`  | `newest`  | Ordenação (price-low, price-high, newest, name)  |
+        | Nome           | Tipo     | Padrão    | Descrição                                     |
+        |----------------|----------|-----------|-----------------------------------------------|
+        | `pagina`       | `number` | `1`       | Número da página (maior que 0)                |
+        | `limite`       | `number` | `16`      | Itens por página (1-100)                      |
+        | `pesquisa`     | `string` | -         | Termo de busca (máximo 200 caracteres)        |
+        | `categoria`    | `string` | -         | Filtro por categoria                          |
+        | `subcategoria` | `string` | -         | Filtro por subcategoria                       |
+        | `precoMinimo`  | `number` | -         | Preço mínimo (maior ou igual a 0)             |
+        | `precoMaximo`  | `number` | -         | Preço máximo (maior ou igual a 0)             |
+        | `ordenarPor`   | `string` | `newest`  | Ordenação (price-low/price-high/newest/name)  |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET "https://api.dacc.com/api/produtos/search?searchPattern=camiseta&categoria=roupas&page=1&limit=10"
+    curl -X GET "https://api.dacc.com/v1/api/produtos/search?pesquisa=camiseta&categoria=roupas&pagina=1&limite=10"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Resultados da Busca**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Produtos encontrados com sucesso",
-            "data": {
-              "products": [
-                {
-                  "id": "550e8400-e29b-41d4-a716-446655440000",
-                  "nome": "Camiseta DACC",
-                  "descricao": "Camiseta oficial do DACC",
-                  "preco": 35.90,
-                  "categoria": "roupas",
-                  "subcategoria": "camisetas"
-                }
-              ]
-            }
-          }
-        }
-        ```
-    * **`404 Not Found` - Nenhum Produto Encontrado**
-        ```json
-        {
-          "success": false,
-          "response": {
-            "code": "RESOURCE_NOT_FOUND",
-            "message": "Nenhum produto encontrado com os critérios de busca"
-          }
-        }
-        ```
-
----
-
-### **POST /api/produtos**
-
-* **Descrição:** Cria um novo produto
-* **Autorização:** Requer permissão `produtos.create`
-
-* **Parâmetros da Requisição:**
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-    * **Body (`application/json`)**
-
-        | Campo           | Tipo      | Obrigatório  | Descrição                                  |
-        |-----------------|-----------|--------------|--------------------------------------------|
-        | `nome`          | `string`  | Sim          | Nome do produto (3-50 caracteres)          |
-        | `descricao`     | `string`  | Sim          | Descrição do produto (10-1000 caracteres)  |
-        | `categoria`     | `string`  | Sim          | Categoria do produto                       |
-        | `subcategoria`  | `string`  | Sim          | Subcategoria do produto                    |
-        | `preco`         | `number`  | Sim          | Preço do produto (> 0)                     |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X POST https://api.dacc.com/api/produtos \
-    -H "Authorization: Bearer <seu_token>" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "nome": "Caneca DACC",
-      "descricao": "Caneca de porcelana com logo do DACC",
-      "categoria": "outros",
-      "subcategoria": "canecas",
-      "preco": 25.90
-    }'
-    ```
-
-* **Respostas:**
-    * **`201 Created` - Produto Criado**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Produto criado com sucesso! Use o endpoint de variações para adicionar opções de compra",
-            "data": {
-              "product": {
-                "id": "770e8400-e29b-41d4-a716-446655440000",
-                "nome": "Caneca DACC",
-                "descricao": "Caneca de porcelana com logo do DACC",
-                "preco": 25.90,
-                "categoria": "outros",
-                "subcategoria": "canecas",
-                "dataCriacao": "2024-01-16T15:30:00Z"
-              }
-            }
-          }
-        }
-        ```
-    * **`400 Bad Request` - Erro de Validação**
-        ```json
-        {
-          "success": false,
-          "response": {
-            "code": "VALIDATION_ERROR",
-            "message": "Erro de validação dos dados",
-            "details": [
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": {
+            "produtos": [
               {
-                "field": "nome",
-                "message": "Nome é obrigatório"
+                "id": "12345678-1234-1234-1234-123456789012",
+                "nome": "Camiseta DACC",
+                "preco": 29.90
               }
-            ]
+            ],
+            "totalItens": 1,
+            "paginaAtual": 1,
+            "totalPaginas": 1
           }
         }
         ```
-
----
 
 ### **PATCH /api/produtos/{id}**
 
-* **Descrição:** Atualiza um produto existente
+* **Descrição:** Atualiza informações de um produto
 * **Autorização:** Requer permissão `produtos.update`
 
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome      | Tipo      | Descrição            |
-        |-----------|-----------|----------------------|
-        | `id`      | `uuid`    | ID único do produto  |
-    * **Headers**
+        | Nome | Tipo   | Descrição           |
+        |------|--------|---------------------|
+        | `id` | `uuid` | ID único do produto |
 
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
     * **Body (`multipart/form-data`)**
 
-        | Campo            | Tipo      | Obrigatório  | Descrição                |
-        |------------------|-----------|--------------|--------------------------|
-        | `nome`           | `string`  | Não          | Nome do produto          |
-        | `descricao`      | `string`  | Não          | Descrição do produto     |
-        | `categoria`      | `string`  | Não          | Categoria do produto     |
-        | `subcategoria`   | `string`  | Não          | Subcategoria do produto  |
-        | `preco`          | `number`  | Não          | Preço do produto         |
-        | `precoOriginal`  | `number`  | Não          | Preço original           |
+        | Campo           | Tipo     | Obrigatório | Descrição               |
+        |-----------------|----------|-------------|-------------------------|
+        | `nome`          | `string` | Não         | Nome do produto         |
+        | `descricao`     | `string` | Não         | Descrição do produto    |
+        | `categoria`     | `string` | Não         | Categoria do produto    |
+        | `subcategoria`  | `string` | Não         | Subcategoria do produto |
+        | `preco`         | `number` | Não         | Preço atual             |
+        | `precoOriginal` | `number` | Não         | Preço original          |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X PATCH https://api.dacc.com/api/produtos/770e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>" \
-    -F 'nome=Caneca DACC Premium' \
-    -F 'preco=27.90'
+    curl -X PATCH https://api.dacc.com/v1/api/produtos/12345678-1234-1234-1234-123456789012 \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -F "preco=24.90"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Produto Atualizado**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Produto atualizado com sucesso"
+          "code": "OK",
+          "message": "Produto atualizado com sucesso",
+          "data": {
+            "id": "12345678-1234-1234-1234-123456789012",
+            "preco": 24.90
           }
         }
         ```
 
----
-
 ### **DELETE /api/produtos/{id}**
 
-* **Descrição:** Remove um produto do catálogo
+* **Descrição:** Remove um produto do sistema
 * **Autorização:** Requer permissão `produtos.delete`
 
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome      | Tipo      | Descrição            |
-        |-----------|-----------|----------------------|
-        | `id`      | `uuid`    | ID único do produto  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
+        | Nome | Tipo   | Descrição           |
+        |------|--------|---------------------|
+        | `id` | `uuid` | ID único do produto |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X DELETE https://api.dacc.com/api/produtos/770e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>"
+    curl -X DELETE https://api.dacc.com/v1/api/produtos/12345678-1234-1234-1234-123456789012 \
+    -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Produto Removido**
+    * **`204 No Content` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Produto removido com sucesso"
-          }
+          "code": "NO_CONTENT",
+          "message": "Produto removido com sucesso"
         }
         ```
-
----
 
 ### **POST /api/produtos/{id}/variations**
 
@@ -795,63 +687,43 @@ ET /api/produtos**
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome      | Tipo      | Descrição            |
-        |-----------|-----------|----------------------|
-        | `id`      | `uuid`    | ID único do produto  |
-    * **Headers**
+        | Nome | Tipo   | Descrição           |
+        |------|--------|---------------------|
+        | `id` | `uuid` | ID único do produto |
 
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
     * **Body (`multipart/form-data`)**
 
-        | Campo            | Tipo      | Obrigatório  | Descrição                                              |
-        |------------------|-----------|--------------|--------------------------------------------------------|
-        | `cor`            | `string`  | Sim          | Cor da variação                                        |
-        | `tamanho`        | `string`  | Sim          | Tamanho (PP, P, M, G, GG, XG, Pequeno, Medio, Grande)  |
-        | `estoque`        | `number`  | Sim          | Quantidade em estoque (0-99999)                        |
-        | `ordemVariacao`  | `number`  | Não          | Ordem da variação (0-999)                              |
+        | Campo           | Tipo     | Obrigatório | Descrição                                                     |
+        |-----------------|----------|-------------|---------------------------------------------------------------|
+        | `cor`           | `string` | Sim         | Nome da cor da variação                                       |
+        | `tamanho`       | `string` | Sim         | Tamanho (PP/P/M/G/GG/XG/Pequeno/Médio/Grande)                 |
+        | `estoque`       | `number` | Não         | Quantidade em estoque (0-99999, padrão: 0)                    |
+        | `ordemVariacao` | `number` | Não         | Ordem de exibição da variação (0-999, padrão: 0)              |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/api/produtos/770e8400-e29b-41d4-a716-446655440000/variations \
-    -H "Authorization: Bearer <seu_token>" \
-    -F 'cor=vermelho' \
-    -F 'tamanho=G' \
-    -F 'estoque=15'
+    curl -X POST https://api.dacc.com/v1/api/produtos/12345678-1234-1234-1234-123456789012/variations \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -F "cor=azul" \
+    -F "tamanho=M" \
+    -F "estoque=50"
     ```
 
 * **Respostas:**
-    * **`201 Created` - Variação Criada**
+    * **`201 Created` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Variação criada com sucesso! Use o endpoint de imagens para adicionar fotos",
-            "data": {
-              "variation": {
-                "id": "880e8400-e29b-41d4-a716-446655440000",
-                "cor": "vermelho",
-                "tamanho": "G",
-                "estoque": 15,
-                "produtoId": "770e8400-e29b-41d4-a716-446655440000"
-              }
-            }
+          "code": "CREATED",
+          "message": "Variação criada com sucesso",
+          "data": {
+            "id": "87654321-4321-4321-4321-210987654321",
+            "cor": "azul",
+            "tamanho": "M",
+            "estoque": 50
           }
         }
         ```
-    * **`409 Conflict` - Variação Já Existe**
-        ```json
-        {
-          "success": false,
-          "response": {
-            "code": "RESOURCE_ALREADY_EXISTS",
-            "message": "Já existe uma variação com cor 'vermelho' e tamanho 'G' para este produto"
-          }
-        }
-        ```
-
----
 
 ### **GET /api/produtos/{id}/variations**
 
@@ -861,135 +733,107 @@ ET /api/produtos**
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome      | Tipo      | Descrição            |
-        |-----------|-----------|----------------------|
-        | `id`      | `uuid`    | ID único do produto  |
+        | Nome | Tipo   | Descrição           |
+        |------|--------|---------------------|
+        | `id` | `uuid` | ID único do produto |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/api/produtos/770e8400-e29b-41d4-a716-446655440000/variations
+    curl -X GET https://api.dacc.com/v1/api/produtos/12345678-1234-1234-1234-123456789012/variations
     ```
 
 * **Respostas:**
-    * **`200 OK` - Lista de Variações**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Encontradas 2 variações para o produto",
-            "data": {
-              "variations": [
-                {
-                  "id": "880e8400-e29b-41d4-a716-446655440000",
-                  "cor": "vermelho",
-                  "tamanho": "G",
-                  "estoque": 15,
-                  "imagens": [
-                    {
-                      "url": "https://exemplo.com/variacao1.jpg",
-                      "altText": "Camiseta vermelha tamanho G"
-                    }
-                  ]
-                }
-              ]
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": [
+            {
+              "id": "87654321-4321-4321-4321-210987654321",
+              "cor": "azul",
+              "tamanho": "M",
+              "estoque": 50,
+              "ordemVariacao": 0
             }
-          }
+          ]
         }
         ```
 
----
-
 ### **PATCH /api/produtos/{id}/variations/{variationId}**
 
-* **Descrição:** Atualiza uma variação de produto
+* **Descrição:** Atualiza uma variação específica de produto
 * **Autorização:** Requer permissão `produtos.update`
 
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome           | Tipo      | Descrição             |
-        |----------------|-----------|-----------------------|
-        | `id`           | `uuid`    | ID único do produto   |
-        | `variationId`  | `uuid`    | ID único da variação  |
-    * **Headers**
+        | Nome          | Tipo   | Descrição              |
+        |---------------|--------|------------------------|
+        | `id`          | `uuid` | ID único do produto    |
+        | `variationId` | `uuid` | ID único da variação   |
 
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
     * **Body (`multipart/form-data`)**
 
-        | Campo            | Tipo      | Obrigatório  | Descrição              |
-        |------------------|-----------|--------------|------------------------|
-        | `cor`            | `string`  | Não          | Cor da variação        |
-        | `tamanho`        | `string`  | Não          | Tamanho da variação    |
-        | `estoque`        | `number`  | Não          | Quantidade em estoque  |
-        | `ordemVariacao`  | `number`  | Não          | Ordem da variação      |
+        | Campo           | Tipo     | Obrigatório | Descrição                                          |
+        |-----------------|----------|-------------|----------------------------------------------------|
+        | `cor`           | `string` | Não         | Nome da cor da variação                            |
+        | `tamanho`       | `string` | Não         | Tamanho (PP/P/M/G/GG/XG/Pequeno/Médio/Grande)      |
+        | `estoque`       | `number` | Não         | Quantidade em estoque (0-99999)                    |
+        | `ordemVariacao` | `number` | Não         | Ordem de exibição da variação (0-999)              |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X PATCH https://api.dacc.com/api/produtos/770e8400-e29b-41d4-a716-446655440000/variations/880e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>" \
-    -F 'estoque=20'
+    curl -X PATCH https://api.dacc.com/v1/api/produtos/12345678-1234-1234-1234-123456789012/variations/87654321-4321-4321-4321-210987654321 \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -F "estoque=25"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Variação Atualizada**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Variação atualizada com sucesso",
-            "data": {
-              "variation": {
-                "id": "880e8400-e29b-41d4-a716-446655440000",
-                "cor": "vermelho",
-                "tamanho": "G",
-                "estoque": 20
-              }
-            }
+          "code": "OK",
+          "message": "Variação atualizada com sucesso",
+          "data": {
+            "id": "87654321-4321-4321-4321-210987654321",
+            "estoque": 25
           }
         }
         ```
 
----
-
 ### **DELETE /api/produtos/{id}/variations/{variationId}**
 
-* **Descrição:** Remove uma variação de produto
+* **Descrição:** Remove uma variação específica de produto
 * **Autorização:** Requer permissão `produtos.delete`
 
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome           | Tipo      | Descrição             |
-        |----------------|-----------|-----------------------|
-        | `id`           | `uuid`    | ID único do produto   |
-        | `variationId`  | `uuid`    | ID único da variação  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
+        | Nome          | Tipo   | Descrição              |
+        |---------------|--------|------------------------|
+        | `id`          | `uuid` | ID único do produto    |
+        | `variationId` | `uuid` | ID único da variação   |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X DELETE https://api.dacc.com/api/produtos/770e8400-e29b-41d4-a716-446655440000/variations/880e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>"
+    curl -X DELETE https://api.dacc.com/v1/api/produtos/12345678-1234-1234-1234-123456789012/variations/87654321-4321-4321-4321-210987654321 \
+    -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Variação Removida**
+    * **`204 No Content` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Variação removida com sucesso"
-          }
+          "code": "NO_CONTENT",
+          "message": "Variação removida com sucesso"
         }
         ```
 
----###
- **POST /api/produtos/{productId}/variations/{variationId}/images**
+### **POST /api/produtos/{productId}/variations/{variationId}/images**
 
 * **Descrição:** Adiciona uma imagem a uma variação de produto
 * **Autorização:** Requer permissão `produtos.create`
@@ -997,140 +841,124 @@ ET /api/produtos**
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome           | Tipo      | Descrição             |
-        |----------------|-----------|-----------------------|
-        | `productId`    | `uuid`    | ID único do produto   |
-        | `variationId`  | `uuid`    | ID único da variação  |
-    * **Headers**
+        | Nome          | Tipo   | Descrição              |
+        |---------------|--------|------------------------|
+        | `productId`   | `uuid` | ID único do produto    |
+        | `variationId` | `uuid` | ID único da variação   |
 
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
     * **Body (`multipart/form-data`)**
 
-        | Campo        | Tipo      | Obrigatório  | Descrição                    |
-        |--------------|-----------|--------------|------------------------------|
-        | `imageFile`  | `file`    | Sim          | Arquivo de imagem (máx 5MB)  |
-        | `imagemAlt`  | `string`  | Não          | Texto alternativo da imagem  |
-        | `order`      | `number`  | Não          | Ordem da imagem              |
+        | Campo       | Tipo     | Obrigatório | Descrição                                     |
+        |-------------|----------|-------------|-----------------------------------------------|
+        | `imagem`    | `file`   | Sim         | Arquivo de imagem (máximo 5MB)                |
+        | `imagemAlt` | `string` | Não         | Texto alternativo (máximo 255 caracteres)     |
+        | `ordem`     | `number` | Não         | Ordem de exibição (padrão: 0)                 |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/api/produtos/770e8400-e29b-41d4-a716-446655440000/variations/880e8400-e29b-41d4-a716-446655440000/images \
-    -H "Authorization: Bearer <seu_token>" \
-    -F 'imageFile=@imagem.jpg' \
-    -F 'imagemAlt=Camiseta vermelha frente' \
-    -F 'order=1'
+    curl -X POST https://api.dacc.com/v1/api/produtos/12345678-1234-1234-1234-123456789012/variations/87654321-4321-4321-4321-210987654321/images \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -F "imagem=@camiseta_azul.jpg" \
+    -F "imagemAlt=Camiseta DACC azul tamanho M"
     ```
 
 * **Respostas:**
-    * **`201 Created` - Imagem Adicionada**
+    * **`201 Created` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Imagem adicionada com sucesso",
-            "data": {
-              "image": {
-                "id": "990e8400-e29b-41d4-a716-446655440000",
-                "imagemUrl": "https://exemplo.com/uploads/imagem.jpg",
-                "imagemAlt": "Camiseta vermelha frente",
-                "ordem": 1
-              }
-            }
+          "code": "CREATED",
+          "message": "Imagem adicionada com sucesso",
+          "data": {
+            "id": "11111111-1111-1111-1111-111111111111",
+            "url": "/uploads/camiseta_azul_123456.jpg",
+            "imagemAlt": "Camiseta DACC azul tamanho M",
+            "ordem": 0
           }
         }
         ```
-
----
+    * **`413 Payload Too Large` - Arquivo Muito Grande**
+        ```json
+        {
+          "success": false,
+          "code": "CONTENT_TOO_LARGE",
+          "message": "O arquivo enviado não pode ter mais de 5MB de tamanho"
+        }
+        ```
 
 ### **GET /api/produtos/images/{imageId}**
 
-* **Descrição:** Obtém detalhes de uma imagem específica
+* **Descrição:** Obtém informações de uma imagem específica
 * **Autorização:** Público
 
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome       | Tipo      | Descrição           |
-        |------------|-----------|---------------------|
-        | `imageId`  | `uuid`    | ID único da imagem  |
+        | Nome      | Tipo   | Descrição            |
+        |-----------|--------|----------------------|
+        | `imageId` | `uuid` | ID único da imagem   |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/api/produtos/images/990e8400-e29b-41d4-a716-446655440000
+    curl -X GET https://api.dacc.com/v1/api/produtos/images/11111111-1111-1111-1111-111111111111
     ```
 
 * **Respostas:**
-    * **`200 OK` - Imagem Encontrada**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Imagem obtida com sucesso",
-            "data": {
-              "image": {
-                "id": "990e8400-e29b-41d4-a716-446655440000",
-                "imagemUrl": "https://exemplo.com/uploads/imagem.jpg",
-                "imagemAlt": "Camiseta vermelha frente",
-                "ordem": 1
-              }
-            }
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": {
+            "id": "11111111-1111-1111-1111-111111111111",
+            "url": "/uploads/camiseta_azul_123456.jpg",
+            "imagemAlt": "Camiseta DACC azul tamanho M",
+            "ordem": 0
           }
         }
         ```
 
----
-
 ### **PATCH /api/produtos/images/{imageId}**
 
-* **Descrição:** Atualiza uma imagem de produto
+* **Descrição:** Atualiza informações de uma imagem
 * **Autorização:** Requer permissão `produtos.update`
 
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome       | Tipo      | Descrição           |
-        |------------|-----------|---------------------|
-        | `imageId`  | `uuid`    | ID único da imagem  |
-    * **Headers**
+        | Nome      | Tipo   | Descrição            |
+        |-----------|--------|----------------------|
+        | `imageId` | `uuid` | ID único da imagem   |
 
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
     * **Body (`multipart/form-data`)**
 
-        | Campo        | Tipo      | Obrigatório  | Descrição                    |
-        |--------------|-----------|--------------|------------------------------|
-        | `imageFile`  | `file`    | Não          | Novo arquivo de imagem       |
-        | `imagemAlt`  | `string`  | Não          | Texto alternativo da imagem  |
-        | `order`      | `number`  | Não          | Ordem da imagem              |
+        | Campo       | Tipo     | Obrigatório | Descrição                                   |
+        |-------------|----------|-------------|---------------------------------------------|
+        | `imagem`    | `file`   | Não         | Novo arquivo de imagem (máximo 5MB)         |
+        | `imagemAlt` | `string` | Não         | Texto alternativo (máximo 255 caracteres)   |
+        | `ordem`     | `number` | Não         | Ordem de exibição                           |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X PATCH https://api.dacc.com/api/produtos/images/990e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>" \
-    -F 'imagemAlt=Camiseta vermelha lateral'
+    curl -X PATCH https://api.dacc.com/v1/api/produtos/images/11111111-1111-1111-1111-111111111111 \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -F "imagemAlt=Nova descrição da imagem"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Imagem Atualizada**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Imagem atualizada com sucesso",
-            "data": {
-              "image": {
-                "id": "990e8400-e29b-41d4-a716-446655440000",
-                "imagemAlt": "Camiseta vermelha lateral"
-              }
-            }
+          "code": "OK",
+          "message": "Imagem atualizada com sucesso",
+          "data": {
+            "id": "11111111-1111-1111-1111-111111111111",
+            "imagemAlt": "Nova descrição da imagem"
           }
         }
         ```
-
----
 
 ### **DELETE /api/produtos/images/{imageId}**
 
@@ -1140,118 +968,418 @@ ET /api/produtos**
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome       | Tipo      | Descrição           |
-        |------------|-----------|---------------------|
-        | `imageId`  | `uuid`    | ID único da imagem  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
+        | Nome      | Tipo   | Descrição            |
+        |-----------|--------|----------------------|
+        | `imageId` | `uuid` | ID único da imagem   |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X DELETE https://api.dacc.com/api/produtos/images/990e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>"
+    curl -X DELETE https://api.dacc.com/v1/api/produtos/images/11111111-1111-1111-1111-111111111111 \
+    -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Imagem Removida**
+    * **`204 No Content` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Imagem removida com sucesso"
+          "code": "NO_CONTENT",
+          "message": "Imagem removida com sucesso"
+        }
+        ```
+
+## Pedidos
+
+### **POST /api/orders**
+
+* **Descrição:** Cria um novo pedido com processamento de pagamento
+* **Autorização:** Requer autenticação JWT
+
+* **Parâmetros da Requisição:**
+    * **Body (`application/json`)**
+
+        | Campo         | Tipo    | Obrigatório | Descrição                |
+        |---------------|---------|-------------|--------------------------|
+        | `itensPedido` | `array` | Sim         | Lista de itens do pedido |
+
+    * **Estrutura de `itensPedido`:**
+
+        | Campo               | Tipo     | Obrigatório | Descrição                    |
+        |---------------------|----------|-------------|------------------------------|
+        | `produtoId`         | `uuid`   | Sim         | ID do produto                |
+        | `produtoVariacaoId` | `uuid`   | Sim         | ID da variação do produto    |
+        | `quantidade`        | `number` | Sim         | Quantidade do item           |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X POST https://api.dacc.com/v1/api/orders \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "itensPedido": [
+        {
+          "produtoId": "12345678-1234-1234-1234-123456789012",
+          "produtoVariacaoId": "87654321-4321-4321-4321-210987654321",
+          "quantidade": 2
+        }
+      ]
+    }'
+    ```
+
+* **Respostas:**
+    * **`201 Created` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "CREATED",
+          "message": "Pedido criado com sucesso",
+          "data": {
+            "orderId": "99999999-9999-9999-9999-999999999999",
+            "status": "created",
+            "total": 59.80,
+            "paymentUrl": "https://mercadopago.com/checkout/v1/redirect?pref_id=123456789"
+          }
+        }
+        ```
+    * **`400 Bad Request` - Produto Fora de Estoque**
+        ```json
+        {
+          "success": false,
+          "code": "PRODUCT_OUT_OF_STOCK",
+          "message": "Produto fora de estoque"
+        }
+        ```
+
+### **GET /api/orders/{id}**
+
+* **Descrição:** Obtém informações de um pedido específico
+* **Autorização:** Requer autenticação JWT
+
+* **Parâmetros da Requisição:**
+    * **Path**
+
+        | Nome | Tipo   | Descrição          |
+        |------|--------|--------------------|
+        | `id` | `uuid` | ID único do pedido |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X GET https://api.dacc.com/v1/api/orders/99999999-9999-9999-9999-999999999999 \
+    -H "Authorization: Bearer <seu_jwt_token>"
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": {
+            "orders": {
+              "id": "99999999-9999-9999-9999-999999999999",
+              "status": "approved",
+              "total": 59.80,
+              "dataCriacao": "2025-08-08T10:00:00Z",
+              "itens": [
+                {
+                  "produtoNome": "Camiseta DACC",
+                  "cor": "azul",
+                  "tamanho": "M",
+                  "quantidade": 2,
+                  "precoUnitario": 29.90
+                }
+              ]
+            }
+          }
+        }
+        ```
+    * **`404 Not Found` - Pedido Não Encontrado**
+        ```json
+        {
+          "success": false,
+          "code": "RESOURCE_NOT_FOUND",
+          "message": "Recurso não encontrado"
+        }
+        ```
+
+### **GET /api/orders/user/{userId}**
+
+* **Descrição:** Lista todos os pedidos de um usuário específico
+* **Autorização:** Requer autenticação JWT
+
+* **Parâmetros da Requisição:**
+    * **Path**
+
+        | Nome     | Tipo   | Descrição           |
+        |----------|--------|---------------------|
+        | `userId` | `uuid` | ID único do usuário |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X GET https://api.dacc.com/v1/api/orders/user/12345678-1234-1234-1234-123456789012 \
+    -H "Authorization: Bearer <seu_jwt_token>"
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": [
+            {
+              "id": "99999999-9999-9999-9999-999999999999",
+              "status": "approved",
+              "total": 59.80,
+              "dataCriacao": "2025-08-08T10:00:00Z"
+            }
+          ]
+        }
+        ```
+
+### **PUT /api/orders/{id}/status**
+
+* **Descrição:** Atualiza o status de um pedido
+* **Autorização:** Requer autenticação JWT
+
+* **Parâmetros da Requisição:**
+    * **Path**
+
+        | Nome | Tipo   | Descrição          |
+        |------|--------|--------------------|
+        | `id` | `uuid` | ID único do pedido |
+
+    * **Body (`application/json`)**
+
+        | Campo    | Tipo     | Obrigatório | Descrição                                                           |
+        |----------|----------|-------------|---------------------------------------------------------------------|
+        | `status` | `string` | Sim         | Novo status (created/pending/approved/rejected/delivered/cancelled) |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X PUT https://api.dacc.com/v1/api/orders/99999999-9999-9999-9999-999999999999/status \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -H "Content-Type: application/json" \
+    -d '"delivered"'
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Status atualizado com sucesso",
+          "data": {
+            "orderId": "99999999-9999-9999-9999-999999999999",
+            "status": "delivered"
           }
         }
         ```
 
----
+### **POST /api/orders/webhook**
+
+* **Descrição:** Webhook para processamento de pagamentos do MercadoPago
+* **Autorização:** Público (validação por assinatura)
+
+* **Parâmetros da Requisição:**
+    * **Headers**
+
+        | Nome           | Tipo     | Obrigatório | Descrição                    |
+        |----------------|----------|-------------|------------------------------|
+        | `x-signature`  | `string` | Sim         | Assinatura do webhook        |
+        | `x-request-id` | `string` | Sim         | ID da requisição             |
+
+    * **Body (`application/x-www-form-urlencoded`)**
+
+        | Campo   | Tipo     | Obrigatório | Descrição                |
+        |---------|----------|-------------|--------------------------|
+        | `type`  | `string` | Não         | Tipo do evento           |
+        | `topic` | `string` | Não         | Tópico do evento         |
+        | `data`  | `object` | Não         | Dados do evento          |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X POST https://api.dacc.com/v1/api/orders/webhook \
+    -H "x-signature: ts=1234567890,v1=signature_hash" \
+    -H "x-request-id: request-id-123" \
+    -d 'type=payment&data[id]=123456789'
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Pagamento realizado com sucesso"
+        }
+        ```
+    * **`400 Bad Request` - Webhook Inválido**
+        ```json
+        {
+          "success": false,
+          "code": "INVALID_WEBHOOK",
+          "message": "Webhook inválido"
+        }
+        ```
+
+## Pagamentos
+
+### **GET /api/payments/success**
+
+* **Descrição:** Página de sucesso do pagamento (callback do MercadoPago)
+* **Autorização:** Público
+
+* **Parâmetros da Requisição:**
+    * **Query**
+
+        | Nome                 | Tipo     | Obrigatório | Descrição                    |
+        |----------------------|----------|-------------|------------------------------|
+        | `external_reference` | `string` | Sim         | Referência externa do pedido |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X GET "https://api.dacc.com/v1/api/payments/success?external_reference=order_123456"
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Pagamento realizado com sucesso",
+          "data": "order_123456"
+        }
+        ```
+
+### **GET /api/payments/failure**
+
+* **Descrição:** Página de falha do pagamento (callback do MercadoPago)
+* **Autorização:** Público
+
+* **Parâmetros da Requisição:**
+    * **Query**
+
+        | Nome                 | Tipo     | Obrigatório | Descrição                    |
+        |----------------------|----------|-------------|------------------------------|
+        | `external_reference` | `string` | Sim         | Referência externa do pedido |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X GET "https://api.dacc.com/v1/api/payments/failure?external_reference=order_123456"
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Falha no Pagamento**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Pagamento falhou. Tente novamente.",
+          "data": "order_123456"
+        }
+        ```
+
+### **GET /api/payments/pending**
+
+* **Descrição:** Página de pagamento pendente (callback do MercadoPago)
+* **Autorização:** Público
+
+* **Parâmetros da Requisição:**
+    * **Query**
+
+        | Nome                 | Tipo     | Obrigatório | Descrição                    |
+        |----------------------|----------|-------------|------------------------------|
+        | `external_reference` | `string` | Sim         | Referência externa do pedido |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X GET "https://api.dacc.com/v1/api/payments/pending?external_reference=order_123456"
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Pagamento Pendente**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Pagamento pendente. Aguarde a confirmação.",
+          "data": "order_123456"
+        }
+        ```
+
+## Avaliações
 
 ### **GET /api/ratings**
 
 * **Descrição:** Lista todas as avaliações do sistema
 * **Autorização:** Requer permissão `reviews.view`
 
-* **Parâmetros da Requisição:**
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/api/ratings \
-    -H "Authorization: Bearer <seu_token>"
+    curl -X GET https://api.dacc.com/v1/api/ratings \
+    -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Lista de Avaliações**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Avaliações obtidas com sucesso",
-            "data": [
-              {
-                "id": "aa0e8400-e29b-41d4-a716-446655440000",
-                "nota": 5,
-                "comentario": "Produto excelente!",
-                "usuarioId": "550e8400-e29b-41d4-a716-446655440000",
-                "produtoId": "770e8400-e29b-41d4-a716-446655440000",
-                "dataAvaliacao": "2024-01-16T10:00:00Z"
-              }
-            ]
-          }
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": [
+            {
+              "id": "11111111-1111-1111-1111-111111111111",
+              "nota": 5,
+              "comentario": "Produto excelente!",
+              "produtoId": "12345678-1234-1234-1234-123456789012",
+              "usuarioId": "87654321-4321-4321-4321-210987654321",
+              "dataCriacao": "2025-08-08T10:00:00Z"
+            }
+          ]
         }
         ```
 
----
-
 ### **GET /api/ratings/{id}**
 
-* **Descrição:** Obtém uma avaliação específica por ID
+* **Descrição:** Obtém informações de uma avaliação específica
 * **Autorização:** Requer permissão `reviews.view`
 
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome      | Tipo      | Descrição              |
-        |-----------|-----------|------------------------|
-        | `id`      | `uuid`    | ID único da avaliação  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
+        | Nome | Tipo   | Descrição              |
+        |------|--------|------------------------|
+        | `id` | `uuid` | ID único da avaliação  |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/api/ratings/aa0e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>"
+    curl -X GET https://api.dacc.com/v1/api/ratings/11111111-1111-1111-1111-111111111111 \
+    -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Avaliação Encontrada**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Avaliação obtida com sucesso",
-            "data": {
-              "id": "aa0e8400-e29b-41d4-a716-446655440000",
-              "nota": 5,
-              "comentario": "Produto excelente!",
-              "usuarioId": "550e8400-e29b-41d4-a716-446655440000",
-              "produtoId": "770e8400-e29b-41d4-a716-446655440000",
-              "dataAvaliacao": "2024-01-16T10:00:00Z"
-            }
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": {
+            "id": "11111111-1111-1111-1111-111111111111",
+            "nota": 5,
+            "comentario": "Produto excelente!",
+            "produtoId": "12345678-1234-1234-1234-123456789012",
+            "usuarioId": "87654321-4321-4321-4321-210987654321",
+            "dataCriacao": "2025-08-08T10:00:00Z"
           }
         }
         ```
-
----
 
 ### **POST /api/ratings**
 
@@ -1259,137 +1387,128 @@ ET /api/produtos**
 * **Autorização:** Requer permissão `reviews.create`
 
 * **Parâmetros da Requisição:**
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
     * **Body (`application/json`)**
 
-        | Campo          | Tipo        | Obrigatório  | Descrição                 |
-        |----------------|-------------|--------------|---------------------------|
-        | `nota`         | `number`    | Sim          | Nota de 1 a 5             |
-        | `usuarioId`    | `uuid`      | Sim          | ID do usuário que avalia  |
-        | `comentario`   | `string`    | Não          | Comentário da avaliação   |
-        | `produtoId`    | `uuid`      | Sim          | ID do produto avaliado    |
-        | `dataPostada`  | `datetime`  | Sim          | Data da avaliação         |
+        | Campo        | Tipo     | Obrigatório | Descrição                     |
+        |--------------|----------|-------------|-------------------------------|
+        | `nota`       | `number` | Sim         | Nota de 1 a 5 estrelas        |
+        | `comentario` | `string` | Não         | Comentário sobre o produto    |
+        | `produtoId`  | `uuid`   | Sim         | ID do produto sendo avaliado  |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/api/ratings \
-    -H "Authorization: Bearer <seu_token>" \
+    curl -X POST https://api.dacc.com/v1/api/ratings \
+    -H "Authorization: Bearer <seu_jwt_token>" \
     -H "Content-Type: application/json" \
     -d '{
       "nota": 5,
-      "usuarioId": "550e8400-e29b-41d4-a716-446655440000",
       "comentario": "Produto excelente, recomendo!",
-      "produtoId": "770e8400-e29b-41d4-a716-446655440000",
-      "dataPostada": "2024-01-16T10:00:00Z"
+      "produtoId": "12345678-1234-1234-1234-123456789012"
     }'
     ```
 
 * **Respostas:**
-    * **`201 Created` - Avaliação Criada**
+    * **`201 Created` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Avaliação criada com sucesso",
-            "data": {
-              "id": "bb0e8400-e29b-41d4-a716-446655440000",
-              "nota": 5,
-              "comentario": "Produto excelente, recomendo!",
-              "dataAvaliacao": "2024-01-16T10:00:00Z"
-            }
+          "code": "CREATED",
+          "message": "Avaliação criada com sucesso",
+          "data": {
+            "id": "11111111-1111-1111-1111-111111111111",
+            "nota": 5,
+            "comentario": "Produto excelente, recomendo!",
+            "produtoId": "12345678-1234-1234-1234-123456789012"
           }
         }
         ```
-
----
+    * **`400 Bad Request` - Erro de Validação**
+        ```json
+        {
+          "success": false,
+          "code": "VALIDATION_ERROR",
+          "message": "Erro de validação dos dados",
+          "details": [
+            {
+              "field": "nota",
+              "message": "A nota deve ser de 1 a 5"
+            }
+          ]
+        }
+        ```
 
 ### **GET /api/ratings/products/{produtoId}**
 
-* **Descrição:** Lista avaliações de um produto específico
+* **Descrição:** Lista todas as avaliações de um produto específico
 * **Autorização:** Público
 
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome         | Tipo      | Descrição            |
-        |--------------|-----------|----------------------|
-        | `produtoId`  | `uuid`    | ID único do produto  |
+        | Nome        | Tipo   | Descrição           |
+        |-------------|--------|---------------------|
+        | `produtoId` | `uuid` | ID único do produto |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/api/ratings/products/770e8400-e29b-41d4-a716-446655440000
+    curl -X GET https://api.dacc.com/v1/api/ratings/products/12345678-1234-1234-1234-123456789012
     ```
 
 * **Respostas:**
-    * **`200 OK` - Avaliações do Produto**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Avaliações do produto obtidas com sucesso",
-            "data": [
-              {
-                "id": "aa0e8400-e29b-41d4-a716-446655440000",
-                "nota": 5,
-                "comentario": "Produto excelente!",
-                "nomeUsuario": "João Silva",
-                "dataAvaliacao": "2024-01-16T10:00:00Z"
-              }
-            ]
-          }
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": [
+            {
+              "id": "11111111-1111-1111-1111-111111111111",
+              "nota": 5,
+              "comentario": "Produto excelente!",
+              "nomeUsuario": "João Silva",
+              "dataCriacao": "2025-08-08T10:00:00Z"
+            }
+          ]
         }
         ```
 
----
-
 ### **GET /api/ratings/users/{usuarioId}**
 
-* **Descrição:** Lista avaliações feitas por um usuário específico
+* **Descrição:** Lista todas as avaliações feitas por um usuário específico
 * **Autorização:** Requer permissão `reviews.view`
 
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome         | Tipo      | Descrição            |
-        |--------------|-----------|----------------------|
-        | `usuarioId`  | `uuid`    | ID único do usuário  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
+        | Nome        | Tipo   | Descrição           |
+        |-------------|--------|---------------------|
+        | `usuarioId` | `uuid` | ID único do usuário |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/api/ratings/users/550e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>"
+    curl -X GET https://api.dacc.com/v1/api/ratings/users/87654321-4321-4321-4321-210987654321 \
+    -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Avaliações do Usuário**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Avaliações do usuário obtidas com sucesso",
-            "data": [
-              {
-                "id": "aa0e8400-e29b-41d4-a716-446655440000",
-                "nota": 5,
-                "comentario": "Produto excelente!",
-                "nomeProduto": "Caneca DACC",
-                "dataAvaliacao": "2024-01-16T10:00:00Z"
-              }
-            ]
-          }
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": [
+            {
+              "id": "11111111-1111-1111-1111-111111111111",
+              "nota": 5,
+              "comentario": "Produto excelente!",
+              "produtoNome": "Camiseta DACC",
+              "dataCriacao": "2025-08-08T10:00:00Z"
+            }
+          ]
         }
         ```
-
----
 
 ### **PATCH /api/ratings/{id}**
 
@@ -1399,853 +1518,72 @@ ET /api/produtos**
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome      | Tipo      | Descrição              |
-        |-----------|-----------|------------------------|
-        | `id`      | `uuid`    | ID único da avaliação  |
-    * **Headers**
+        | Nome | Tipo   | Descrição              |
+        |------|--------|------------------------|
+        | `id` | `uuid` | ID único da avaliação  |
 
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
     * **Body (`application/json`)**
 
-        | Campo         | Tipo      | Obrigatório  | Descrição                |
-        |---------------|-----------|--------------|--------------------------|
-        | `nota`        | `number`  | Sim          | Nota de 1 a 5            |
-        | `comentario`  | `string`  | Não          | Comentário da avaliação  |
+        | Campo         | Tipo     | Obrigatório | Descrição                    |
+        |---------------|----------|-------------|------------------------------|
+        | `nota`        | `number` | Sim         | Nova nota de 1 a 5 estrelas  |
+        | `comentario`  | `string` | Não         | Novo comentário              |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X PATCH https://api.dacc.com/api/ratings/aa0e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>" \
+    curl -X PATCH https://api.dacc.com/v1/api/ratings/11111111-1111-1111-1111-111111111111 \
+    -H "Authorization: Bearer <seu_jwt_token>" \
     -H "Content-Type: application/json" \
     -d '{
       "nota": 4,
-      "comentario": "Produto muito bom, mas pode melhorar"
+      "comentario": "Produto bom, mas pode melhorar"
     }'
     ```
 
 * **Respostas:**
-    * **`200 OK` - Avaliação Atualizada**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Avaliação atualizada com sucesso",
-            "data": {
-              "id": "aa0e8400-e29b-41d4-a716-446655440000",
-              "nota": 4,
-              "comentario": "Produto muito bom, mas pode melhorar"
-            }
+          "code": "OK",
+          "message": "Avaliação atualizada com sucesso",
+          "data": {
+            "id": "11111111-1111-1111-1111-111111111111",
+            "nota": 4,
+            "comentario": "Produto bom, mas pode melhorar"
           }
         }
         ```
 
----
-
 ### **DELETE /api/ratings/{id}**
 
-* **Descrição:** Remove uma avaliação
+* **Descrição:** Remove uma avaliação do sistema
 * **Autorização:** Requer permissão `reviews.delete`
 
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome      | Tipo      | Descrição              |
-        |-----------|-----------|------------------------|
-        | `id`      | `uuid`    | ID único da avaliação  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
+        | Nome | Tipo   | Descrição              |
+        |------|--------|------------------------|
+        | `id` | `uuid` | ID único da avaliação  |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X DELETE https://api.dacc.com/api/ratings/aa0e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>"
+    curl -X DELETE https://api.dacc.com/v1/api/ratings/11111111-1111-1111-1111-111111111111 \
+    -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Avaliação Removida**
+    * **`204 No Content` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Avaliação removida com sucesso"
-          }
+          "code": "NO_CONTENT",
+          "message": "Avaliação removida com sucesso"
         }
         ```
 
----### **
-GET /api/announcements**
-
-* **Descrição:** Lista todos os anúncios do sistema
-* **Autorização:** Requer autenticação
-
-* **Parâmetros da Requisição:**
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X GET https://api.dacc.com/api/announcements \
-    -H "Authorization: Bearer <seu_token>"
-    ```
-
-* **Respostas:**
-    * **`200 OK` - Lista de Anúncios**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Anúncios obtidos com sucesso",
-            "data": [
-              {
-                "id": "cc0e8400-e29b-41d4-a716-446655440000",
-                "titulo": "Novo Evento DACC",
-                "conteudo": "Participe do nosso próximo evento...",
-                "tipoAnuncio": "evento",
-                "imagemUrl": "https://exemplo.com/anuncio.jpg",
-                "ativo": true,
-                "dataCriacao": "2024-01-16T12:00:00Z"
-              }
-            ]
-          }
-        }
-        ```
-
----
-
-### **GET /api/announcements/{id}**
-
-* **Descrição:** Obtém um anúncio específico por ID
-* **Autorização:** Requer autenticação
-
-* **Parâmetros da Requisição:**
-    * **Path**
-
-        | Nome      | Tipo      | Descrição            |
-        |-----------|-----------|----------------------|
-        | `id`      | `uuid`    | ID único do anúncio  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X GET https://api.dacc.com/api/announcements/cc0e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>"
-    ```
-
-* **Respostas:**
-    * **`200 OK` - Anúncio Encontrado**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Anúncio obtido com sucesso",
-            "data": {
-              "id": "cc0e8400-e29b-41d4-a716-446655440000",
-              "titulo": "Novo Evento DACC",
-              "conteudo": "Participe do nosso próximo evento...",
-              "tipoAnuncio": "evento",
-              "imagemUrl": "https://exemplo.com/anuncio.jpg",
-              "imagemAlt": "Banner do evento",
-              "ativo": true,
-              "autorId": "550e8400-e29b-41d4-a716-446655440000",
-              "dataCriacao": "2024-01-16T12:00:00Z"
-            }
-          }
-        }
-        ```
-
----
-
-### **POST /api/announcements**
-
-* **Descrição:** Cria um novo anúncio
-* **Autorização:** Requer autenticação
-
-* **Parâmetros da Requisição:**
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-    * **Body (`application/json`)**
-
-        | Campo          | Tipo       | Obrigatório  | Descrição                           |
-        |----------------|------------|--------------|-------------------------------------|
-        | `titulo`       | `string`   | Não          | Título do anúncio                   |
-        | `conteudo`     | `string`   | Não          | Conteúdo do anúncio                 |
-        | `tipoAnuncio`  | `string`   | Não          | Tipo (evento, noticia, importante)  |
-        | `imagemUrl`    | `string`   | Não          | URL da imagem do anúncio            |
-        | `imagemAlt`    | `string`   | Não          | Texto alternativo da imagem         |
-        | `ativo`        | `boolean`  | Sim          | Se o anúncio está ativo             |
-        | `autorId`      | `uuid`     | Sim          | ID do autor do anúncio              |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X POST https://api.dacc.com/api/announcements \
-    -H "Authorization: Bearer <seu_token>" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "titulo": "Workshop de Python",
-      "conteudo": "Inscrições abertas para workshop de Python...",
-      "tipoAnuncio": "evento",
-      "imagemUrl": "https://exemplo.com/python.jpg",
-      "imagemAlt": "Logo Python",
-      "ativo": true,
-      "autorId": "550e8400-e29b-41d4-a716-446655440000"
-    }'
-    ```
-
-* **Respostas:**
-    * **`201 Created` - Anúncio Criado**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Anúncio criado com sucesso",
-            "data": {
-              "id": "dd0e8400-e29b-41d4-a716-446655440000",
-              "titulo": "Workshop de Python",
-              "tipoAnuncio": "evento",
-              "ativo": true,
-              "dataCriacao": "2024-01-16T13:00:00Z"
-            }
-          }
-        }
-        ```
-
----
-
-### **PATCH /api/announcements/{id}**
-
-* **Descrição:** Atualiza um anúncio existente
-* **Autorização:** Requer autenticação
-
-* **Parâmetros da Requisição:**
-    * **Path**
-
-        | Nome      | Tipo      | Descrição            |
-        |-----------|-----------|----------------------|
-        | `id`      | `uuid`    | ID único do anúncio  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-    * **Body (`application/json`)**
-
-        | Campo          | Tipo       | Obrigatório  | Descrição            |
-        |----------------|------------|--------------|----------------------|
-        | `titulo`       | `string`   | Não          | Título do anúncio    |
-        | `conteudo`     | `string`   | Não          | Conteúdo do anúncio  |
-        | `tipoAnuncio`  | `string`   | Não          | Tipo do anúncio      |
-        | `imagemUrl`    | `string`   | Não          | URL da imagem        |
-        | `imagemAlt`    | `string`   | Não          | Texto alternativo    |
-        | `ativo`        | `boolean`  | Não          | Status do anúncio    |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X PATCH https://api.dacc.com/api/announcements/dd0e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "titulo": "Workshop de Python - Atualizado",
-      "ativo": false
-    }'
-    ```
-
-* **Respostas:**
-    * **`200 OK` - Anúncio Atualizado**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Anúncio atualizado com sucesso"
-          }
-        }
-        ```
-
----
-
-### **DELETE /api/announcements/{id}**
-
-* **Descrição:** Remove um anúncio
-* **Autorização:** Requer autenticação
-
-* **Parâmetros da Requisição:**
-    * **Path**
-
-        | Nome      | Tipo      | Descrição            |
-        |-----------|-----------|----------------------|
-        | `id`      | `uuid`    | ID único do anúncio  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X DELETE https://api.dacc.com/api/announcements/dd0e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>"
-    ```
-
-* **Respostas:**
-    * **`200 OK` - Anúncio Removido**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Anúncio removido com sucesso"
-          }
-        }
-        ```
-
----
-
-### **GET /api/diretores**
-
-* **Descrição:** Lista todos os diretores
-* **Autorização:** Requer permissão `faculty.view`
-
-* **Parâmetros da Requisição:**
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X GET https://api.dacc.com/api/diretores \
-    -H "Authorization: Bearer <seu_token>"
-    ```
-
-* **Respostas:**
-    * **`200 OK` - Lista de Diretores**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Diretores obtidos com sucesso",
-            "data": [
-              {
-                "id": "ee0e8400-e29b-41d4-a716-446655440000",
-                "nome": "Prof. Maria Silva",
-                "descricao": "Diretora de Tecnologia",
-                "imagemUrl": "https://exemplo.com/maria.jpg",
-                "email": "maria.silva@dacc.com",
-                "githubLink": "https://github.com/mariasilva",
-                "linkedinLink": "https://linkedin.com/in/mariasilva",
-                "diretoriaId": "ff0e8400-e29b-41d4-a716-446655440000"
-              }
-            ]
-          }
-        }
-        ```
-
----
-
-### **GET /api/diretores/{id}**
-
-* **Descrição:** Obtém um diretor específico por ID
-* **Autorização:** Requer autenticação
-
-* **Parâmetros da Requisição:**
-    * **Path**
-
-        | Nome      | Tipo      | Descrição            |
-        |-----------|-----------|----------------------|
-        | `id`      | `uuid`    | ID único do diretor  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X GET https://api.dacc.com/api/diretores/ee0e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>"
-    ```
-
-* **Respostas:**
-    * **`200 OK` - Diretor Encontrado**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Diretor obtido com sucesso",
-            "data": {
-              "id": "ee0e8400-e29b-41d4-a716-446655440000",
-              "nome": "Prof. Maria Silva",
-              "descricao": "Diretora de Tecnologia com 15 anos de experiência",
-              "imagemUrl": "https://exemplo.com/maria.jpg",
-              "usuarioId": "550e8400-e29b-41d4-a716-446655440000",
-              "diretoriaId": "ff0e8400-e29b-41d4-a716-446655440000",
-              "email": "maria.silva@dacc.com",
-              "githubLink": "https://github.com/mariasilva",
-              "linkedinLink": "https://linkedin.com/in/mariasilva"
-            }
-          }
-        }
-        ```
-
----
-
-### **POST /api/diretores**
-
-* **Descrição:** Cria um novo diretor
-* **Autorização:** Requer autenticação
-
-* **Parâmetros da Requisição:**
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-    * **Body (`application/json`)**
-
-        | Campo           | Tipo      | Obrigatório  | Descrição                       |
-        |-----------------|-----------|--------------|---------------------------------|
-        | `id`            | `uuid`    | Sim          | ID do diretor                   |
-        | `nome`          | `string`  | Não          | Nome do diretor                 |
-        | `descricao`     | `string`  | Não          | Descrição/biografia do diretor  |
-        | `imagemUrl`     | `string`  | Não          | URL da foto do diretor          |
-        | `usuarioId`     | `uuid`    | Não          | ID do usuário associado         |
-        | `diretoriaId`   | `uuid`    | Não          | ID da diretoria                 |
-        | `email`         | `string`  | Não          | E-mail do diretor               |
-        | `githubLink`    | `string`  | Não          | Link do GitHub                  |
-        | `linkedinLink`  | `string`  | Não          | Link do LinkedIn                |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X POST https://api.dacc.com/api/diretores \
-    -H "Authorization: Bearer <seu_token>" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "id": "gg0e8400-e29b-41d4-a716-446655440000",
-      "nome": "Prof. João Santos",
-      "descricao": "Diretor de Pesquisa e Desenvolvimento",
-      "email": "joao.santos@dacc.com",
-      "githubLink": "https://github.com/joaosantos",
-      "linkedinLink": "https://linkedin.com/in/joaosantos",
-      "diretoriaId": "ff0e8400-e29b-41d4-a716-446655440000"
-    }'
-    ```
-
-* **Respostas:**
-    * **`201 Created` - Diretor Criado**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Diretor criado com sucesso",
-            "data": {
-              "id": "gg0e8400-e29b-41d4-a716-446655440000",
-              "nome": "Prof. João Santos",
-              "email": "joao.santos@dacc.com"
-            }
-          }
-        }
-        ```
-
----
-
-### **PATCH /api/diretores/{id}**
-
-* **Descrição:** Atualiza um diretor existente
-* **Autorização:** Requer autenticação
-
-* **Parâmetros da Requisição:**
-    * **Path**
-
-        | Nome      | Tipo      | Descrição            |
-        |-----------|-----------|----------------------|
-        | `id`      | `uuid`    | ID único do diretor  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-    * **Body (`application/json`)**
-
-        | Campo           | Tipo      | Obrigatório  | Descrição             |
-        |-----------------|-----------|--------------|-----------------------|
-        | `nome`          | `string`  | Não          | Nome do diretor       |
-        | `descricao`     | `string`  | Não          | Descrição do diretor  |
-        | `imagemUrl`     | `string`  | Não          | URL da imagem         |
-        | `email`         | `string`  | Não          | E-mail do diretor     |
-        | `githubLink`    | `string`  | Não          | Link do GitHub        |
-        | `linkedinLink`  | `string`  | Não          | Link do LinkedIn      |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X PATCH https://api.dacc.com/api/diretores/gg0e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "descricao": "Diretor de Pesquisa e Desenvolvimento com foco em IA"
-    }'
-    ```
-
-* **Respostas:**
-    * **`200 OK` - Diretor Atualizado**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Diretor atualizado com sucesso"
-          }
-        }
-        ```
-
----
-
-### **DELETE /api/diretores/{id}**
-
-* **Descrição:** Remove um diretor
-* **Autorização:** Requer autenticação
-
-* **Parâmetros da Requisição:**
-    * **Path**
-
-        | Nome      | Tipo      | Descrição            |
-        |-----------|-----------|----------------------|
-        | `id`      | `uuid`    | ID único do diretor  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X DELETE https://api.dacc.com/api/diretores/gg0e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>"
-    ```
-
-* **Respostas:**
-    * **`200 OK` - Diretor Removido**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Diretor removido com sucesso"
-          }
-        }
-        ```
-
----#
-## **GET /api/eventos**
-
-* **Descrição:** Lista todos os eventos acadêmicos
-* **Autorização:** Público
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X GET https://api.dacc.com/api/eventos
-    ```
-
-* **Respostas:**
-    * **`200 OK` - Lista de Eventos**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Eventos obtidos com sucesso",
-            "data": [
-              {
-                "id": "hh0e8400-e29b-41d4-a716-446655440000",
-                "titulo": "Workshop de React",
-                "descricao": "Workshop prático sobre desenvolvimento React",
-                "data": "2024-02-15T14:00:00Z",
-                "tipoEvento": "workshop",
-                "autorId": "550e8400-e29b-41d4-a716-446655440000",
-                "textoAcao": "Inscrever-se",
-                "linkAcao": "https://forms.dacc.com/react-workshop",
-                "dataCriacao": "2024-01-16T14:00:00Z"
-              }
-            ]
-          }
-        }
-        ```
-
----
-
-### **GET /api/eventos/{id}**
-
-* **Descrição:** Obtém um evento específico por ID
-* **Autorização:** Público
-
-* **Parâmetros da Requisição:**
-    * **Path**
-
-        | Nome      | Tipo      | Descrição           |
-        |-----------|-----------|---------------------|
-        | `id`      | `uuid`    | ID único do evento  |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X GET https://api.dacc.com/api/eventos/hh0e8400-e29b-41d4-a716-446655440000
-    ```
-
-* **Respostas:**
-    * **`200 OK` - Evento Encontrado**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Evento obtido com sucesso",
-            "data": {
-              "id": "hh0e8400-e29b-41d4-a716-446655440000",
-              "titulo": "Workshop de React",
-              "descricao": "Workshop prático sobre desenvolvimento React para iniciantes e intermediários",
-              "data": "2024-02-15T14:00:00Z",
-              "tipoEvento": "workshop",
-              "autorId": "550e8400-e29b-41d4-a716-446655440000",
-              "textoAcao": "Inscrever-se",
-              "linkAcao": "https://forms.dacc.com/react-workshop",
-              "dataCriacao": "2024-01-16T14:00:00Z",
-              "dataAtualizacao": "2024-01-16T14:00:00Z"
-            }
-          }
-        }
-        ```
-
----
-
-### **POST /api/eventos**
-
-* **Descrição:** Cria um novo evento
-* **Autorização:** Requer permissão `eventos.create`
-
-* **Parâmetros da Requisição:**
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-    * **Body (`application/json`)**
-
-        | Campo         | Tipo        | Obrigatório  | Descrição                              |
-        |---------------|-------------|--------------|----------------------------------------|
-        | `id`          | `uuid`      | Sim          | ID do evento                           |
-        | `titulo`      | `string`    | Não          | Título do evento                       |
-        | `descricao`   | `string`    | Não          | Descrição detalhada do evento          |
-        | `data`        | `datetime`  | Não          | Data e hora do evento                  |
-        | `tipoEvento`  | `string`    | Não          | Tipo (workshop, seminario, hackathon)  |
-        | `autorId`     | `uuid`      | Não          | ID do autor/organizador                |
-        | `textoAcao`   | `string`    | Não          | Texto do botão de ação                 |
-        | `linkAcao`    | `string`    | Não          | Link para inscrição/mais informações   |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X POST https://api.dacc.com/api/eventos \
-    -H "Authorization: Bearer <seu_token>" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "id": "ii0e8400-e29b-41d4-a716-446655440000",
-      "titulo": "Hackathon DACC 2024",
-      "descricao": "Maior hackathon do ano com prêmios incríveis",
-      "data": "2024-03-20T09:00:00Z",
-      "tipoEvento": "hackathon",
-      "autorId": "550e8400-e29b-41d4-a716-446655440000",
-      "textoAcao": "Inscrever Equipe",
-      "linkAcao": "https://hackathon.dacc.com"
-    }'
-    ```
-
-* **Respostas:**
-    * **`201 Created` - Evento Criado**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Evento criado com sucesso",
-            "data": {
-              "id": "ii0e8400-e29b-41d4-a716-446655440000",
-              "titulo": "Hackathon DACC 2024",
-              "tipoEvento": "hackathon",
-              "data": "2024-03-20T09:00:00Z",
-              "dataCriacao": "2024-01-16T15:00:00Z"
-            }
-          }
-        }
-        ```
-
----
-
-### **PATCH /api/eventos/{id}**
-
-* **Descrição:** Atualiza um evento existente
-* **Autorização:** Requer permissão `eventos.update`
-
-* **Parâmetros da Requisição:**
-    * **Path**
-
-        | Nome      | Tipo      | Descrição           |
-        |-----------|-----------|---------------------|
-        | `id`      | `uuid`    | ID único do evento  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-    * **Body (`application/json`)**
-
-        | Campo         | Tipo        | Obrigatório  | Descrição               |
-        |---------------|-------------|--------------|-------------------------|
-        | `titulo`      | `string`    | Não          | Título do evento        |
-        | `descricao`   | `string`    | Não          | Descrição do evento     |
-        | `data`        | `datetime`  | Não          | Data e hora do evento   |
-        | `tipoEvento`  | `string`    | Não          | Tipo do evento          |
-        | `textoAcao`   | `string`    | Não          | Texto do botão de ação  |
-        | `linkAcao`    | `string`    | Não          | Link de ação            |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X PATCH https://api.dacc.com/api/eventos/ii0e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "data": "2024-03-22T09:00:00Z",
-      "descricao": "Maior hackathon do ano com prêmios incríveis - Data atualizada!"
-    }'
-    ```
-
-* **Respostas:**
-    * **`200 OK` - Evento Atualizado**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Evento atualizado com sucesso"
-          }
-        }
-        ```
-
----
-
-### **DELETE /api/eventos/{id}**
-
-* **Descrição:** Remove um evento
-* **Autorização:** Requer permissão `eventos.delete`
-
-* **Parâmetros da Requisição:**
-    * **Path**
-
-        | Nome      | Tipo      | Descrição           |
-        |-----------|-----------|---------------------|
-        | `id`      | `uuid`    | ID único do evento  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X DELETE https://api.dacc.com/api/eventos/ii0e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>"
-    ```
-
-* **Respostas:**
-    * **`200 OK` - Evento Removido**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Evento removido com sucesso"
-          }
-        }
-        ```
-
----
-
-### **POST /api/eventos/{id}/register**
-
-* **Descrição:** Registra usuário em um evento (não implementado)
-* **Autorização:** Requer permissão `eventos.register`
-
-* **Parâmetros da Requisição:**
-    * **Path**
-
-        | Nome      | Tipo      | Descrição           |
-        |-----------|-----------|---------------------|
-        | `id`      | `uuid`    | ID único do evento  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X POST https://api.dacc.com/api/eventos/ii0e8400-e29b-41d4-a716-446655440000/register \
-    -H "Authorization: Bearer <seu_token>"
-    ```
-
-* **Respostas:**
-    * **`501 Not Implemented` - Não Implementado**
-        ```json
-        {
-          "success": false,
-          "response": {
-            "code": "NOT_IMPLEMENTED",
-            "message": "Funcionalidade não implementada"
-          }
-        }
-        ```
-
----
-
-### **DELETE /api/eventos/{id}/register**
-
-* **Descrição:** Remove registro de usuário em um evento (não implementado)
-* **Autorização:** Requer permissão `eventos.register`
-
-* **Parâmetros da Requisição:**
-    * **Path**
-
-        | Nome      | Tipo      | Descrição           |
-        |-----------|-----------|---------------------|
-        | `id`      | `uuid`    | ID único do evento  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X DELETE https://api.dacc.com/api/eventos/ii0e8400-e29b-41d4-a716-446655440000/register \
-    -H "Authorization: Bearer <seu_token>"
-    ```
-
-* **Respostas:**
-    * **`501 Not Implemented` - Não Implementado**
-        ```json
-        {
-          "success": false,
-          "response": {
-            "code": "NOT_IMPLEMENTED",
-            "message": "Funcionalidade não implementada"
-          }
-        }
-        ```
-
----
+## Notícias
 
 ### **GET /api/news**
 
@@ -2254,75 +1592,75 @@ GET /api/announcements**
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/api/news
+    curl -X GET https://api.dacc.com/v1/api/news
     ```
 
 * **Respostas:**
-    * **`200 OK` - Lista de Notícias**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Notícias obtidas com sucesso",
-            "data": [
-              {
-                "id": "jj0e8400-e29b-41d4-a716-446655440000",
-                "titulo": "Nova Parceria com Empresa de Tecnologia",
-                "descricao": "DACC firma parceria estratégica",
-                "conteudo": "O DACC firmou parceria com empresa líder em tecnologia...",
-                "imagemUrl": "https://exemplo.com/noticia1.jpg",
-                "categoria": "parcerias",
-                "autorId": "550e8400-e29b-41d4-a716-446655440000",
-                "dataPublicacao": "2024-01-15T12:00:00Z",
-                "dataAtualizacao": "2024-01-15T12:00:00Z"
-              }
-            ]
-          }
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": [
+            {
+              "id": "22222222-2222-2222-2222-222222222222",
+              "titulo": "Nova parceria do DACC",
+              "descricao": "DACC firma parceria com empresa de tecnologia",
+              "categoria": "parceria",
+              "dataPublicacao": "2025-08-08T10:00:00Z",
+              "autorNome": "João Silva"
+            }
+          ]
         }
         ```
 
----
-
 ### **GET /api/news/{id}**
 
-* **Descrição:** Obtém uma notícia específica por ID
+* **Descrição:** Obtém informações detalhadas de uma notícia específica
 * **Autorização:** Público
 
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome      | Tipo      | Descrição            |
-        |-----------|-----------|----------------------|
-        | `id`      | `uuid`    | ID único da notícia  |
+        | Nome | Tipo   | Descrição            |
+        |------|--------|----------------------|
+        | `id` | `uuid` | ID único da notícia  |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/api/news/jj0e8400-e29b-41d4-a716-446655440000
+    curl -X GET https://api.dacc.com/v1/api/news/22222222-2222-2222-2222-222222222222
     ```
 
 * **Respostas:**
-    * **`200 OK` - Notícia Encontrada**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Notícia obtida com sucesso",
-            "data": {
-              "id": "jj0e8400-e29b-41d4-a716-446655440000",
-              "titulo": "Nova Parceria com Empresa de Tecnologia",
-              "descricao": "DACC firma parceria estratégica",
-              "conteudo": "O DACC firmou parceria com empresa líder em tecnologia para desenvolvimento de projetos inovadores...",
-              "imagemUrl": "https://exemplo.com/noticia1.jpg",
-              "categoria": "parcerias",
-              "autorId": "550e8400-e29b-41d4-a716-446655440000",
-              "dataPublicacao": "2024-01-15T12:00:00Z",
-              "dataAtualizacao": "2024-01-15T12:00:00Z"
-            }
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": {
+            "id": "22222222-2222-2222-2222-222222222222",
+            "titulo": "Nova parceria do DACC",
+            "descricao": "DACC firma parceria com empresa de tecnologia",
+            "conteudo": "Conteúdo completo da notícia...",
+            "categoria": "parceria",
+            "imagemUrl": "/uploads/noticia_123.jpg",
+            "dataPublicacao": "2025-08-08T10:00:00Z",
+            "dataAtualizacao": "2025-08-08T11:00:00Z",
+            "autorId": "87654321-4321-4321-4321-210987654321",
+            "autorNome": "João Silva"
           }
         }
         ```
-
----
+    * **`404 Not Found` - Notícia Não Encontrada**
+        ```json
+        {
+          "success": false,
+          "code": "RESOURCE_NOT_FOUND",
+          "message": "Recurso não encontrado"
+        }
+        ```
 
 ### **POST /api/news**
 
@@ -2330,57 +1668,57 @@ GET /api/announcements**
 * **Autorização:** Requer permissão `noticias.create`
 
 * **Parâmetros da Requisição:**
-    * **Headers**
+    * **Body (`multipart/form-data`)**
 
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-    * **Body (`application/json`)**
-
-        | Campo              | Tipo        | Obrigatório  | Descrição                     |
-        |--------------------|-------------|--------------|-------------------------------|
-        | `titulo`           | `string`    | Sim          | Título da notícia             |
-        | `descricao`        | `string`    | Sim          | Descrição resumida            |
-        | `conteudo`         | `string`    | Não          | Conteúdo completo da notícia  |
-        | `imagemUrl`        | `string`    | Não          | URL da imagem de capa         |
-        | `autorId`          | `uuid`      | Não          | ID do autor da notícia        |
-        | `categoria`        | `string`    | Não          | Categoria da notícia          |
-        | `dataAtualizacao`  | `datetime`  | Não          | Data de atualização           |
-        | `dataPublicacao`   | `datetime`  | Não          | Data de publicação            |
+        | Campo             | Tipo       | Obrigatório | Descrição                        |
+        |-------------------|------------|-------------|----------------------------------|
+        | `titulo`          | `string`   | Sim         | Título da notícia                |
+        | `descricao`       | `string`   | Sim         | Descrição resumida               |
+        | `conteudo`        | `string`   | Não         | Conteúdo completo da notícia     |
+        | `categoria`       | `string`   | Não         | Categoria da notícia             |
+        | `imageFile`       | `file`     | Não         | Arquivo de imagem (máximo 5MB)   |
+        | `dataPublicacao`  | `datetime` | Não         | Data de publicação               |
+        | `dataAtualizacao` | `datetime` | Não         | Data de atualização              |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/api/news \
-    -H "Authorization: Bearer <seu_token>" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "titulo": "Novo Laboratório de IA",
-      "descricao": "DACC inaugura laboratório de Inteligência Artificial",
-      "conteudo": "O DACC inaugurou seu novo laboratório de IA com equipamentos de última geração...",
-      "categoria": "infraestrutura",
-      "imagemUrl": "https://exemplo.com/lab-ia.jpg",
-      "autorId": "550e8400-e29b-41d4-a716-446655440000"
-    }'
+    curl -X POST https://api.dacc.com/v1/api/news \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -F "titulo=Nova parceria do DACC" \
+    -F "descricao=DACC firma parceria com empresa de tecnologia" \
+    -F "conteudo=Conteúdo completo da notícia..." \
+    -F "categoria=parceria" \
+    -F "imageFile=@noticia.jpg"
     ```
 
 * **Respostas:**
-    * **`201 Created` - Notícia Criada**
+    * **`201 Created` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Notícia criada com sucesso",
-            "data": {
-              "id": "kk0e8400-e29b-41d4-a716-446655440000",
-              "titulo": "Novo Laboratório de IA",
-              "categoria": "infraestrutura",
-              "dataPublicacao": "2024-01-16T18:00:00Z"
-            }
+          "code": "CREATED",
+          "message": "Notícia criada com sucesso",
+          "data": {
+            "id": "22222222-2222-2222-2222-222222222222",
+            "titulo": "Nova parceria do DACC",
+            "categoria": "parceria"
           }
         }
         ```
-
----
+    * **`400 Bad Request` - Erro de Validação**
+        ```json
+        {
+          "success": false,
+          "code": "VALIDATION_ERROR",
+          "message": "Erro de validação dos dados",
+          "details": [
+            {
+              "field": "titulo",
+              "message": "Título é obrigatório"
+            }
+          ]
+        }
+        ```
 
 ### **PATCH /api/news/{id}**
 
@@ -2390,159 +1728,392 @@ GET /api/announcements**
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome      | Tipo      | Descrição            |
-        |-----------|-----------|----------------------|
-        | `id`      | `uuid`    | ID único da notícia  |
-    * **Headers**
+        | Nome | Tipo   | Descrição            |
+        |------|--------|----------------------|
+        | `id` | `uuid` | ID único da notícia  |
 
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-    * **Body (`application/json`)**
+    * **Body (`multipart/form-data`)**
 
-        | Campo        | Tipo      | Obrigatório  | Descrição             |
-        |--------------|-----------|--------------|-----------------------|
-        | `titulo`     | `string`  | Não          | Título da notícia     |
-        | `descricao`  | `string`  | Não          | Descrição da notícia  |
-        | `conteudo`   | `string`  | Não          | Conteúdo da notícia   |
-        | `imagemUrl`  | `string`  | Não          | URL da imagem         |
-        | `categoria`  | `string`  | Não          | Categoria da notícia  |
+        | Campo             | Tipo       | Obrigatório | Descrição                        |
+        |-------------------|------------|-------------|----------------------------------|
+        | `titulo`          | `string`   | Não         | Novo título da notícia           |
+        | `descricao`       | `string`   | Não         | Nova descrição                   |
+        | `conteudo`        | `string`   | Não         | Novo conteúdo                    |
+        | `categoria`       | `string`   | Não         | Nova categoria                   |
+        | `imageFile`       | `file`     | Não         | Nova imagem (máximo 5MB)         |
+        | `dataPublicacao`  | `datetime` | Não         | Nova data de publicação          |
+        | `dataAtualizacao` | `datetime` | Não         | Nova data de atualização         |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X PATCH https://api.dacc.com/api/news/kk0e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "titulo": "Novo Laboratório de IA - Inauguração Oficial",
-      "conteudo": "O DACC inaugurou oficialmente seu novo laboratório de IA com equipamentos de última geração e capacidade para 50 alunos..."
-    }'
+    curl -X PATCH https://api.dacc.com/v1/api/news/22222222-2222-2222-2222-222222222222 \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -F "titulo=Parceria DACC - Atualizada"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Notícia Atualizada**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Notícia atualizada com sucesso"
+          "code": "OK",
+          "message": "Notícia atualizada com sucesso",
+          "data": {
+            "id": "22222222-2222-2222-2222-222222222222",
+            "titulo": "Parceria DACC - Atualizada"
           }
         }
         ```
 
----
-
 ### **DELETE /api/news/{id}**
 
-* **Descrição:** Remove uma notícia
+* **Descrição:** Remove uma notícia do sistema
 * **Autorização:** Requer permissão `noticias.delete`
 
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome      | Tipo      | Descrição            |
-        |-----------|-----------|----------------------|
-        | `id`      | `uuid`    | ID único da notícia  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
+        | Nome | Tipo   | Descrição            |
+        |------|--------|----------------------|
+        | `id` | `uuid` | ID único da notícia  |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X DELETE https://api.dacc.com/api/news/kk0e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>"
+    curl -X DELETE https://api.dacc.com/v1/api/news/22222222-2222-2222-2222-222222222222 \
+    -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Notícia Removida**
+    * **`204 No Content` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Notícia removida com sucesso"
+          "code": "NO_CONTENT",
+          "message": "Notícia removida com sucesso"
+        }
+        ```
+
+## Eventos
+
+### **GET /api/eventos**
+
+* **Descrição:** Lista todos os eventos disponíveis
+* **Autorização:** Público
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X GET https://api.dacc.com/v1/api/eventos
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": [
+            {
+              "id": "33333333-3333-3333-3333-333333333333",
+              "titulo": "Workshop de React",
+              "descricao": "Workshop sobre desenvolvimento com React",
+              "data": "2025-08-15T14:00:00Z",
+              "tipoEvento": "workshop",
+              "textoAcao": "Inscrever-se",
+              "linkAcao": "https://forms.google.com/workshop-react"
+            }
+          ]
+        }
+        ```
+
+### **GET /api/eventos/{id}**
+
+* **Descrição:** Obtém informações detalhadas de um evento específico
+* **Autorização:** Público
+
+* **Parâmetros da Requisição:**
+    * **Path**
+
+        | Nome | Tipo   | Descrição           |
+        |------|--------|---------------------|
+        | `id` | `uuid` | ID único do evento  |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X GET https://api.dacc.com/v1/api/eventos/33333333-3333-3333-3333-333333333333
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": {
+            "id": "33333333-3333-3333-3333-333333333333",
+            "titulo": "Workshop de React",
+            "descricao": "Workshop completo sobre desenvolvimento com React, incluindo hooks e context API",
+            "data": "2025-08-15T14:00:00Z",
+            "tipoEvento": "workshop",
+            "textoAcao": "Inscrever-se",
+            "linkAcao": "https://forms.google.com/workshop-react",
+            "organizadorId": "87654321-4321-4321-4321-210987654321",
+            "organizadorNome": "João Silva"
+          }
+        }
+        ```
+    * **`404 Not Found` - Evento Não Encontrado**
+        ```json
+        {
+          "success": false,
+          "code": "RESOURCE_NOT_FOUND",
+          "message": "Recurso não encontrado"
+        }
+        ```
+
+### **POST /api/eventos**
+
+* **Descrição:** Cria um novo evento
+* **Autorização:** Requer permissão `eventos.create`
+
+* **Parâmetros da Requisição:**
+    * **Body (`application/json`)**
+
+        | Campo        | Tipo       | Obrigatório | Descrição                                       |
+        |--------------|------------|-------------|-------------------------------------------------|
+        | `titulo`     | `string`   | Não         | Título do evento                                |
+        | `descricao`  | `string`   | Não         | Descrição detalhada do evento                   |
+        | `data`       | `datetime` | Não         | Data e hora do evento                           |
+        | `tipoEvento` | `string`   | Não         | Tipo do evento (workshop/seminário/hackathon)   |
+        | `textoAcao`  | `string`   | Não         | Texto do botão de ação                          |
+        | `linkAcao`   | `string`   | Não         | Link para inscrição ou mais informações         |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X POST https://api.dacc.com/v1/api/eventos \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "titulo": "Workshop de React",
+      "descricao": "Workshop sobre desenvolvimento com React",
+      "data": "2025-08-15T14:00:00Z",
+      "tipoEvento": "workshop",
+      "textoAcao": "Inscrever-se",
+      "linkAcao": "https://forms.google.com/workshop-react"
+    }'
+    ```
+
+* **Respostas:**
+    * **`201 Created` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "CREATED",
+          "message": "Evento criado com sucesso",
+          "data": {
+            "id": "33333333-3333-3333-3333-333333333333",
+            "titulo": "Workshop de React",
+            "data": "2025-08-15T14:00:00Z"
           }
         }
         ```
 
----#
-## **GET /api/projects**
+### **PATCH /api/eventos/{id}**
+
+* **Descrição:** Atualiza um evento existente
+* **Autorização:** Requer permissão `eventos.update`
+
+* **Parâmetros da Requisição:**
+    * **Path**
+
+        | Nome | Tipo   | Descrição           |
+        |------|--------|---------------------|
+        | `id` | `uuid` | ID único do evento  |
+
+    * **Body (`application/json`)**
+
+        | Campo        | Tipo       | Obrigatório | Descrição                                      |
+        |--------------|------------|-------------|------------------------------------------------|
+        | `titulo`     | `string`   | Não         | Novo título do evento                          |
+        | `descricao`  | `string`   | Não         | Nova descrição                                 |
+        | `data`       | `datetime` | Não         | Nova data e hora                               |
+        | `tipoEvento` | `string`   | Não         | Novo tipo do evento                            |
+        | `textoAcao`  | `string`   | Não         | Novo texto do botão                            |
+        | `linkAcao`   | `string`   | Não         | Novo link de ação                              |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X PATCH https://api.dacc.com/v1/api/eventos/33333333-3333-3333-3333-333333333333 \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "titulo": "Workshop Avançado de React"
+    }'
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Evento atualizado com sucesso",
+          "data": {
+            "id": "33333333-3333-3333-3333-333333333333",
+            "titulo": "Workshop Avançado de React"
+          }
+        }
+        ```
+
+### **DELETE /api/eventos/{id}**
+
+* **Descrição:** Remove um evento do sistema
+* **Autorização:** Requer permissão `eventos.delete`
+
+* **Parâmetros da Requisição:**
+    * **Path**
+
+        | Nome | Tipo   | Descrição           |
+        |------|--------|---------------------|
+        | `id` | `uuid` | ID único do evento  |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X DELETE https://api.dacc.com/v1/api/eventos/33333333-3333-3333-3333-333333333333 \
+    -H "Authorization: Bearer <seu_jwt_token>"
+    ```
+
+* **Respostas:**
+    * **`204 No Content` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "NO_CONTENT",
+          "message": "Evento removido com sucesso"
+        }
+        ```
+
+### **POST /api/eventos/{id}/register**
+
+* **Descrição:** Registra o usuário em um evento (não implementado)
+* **Autorização:** Requer permissão `eventos.register`
+
+* **Parâmetros da Requisição:**
+    * **Path**
+
+        | Nome | Tipo   | Descrição           |
+        |------|--------|---------------------|
+        | `id` | `uuid` | ID único do evento  |
+
+* **Respostas:**
+    * **`501 Not Implemented` - Não Implementado**
+        ```json
+        {
+          "success": false,
+          "code": "NOT_IMPLEMENTED",
+          "message": "Funcionalidade não implementada"
+        }
+        ```
+
+### **DELETE /api/eventos/{id}/register**
+
+* **Descrição:** Remove o registro do usuário de um evento (não implementado)
+* **Autorização:** Requer permissão `eventos.register`
+
+* **Parâmetros da Requisição:**
+    * **Path**
+
+        | Nome | Tipo   | Descrição           |
+        |------|--------|---------------------|
+        | `id` | `uuid` | ID único do evento  |
+
+* **Respostas:**
+    * **`501 Not Implemented` - Não Implementado**
+        ```json
+        {
+          "success": false,
+          "code": "NOT_IMPLEMENTED",
+          "message": "Funcionalidade não implementada"
+        }
+        ```#
+## Projetos
+
+### **GET /api/projects**
 
 * **Descrição:** Lista todos os projetos acadêmicos
 * **Autorização:** Público
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/api/projects
+    curl -X GET https://api.dacc.com/v1/api/projects
     ```
 
 * **Respostas:**
-    * **`200 OK` - Lista de Projetos**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Projetos obtidos com sucesso",
-            "data": [
-              {
-                "id": "ll0e8400-e29b-41d4-a716-446655440000",
-                "titulo": "Sistema de Gestão Acadêmica",
-                "descricao": "Desenvolvimento de sistema para gestão de notas e frequência",
-                "imagemUrl": "https://exemplo.com/projeto1.jpg",
-                "status": "em progresso",
-                "diretoria": "Tecnologia",
-                "tags": ["web", "backend", "database"],
-                "dataCriacao": "2024-01-10T08:00:00Z",
-                "dataAtualizacao": "2024-01-15T10:00:00Z"
-              }
-            ]
-          }
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": [
+            {
+              "id": "44444444-4444-4444-4444-444444444444",
+              "titulo": "Sistema de Gestão Acadêmica",
+              "descricao": "Sistema para gerenciar atividades acadêmicas",
+              "status": "em progresso",
+              "diretoria": "Tecnologia",
+              "tags": ["web", "backend", "frontend"]
+            }
+          ]
         }
         ```
 
----
-
 ### **GET /api/projects/{id}**
 
-* **Descrição:** Obtém um projeto específico por ID
+* **Descrição:** Obtém informações detalhadas de um projeto específico
 * **Autorização:** Público
 
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome      | Tipo      | Descrição            |
-        |-----------|-----------|----------------------|
-        | `id`      | `uuid`    | ID único do projeto  |
+        | Nome | Tipo   | Descrição            |
+        |------|--------|----------------------|
+        | `id` | `uuid` | ID único do projeto  |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/api/projects/ll0e8400-e29b-41d4-a716-446655440000
+    curl -X GET https://api.dacc.com/v1/api/projects/44444444-4444-4444-4444-444444444444
     ```
 
 * **Respostas:**
-    * **`200 OK` - Projeto Encontrado**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Projeto obtido com sucesso",
-            "data": {
-              "id": "ll0e8400-e29b-41d4-a716-446655440000",
-              "titulo": "Sistema de Gestão Acadêmica",
-              "descricao": "Desenvolvimento de sistema completo para gestão de notas, frequência e histórico acadêmico dos estudantes",
-              "imagemUrl": "https://exemplo.com/projeto1.jpg",
-              "status": "em progresso",
-              "diretoria": "Tecnologia",
-              "tags": ["web", "backend", "database", "api"],
-              "dataCriacao": "2024-01-10T08:00:00Z",
-              "dataAtualizacao": "2024-01-15T10:00:00Z"
-            }
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": {
+            "id": "44444444-4444-4444-4444-444444444444",
+            "titulo": "Sistema de Gestão Acadêmica",
+            "descricao": "Sistema completo para gerenciar atividades acadêmicas do DACC",
+            "status": "em progresso",
+            "diretoria": "Tecnologia",
+            "tags": ["web", "backend", "frontend"],
+            "imagemUrl": "/uploads/projeto_123.jpg",
+            "dataCriacao": "2025-08-01T10:00:00Z",
+            "dataAtualizacao": "2025-08-08T10:00:00Z"
           }
         }
         ```
-
----
+    * **`404 Not Found` - Projeto Não Encontrado**
+        ```json
+        {
+          "success": false,
+          "code": "RESOURCE_NOT_FOUND",
+          "message": "Recurso não encontrado"
+        }
+        ```
 
 ### **POST /api/projects**
 
@@ -2550,56 +2121,44 @@ GET /api/announcements**
 * **Autorização:** Requer permissão `projetos.create`
 
 * **Parâmetros da Requisição:**
-    * **Headers**
+    * **Body (`multipart/form-data`)**
 
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-    * **Body (`application/json`)**
-
-        | Campo        | Tipo        | Obrigatório  | Descrição                                    |
-        |--------------|-------------|--------------|----------------------------------------------|
-        | `titulo`     | `string`    | Não          | Título do projeto                            |
-        | `descricao`  | `string`    | Não          | Descrição detalhada do projeto               |
-        | `imagemUrl`  | `string`    | Não          | URL da imagem do projeto                     |
-        | `status`     | `string`    | Não          | Status (planejado, em progresso, concluido)  |
-        | `diretoria`  | `string`    | Não          | Diretoria responsável                        |
-        | `tags`       | `string[]`  | Não          | Tags do projeto                              |
+        | Campo       | Tipo     | Obrigatório | Descrição                                      |
+        |-------------|----------|-------------|------------------------------------------------|
+        | `titulo`    | `string` | Não         | Título do projeto                              |
+        | `descricao` | `string` | Não         | Descrição detalhada do projeto                 |
+        | `status`    | `string` | Não         | Status (planejado/em progresso/concluído)      |
+        | `diretoria` | `string` | Não         | Diretoria responsável pelo projeto             |
+        | `tags`      | `array`  | Não         | Tags relacionadas ao projeto                   |
+        | `imageFile` | `file`   | Não         | Arquivo de imagem do projeto (máximo 5MB)      |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/api/projects \
-    -H "Authorization: Bearer <seu_token>" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "titulo": "App Mobile DACC",
-      "descricao": "Aplicativo mobile para estudantes acessarem informações acadêmicas",
-      "imagemUrl": "https://exemplo.com/app-mobile.jpg",
-      "status": "planejado",
-      "diretoria": "Tecnologia",
-      "tags": ["mobile", "react-native", "api", "estudantes"]
-    }'
+    curl -X POST https://api.dacc.com/v1/api/projects \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -F "titulo=Sistema de Gestão Acadêmica" \
+    -F "descricao=Sistema para gerenciar atividades acadêmicas" \
+    -F "status=planejado" \
+    -F "diretoria=Tecnologia" \
+    -F "tags=web" \
+    -F "tags=backend" \
+    -F "imageFile=@projeto.jpg"
     ```
 
 * **Respostas:**
-    * **`201 Created` - Projeto Criado**
+    * **`201 Created` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Projeto criado com sucesso",
-            "data": {
-              "id": "mm0e8400-e29b-41d4-a716-446655440000",
-              "titulo": "App Mobile DACC",
-              "status": "planejado",
-              "diretoria": "Tecnologia",
-              "dataCriacao": "2024-01-16T17:00:00Z"
-            }
+          "code": "CREATED",
+          "message": "Projeto criado com sucesso",
+          "data": {
+            "id": "44444444-4444-4444-4444-444444444444",
+            "titulo": "Sistema de Gestão Acadêmica",
+            "status": "planejado"
           }
         }
         ```
-
----
 
 ### **PATCH /api/projects/{id}**
 
@@ -2609,788 +2168,556 @@ GET /api/announcements**
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome      | Tipo      | Descrição            |
-        |-----------|-----------|----------------------|
-        | `id`      | `uuid`    | ID único do projeto  |
-    * **Headers**
+        | Nome | Tipo   | Descrição            |
+        |------|--------|----------------------|
+        | `id` | `uuid` | ID único do projeto  |
 
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-    * **Body (`application/json`)**
+    * **Body (`multipart/form-data`)**
 
-        | Campo        | Tipo        | Obrigatório  | Descrição              |
-        |--------------|-------------|--------------|------------------------|
-        | `titulo`     | `string`    | Não          | Título do projeto      |
-        | `descricao`  | `string`    | Não          | Descrição do projeto   |
-        | `imagemUrl`  | `string`    | Não          | URL da imagem          |
-        | `status`     | `string`    | Não          | Status do projeto      |
-        | `diretoria`  | `string`    | Não          | Diretoria responsável  |
-        | `tags`       | `string[]`  | Não          | Tags do projeto        |
+        | Campo       | Tipo     | Obrigatório | Descrição                                      |
+        |-------------|----------|-------------|------------------------------------------------|
+        | `titulo`    | `string` | Não         | Novo título do projeto                         |
+        | `descricao` | `string` | Não         | Nova descrição                                 |
+        | `status`    | `string` | Não         | Novo status                                    |
+        | `diretoria` | `string` | Não         | Nova diretoria responsável                     |
+        | `tags`      | `array`  | Não         | Novas tags                                     |
+        | `imageFile` | `file`   | Não         | Nova imagem (máximo 5MB)                       |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X PATCH https://api.dacc.com/api/projects/mm0e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "status": "em progresso",
-      "descricao": "Aplicativo mobile para estudantes acessarem informações acadêmicas - Desenvolvimento iniciado"
-    }'
+    curl -X PATCH https://api.dacc.com/v1/api/projects/44444444-4444-4444-4444-444444444444 \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -F "status=em progresso"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Projeto Atualizado**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Projeto atualizado com sucesso"
+          "code": "OK",
+          "message": "Projeto atualizado com sucesso",
+          "data": {
+            "id": "44444444-4444-4444-4444-444444444444",
+            "status": "em progresso"
           }
         }
         ```
 
----
-
 ### **DELETE /api/projects/{id}**
 
-* **Descrição:** Remove um projeto
+* **Descrição:** Remove um projeto do sistema
 * **Autorização:** Requer permissão `projetos.delete`
 
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome      | Tipo      | Descrição            |
-        |-----------|-----------|----------------------|
-        | `id`      | `uuid`    | ID único do projeto  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
+        | Nome | Tipo   | Descrição            |
+        |------|--------|----------------------|
+        | `id` | `uuid` | ID único do projeto  |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X DELETE https://api.dacc.com/api/projects/mm0e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>"
+    curl -X DELETE https://api.dacc.com/v1/api/projects/44444444-4444-4444-4444-444444444444 \
+    -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Projeto Removido**
+    * **`204 No Content` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Projeto removido com sucesso"
-          }
+          "code": "NO_CONTENT",
+          "message": "Projeto removido com sucesso"
         }
         ```
 
----
+## Diretores
 
-### **GET /api/posts**
+### **GET /api/diretores**
 
-* **Descrição:** Lista todos os posts do fórum
-* **Autorização:** Público
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X GET https://api.dacc.com/api/posts
-    ```
-
-* **Respostas:**
-    * **`200 OK` - Lista de Posts**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Posts obtidos com sucesso",
-            "data": [
-              {
-                "id": 1,
-                "titulo": "Dúvida sobre React Hooks",
-                "conteudo": "Como usar useEffect corretamente?",
-                "tags": ["react", "javascript", "hooks"],
-                "autorId": "550e8400-e29b-41d4-a716-446655440000",
-                "visualizacoes": 25,
-                "respondida": false,
-                "dataCriacao": "2024-01-16T10:00:00Z"
-              }
-            ]
-          }
-        }
-        ```
-
----
-
-### **GET /api/posts/{id}**
-
-* **Descrição:** Obtém um post específico por ID
-* **Autorização:** Público
-
-* **Parâmetros da Requisição:**
-    * **Path**
-
-        | Nome      | Tipo      | Descrição         |
-        |-----------|-----------|-------------------|
-        | `id`      | `number`  | ID único do post  |
+* **Descrição:** Lista todos os diretores e diretorias
+* **Autorização:** Requer permissão `faculty.view`
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/api/posts/1
+    curl -X GET https://api.dacc.com/v1/api/diretores \
+    -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Post Encontrado**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Post obtido com sucesso",
-            "data": {
-              "id": 1,
-              "titulo": "Dúvida sobre React Hooks",
-              "conteudo": "Como usar useEffect corretamente? Estou tendo problemas com dependências...",
-              "tags": ["react", "javascript", "hooks"],
-              "autorId": "550e8400-e29b-41d4-a716-446655440000",
-              "visualizacoes": 26,
-              "respondida": false,
-              "dataCriacao": "2024-01-16T10:00:00Z",
-              "dataAtualizacao": "2024-01-16T10:00:00Z"
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": [
+            {
+              "id": "55555555-5555-5555-5555-555555555555",
+              "nome": "João Silva",
+              "descricao": "Diretor de Tecnologia",
+              "email": "joao.silva@dacc.com",
+              "githubLink": "https://github.com/joaosilva",
+              "linkedinLink": "https://linkedin.com/in/joaosilva",
+              "imagemUrl": "/uploads/diretor_123.jpg"
             }
-          }
+          ]
         }
         ```
-
----
-
-### **POST /api/posts**
-
-* **Descrição:** Cria um novo post no fórum
-* **Autorização:** Requer permissão `forum.posts.create`
-
-* **Parâmetros da Requisição:**
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-    * **Body (`application/json`)**
-
-        | Campo       | Tipo        | Obrigatório  | Descrição                  |
-        |-------------|-------------|--------------|----------------------------|
-        | `titulo`    | `string`    | Não          | Título do post             |
-        | `conteudo`  | `string`    | Não          | Conteúdo do post           |
-        | `tags`      | `string[]`  | Não          | Tags relacionadas ao post  |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X POST https://api.dacc.com/api/posts \
-    -H "Authorization: Bearer <seu_token>" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "titulo": "Como configurar Docker?",
-      "conteudo": "Preciso de ajuda para configurar Docker no meu projeto. Alguém pode me ajudar?",
-      "tags": ["docker", "devops", "configuracao"]
-    }'
-    ```
-
-* **Respostas:**
-    * **`201 Created` - Post Criado**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Post criado com sucesso",
-            "data": {
-              "id": 2,
-              "titulo": "Como configurar Docker?",
-              "tags": ["docker", "devops", "configuracao"],
-              "dataCriacao": "2024-01-16T19:00:00Z"
-            }
-          }
-        }
-        ```
-
----
-
-### **PATCH /api/posts/{id}**
-
-* **Descrição:** Atualiza um post existente
-* **Autorização:** Requer permissão `forum.posts.update`
-
-* **Parâmetros da Requisição:**
-    * **Path**
-
-        | Nome      | Tipo      | Descrição         |
-        |-----------|-----------|-------------------|
-        | `id`      | `number`  | ID único do post  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-    * **Body (`application/json`)**
-
-        | Campo       | Tipo        | Obrigatório  | Descrição         |
-        |-------------|-------------|--------------|-------------------|
-        | `titulo`    | `string`    | Não          | Título do post    |
-        | `conteudo`  | `string`    | Não          | Conteúdo do post  |
-        | `tags`      | `string[]`  | Não          | Tags do post      |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X PATCH https://api.dacc.com/api/posts/2 \
-    -H "Authorization: Bearer <seu_token>" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "conteudo": "Preciso de ajuda para configurar Docker no meu projeto Node.js. Alguém pode me ajudar com o Dockerfile?"
-    }'
-    ```
-
-* **Respostas:**
-    * **`200 OK` - Post Atualizado**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Post atualizado com sucesso"
-          }
-        }
-        ```
-
----
-
-### **DELETE /api/posts/{id}**
-
-* **Descrição:** Remove um post
-* **Autorização:** Requer permissão `forum.posts.delete`
-
-* **Parâmetros da Requisição:**
-    * **Path**
-
-        | Nome      | Tipo      | Descrição         |
-        |-----------|-----------|-------------------|
-        | `id`      | `number`  | ID único do post  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X DELETE https://api.dacc.com/api/posts/2 \
-    -H "Authorization: Bearer <seu_token>"
-    ```
-
-* **Respostas:**
-    * **`200 OK` - Post Removido**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Post removido com sucesso"
-          }
-        }
-        ```
-
----
-
-### **POST /api/orders**
-
-* **Descrição:** Cria um novo pedido com pagamento
-* **Autorização:** Requer autenticação
-
-* **Parâmetros da Requisição:**
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-    * **Body (`application/json`)**
-
-        | Campo         | Tipo      | Obrigatório  | Descrição                 |
-        |---------------|-----------|--------------|---------------------------|
-        | `orderItems`  | `array`   | Sim          | Lista de itens do pedido  |
-
-    * **Estrutura de `orderItems`:**
-
-        | Campo                 | Tipo      | Obrigatório  | Descrição                  |
-        |-----------------------|-----------|--------------|----------------------------|
-        | `productId`           | `uuid`    | Sim          | ID do produto              |
-        | `productVariationId`  | `uuid`    | Sim          | ID da variação do produto  |
-        | `quantity`            | `number`  | Sim          | Quantidade do item         |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X POST https://api.dacc.com/api/orders \
-    -H "Authorization: Bearer <seu_token>" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "orderItems": [
-        {
-          "productId": "770e8400-e29b-41d4-a716-446655440000",
-          "productVariationId": "880e8400-e29b-41d4-a716-446655440000",
-          "quantity": 2
-        }
-      ]
-    }'
-    ```
-
-* **Respostas:**
-    * **`201 Created` - Pedido Criado**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Pedido criado com sucesso",
-            "data": {
-              "orderResponse": {
-                "orderId": "nn0e8400-e29b-41d4-a716-446655440000",
-                "total": 71.80,
-                "status": "created",
-                "paymentUrl": "https://mercadopago.com/checkout/v1/redirect?pref_id=123456789",
-                "dataCriacao": "2024-01-16T20:00:00Z"
-              }
-            }
-          }
-        }
-        ```
-    * **`400 Bad Request` - Nenhum Item**
+    * **`403 Forbidden` - Permissões Insuficientes**
         ```json
         {
           "success": false,
-          "response": {
-            "code": "BAD_REQUEST",
-            "message": "Nenhum item foi adicionado ao pedido"
-          }
+          "code": "AUTH_INSUFFICIENT_PERMISSIONS",
+          "message": "Permissões insuficientes"
         }
         ```
 
----
+### **GET /api/diretores/{id}**
 
-### **GET /api/orders/{id}**
-
-* **Descrição:** Obtém um pedido específico por ID
-* **Autorização:** Requer autenticação
+* **Descrição:** Obtém informações detalhadas de um diretor específico
+* **Autorização:** Requer autenticação JWT
 
 * **Parâmetros da Requisição:**
     * **Path**
 
-        | Nome      | Tipo      | Descrição           |
-        |-----------|-----------|---------------------|
-        | `id`      | `uuid`    | ID único do pedido  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
+        | Nome | Tipo   | Descrição            |
+        |------|--------|----------------------|
+        | `id` | `uuid` | ID único do diretor  |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/api/orders/nn0e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>"
+    curl -X GET https://api.dacc.com/v1/api/diretores/55555555-5555-5555-5555-555555555555 \
+    -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Pedido Encontrado**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Pedido obtido com sucesso",
-            "data": {
-              "orders": {
-                "id": "nn0e8400-e29b-41d4-a716-446655440000",
-                "usuarioId": "550e8400-e29b-41d4-a716-446655440000",
-                "total": 71.80,
-                "status": "approved",
-                "metodoPagamento": "pix",
-                "dataPedido": "2024-01-16T20:00:00Z",
-                "itens": [
-                  {
-                    "produtoNome": "Caneca DACC",
-                    "cor": "vermelho",
-                    "tamanho": "G",
-                    "quantidade": 2,
-                    "precoUnitario": 35.90
-                  }
-                ]
-              }
-            }
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": {
+            "id": "55555555-5555-5555-5555-555555555555",
+            "nome": "João Silva",
+            "descricao": "Diretor de Tecnologia responsável por projetos de desenvolvimento",
+            "email": "joao.silva@dacc.com",
+            "githubLink": "https://github.com/joaosilva",
+            "linkedinLink": "https://linkedin.com/in/joaosilva",
+            "imagemUrl": "/uploads/diretor_123.jpg",
+            "usuarioId": "87654321-4321-4321-4321-210987654321",
+            "diretoriaId": "66666666-6666-6666-6666-666666666666"
           }
         }
         ```
-
----
-
-### **GET /api/orders/user/{userId}**
-
-* **Descrição:** Lista pedidos de um usuário específico
-* **Autorização:** Requer autenticação
-
-* **Parâmetros da Requisição:**
-    * **Path**
-
-        | Nome      | Tipo      | Descrição            |
-        |-----------|-----------|----------------------|
-        | `userId`  | `uuid`    | ID único do usuário  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X GET https://api.dacc.com/api/orders/user/550e8400-e29b-41d4-a716-446655440000 \
-    -H "Authorization: Bearer <seu_token>"
-    ```
-
-* **Respostas:**
-    * **`200 OK` - Pedidos do Usuário**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Pedidos obtidos com sucesso",
-            "data": [
-              {
-                "id": "nn0e8400-e29b-41d4-a716-446655440000",
-                "total": 71.80,
-                "status": "approved",
-                "dataPedido": "2024-01-16T20:00:00Z"
-              }
-            ]
-          }
-        }
-        ```
-
----
-
-### **PUT /api/orders/{id}/status**
-
-* **Descrição:** Atualiza o status de um pedido
-* **Autorização:** Requer autenticação
-
-* **Parâmetros da Requisição:**
-    * **Path**
-
-        | Nome      | Tipo      | Descrição           |
-        |-----------|-----------|---------------------|
-        | `id`      | `uuid`    | ID único do pedido  |
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
-    * **Body (`application/json`)**
-
-        | Campo     | Tipo      | Obrigatório  | Descrição                                                                 |
-        |-----------|-----------|--------------|---------------------------------------------------------------------------|
-        | `status`  | `string`  | Sim          | Novo status (created, pending, approved, rejected, delivered, cancelled)  |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X PUT https://api.dacc.com/api/orders/nn0e8400-e29b-41d4-a716-446655440000/status \
-    -H "Authorization: Bearer <seu_token>" \
-    -H "Content-Type: application/json" \
-    -d '"delivered"'
-    ```
-
-* **Respostas:**
-    * **`200 OK` - Status Atualizado**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Status atualizado com sucesso",
-            "data": {
-              "orderId": "nn0e8400-e29b-41d4-a716-446655440000",
-              "status": "delivered"
-            }
-          }
-        }
-        ```
-
----
-
-### **POST /api/orders/webhook**
-
-* **Descrição:** Processa webhook do MercadoPago para atualização de pagamentos
-* **Autorização:** Público (validação por assinatura)
-
-* **Parâmetros da Requisição:**
-    * **Headers**
-
-        | Nome           | Tipo      | Descrição                          |
-        |----------------|-----------|------------------------------------|
-        | `x-signature`  | `string`  | Assinatura do webhook MercadoPago  |
-    * **Body (`application/json`)**
-
-        | Campo     | Tipo      | Obrigatório  | Descrição                 |
-        |-----------|-----------|--------------|---------------------------|
-        | `type`    | `string`  | Sim          | Tipo do evento (payment)  |
-        | `data`    | `object`  | Sim          | Dados do evento           |
-
-    * **Estrutura de `data`:**
-
-        | Campo     | Tipo      | Obrigatório  | Descrição                       |
-        |-----------|-----------|--------------|---------------------------------|
-        | `id`      | `string`  | Sim          | ID do pagamento no MercadoPago  |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X POST https://api.dacc.com/api/orders/webhook \
-    -H "x-signature: ts=1234567890,v1=signature_hash" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "type": "payment",
-      "data": {
-        "id": "123456789"
-      }
-    }'
-    ```
-
-* **Respostas:**
-    * **`200 OK` - Webhook Processado**
-        ```json
-        {
-          "success": true,
-          "response": {
-            "message": "Pagamento realizado com sucesso"
-          }
-        }
-        ```
-    * **`400 Bad Request` - Webhook Inválido**
+    * **`404 Not Found` - Diretor Não Encontrado**
         ```json
         {
           "success": false,
-          "response": {
-            "code": "INVALID_WEBHOOK",
-            "message": "Falha na validação da assinatura do webhook"
-          }
+          "code": "RESOURCE_NOT_FOUND",
+          "message": "Recurso não encontrado"
         }
         ```
 
----#
-## **GET /api/payments/success**
+### **POST /api/diretores**
 
-* **Descrição:** Página de sucesso do pagamento (callback MercadoPago)
-* **Autorização:** Público
+* **Descrição:** Cria um novo diretor
+* **Autorização:** Requer autenticação JWT
 
 * **Parâmetros da Requisição:**
-    * **Query**
+    * **Body (`multipart/form-data`)**
 
-        | Nome                  | Tipo      | Padrão    | Descrição                        |
-        |-----------------------|-----------|-----------|----------------------------------|
-        | `external_reference`  | `string`  | -         | Referência externa do pagamento  |
+        | Campo          | Tipo     | Obrigatório | Descrição                           |
+        |----------------|----------|-------------|-------------------------------------|
+        | `nome`         | `string` | Não         | Nome do diretor                     |
+        | `descricao`    | `string` | Não         | Descrição do cargo/responsabilidade |
+        | `email`        | `string` | Não         | E-mail do diretor                   |
+        | `githubLink`   | `string` | Não         | Link do perfil GitHub               |
+        | `linkedinLink` | `string` | Não         | Link do perfil LinkedIn             |
+        | `imageFile`    | `file`   | Não         | Foto do diretor (máximo 5MB)        |
+        | `usuarioId`    | `uuid`   | Não         | ID do usuário associado             |
+        | `diretoriaId`  | `uuid`   | Não         | ID da diretoria                     |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET "https://api.dacc.com/api/payments/success?external_reference=order_123"
+    curl -X POST https://api.dacc.com/v1/api/diretores \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -F "nome=João Silva" \
+    -F "descricao=Diretor de Tecnologia" \
+    -F "email=joao.silva@dacc.com" \
+    -F "githubLink=https://github.com/joaosilva" \
+    -F "imageFile=@diretor.jpg"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Pagamento Bem-sucedido**
+    * **`201 Created` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Pagamento realizado com sucesso",
-            "data": "order_123"
+          "code": "CREATED",
+          "message": "Diretor criado com sucesso",
+          "data": {
+            "id": "55555555-5555-5555-5555-555555555555",
+            "nome": "João Silva",
+            "email": "joao.silva@dacc.com"
           }
         }
         ```
 
----
+### **PATCH /api/diretores/{id}**
 
-### **GET /api/payments/failure**
-
-* **Descrição:** Página de falha do pagamento (callback MercadoPago)
-* **Autorização:** Público
+* **Descrição:** Atualiza informações de um diretor
+* **Autorização:** Requer autenticação JWT
 
 * **Parâmetros da Requisição:**
-    * **Query**
+    * **Path**
 
-        | Nome                  | Tipo      | Padrão    | Descrição                        |
-        |-----------------------|-----------|-----------|----------------------------------|
-        | `external_reference`  | `string`  | -         | Referência externa do pagamento  |
+        | Nome | Tipo   | Descrição            |
+        |------|--------|----------------------|
+        | `id` | `uuid` | ID único do diretor  |
+
+    * **Body (`multipart/form-data`)**
+
+        | Campo          | Tipo     | Obrigatório | Descrição                           |
+        |----------------|----------|-------------|-------------------------------------|
+        | `nome`         | `string` | Não         | Novo nome do diretor                |
+        | `descricao`    | `string` | Não         | Nova descrição                      |
+        | `email`        | `string` | Não         | Novo e-mail                         |
+        | `githubLink`   | `string` | Não         | Novo link do GitHub                 |
+        | `linkedinLink` | `string` | Não         | Novo link do LinkedIn               |
+        | `imageFile`    | `file`   | Não         | Nova foto (máximo 5MB)              |
+        | `usuarioId`    | `uuid`   | Não         | Novo ID do usuário associado        |
+        | `diretoriaId`  | `uuid`   | Não         | Novo ID da diretoria                |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET "https://api.dacc.com/api/payments/failure?external_reference=order_123"
+    curl -X PATCH https://api.dacc.com/v1/api/diretores/55555555-5555-5555-5555-555555555555 \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -F "descricao=Diretor de Tecnologia e Inovação"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Pagamento Falhou**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Pagamento falhou. Tente novamente",
-            "data": "order_123"
+          "code": "OK",
+          "message": "Diretor atualizado com sucesso",
+          "data": {
+            "id": "55555555-5555-5555-5555-555555555555",
+            "descricao": "Diretor de Tecnologia e Inovação"
           }
         }
         ```
 
----
+### **DELETE /api/diretores/{id}**
 
-### **GET /api/payments/pending**
-
-* **Descrição:** Página de pagamento pendente (callback MercadoPago)
-* **Autorização:** Público
+* **Descrição:** Remove um diretor do sistema
+* **Autorização:** Requer autenticação JWT
 
 * **Parâmetros da Requisição:**
-    * **Query**
+    * **Path**
 
-        | Nome                  | Tipo      | Padrão    | Descrição                        |
-        |-----------------------|-----------|-----------|----------------------------------|
-        | `external_reference`  | `string`  | -         | Referência externa do pagamento  |
+        | Nome | Tipo   | Descrição            |
+        |------|--------|----------------------|
+        | `id` | `uuid` | ID único do diretor  |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET "https://api.dacc.com/api/payments/pending?external_reference=order_123"
+    curl -X DELETE https://api.dacc.com/v1/api/diretores/55555555-5555-5555-5555-555555555555 \
+    -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Pagamento Pendente**
+    * **`204 No Content` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Pagamento pendente. Aguarde a confirmação",
-            "data": "order_123"
+          "code": "NO_CONTENT",
+          "message": "Diretor removido com sucesso"
+        }
+        ```#
+# Anúncios
+
+### **GET /api/announcements**
+
+* **Descrição:** Lista todos os anúncios ativos
+* **Autorização:** Requer autenticação JWT
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X GET https://api.dacc.com/v1/api/announcements \
+    -H "Authorization: Bearer <seu_jwt_token>"
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": [
+            {
+              "id": "77777777-7777-7777-7777-777777777777",
+              "titulo": "Manutenção do Sistema",
+              "conteudo": "Sistema ficará em manutenção no domingo",
+              "tipoAnuncio": "importante",
+              "ativo": true,
+              "imagemUrl": "/uploads/anuncio_123.jpg",
+              "imagemAlt": "Ícone de manutenção"
+            }
+          ]
+        }
+        ```
+
+### **GET /api/announcements/{id}**
+
+* **Descrição:** Obtém informações detalhadas de um anúncio específico
+* **Autorização:** Requer autenticação JWT
+
+* **Parâmetros da Requisição:**
+    * **Path**
+
+        | Nome | Tipo   | Descrição            |
+        |------|--------|----------------------|
+        | `id` | `uuid` | ID único do anúncio  |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X GET https://api.dacc.com/v1/api/announcements/77777777-7777-7777-7777-777777777777 \
+    -H "Authorization: Bearer <seu_jwt_token>"
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": {
+            "id": "77777777-7777-7777-7777-777777777777",
+            "titulo": "Manutenção do Sistema",
+            "conteudo": "O sistema ficará em manutenção no domingo das 8h às 12h",
+            "tipoAnuncio": "importante",
+            "ativo": true,
+            "imagemUrl": "/uploads/anuncio_123.jpg",
+            "imagemAlt": "Ícone de manutenção",
+            "autorId": "87654321-4321-4321-4321-210987654321",
+            "dataCriacao": "2025-08-08T10:00:00Z"
+          }
+        }
+        ```
+    * **`404 Not Found` - Anúncio Não Encontrado**
+        ```json
+        {
+          "success": false,
+          "code": "RESOURCE_NOT_FOUND",
+          "message": "Recurso não encontrado"
+        }
+        ```
+
+### **POST /api/announcements**
+
+* **Descrição:** Cria um novo anúncio
+* **Autorização:** Requer autenticação JWT
+
+* **Parâmetros da Requisição:**
+    * **Body (`multipart/form-data`)**
+
+        | Campo         | Tipo      | Obrigatório | Descrição                                     |
+        |---------------|-----------|-------------|-----------------------------------------------|
+        | `titulo`      | `string`  | Não         | Título do anúncio                             |
+        | `conteudo`    | `string`  | Não         | Conteúdo do anúncio                           |
+        | `tipoAnuncio` | `string`  | Não         | Tipo (evento/notícia/importante)              |
+        | `ativo`       | `boolean` | Não         | Se o anúncio está ativo                       |
+        | `imageFile`   | `file`    | Não         | Arquivo de imagem (máximo 5MB)                |
+        | `imagemAlt`   | `string`  | Não         | Texto alternativo da imagem                   |
+        | `autorId`     | `uuid`    | Não         | ID do autor (preenchido automaticamente)      |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X POST https://api.dacc.com/v1/api/announcements \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -F "titulo=Manutenção do Sistema" \
+    -F "conteudo=Sistema ficará em manutenção no domingo" \
+    -F "tipoAnuncio=importante" \
+    -F "ativo=true" \
+    -F "imageFile=@manutencao.jpg" \
+    -F "imagemAlt=Ícone de manutenção"
+    ```
+
+* **Respostas:**
+    * **`201 Created` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "CREATED",
+          "message": "Anúncio criado com sucesso",
+          "data": {
+            "id": "77777777-7777-7777-7777-777777777777",
+            "titulo": "Manutenção do Sistema",
+            "tipoAnuncio": "importante"
           }
         }
         ```
 
----
+### **PATCH /api/announcements/{id}**
+
+* **Descrição:** Atualiza um anúncio existente
+* **Autorização:** Requer autenticação JWT
+
+* **Parâmetros da Requisição:**
+    * **Path**
+
+        | Nome | Tipo   | Descrição            |
+        |------|--------|----------------------|
+        | `id` | `uuid` | ID único do anúncio  |
+
+    * **Body (`multipart/form-data`)**
+
+        | Campo         | Tipo      | Obrigatório | Descrição                        |
+        |---------------|-----------|-------------|----------------------------------|
+        | `titulo`      | `string`  | Não         | Novo título                      |
+        | `conteudo`    | `string`  | Não         | Novo conteúdo                    |
+        | `tipoAnuncio` | `string`  | Não         | Novo tipo                        |
+        | `ativo`       | `boolean` | Não         | Novo status de ativação          |
+        | `imageFile`   | `file`    | Não         | Nova imagem (máximo 5MB)         |
+        | `imagemAlt`   | `string`  | Não         | Novo texto alternativo           |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X PATCH https://api.dacc.com/v1/api/announcements/77777777-7777-7777-7777-777777777777 \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -F "ativo=false"
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Anúncio atualizado com sucesso",
+          "data": {
+            "id": "77777777-7777-7777-7777-777777777777",
+            "ativo": false
+          }
+        }
+        ```
+
+### **DELETE /api/announcements/{id}**
+
+* **Descrição:** Remove um anúncio do sistema
+* **Autorização:** Requer autenticação JWT
+
+* **Parâmetros da Requisição:**
+    * **Path**
+
+        | Nome | Tipo   | Descrição            |
+        |------|--------|----------------------|
+        | `id` | `uuid` | ID único do anúncio  |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X DELETE https://api.dacc.com/v1/api/announcements/77777777-7777-7777-7777-777777777777 \
+    -H "Authorization: Bearer <seu_jwt_token>"
+    ```
+
+* **Respostas:**
+    * **`204 No Content` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "NO_CONTENT",
+          "message": "Anúncio removido com sucesso"
+        }
+        ```
+
+## Upload de Arquivos
 
 ### **POST /api/filestorage/uploadImage**
 
-* **Descrição:** Faz upload de uma imagem
-* **Autorização:** Requer cargo `administrador`
+* **Descrição:** Faz upload de uma imagem para o servidor
+* **Autorização:** Requer role `administrador`
 
 * **Parâmetros da Requisição:**
-    * **Headers**
-
-        | Nome             | Tipo      | Descrição     |
-        |------------------|-----------|---------------|
-        | `Authorization`  | `string`  | Bearer token  |
     * **Body (`multipart/form-data`)**
 
-        | Campo     | Tipo      | Obrigatório  | Descrição                    |
-        |-----------|-----------|--------------|------------------------------|
-        | `file`    | `file`    | Sim          | Arquivo de imagem (máx 5MB)  |
+        | Campo  | Tipo   | Obrigatório | Descrição                      |
+        |--------|--------|-------------|--------------------------------|
+        | `file` | `file` | Sim         | Arquivo de imagem (máximo 5MB) |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/api/filestorage/uploadImage \
-    -H "Authorization: Bearer <seu_token>" \
-    -F 'file=@imagem.jpg'
+    curl -X POST https://api.dacc.com/v1/api/filestorage/uploadImage \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -F "file=@imagem.jpg"
     ```
 
 * **Respostas:**
-    * **`200 OK` - Upload Realizado**
+    * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "response": {
-            "message": "Upload realizado com sucesso",
-            "data": {
-              "url": "https://exemplo.com/uploads/imagem_123.jpg"
-            }
+          "code": "OK",
+          "message": "Upload realizado com sucesso",
+          "data": {
+            "url": "/uploads/imagem_123456.jpg"
           }
         }
         ```
-    * **`400 Bad Request` - Arquivo Inválido**
+    * **`400 Bad Request` - Nenhum Arquivo Enviado**
         ```json
         {
           "success": false,
-          "response": {
-            "code": "BAD_REQUEST",
-            "message": "Nenhum arquivo foi enviado"
-          }
+          "code": "BAD_REQUEST",
+          "message": "Nenhum arquivo foi enviado"
         }
         ```
     * **`413 Payload Too Large` - Arquivo Muito Grande**
         ```json
         {
           "success": false,
-          "response": {
-            "code": "CONTENT_TOO_LARGE",
-            "message": "Arquivo maior que 5MB"
-          }
+          "code": "CONTENT_TOO_LARGE",
+          "message": "O arquivo enviado não pode ter mais de 5MB de tamanho"
         }
         ```
 
 ---
 
-## Códigos de Erro
+## Códigos de Erro Específicos
 
-### Códigos de Autenticação (4xx)
-- **`AUTH_TOKEN_INVALID`** (401): Token JWT inválido
-- **`AUTH_TOKEN_EXPIRED`** (401): Token JWT expirado
-- **`INVALID_CREDENTIALS`** (401): Credenciais inválidas
-- **`AUTH_INSUFFICIENT_PERMISSIONS`** (403): Permissões insuficientes
+### Erros de Autenticação
+- `AUTH_TOKEN_INVALID` (401) - Token JWT inválido
+- `AUTH_TOKEN_EXPIRED` (401) - Token JWT expirado
+- `AUTH_INSUFFICIENT_PERMISSIONS` (403) - Permissões insuficientes
+- `INVALID_CREDENTIALS` (401) - Credenciais inválidas
 
-### Códigos de Validação (4xx)
-- **`VALIDATION_ERROR`** (400): Erro de validação dos dados
-- **`BAD_REQUEST`** (400): Dados inválidos na requisição
-- **`RESOURCE_NOT_FOUND`** (404): Recurso não encontrado
-- **`RESOURCE_ALREADY_EXISTS`** (409): Recurso já existe
+### Erros de Validação
+- `VALIDATION_ERROR` (400) - Erro de validação com detalhes específicos
+- `BAD_REQUEST` (400) - Dados inválidos na requisição
+- `RESOURCE_NOT_FOUND` (404) - Recurso não encontrado
+- `RESOURCE_ALREADY_EXISTS` (409) - Recurso já existe
 
-### Códigos Específicos do Domínio (4xx)
-- **`ACCOUNT_INACTIVE`** (400): Conta desativada
-- **`INSUFFICIENT_STOCK`** (400): Estoque insuficiente
-- **`PRODUCT_OUT_OF_STOCK`** (400): Produto fora de estoque
-- **`CART_ITEM_NOT_FOUND`** (404): Item não encontrado no carrinho
-- **`EVENT_FULL`** (400): Evento lotado
-- **`REGISTRATION_CLOSED`** (400): Inscrições encerradas
-- **`CONTENT_TOO_LARGE`** (413): Arquivo maior que 5MB
-- **`PAYMENT_FAILED`** (400): Falha no processamento do pagamento
-- **`INVALID_WEBHOOK`** (400): Webhook inválido
+### Erros Específicos do Domínio
+- `ACCOUNT_INACTIVE` (400) - Conta desativada
+- `INSUFFICIENT_STOCK` (400) - Estoque insuficiente
+- `PRODUCT_OUT_OF_STOCK` (400) - Produto fora de estoque
+- `CART_ITEM_NOT_FOUND` (404) - Item não encontrado no carrinho
+- `EVENT_FULL` (400) - Evento lotado
+- `REGISTRATION_CLOSED` (400) - Inscrições encerradas
+- `CONTENT_TOO_LARGE` (413) - Arquivo maior que 5MB
+- `PAYMENT_FAILED` (400) - Falha no processamento do pagamento
+- `INVALID_WEBHOOK` (400) - Webhook inválido
 
-### Códigos Técnicos (5xx)
-- **`INTERNAL_SERVER_ERROR`** (500): Erro interno do servidor
-- **`RATE_LIMIT_EXCEEDED`** (429): Limite de requisições excedido
-
----
-
-## Sistema de Permissões
-
-A API utiliza um sistema de permissões granular baseado em cargos:
-
-### Cargos Disponíveis
-- **aluno**: Permissões básicas de visualização e interação
-- **diretor**: Permissões de gestão de conteúdo e projetos
-- **administrador**: Todas as permissões do sistema
-
-## Considerações Técnicas
-
-### Paginação
-Endpoints que retornam listas suportam paginação via query parameters:
-- `page`: Número da página (padrão: 1)
-- `limit`: Itens por página (padrão: 16, máximo: 100)
-
-### Upload de Arquivos
-- Tamanho máximo: 5MB por arquivo
-- Formatos suportados: Imagens (processadas via SixLabors.ImageSharp)
-- Diretório de armazenamento: `wwwroot/uploads/`
-
-### Integração MercadoPago
-- Ambiente: Sandbox (teste)
-- Métodos de pagamento: PIX e vendas físicas
-- Webhooks: Validação por assinatura obrigatória
-- Callbacks: URLs de sucesso, falha e pendência configuráveis
-
-### Banco de Dados
-- PostgreSQL hospedado na Neon
-- Suporte a transações para operações críticas
-- Procedures para operações complexas (ex: remoção de estoque múltiplo)
+### Erros Técnicos
+- `INTERNAL_SERVER_ERROR` (500) - Erro interno do servidor
+- `RATE_LIMIT_EXCEEDED` (429) - Limite de requisições excedido
 
 ---
 
-*Documentação gerada automaticamente em 05/08/2025*
+*Documentação gerada automaticamente em 08/08/2025*

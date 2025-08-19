@@ -4,7 +4,7 @@ using DaccApi.Infrastructure.Repositories.Products;
 using DaccApi.Services.FileStorage;
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Helpers;
-using Helpers.Response;
+using DaccApi.Responses;
 
 namespace DaccApi.Services.Products
 {
@@ -300,7 +300,7 @@ namespace DaccApi.Services.Products
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Warning: Failed to delete variation images: {ex.Message}");
+                    return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, "Erro ao deletar variação de produto!");
                 }
                 
                 await _produtosRepository.DeleteVariationAsync(variationId);

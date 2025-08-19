@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using DaccApi.Model.Validation;
 
 namespace DaccApi.Model

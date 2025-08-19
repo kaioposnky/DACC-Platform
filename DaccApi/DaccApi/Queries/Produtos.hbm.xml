@@ -170,6 +170,8 @@
             v.tamanho_id AS TamanhoId,
             t.nome AS Tamanho,
             v.estoque AS Estoque,
+            COALESCE(r.quantidade_reservada, 0) as EstoqueReservado,
+            (v.estoque - COALESCE(r.quantidade_reservada, 0)) as EstoqueDisponivel,
             v.sku AS Sku,
             v.ordem AS Ordem,
             v.data_criacao AS DataCriacao,
@@ -177,6 +179,12 @@
         FROM produto_variacao v
         INNER JOIN produto_cor c ON v.cor_id = c.id
         INNER JOIN produto_tamanho t ON v.tamanho_id = t.id
+        LEFT JOIN (
+            SELECT produto_variacao_id, SUM(quantidade) as quantidade_reservada
+            FROM reserva_produto 
+            WHERE ativo = true AND data_expira > NOW()
+            GROUP BY produto_variacao_id
+        ) r ON r.produto_variacao_id = v.id
         WHERE v.produto_id = @ProductId
         ORDER BY v.ordem;
     </query>
@@ -191,6 +199,8 @@
             v.tamanho_id AS TamanhoId,
             t.nome AS Tamanho,
             v.estoque AS Estoque,
+            COALESCE(r.quantidade_reservada, 0) as EstoqueReservado,
+            (v.estoque - COALESCE(r.quantidade_reservada, 0)) as EstoqueDisponivel,
             v.sku AS Sku,
             v.ordem AS Ordem,
             v.data_criacao AS DataCriacao,
@@ -198,6 +208,12 @@
         FROM produto_variacao v
         INNER JOIN produto_cor c ON v.cor_id = c.id
         INNER JOIN produto_tamanho t ON v.tamanho_id = t.id
+        LEFT JOIN (
+            SELECT produto_variacao_id, SUM(quantidade) as quantidade_reservada
+            FROM reserva_produto 
+            WHERE ativo = true AND data_expira > NOW()
+            GROUP BY produto_variacao_id
+        ) r ON r.produto_variacao_id = v.id
         WHERE v.id = @Id;
     </query>
 
@@ -268,21 +284,33 @@
         WHERE id = @Id
     </query>
 
-    <!-- Obter produto + variacoes de forma mais otimizada-->
+    <!-- Obter produto + variacoes de forma mais otimizada com primeira imagem -->
     <query name="GetVariationsWithProductByIds">
-        SELECT
+        SELECT DISTINCT ON (pv.id)
         pv.id as VariationId,
         pv.produto_id as ProductId,
         p.nome as ProductName,
-        p.Preco as Preco,
+        p.preco as Preco,
         pc.nome as ColorName,
         pt.nome as SizeName,
-        pv.estoque as Stock
+        pv.estoque as Stock,
+        COALESCE(r.quantidade_reservada, 0) as ReservedStock,
+        (pv.estoque - COALESCE(r.quantidade_reservada, 0)) as AvailableStock,
+        pi.imagem_url as ImageUrl,
+        pi.imagem_alt as ImageAlt
         FROM produto_variacao pv
         INNER JOIN produto p ON pv.produto_id = p.id
         LEFT JOIN produto_cor pc ON pv.cor_id = pc.id
         LEFT JOIN produto_tamanho pt ON pv.tamanho_id = pt.id
-        WHERE pv.id = ANY(@VariationIds);
+        LEFT JOIN produto_imagem pi ON pi.produto_variacao_id = pv.id
+        LEFT JOIN (
+            SELECT produto_variacao_id, SUM(quantidade) as quantidade_reservada
+            FROM reserva_produto 
+            WHERE ativo = true AND data_expira > NOW()
+            GROUP BY produto_variacao_id
+        ) r ON r.produto_variacao_id = pv.id
+        WHERE pv.id = ANY(@VariationIds) AND p.ativo = true
+        ORDER BY pv.id, pi.ordem ASC NULLS LAST;
     </query>
 
     <!-- Query para obter uma imagem específica por ID -->
@@ -320,5 +348,15 @@
         LEFT JOIN produto_variacao pv ON pv.produto_id = @Id 
         LEFT JOIN produto_subcategoria ps ON p.subcategoria_id = ps.id
         LEFT JOIN produto_categoria pc ON ps.categoria_id = pc.id;
+    </query>
+
+    <!-- Query para verificar estoque de múltiplos produtos -->
+    <query name="CheckMultipleProductsStock">
+        SELECT * FROM check_multiple_products_stock(@VariationIds, @Quantities);
+    </query>
+
+    <!-- Query para remover estoque de múltiplos produtos (sem verificação) -->
+    <query name="RemoveMultipleProductsStockDirect">
+        SELECT * FROM remove_multiple_products_stock_direct(@VariationIds, @Quantities);
     </query>
 </queries>

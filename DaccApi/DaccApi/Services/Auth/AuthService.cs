@@ -3,14 +3,15 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net.Mail;
 using System.Security.Authentication;
 using System.Security.Claims;
+using System.Text;
 using DaccApi.Model;
 using DaccApi.Helpers;
 using DaccApi.Infrastructure.Cryptography;
 using DaccApi.Infrastructure.Repositories.Permission;
 using DaccApi.Infrastructure.Repositories.User;
 using DaccApi.Model.Responses;
+using DaccApi.Responses;
 using DaccApi.Services.Token;
-using Helpers.Response;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -91,49 +92,47 @@ namespace DaccApi.Services.Auth
             }
         }
             
-        public async Task<IActionResult> RegisterUser(RequestUsuario request)
+        public async Task<IActionResult> RegisterUser(RequestCreateUsuario requestCreate)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(request.Nome) ||
-                    string.IsNullOrWhiteSpace(request.Sobrenome) ||
-                    string.IsNullOrWhiteSpace(request.Telefone) ||
-                    string.IsNullOrWhiteSpace(request.Curso))
+                if (string.IsNullOrWhiteSpace(requestCreate.Nome) ||
+                    string.IsNullOrWhiteSpace(requestCreate.Sobrenome) ||
+                    string.IsNullOrWhiteSpace(requestCreate.Telefone) ||
+                    string.IsNullOrWhiteSpace(requestCreate.Curso))
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
 
-                if (!IsValidRa(request.Ra))
+                if (!IsValidRa(requestCreate.Ra))
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, 
                         "RA inválido! Seu RA deve conter 9 dígitos numéricos");
                 }
                 
-                if (!IsValidEmail(request.Email))
+                if (!IsValidEmail(requestCreate.Email))
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "Formato de email inválido!");
                 }
 
-                if (!IsValidPassword(request.Senha))
+                if (!IsValidPassword(requestCreate.Senha))
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, 
                         "Senha muito fraca! A senha deve ter ao menos 8 caracteres, " +
                         "uma letra maiúscula, uma letra minúscula e um número!");
                 }
-                
 
                 var usuario = new Usuario
                 {
-                    Nome = request.Nome,
-                    Sobrenome = request.Sobrenome,
-                    Ra = request.Ra,
-                    Curso = request.Curso,
-                    Email = request.Email,
-                    Telefone = request.Telefone,
-                    SenhaHash = request.Senha,
-                    ImagemUrl = request.ImagemUrl ?? "",
+                    Nome = requestCreate.Nome,
+                    Sobrenome = requestCreate.Sobrenome,
+                    Ra = requestCreate.Ra,
+                    Curso = requestCreate.Curso,
+                    Email = requestCreate.Email,
+                    Telefone = requestCreate.Telefone,
+                    SenhaHash = requestCreate.Senha,
                     Ativo = true,
-                    InscritoNoticia = request.InscritoNoticia ?? false,
+                    InscritoNoticia = requestCreate.InscritoNoticia ?? false,
                     Cargo = CargoUsuario.Aluno,
                     DataCriacao = DateTime.Now,
                     DataAtualizacao = DateTime.Now
@@ -149,9 +148,8 @@ namespace DaccApi.Services.Auth
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse(
-                    "Ocorreu um erro ao tentar cadastrar o usuário, favor relatar ao suporte pelo: contato.daccfei@gmail.com " +
-                    ex.StackTrace);
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,
+                    "Ocorreu um erro ao tentar cadastrar o usuário, favor relatar ao suporte pelo: contato.daccfei@gmail.com ");
             }
         }
 
@@ -159,7 +157,21 @@ namespace DaccApi.Services.Auth
         {
             try
             {
-                var userId = Guid.Parse(new JwtSecurityToken(refreshToken).Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value);
+                Guid userId;
+                try
+                {
+                    userId = Guid.Parse(new JwtSecurityToken(refreshToken).Claims
+                        .First(x => x.Type == ClaimTypes.NameIdentifier).Value);
+                }
+                catch (ArgumentException)
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.AUTH_TOKEN_INVALID);
+                }
+                catch (FormatException)
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.AUTH_TOKEN_INVALID);
+                }
+                
                 var user = await _usuarioRepository.GetUserById(userId);
                 
                 var validRefreshToken = await _tokenService.ValidateRefreshToken(userId, refreshToken);
@@ -185,6 +197,24 @@ namespace DaccApi.Services.Auth
             }
         }
 
+        public async Task<IActionResult> Logout(Guid userId)
+        {
+            try
+            {
+                var userTokens = await _usuarioRepository.GetUserTokens(userId);
+                
+                var tokensUsuario = new TokensUsuario(){ AccessToken = "", RefreshToken = "" };
+                
+                await _usuarioRepository.UpdateUserTokens(userId, tokensUsuario);
+
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK, "Usuário saiu com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
+        
         private static bool IsValidRa(string? ra)
         {
             if (ra == null || string.IsNullOrWhiteSpace(ra))

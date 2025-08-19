@@ -199,9 +199,6 @@ namespace DaccApi.Infrastructure.Repositories.User
             }
             catch (PostgresException ex)
             {
-                Console.WriteLine(ex.Detail);
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.MessageText);
                 throw new Exception("Erro ao atualizar tokens do usuário!" + ex.Message);
             }
             catch (Exception ex)

@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<queries>
+    
+    <query name="CreateReserva">
+        INSERT INTO reserva_produto(produto_variacao_id, pedido_id, quantidade, ativo, data_expira)
+        VALUES(@ProdutoVariacaoId, @PedidoId, @Quantidade, @Ativo, @DataExpira);
+    </query>
+
+    <query name="GetReservasAtivasByVariacao">
+        SELECT * FROM reserva_produto
+        WHERE produto_variacao_id = @ProdutoVariacaoId
+        AND ativo = true
+        AND data_expira > NOW()
+    </query>
+
+    <query name="GetQuantidadeReservadaByVariacao">
+        SELECT COALESCE(SUM(quantidade), 0) as total
+        FROM reserva_produto
+        WHERE produto_variacao_id = @ProdutoVariacaoId
+        AND ativo = true
+        AND data_expira > NOW()
+    </query>
+
+    <query name="ConfirmarReserva">
+        UPDATE reserva_produto
+        SET ativo = false
+        WHERE pedido_id = @PedidoId
+        AND ativo = true
+    </query>
+
+    <query name="CancelarReserva">
+        DELETE FROM reserva_produto
+        WHERE pedido_id = @PedidoId
+        AND ativo = true
+    </query>
+
+    <query name="CreateReservasLote">
+        INSERT INTO reserva_produto(produto_variacao_id, pedido_id, quantidade, ativo, data_expira)
+        VALUES(@ProdutoVariacaoId, @PedidoId, @Quantidade, @Ativo, @DataExpira);
+    </query>
+
+    <query name="CreateReservasLoteAtomica">
+        <![CDATA[
+        WITH estoque_disponivel AS (
+            SELECT 
+                pv.id as produto_variacao_id,
+                pv.estoque - COALESCE(SUM(rp.quantidade), 0) as disponivel
+            FROM produto_variacao pv
+            LEFT JOIN reserva_produto rp ON rp.produto_variacao_id = pv.id 
+                AND rp.ativo = true AND rp.data_expira > NOW()
+            WHERE pv.id = @ProdutoVariacaoId
+            GROUP BY pv.id, pv.estoque
+        ),
+        reserva_inserida AS (
+            INSERT INTO reserva_produto(produto_variacao_id, pedido_id, quantidade, ativo, data_expira)
+            SELECT @ProdutoVariacaoId, @PedidoId, 
+                   CASE 
+                       WHEN ed.disponivel >= @Quantidade THEN @Quantidade
+                       ELSE 0
+                   END as quantidade_final,
+                   @Ativo, @DataExpira
+            FROM estoque_disponivel ed
+            WHERE ed.disponivel >= @Quantidade
+            RETURNING quantidade
+        )
+        SELECT COALESCE(SUM(quantidade), 0) as quantidade_reservada FROM reserva_inserida;
+        ]]>
+    </query>
+
+    <query name="LimparReservasExpiradas">
+        DELETE FROM reserva_produto
+        WHERE data_expira &lt; NOW()
+        OR ativo = false
+    </query>
+    
+</queries>

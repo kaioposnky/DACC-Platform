@@ -8,7 +8,7 @@ namespace DaccApi.Model
         public string? Descricao { get; set; }
         [ImageValidation]
         
-        public string? ImagemUrl { get; set; }
+        public IFormFile? ImageFile { get; set; }
         
         public string? Status { get; set; }
         

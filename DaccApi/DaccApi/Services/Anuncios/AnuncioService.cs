@@ -1,7 +1,8 @@
 ﻿using DaccApi.Helpers;
 using DaccApi.Infrastructure.Repositories.Anuncio;
 using DaccApi.Model;
-using Helpers.Response;
+using DaccApi.Responses;
+using DaccApi.Services.FileStorage;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.Anuncios
@@ -9,10 +10,12 @@ namespace DaccApi.Services.Anuncios
     public class AnuncioService : IAnuncioService
     {
         private readonly IAnuncioRepository _anuncioRepository;
+        private readonly IFileStorageService _fileStorageService;
 
-        public AnuncioService(IAnuncioRepository anuncioRepository)
+        public AnuncioService(IAnuncioRepository anuncioRepository, IFileStorageService fileStorageService)
         {
             _anuncioRepository = anuncioRepository;
+            _fileStorageService = fileStorageService;
         }
 
         public async Task<IActionResult> GetAllAnuncio()
@@ -106,12 +109,14 @@ namespace DaccApi.Services.Anuncios
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Anúncio não encontrado!");
                 }
 
+                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile!);
+                
                 var anuncio = new Anuncio()
                 {
                    Titulo = request.Titulo,
                    Conteudo = request.Conteudo,
                    ImagemAlt = request.ImagemAlt,
-                   ImagemUrl = request.ImagemUrl, // TODO: Obter URL pelo FileStorageService
+                   ImagemUrl = imageUrl,
                    TipoAnuncio = request.TipoAnuncio,
                    Ativo = request.Ativo
                 };

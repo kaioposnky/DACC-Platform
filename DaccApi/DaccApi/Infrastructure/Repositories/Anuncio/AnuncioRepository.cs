@@ -62,7 +62,7 @@ namespace DaccApi.Infrastructure.Repositories.Anuncio
             {
                 var sql = _repositoryDapper.GetQueryNamed("CreateAnuncio");
 
-                Console.WriteLine("Executando insert de anúncio" + await _repositoryDapper.ExecuteAsync(sql, anuncio));
+                await _repositoryDapper.ExecuteAsync(sql, anuncio);
             }
             catch (Exception ex)
             {

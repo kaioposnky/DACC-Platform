@@ -1,8 +1,7 @@
 ﻿using DaccApi.Model;
 using DaccApi.Infrastructure.Repositories.Eventos;
 using DaccApi.Helpers;
-
-using Helpers.Response;
+using DaccApi.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -31,7 +30,7 @@ namespace DaccApi.Services.Eventos
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR + ex.Message);
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, "Erro ao obter eventos! " + ex.Message);
             }
         }
         

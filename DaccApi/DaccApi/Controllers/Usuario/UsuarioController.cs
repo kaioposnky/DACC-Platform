@@ -1,4 +1,5 @@
 ﻿using DaccApi.Infrastructure.Authentication;
+using DaccApi.Helpers.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Model;
 using DaccApi.Services.User;
@@ -6,7 +7,7 @@ using DaccApi.Services.User;
 namespace DaccApi.Controllers.Usuario
 {
     [ApiController]
-    [Route("api/users")]
+    [Route("v1/api/users")]
     public class UsuarioController : ControllerBase
     {
         private readonly IUsuarioService _usuarioService;
@@ -16,6 +17,7 @@ namespace DaccApi.Controllers.Usuario
             _usuarioService = usuarioService;
         }
         
+        [AuthenticatedGetResponses]
         [HasPermission(AppPermissions.Users.ViewAll)]
         [HttpGet("")]
         public async Task<IActionResult> GetUsers()
@@ -24,6 +26,7 @@ namespace DaccApi.Controllers.Usuario
             return response;
         }
 
+        [AuthenticatedGetResponses]
         [HasPermission(AppPermissions.Users.View)]
         [HttpGet("{id:guid}")]
         public IActionResult GetUser([FromRoute] Guid id)
@@ -32,14 +35,16 @@ namespace DaccApi.Controllers.Usuario
             return response;
         }
         
+        [AuthenticatedPatchResponses]
         [HasPermission(AppPermissions.Users.Update)]
         [HttpPatch("{id:guid}")]
-        public async Task<IActionResult> UpdateUser([FromRoute] Guid id, [FromBody] RequestUpdateUsuario request)
+        public async Task<IActionResult> UpdateUser([FromRoute] Guid id, [FromForm] RequestUpdateUsuario request)
         {
             var response = await _usuarioService.UpdateUser(id, request);
             return response;
         }
-
+        
+        [AuthenticatedDeleteResponses]
         [HasPermission(AppPermissions.Users.Delete)]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteUser([FromRoute] Guid id)

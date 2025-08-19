@@ -1,3 +1,4 @@
+using System.Data;
 using DaccApi.Model;
 
 namespace DaccApi.Infrastructure.Repositories.Products
@@ -23,7 +24,8 @@ namespace DaccApi.Infrastructure.Repositories.Products
         Task<int> CheckProductVariationStock(Guid productVariationId);
         Task<bool> RemoveProductVariationStockAsync(Guid productVariationId, int amount);
         Task<List<ProdutoVariacaoInfo>> GetVariationsWithProductByIdsAsync(List<Guid> variationIds);
-        Task<bool> RemoveMultipleProductsStockAsync(List<Guid> variationIds, List<int> quantities);
+        Task<bool> CheckMultipleProductsStockAsync(List<Guid> variationIds, List<int> quantities);
+        Task<bool> RemoveMultipleProductsStockDirectAsync(List<Guid> variationIds, List<int> quantities, IDbTransaction? transaction = null);
         Task<ProdutoImagem?> GetImageByIdAsync(Guid imageId);
         Task UpdateProductImageAsync(ProdutoImagem imagem);
         Task DeleteImageAsync(Guid imageId);

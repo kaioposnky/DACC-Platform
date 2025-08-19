@@ -8,7 +8,7 @@ namespace DaccApi.Model
             public string? Nome { get; set; }
             public string? Descricao { get; set; }
             [ImageValidation]
-            public string? ImagemUrl { get; set; }
+            public IFormFile? ImageFile { get; set; }
             public Guid? UsuarioId { get; set; }
             public Guid? DiretoriaId { get; set; }
             public string? Email { get; set; }

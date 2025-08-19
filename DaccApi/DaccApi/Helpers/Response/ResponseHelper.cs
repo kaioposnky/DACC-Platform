@@ -1,83 +1,60 @@
-﻿using DaccApi.Responses;
-using DaccApi.Responses.UserResponse;
-using Helpers.Response;
+﻿using System.Net;
+using System.Text.Json;
+using DaccApi.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Helpers
 {
     /// <summary>
-    /// Helper para criar respostas de retorno da API de forma mais fácil.
+    /// Helper para criação de respostas padronizadas da API
     /// </summary>
     public static class ResponseHelper
     {
         /// <summary>
-        /// Deprecated: Use CreateSuccessResponse with ResponseSuccess instead
-        /// </summary>
-        public static IActionResult CreateSuccessResponse(object? data = null, string? message = null)
-        {
-            message ??= ResponseMessages.SuccessRequestMessages.GENERIC;
-            data ??= new { };
-            
-            var response = ResponseSuccess.WithData(ResponseSuccess.OK, data);
-            return new ObjectResult(response) { StatusCode = 200 };
-        }
-        
-        /// <summary>
-        /// Deprecated: Use CreateErrorResponse with ResponseError instead
-        /// </summary>
-        public static IActionResult CreateBadRequestResponse(string? error = null)
-        {
-            error ??= ResponseMessages.BadRequestMessages.GENERIC;
-            
-            var response = new BadRequest(error);
-            return new ObjectResult(response) { StatusCode = 400 };
-        }
-
-        /// <summary>
-        /// Deprecated: Use CreateErrorResponse with ResponseError instead
-        /// </summary>
-        public static IActionResult CreateErrorResponse(string? error = null, Exception? exception = null)
-        {
-            error ??= ResponseMessages.ErrorRequestMessages.GENERIC;
-            exception ??= new Exception("Exception não informada!");
-            
-            var response = new ErrorRequest(error, exception);
-            return new ObjectResult(response) { StatusCode = 500 };
-        }
-
-        /// <summary>
-        /// Cria uma resposta customizada
-        /// </summary>
-        /// <param name="statusCode">Código de status HTTP</param>
-        /// <param name="data">Dados da resposta</param>
-        /// <param name="message">Mensagem Customizada, Deixe vazio para usar uma mensagem genérica.</param>
-        public static IActionResult CreateCustomResponse(int statusCode, object? data = null, string? message = null){
-            var response = new ApiResponse(true, data);
-            return new ObjectResult(response) { StatusCode = statusCode };
-        }
-
-        /// <summary>
         /// Cria uma resposta de erro
         /// </summary>
-        /// <param name="error">Mensagem de Error, Deixe vazio para usar uma mensagem genérica.</param>
-        /// <param name="message">Mensagem customizada para o erro.</param>
+        /// <param name="errorResponse">Tipo de erro predefinido</param>
+        /// <param name="message">Mensagem customizada para o erro (opcional)</param>
         /// <returns>IActionResult</returns>
-        public static IActionResult CreateErrorResponse(ResponseError error, string? message = null){
-            if (message != null) error.ErrorInfo.Message = message;
-            var response = new ApiResponse(false, error);
-            return new ObjectResult(response) { StatusCode = error.StatusCode };
+        public static IActionResult CreateErrorResponse(ResponseError errorResponse, string? message = null)
+        {
+            if (message != null)
+            {
+                // Cria uma nova instância com a mensagem customizada
+                errorResponse = errorResponse.WithDetails(null);
+                // Como não podemos modificar diretamente, vamos criar um novo objeto
+                var customError = new ResponseError(errorResponse.StatusCode, errorResponse.Code, message, errorResponse.Details);
+                return new ObjectResult(customError) { StatusCode = customError.StatusCode };
+            }
+            
+            return new ObjectResult(errorResponse) { StatusCode = errorResponse.StatusCode };
         }
 
         /// <summary>
         /// Cria uma resposta de sucesso
         /// </summary>
-        /// <param name="success">Mensagem de Success, Deixe vazio para usar uma mensagem genérica.</param>
-        /// <param name="message">Mensagem customizada para o sucesso.</param>
+        /// <param name="successResponse">Tipo de sucesso predefinido</param>
+        /// <param name="message">Mensagem customizada para o sucesso (opcional)</param>
         /// <returns>IActionResult</returns>
-        public static IActionResult CreateSuccessResponse(ResponseSuccess success, string? message = null){
-            if (message != null) success.SuccessInfo.Message = message;
-            var response = new ApiResponse(true, success);
-            return new ObjectResult(response) { StatusCode = success.StatusCode };
+        public static IActionResult CreateSuccessResponse(ResponseSuccess successResponse, string? message = null)
+        {
+            if (message != null)
+            {
+                // Cria uma nova instância com a mensagem customizada
+                var customSuccess = new ResponseSuccess(successResponse.StatusCode, successResponse.Code, message, successResponse.Data);
+                return new ObjectResult(customSuccess) { StatusCode = customSuccess.StatusCode };
+            }
+            
+            return new ObjectResult(successResponse) { StatusCode = successResponse.StatusCode };
+        }
+        
+        public static async Task WriteResponseErrorAsync(HttpContext httpContext, HttpStatusCode statusCode, ResponseError responseError, string? message = null)
+        {
+            var response = (ObjectResult)ResponseHelper.CreateErrorResponse(responseError, message);
+            httpContext.Response.ContentType = "application/json";
+            httpContext.Response.StatusCode = (int)statusCode;
+            // Escreve o body da resposta que será enviada
+            await httpContext.Response.WriteAsync(JsonSerializer.Serialize(response.Value));
         }
     }
 }

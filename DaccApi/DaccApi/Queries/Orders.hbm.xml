@@ -33,11 +33,10 @@
     <query name="GetOrderItemsByOrderId">
         SELECT
         id as Id,
-        pedido_id as OrderId,
-        produto_id as ProductId,
-        quantidade as Quantity,
-        produto_variacao_id as ProductVariationId,
-        preco_unitario as UnitPrice
+        produto_id as ProdutoId,
+        produto_variacao_id as ProdutoVariacaoId,
+        quantidade as Quantidade,
+        preco_unitario as PrecoUnitario
         FROM item_pedido
         WHERE pedido_id = @OrderId;
     </query>
@@ -67,6 +66,11 @@
         SET mercadopago_pagamento_id = @MercadoPagoPaymentId,
         metodo_pagamento = @PaymentMethod,
         status_pedido = @Status
+        WHERE id = @Id;
+    </query>
+    <query name="UpdateOrderPreferenceId">
+        UPDATE pedido
+        SET preference_id = @PreferenceId,
         WHERE id = @Id;
     </query>
 </queries>
