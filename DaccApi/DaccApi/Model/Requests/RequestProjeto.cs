@@ -1,9 +1,12 @@
-﻿namespace DaccApi.Model
+﻿using DaccApi.Model.Validation;
+
+namespace DaccApi.Model
 {
     public class RequestProjeto
     {
         public string? Titulo { get; set; }
         public string? Descricao { get; set; }
+        [ImageValidation]
         
         public IFormFile? ImageFile { get; set; }
         
