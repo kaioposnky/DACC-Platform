@@ -50,7 +50,7 @@ namespace DaccApi.Infrastructure.Repositories.Eventos
             }
         }
 
-        public async Task CreateEvento(Evento evento)
+        public async Task<Guid> CreateEvento(Evento evento)
         {
             try
             {
@@ -67,7 +67,8 @@ namespace DaccApi.Infrastructure.Repositories.Eventos
                     Data = evento.Data ?? DateTime.UtcNow
                 };
 
-                await _repositoryDapper.ExecuteAsync(sql, param);
+                var result = await _repositoryDapper.QueryFirstAsync<Guid>(sql, param);
+                return result;
             }
             catch (Exception ex)
             {
