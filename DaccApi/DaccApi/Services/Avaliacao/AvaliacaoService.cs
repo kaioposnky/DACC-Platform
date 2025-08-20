@@ -48,7 +48,8 @@ public class AvaliacaoService : IAvaliacaoService
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
+            Console.WriteLine("Erro completo em GetAllAvaliacoes: " + ex.ToString());
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.ToString());
         }
     }
     

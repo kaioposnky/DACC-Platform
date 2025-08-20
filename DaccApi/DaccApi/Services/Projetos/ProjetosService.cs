@@ -2,6 +2,7 @@
 using DaccApi.Infrastructure.Repositories.Projetos;
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Model;
+using DaccApi.Model.Requests;
 using DaccApi.Responses;
 using DaccApi.Services.FileStorage;
 
@@ -60,7 +61,6 @@ namespace DaccApi.Services.Projetos
                 
                 if (String.IsNullOrWhiteSpace(request.Titulo) ||
                     String.IsNullOrWhiteSpace(request.Descricao) ||
-                    request.ImageFile == null ||
                     String.IsNullOrWhiteSpace(request.Status)||
                     String.IsNullOrWhiteSpace(request.Diretoria)||
                     request.Tags == null)
@@ -70,11 +70,9 @@ namespace DaccApi.Services.Projetos
                 }
                 
                 
-                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile!);
 
                 var projeto = new Projeto()
                 {
-                    ImagemUrl = imageUrl,
                     Titulo = request.Titulo,
                     Descricao = request.Descricao,
                     Status = request.Status,
@@ -91,6 +89,34 @@ namespace DaccApi.Services.Projetos
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
             }
         }
+        
+        
+        public async Task<IActionResult> AddProjetoImage(Guid id, ImageRequest request)
+        {
+            try
+            {
+                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
+
+                var projeto = await _projetosRepository.GetProjetoById(id);
+
+                if (projeto == null)
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Projeto não encontrada!");
+                }
+            
+                projeto.ImagemUrl = imageUrl;
+                projeto.ImagemAlt = request.ImageAlt;
+            
+                await _projetosRepository.UpdateProjeto(id, projeto);
+
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(request));
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, "Erro ao adicionar anuncio na projeto." + ex.Message);
+            }
+        }
+        
 
         public async Task<IActionResult> DeleteProjeto(Guid id)
         {
@@ -120,7 +146,6 @@ namespace DaccApi.Services.Projetos
                 if (projetoQuery == null ||
                     String.IsNullOrWhiteSpace(request.Titulo) ||
                     String.IsNullOrWhiteSpace(request.Descricao) ||
-                    request.ImageFile == null ||
                     String.IsNullOrWhiteSpace(request.Status)||
                     String.IsNullOrWhiteSpace(request.Diretoria)||
                     request.Tags == null)
@@ -128,7 +153,6 @@ namespace DaccApi.Services.Projetos
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
                 
-                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile!);
 
                 var projeto = new Projeto()
                 {
@@ -137,7 +161,7 @@ namespace DaccApi.Services.Projetos
                     Status = request.Status,
                     Diretoria = request.Diretoria,
                     Tags = request.Tags,
-                    ImagemUrl = imageUrl,
+
                 };
                 await _projetosRepository.UpdateProjeto(id, projeto);
 

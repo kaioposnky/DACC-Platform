@@ -378,7 +378,7 @@ CREATE TABLE projeto
     id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     titulo           VARCHAR(200) NOT NULL,
     descricao        TEXT         NOT NULL,
-    imagem_url       VARCHAR(255) NOT NULL,
+    imagem_url       VARCHAR(255),
     status           VARCHAR(50) REFERENCES tipos_progresso (nome),
     diretoria        VARCHAR(100) REFERENCES diretoria (nome),
     tags             VARCHAR(20)[],

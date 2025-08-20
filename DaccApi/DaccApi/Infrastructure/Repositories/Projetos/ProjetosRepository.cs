@@ -43,7 +43,6 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
                 {
                     Titulo = projeto.Titulo,
                     Descricao = projeto.Descricao,
-                    ImagemUrl = projeto.ImagemUrl,
                     Status = projeto.Status,
                     Diretoria = projeto.Diretoria,
                     Tags = projeto.Tags
@@ -82,7 +81,6 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
                     id = id,
                     Titulo = projeto.Titulo,
                     Descricao = projeto.Descricao,
-                    ImagemUrl = projeto.ImagemUrl,
                     Status = projeto.Status,
                     Diretoria = projeto.Diretoria,
                     Tags = projeto.Tags
