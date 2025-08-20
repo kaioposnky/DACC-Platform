@@ -1,4 +1,5 @@
 ﻿using DaccApi.Model;
+using DaccApi.Model.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.Projetos
@@ -9,6 +10,8 @@ namespace DaccApi.Services.Projetos
         public Task<IActionResult> GetProjetoById(Guid id);
         
         public Task<IActionResult> CreateProjeto(RequestProjeto request);
+        
+        public Task<IActionResult> AddProjetoImage(Guid id, ImageRequest request);
 
         public Task<IActionResult> DeleteProjeto(Guid id);
         

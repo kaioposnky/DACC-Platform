@@ -10,6 +10,7 @@
         public string? Descricao { get; set; }
         
         public string? ImagemUrl { get; set; }
+        public string? ImagemAlt { get; set; }
         
         public string? Status { get; set; }
         

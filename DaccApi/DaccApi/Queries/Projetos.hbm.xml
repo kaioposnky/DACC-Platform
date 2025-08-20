@@ -30,12 +30,10 @@
 		INSERT INTO projeto
 			(titulo,
 			descricao,
-			imagem_url,
 			status,
 			diretoria,
-			tags
-			)
-		VALUES (@Titulo, @Descricao, @ImagemUrl, @Status, @Diretoria, @Tags)
+			tags)
+		VALUES (@Titulo, @Descricao, @Status, @Diretoria, @Tags)
 	</query>
 
 
@@ -49,6 +47,7 @@
 			SET titulo = @Titulo,
 				descricao = @Descricao,
 				imagem_url = @ImagemUrl,
+				imagem_alt = @ImagemAlt,
 				status = @Status,
 				diretoria = @Diretoria,
 				tags = @Tags

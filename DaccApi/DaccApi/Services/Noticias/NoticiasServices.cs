@@ -88,7 +88,7 @@ public class NoticiasServices : INoticiasServices
         }
         catch (Exception ex)
         {
-            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, "Erro ao adicionar imagem na notícia.");
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, "Erro ao adicionar imagem na notícia." + ex.Message);
         }
     }
     

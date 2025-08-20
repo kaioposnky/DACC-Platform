@@ -3,6 +3,7 @@ using DaccApi.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using DaccApi.Infrastructure.Authentication;
+using DaccApi.Model.Requests;
 using DaccApi.Services.Anuncios;
 
 namespace DaccApi.Controllers.Anuncio
@@ -40,6 +41,14 @@ namespace DaccApi.Controllers.Anuncio
         public async Task<IActionResult> CreateAnuncio([FromBody] RequestAnuncio anuncio)
         {
             var response = await _anuncioService.CreateAnuncio(anuncio);
+            return response;
+        }
+        
+        [HttpPost("{id:guid}")]
+
+        public async Task<IActionResult> AddAnuncioImage([FromRoute] Guid id, [FromForm] ImageRequest request)
+        {
+            var response = await _anuncioService.AddAnuncioImage(id, request);
             return response;
         }
         
