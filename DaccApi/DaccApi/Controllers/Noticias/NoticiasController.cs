@@ -40,11 +40,11 @@ namespace DaccApi.Controllers.Noticias
             return response;
         }
 
-        [HttpPost("{id:guid}")]
+        [HttpPatch("{id:guid}/image")]
         [HasPermission(AppPermissions.Noticias.Update)]
-        public async Task<IActionResult> AddNoticiaImage([FromRoute] Guid id, [FromForm] ImageRequest request)
+        public async Task<IActionResult> UpdateNoticiaImage([FromRoute] Guid id, [FromForm] ImageRequest request)
         {
-            var response = await _noticiasServices.AddNoticiaImage(id, request);
+            var response = await _noticiasServices.UpdateNoticiaImage(id, request);
             return response;
         }
         
