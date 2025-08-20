@@ -14,11 +14,13 @@ namespace DaccApi.Model
         [StringLength(20, ErrorMessage = "Sobrenome deve ter no máximo 20 caracteres")]
         [MinLength(3, ErrorMessage = "Sobrenome deve ter pelo menos 3 caracteres")]
         public string? Sobrenome { get; set; }
-        [EmailAddress]
+        [EmailAddress(ErrorMessage = "Email inválido")]
         public string? Email { get; set; }
+        [RaValidation(ErrorMessage = "RA inválido")]
         public string? Ra { get; set; }
         public string? Curso { get; set; }
-        [Phone]
+        [Required(ErrorMessage = "Telefone é obrigatório")]
+        [PhoneValidation(ErrorMessage = "Telefone inválido")]
         public string? Telefone { get; set; }
         public string? Senha { get; set; }
         public bool? InscritoNoticia { get; set; } = false;

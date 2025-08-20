@@ -11,7 +11,7 @@ namespace DaccApi.Model
         [EmailAddress]
         public string? Email { get; set; }
         public string? Curso { get; set; }
-        [Phone]
+        [PhoneValidation(ErrorMessage = "Telefone inválido")]
         public string? Telefone { get; set; }
         public IFormFile? ImageFile { get; set; }
         public bool? InscritoNoticia { get; set; }

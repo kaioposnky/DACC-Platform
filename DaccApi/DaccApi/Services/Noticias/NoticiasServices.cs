@@ -66,7 +66,7 @@ public class NoticiasServices : INoticiasServices
         }
     }
 
-    public async Task<IActionResult> AddNoticiaImage(Guid noticiaId, ImageRequest request)
+    public async Task<IActionResult> UpdateNoticiaImage(Guid noticiaId, ImageRequest request)
     {
         try
         {
