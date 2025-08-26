@@ -1,15 +1,19 @@
 using DaccApi.Exceptions;
+using DaccApi.Helpers;
 using DaccApi.Infrastructure.Dapper;
+using DaccApi.Infrastructure.Mail;
 using DaccApi.Infrastructure.MercadoPago.Constants;
 using DaccApi.Infrastructure.MercadoPago.Models;
 using DaccApi.Infrastructure.Repositories.Orders;
 using DaccApi.Infrastructure.Repositories.Products;
 using DaccApi.Infrastructure.Repositories.Reservas;
+using DaccApi.Infrastructure.Repositories.User;
 using DaccApi.Infrastructure.Services.MercadoPago;
 using DaccApi.Model;
 using DaccApi.Model.Objects.Order;
 using DaccApi.Model.Requests;
 using DaccApi.Model.Responses;
+using DaccApi.Responses;
 
 namespace DaccApi.Services.Orders
 {
@@ -19,6 +23,8 @@ namespace DaccApi.Services.Orders
         private readonly IMercadoPagoService _mercadoPagoService;
         private readonly IProdutosRepository _produtosRepository;
         private readonly IReservaRepository _reservaRepository;
+        private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IMailService _mailService;
         private readonly IRepositoryDapper _dapper;
         private readonly int _orderMinutesToExpire;
         
@@ -28,7 +34,7 @@ namespace DaccApi.Services.Orders
             IProdutosRepository produtosRepository,
             IReservaRepository reservaRepository,
             IConfiguration configuration,
-            IRepositoryDapper dapper)
+            IRepositoryDapper dapper, IMailService mailService, IUsuarioRepository usuarioRepository)
         {
             _ordersRepository = ordersRepository;
             _mercadoPagoService = mercadoPagoService;
@@ -36,12 +42,21 @@ namespace DaccApi.Services.Orders
             _reservaRepository = reservaRepository;
             _orderMinutesToExpire = int.Parse(configuration["OrderExpireMinutes"]);
             _dapper = dapper;
+            _mailService = mailService;
+            _usuarioRepository = usuarioRepository;
         }
 
         public async Task<CreateOrderResponse> CreateOrderWithPayment(Guid userId, CreateOrderRequest request)
         {
             try
             {
+                var user = await _usuarioRepository.GetUserById(userId);
+
+                if (user == null)
+                {
+                    throw new ArgumentException("Usuário não encontrado!");
+                }
+                
                 var variationIds = request.ItensPedido.Select(item => item.ProdutoVariacaoId).ToList();
 
                 var productVariationsInfo = await _produtosRepository.GetVariationsWithProductByIdsAsync(variationIds);
@@ -126,6 +141,8 @@ namespace DaccApi.Services.Orders
                 
                     // atualizar order no banco
                     await _ordersRepository.UpdateOrderPreferenceId(order.Id, order.PreferenceId, transaction);
+
+                    await _mailService.SendOrderCreatedEmailAsync(user, order);
                     
                     // Se a operação deu certo dá commit em tudo
                     transaction.Commit();
@@ -217,7 +234,7 @@ namespace DaccApi.Services.Orders
                 {
                     // Quebra o switch e segue para a transação
                     case MercadoPagoConstants.PaymentStatus.Pending:
-                        await ProcessPendingOrder(orderId, paymentStatus);
+                        await ProcessPendingOrder(order, paymentStatus);
                         break;
                     // Se o pedido foi completado ignorar
                     case MercadoPagoConstants.PaymentStatus.Approved:
@@ -237,32 +254,43 @@ namespace DaccApi.Services.Orders
             }
         }
 
-        private async Task ProcessPendingOrder(Guid orderId, PaymentStatusResponse paymentStatus)
+        private async Task ProcessPendingOrder(Order order, PaymentStatusResponse paymentStatus)
         {
             using var transaction = _dapper.BeginTransaction();
             try
             {
+                var user = await _usuarioRepository.GetUserById(order.UserId);
+
+                // Se o usuário for inválido cancelar o pedido e retornar
+                if (user == null)
+                {
+                    await CancelOrder(order.Id);
+                    return;
+                }
+                
                 // Atualiza os dados do pedido com as informações do pagamento recebidas
                 await _ordersRepository.UpdateOrderPaymentInfo(
-                    orderId,
+                    order.Id,
                     paymentStatus.PaymentId,
                     paymentStatus.PaymentMethod!,
                     paymentStatus.Status, 
                     transaction
                 );
                 
-                var orderItems = await _ordersRepository.GetOrderItemsByOrderId(orderId, transaction);
+                var orderItems = await _ordersRepository.GetOrderItemsByOrderId(order.Id, transaction);
                 
                 var variationIds = orderItems.Select(item => item.ProdutoVariacaoId).ToList();
                 var quantities = orderItems.Select(item => item.Quantidade).ToList();
                 
                 // Atualiza a reserva
-                await _reservaRepository.ConfirmarReserva(orderId, transaction);
+                await _reservaRepository.ConfirmarReserva(order.Id, transaction);
                 
                 // Só remove os produtos depois de todas as etapas do pagamento são concluídas
                 await _produtosRepository.RemoveMultipleProductsStockDirectAsync(variationIds, quantities, transaction);
                     
                 transaction.Commit();
+                
+                await _mailService.SendOrderConfirmationEmailAsync(user, order);
             }
             catch (Exception ex)
             {
@@ -273,7 +301,7 @@ namespace DaccApi.Services.Orders
         
         private async Task CancelOrder(Guid orderId)
         {
-            // change transaction to old
+            // Change transaction to old
             using var transaction = _dapper.BeginTransaction();
             try
             {
