@@ -1,6 +1,7 @@
 ﻿using DaccApi.Helpers;
 using DaccApi.Infrastructure.Repositories.Noticias;
 using DaccApi.Model;
+using DaccApi.Model.Requests;
 using DaccApi.Responses;
 using DaccApi.Services.FileStorage;
 using Microsoft.AspNetCore.Mvc;
@@ -46,15 +47,12 @@ public class NoticiasServices : INoticiasServices
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
-
-            var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile!);
             
             var noticia = new Noticia()
             {
                 Categoria = request.Categoria,
                 Descricao = request.Descricao,
                 Titulo = request.Titulo,
-                ImagemUrl = imageUrl,
                 AutorId = autorId,
             };
             
@@ -68,6 +66,32 @@ public class NoticiasServices : INoticiasServices
         }
     }
 
+    public async Task<IActionResult> UpdateNoticiaImage(Guid noticiaId, ImageRequest request)
+    {
+        try
+        {
+            var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
+
+            var noticia = await _noticiasRepository.GetNoticiaById(noticiaId);
+
+            if (noticia == null)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Notícia não encontrada!");
+            }
+            
+            noticia.ImagemUrl = imageUrl;
+            noticia.ImagemAlt = request.ImageAlt;
+            
+            await _noticiasRepository.UpdateNoticia(noticiaId, noticia);
+
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(noticia));
+        }
+        catch (Exception ex)
+        {
+            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, "Erro ao adicionar imagem na notícia." + ex.Message);
+        }
+    }
+    
     public async Task<IActionResult> DeleteNoticia(Guid id)
     {
 
@@ -117,14 +141,11 @@ public class NoticiasServices : INoticiasServices
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
             
-            var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile!);
-
             var noticia = new Noticia()
             {
                 Titulo = request.Titulo,
                 Descricao = request.Descricao,
                 Categoria = request.Categoria,
-                ImagemUrl = imageUrl,
             };
             
             await _noticiasRepository.UpdateNoticia(id, noticia);

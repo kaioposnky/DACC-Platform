@@ -1,4 +1,5 @@
 using DaccApi.Helpers;
+using DaccApi.Helpers.Attributes;
 using DaccApi.Responses;
 using DaccApi.Services.FileStorage;
 using Microsoft.AspNetCore.Authorization;
@@ -18,6 +19,7 @@ namespace DaccApi.Controllers
             _storageService = storageService;
         }
 
+        [FileUploadResponses]
         [HttpPost("uploadImage")]
         [Authorize(Roles = "administrador")]
         [RequestSizeLimit(5 * 1024 * 1024)] // 5 MB

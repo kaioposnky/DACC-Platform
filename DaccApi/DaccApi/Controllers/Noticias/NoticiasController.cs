@@ -1,10 +1,12 @@
 ﻿using DaccApi.Helpers;
+using DaccApi.Helpers.Attributes;
 using DaccApi.Model;
 using DaccApi.Responses;
 using DaccApi.Services.Noticias;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Infrastructure.Authentication;
+using DaccApi.Model.Requests;
 
 namespace DaccApi.Controllers.Noticias
 {
@@ -19,6 +21,7 @@ namespace DaccApi.Controllers.Noticias
             _noticiasServices = noticiasServices;
         }
 
+        [PublicGetResponses]
         [AllowAnonymous]
         [HttpGet("")]
         public async Task<IActionResult> GetAllNoticias()
@@ -27,15 +30,25 @@ namespace DaccApi.Controllers.Noticias
             return response;
         }
         
+        [AuthenticatedPostResponses]
         [HttpPost("")]
         [HasPermission(AppPermissions.Noticias.Create)]
-        public async Task<IActionResult> CreateNoticia([FromForm] RequestNoticia request)
+        public async Task<IActionResult> CreateNoticia([FromBody] RequestNoticia request)
         {
             var autorId = ClaimsHelper.GetUserId(User);
             var response = await _noticiasServices.CreateNoticia(autorId, request);
             return response;
         }
+
+        [HttpPatch("{id:guid}/image")]
+        [HasPermission(AppPermissions.Noticias.Update)]
+        public async Task<IActionResult> UpdateNoticiaImage([FromRoute] Guid id, [FromForm] ImageRequest request)
+        {
+            var response = await _noticiasServices.UpdateNoticiaImage(id, request);
+            return response;
+        }
         
+        [PublicGetResponses]
         [AllowAnonymous]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetNoticiaById([FromRoute] Guid id)
@@ -44,6 +57,7 @@ namespace DaccApi.Controllers.Noticias
             return response;
         }
         
+        [AuthenticatedDeleteResponses]
         [HttpDelete("{id:guid}")]
         [HasPermission(AppPermissions.Noticias.Delete)]
         public async Task<IActionResult> DeleteNoticia([FromRoute] Guid id)
@@ -52,6 +66,7 @@ namespace DaccApi.Controllers.Noticias
             return response;
         }
         
+        [AuthenticatedPatchResponses]
         [HttpPatch("{id:guid}")]
         [HasPermission(AppPermissions.Noticias.Update)]
         public async Task<IActionResult> UpdateNoticia([FromRoute] Guid id, [FromForm] RequestNoticia request)

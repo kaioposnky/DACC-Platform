@@ -44,6 +44,7 @@ public class NoticiasRepository : INoticiasRepository
                 Titulo = noticia.Titulo,
                 Descricao = noticia.Descricao,
                 Conteudo = noticia.Conteudo,
+                AutorId = noticia.AutorId
             };
 
             await _repositoryDapper.ExecuteAsync(sql, param);
@@ -101,7 +102,6 @@ public class NoticiasRepository : INoticiasRepository
                 Conteudo = noticia.Conteudo,
                 Categoria = noticia.Categoria,
                 Descricao = noticia.Descricao,
-                ImagemUrl = noticia.ImagemUrl
             };
             await _repositoryDapper.ExecuteAsync(sql, param);
             

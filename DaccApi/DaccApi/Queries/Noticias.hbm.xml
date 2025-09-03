@@ -14,8 +14,8 @@
         FROM noticia
     </query>
     <query name="CreateNoticia">
-        INSERT INTO noticia(titulo, descricao, conteudo)
-        VALUES (@Titulo, @Descricao, @Conteudo)
+        INSERT INTO noticia(titulo, descricao, conteudo, autor_id)
+        VALUES (@Titulo, @Descricao, @Conteudo, @AutorId)
     </query>
     <query name="DeleteNoticia">
         DELETE FROM noticia WHERE id=@id
@@ -37,6 +37,7 @@
         UPDATE noticia
             SET titulo = @Titulo,
                 imagem_url = @ImagemUrl,
+                imagem_alt = @ImagemAlt,
                 conteudo = @Conteudo,
                 descricao = @Descricao,
                 categoria = @Categoria,

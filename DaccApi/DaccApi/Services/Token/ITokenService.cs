@@ -1,4 +1,4 @@
-﻿using DaccApi.Model;
+using DaccApi.Model;
 
 namespace DaccApi.Services.Token
 {

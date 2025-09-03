@@ -1,6 +1,7 @@
 ﻿using DaccApi.Helpers;
 using DaccApi.Infrastructure.Repositories.Anuncio;
 using DaccApi.Model;
+using DaccApi.Model.Requests;
 using DaccApi.Responses;
 using DaccApi.Services.FileStorage;
 using Microsoft.AspNetCore.Mvc;
@@ -58,10 +59,7 @@ namespace DaccApi.Services.Anuncios
             {
                 if (
                     String.IsNullOrEmpty(anuncio.Titulo) ||
-                    String.IsNullOrEmpty(anuncio.Conteudo) ||
-                    String.IsNullOrEmpty(anuncio.ImagemAlt)||
-                    String.IsNullOrEmpty(anuncio.ImagemAlt)||
-                    String.IsNullOrEmpty(anuncio.ImagemAlt)
+                    String.IsNullOrEmpty(anuncio.Conteudo)
                     )
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
@@ -76,6 +74,34 @@ namespace DaccApi.Services.Anuncios
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
             }
         }
+        
+        public async Task<IActionResult> AddAnuncioImage(Guid id, ImageRequest request)
+        {
+            try
+            {
+                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
+
+                var anuncio = await _anuncioRepository.GetAnuncioById(id);
+
+                if (anuncio == null)
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Notícia não encontrada!");
+                }
+            
+                anuncio.ImagemUrl = imageUrl;
+                anuncio.ImagemAlt = request.ImageAlt;
+            
+                await _anuncioRepository.UpdateAnuncio(id, anuncio);
+
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(request));
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, "Erro ao adicionar anuncio na notícia." + ex.Message);
+            }
+        }
+        
+        
         
         public async Task<IActionResult> DeleteAnuncio(Guid id)
         {
@@ -108,15 +134,12 @@ namespace DaccApi.Services.Anuncios
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Anúncio não encontrado!");
                 }
-
-                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile!);
+                
                 
                 var anuncio = new Anuncio()
                 {
                    Titulo = request.Titulo,
                    Conteudo = request.Conteudo,
-                   ImagemAlt = request.ImagemAlt,
-                   ImagemUrl = imageUrl,
                    TipoAnuncio = request.TipoAnuncio,
                    Ativo = request.Ativo
                 };

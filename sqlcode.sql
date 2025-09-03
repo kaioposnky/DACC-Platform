@@ -363,6 +363,7 @@ CREATE TABLE noticia
     descricao        VARCHAR(255) NOT NULL,
     conteudo         TEXT,
     imagem_url       VARCHAR(255),
+    imagem_alt       VARCHAR(255),
     autor_id         UUID REFERENCES usuario (id),
     categoria        VARCHAR(50) REFERENCES categorias_noticia (nome),
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -377,7 +378,7 @@ CREATE TABLE projeto
     id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     titulo           VARCHAR(200) NOT NULL,
     descricao        TEXT         NOT NULL,
-    imagem_url       VARCHAR(255) NOT NULL,
+    imagem_url       VARCHAR(255),
     status           VARCHAR(50) REFERENCES tipos_progresso (nome),
     diretoria        VARCHAR(100) REFERENCES diretoria (nome),
     tags             VARCHAR(20)[],
@@ -485,7 +486,7 @@ INSERT INTO permissoes (nome, descricao)
 VALUES
     -- Permissões de Usuários
     ('users.view', 'Visualizar um usuário'),
-    ('user.viewall', 'Visualizar todos os usuários'),
+    ('users.viewall', 'Visualizar todos os usuários'),
     ('users.create', 'Criar novos usuários'),
     ('users.update', 'Atualizar informações de usuários'),
     ('users.delete', 'Deletar usuários'),

@@ -14,7 +14,7 @@
             usuario_id as UsuarioId,
             comentario as Comentario,
             produto_id as ProdutoId,
-            data_criacao as DataPostada
+            data_avaliacao as DataPostada
         FROM avaliacao;
     </query>
     
@@ -25,7 +25,7 @@
             usuario_id as UsuarioId,
             comentario as Comentario,
             produto_id as ProdutoId,
-            data_criacao as DataPostada
+            data_avaliacao as DataPostada
         FROM avaliacao WHERE id = @id
     </query>
     
@@ -37,7 +37,7 @@
             usuario_id as UsuarioId,
             comentario as Comentario,
             produto_id as ProdutoId,
-            data_criacao as DataPostada
+            data_avaliacao as DataPostada
         FROM avaliacao WHERE produto_id = @ProdutoId;
     </query>
 <!--    Query para obter as avaliacoes de um usuario-->
@@ -48,7 +48,7 @@
             usuario_id as UsuarioId,
             comentario as Comentario,
             produto_id as ProdutoId,
-            data_criacao as DataPostada
+            data_avaliacao as DataPostada
         FROM avaliacao WHERE usuario_id = @UsuarioId;
     </query>
     <query name="DeleteAvaliacao">

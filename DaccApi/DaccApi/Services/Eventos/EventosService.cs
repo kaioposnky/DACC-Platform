@@ -51,6 +51,7 @@ namespace DaccApi.Services.Eventos
 
                     var evento = new Evento()
                     {
+                        
                         Titulo = request.Titulo,
                         AutorId = autorId,
                         Descricao = request.Descricao,
@@ -58,9 +59,11 @@ namespace DaccApi.Services.Eventos
                         TextoAcao = request.TextoAcao,
                         TipoEvento = request.TipoEvento
                     };
-                    await _eventosRepository.CreateEvento(evento);
 
-                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
+                    var eventoId = await _eventosRepository.CreateEvento(evento);
+                    evento.Id = eventoId;
+                    
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED.WithData(evento));
                 }
                 catch (Exception ex)
                 {

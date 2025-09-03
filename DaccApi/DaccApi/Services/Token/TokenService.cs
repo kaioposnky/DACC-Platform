@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Authentication;
 using System.Security.Claims;
@@ -90,14 +91,18 @@ namespace DaccApi.Services.Token
         public async Task<bool> ValidateRefreshToken(Guid userId, string refreshToken)
         {
             var userTokensOld = await _usuarioRepository.GetUserTokens(userId);
-            var oldRefeshToken = userTokensOld.RefreshToken;
+            var oldRefeshToken = userTokensOld!.RefreshToken;
+            
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(refreshToken);
 
-            if (string.IsNullOrWhiteSpace(oldRefeshToken))
+            if (token.ValidTo < DateTime.UtcNow)
             {
-                return true;
+                return false;
             }
-
-            return oldRefeshToken.Equals(refreshToken);
+            
+            // se o token salvo for "" ele deu logout, então o token é inválido
+            return !string.IsNullOrWhiteSpace(oldRefeshToken) || oldRefeshToken.Equals(refreshToken);
         }
+        
     }
 }

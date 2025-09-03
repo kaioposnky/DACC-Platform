@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net.Mail;
 using System.Security.Authentication;
 using System.Security.Claims;
+using System.Text;
 using DaccApi.Model;
 using DaccApi.Helpers;
 using DaccApi.Infrastructure.Cryptography;
@@ -120,7 +121,6 @@ namespace DaccApi.Services.Auth
                         "Senha muito fraca! A senha deve ter ao menos 8 caracteres, " +
                         "uma letra maiúscula, uma letra minúscula e um número!");
                 }
-                
 
                 var usuario = new Usuario
                 {
@@ -157,7 +157,21 @@ namespace DaccApi.Services.Auth
         {
             try
             {
-                var userId = Guid.Parse(new JwtSecurityToken(refreshToken).Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value);
+                Guid userId;
+                try
+                {
+                    userId = Guid.Parse(new JwtSecurityToken(refreshToken).Claims
+                        .First(x => x.Type == ClaimTypes.NameIdentifier).Value);
+                }
+                catch (ArgumentException)
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.AUTH_TOKEN_INVALID);
+                }
+                catch (FormatException)
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.AUTH_TOKEN_INVALID);
+                }
+                
                 var user = await _usuarioRepository.GetUserById(userId);
                 
                 var validRefreshToken = await _tokenService.ValidateRefreshToken(userId, refreshToken);
@@ -183,6 +197,24 @@ namespace DaccApi.Services.Auth
             }
         }
 
+        public async Task<IActionResult> Logout(Guid userId)
+        {
+            try
+            {
+                var userTokens = await _usuarioRepository.GetUserTokens(userId);
+                
+                var tokensUsuario = new TokensUsuario(){ AccessToken = "", RefreshToken = "" };
+                
+                await _usuarioRepository.UpdateUserTokens(userId, tokensUsuario);
+
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK, "Usuário saiu com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
+        
         private static bool IsValidRa(string? ra)
         {
             if (ra == null || string.IsNullOrWhiteSpace(ra))

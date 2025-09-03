@@ -6,7 +6,7 @@ namespace DaccApi.Infrastructure.Repositories.Eventos
     {
         public Task<List<Evento>> GetAllEventos();
         public Task<Evento?> GetEventoById(Guid id);
-        public Task CreateEvento(Evento evento);
+        public Task<Guid> CreateEvento(Evento evento);
         public Task DeleteEvento(Guid id);
         public Task UpdateEvento(Guid id, Evento evento);
     }

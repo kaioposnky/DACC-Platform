@@ -4,6 +4,7 @@ using DaccApi.Infrastructure.Repositories.Diretores;
 using DaccApi.Helpers;
 using DaccApi.Responses;
 using DaccApi.Services.Diretores;
+using DaccApi.Services.FileStorage;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.Diretores
@@ -11,10 +12,12 @@ namespace DaccApi.Services.Diretores
     public class DiretoresService : IDiretoresService
     {
         private readonly IDiretoresRepository _diretoresRepository;
+        private readonly IFileStorageService _fileStorageService;
 
-        public DiretoresService(IDiretoresRepository diretoresRepository)
+        public DiretoresService(IDiretoresRepository diretoresRepository, IFileStorageService fileStorageService)
         {
             _diretoresRepository = diretoresRepository;
+            _fileStorageService = fileStorageService;
         }
         public async Task<IActionResult> GetAllDiretores()
         {
@@ -119,8 +122,14 @@ namespace DaccApi.Services.Diretores
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
+
+                string? imageUrl = null;
+                if (request.ImageFile != null)
+                {
+                    imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
+                }
                 
-                var diretor = new Diretor()
+                var diretor = new Diretor
                 {
                     Nome = request.Nome,
                     Descricao = request.Descricao,
@@ -129,6 +138,7 @@ namespace DaccApi.Services.Diretores
                     Email = request.Email,
                     DiretoriaId = request.DiretoriaId,
                     UsuarioId = request.UsuarioId,
+                    ImagemUrl = imageUrl ?? diretorQuery.ImagemUrl
                 };
                 
                 await _diretoresRepository.UpdateDiretor(id, diretor);
@@ -140,7 +150,5 @@ namespace DaccApi.Services.Diretores
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
             }
         }
-
-       
     }
 }
