@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using DaccApi.Model;
 using MimeKit;
 
@@ -10,62 +10,84 @@ namespace DaccApi.EmailTemplates
         {
             var html = new StringBuilder();
 
-            html.AppendLine("<html>");
-            html.AppendLine("<head>");
-            html.AppendLine("<style>");
-            html.AppendLine("  body { font-family: Arial, sans-serif; color: #333; margin: 0; padding: 20px; background-color: #f8f9fa; }");
-            html.AppendLine("  .container { max-width: 600px; margin: 0 auto; background-color: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }");
-            html.AppendLine("  .header { text-align: center; padding-bottom: 20px; border-bottom: 1px solid #eee; margin-bottom: 30px; }");
-            html.AppendLine("  .content { line-height: 1.6; }");
-            html.AppendLine("  .highlight { background-color: #e9f7ff; padding: 15px; border-radius: 5px; margin: 20px 0; }");
-            html.AppendLine("  .footer { text-align: center; padding-top: 20px; border-top: 1px solid #eee; margin-top: 30px; color: #666; font-size: 14px; }");
-            html.AppendLine("  .btn { display: inline-block; background-color: #007bff; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; margin: 20px 0; }");
-            html.AppendLine("</style>");
-            html.AppendLine("</head>");
-            html.AppendLine("<body>");
+            html.AppendLine(@"
+<!DOCTYPE html>
+<html lang=""pt-BR"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <title>Bem-vindo(a) à Nossa Plataforma!</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .header img {
+            max-width: 150px;
+        }
+        .content {
+            padding: 20px;
+            text-align: center;
+        }
+        .content h1 {
+            color: #333333;
+        }
+        .content p {
+            color: #666666;
+            line-height: 1.6;
+        }
+        .button {
+            display: inline-block;
+            padding: 15px 25px;
+            margin: 20px 0;
+            background-color: #007bff;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #999999;
+        }
+    </style>
+</head>
+<body>
+    <div class=""container"">
+        <div class=""header"">
+            <img src=""https://via.placeholder.com/150"" alt=""Logo da Empresa"">
+        </div>
+        <div class=""content"">
+            <h1>Bem-vindo(a), " + user.Nome + @"!</h1>
+            <p>Estamos muito felizes em ter você conosco. Sua conta foi criada com sucesso e agora você pode aproveitar todos os recursos da nossa plataforma.</p>
+            <a href=""#"" class=""button"">Acessar Minha Conta</a>
+        </div>
+        <div class=""footer"">
+            <p>&copy; 2025 DaccApi. Todos os direitos reservados.</p>
+            <p>Se você não se cadastrou em nossa plataforma, por favor, ignore este e-mail.</p>
+        </div>
+    </div>
+</body>
+</html>
+");
 
-            html.AppendLine("<div class='container'>");
-            html.AppendLine("<div class='header'>");
-            html.AppendLine("<h1>Bem-vindo(a) à Nossa Plataforma!</h1>");
-            html.AppendLine("<p>É um prazer ter você conosco</p>");
-            html.AppendLine("</div>");
-
-            html.AppendLine("<div class='content'>");
-            html.AppendLine($"<h2>Olá {user.Nome} {user.Sobrenome}!</h2>");
-            html.AppendLine("<p>Estamos muito felizes em tê-lo(a) como nosso novo usuário. Sua conta foi criada com sucesso e agora você pode acessar todos os recursos disponíveis na nossa plataforma.</p>");
-
-            html.AppendLine("<div class='highlight'>");
-            html.AppendLine("<h3>Informações da sua conta:</h3>");
-            html.AppendLine($"<p><strong>Nome:</strong> {user.Nome} {user.Sobrenome}</p>");
-            html.AppendLine($"<p><strong>Email:</strong> {user.Email}</p>");
-            html.AppendLine($"<p><strong>RA:</strong> {user.Ra}</p>");
-            html.AppendLine("</div>");
-
-            html.AppendLine("<p>Agora você pode:</p>");
-            html.AppendLine("<ul>");
-            html.AppendLine("<li>Navegar por nossos produtos e serviços</li>");
-            html.AppendLine("<li>Fazer pedidos e compras</li>");
-            html.AppendLine("<li>Participar de nossa comunidade</li>");
-            html.AppendLine("<li>Acessar notícias e eventos importantes</li>");
-            html.AppendLine("</ul>");
-
-            html.AppendLine("<p>Se tiver alguma dúvida ou precisar de ajuda, não hesite em entrar em contato com nosso suporte.</p>");
-
-            html.AppendLine("<a href='#' class='btn'>Acessar Minha Conta</a>");
-
-            html.AppendLine("</div>");
-
-            html.AppendLine("<div class='footer'>");
-            html.AppendLine("<p>Atenciosamente,</p>");
-            html.AppendLine("<p>A Equipe da Nossa Plataforma</p>");
-            html.AppendLine("<p>© 2025 Nome da Empresa. Todos os direitos reservados.</p>");
-            html.AppendLine("</div>");
-
-            html.AppendLine("</div>");
-            html.AppendLine("</body>");
-            html.AppendLine("</html>");
-
-            return new TextPart()
+            return new TextPart("html")
             {
                 Text = html.ToString()
             };
