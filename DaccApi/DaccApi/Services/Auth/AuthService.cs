@@ -7,6 +7,7 @@ using System.Text;
 using DaccApi.Model;
 using DaccApi.Helpers;
 using DaccApi.Infrastructure.Cryptography;
+using DaccApi.Infrastructure.Mail;
 using DaccApi.Infrastructure.Repositories.Permission;
 using DaccApi.Infrastructure.Repositories.User;
 using DaccApi.Model.Responses;
@@ -23,12 +24,14 @@ namespace DaccApi.Services.Auth
         private readonly IArgon2Utility _argon2Utility;
         private readonly ITokenService _tokenService;
         private readonly IPermissionRepository _permissionRepository;
-        public AuthService(IUsuarioRepository u, IArgon2Utility a, ITokenService t, IPermissionRepository p)
+        private readonly IMailService _mailService;
+        public AuthService(IUsuarioRepository u, IArgon2Utility a, ITokenService t, IPermissionRepository p, IMailService m)
         {
             _usuarioRepository = u;
             _argon2Utility = a;
             _tokenService = t;
             _permissionRepository = p;
+            _mailService = m;
         }
         
         private bool ValidateCredentials(string email, string password, string hashedPassword)
@@ -92,6 +95,7 @@ namespace DaccApi.Services.Auth
             }
         }
             
+        // TODO: Transferir email para o controller e refatorar a lógica do register para retornar o usuário ou uma exception.
         public async Task<IActionResult> RegisterUser(RequestCreateUsuario requestCreate)
         {
             try
@@ -139,6 +143,9 @@ namespace DaccApi.Services.Auth
                 };
 
                 await _usuarioRepository.CreateUser(usuario);
+
+                // envia email de boas vindas
+                await _mailService.SendWelcomeEmailAsync(usuario);
                 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED.WithData(new { users = usuario.ToResponse() }));
             }
