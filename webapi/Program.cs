@@ -233,6 +233,7 @@ var webRootPath = Path.Combine(contentRootPath, "wwwroot");
 if (!Directory.Exists(webRootPath))
 {
     Directory.CreateDirectory(webRootPath);
+    app.Environment.WebRootPath = webRootPath;
 }
 
 var uploadFilesSubfolder = builder.Configuration["UploadFilesSubfolder"]!;
