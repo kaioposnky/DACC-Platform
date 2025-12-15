@@ -1,0 +1,1 @@
+export { NewsFilter, type FilterOptions } from './NewsFilter'; 

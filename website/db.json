@@ -1,0 +1,784 @@
+{
+  "announcements": [
+    {
+      "id": "1",
+      "title": "Sociedade da Coruja",
+      "type": "event",
+      "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "icon": "M9.5 14C10.3 14 11 13.3 11 12.5S10.3 11 9.5 11 8 11.7 8 12.5 8.7 14 9.5 14M12 7.5C12.8 7.5 13.5 6.8 13.5 6S12.8 4.5 12 4.5 10.5 5.2 10.5 6 11.2 7.5 12 7.5M14.5 14C15.3 14 16 13.3 16 12.5S15.3 11 14.5 11 13 11.7 13 12.5 13.7 14 14.5 14M12 2L13.09 8.26L22 9L17 14L18.18 23L12 19.5L5.82 23L7 14L2 9L10.91 8.26L12 2Z",
+      "details": [
+        { "icon": "calendar", "text": "Toda Quarta-feira" },
+        { "icon": "clock", "text": "18:00 - 19:00" },
+        { "icon": "location", "text": "Entre os prédios I e J. FEI - São Bernardo do Campo" }
+      ],
+      "primaryButtonText": "Participar",
+      "secondaryButtonText": "Saiba Mais",
+      "primaryButtonLink": "https://www.google.com",
+      "secondaryButtonLink": "https://www.google.com",
+      "imageSrc": "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      "imageAlt": "Students working on laptops during workshop",
+      "createdAt": "2024-01-01T10:00:00Z" 
+    },
+    {
+      "id": "2",
+      "title": "Familía do Corujão",
+      "type": "event",
+      "content": "Grupo criado para unir a galera da Ciência da Computação da FEI, compartilhar ideias, tirar dúvidas e participar de projetos incríveis que vão muito além da sala de aula!",
+      "icon": "M9.5 14C10.3 14 11 13.3 11 12.5S10.3 11 9.5 11 8 11.7 8 12.5 8.7 14 9.5 14M12 7.5C12.8 7.5 13.5 6.8 13.5 6S12.8 4.5 12 4.5 10.5 5.2 10.5 6 11.2 7.5 12 7.5M14.5 14C15.3 14 16 13.3 16 12.5S15.3 11 14.5 11 13 11.7 13 12.5 13.7 14 14.5 14M12 2L13.09 8.26L22 9L17 14L18.18 23L12 19.5L5.82 23L7 14L2 9L10.91 8.26L12 2Z",
+      "details": [
+        { "icon": "location", "text": "WhatsApp" }
+      ],
+      "primaryButtonText": "Participar",
+      "primaryButtonLink": "#",
+      "imageSrc": "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      "imageAlt": "Students working on laptops during workshop",
+      "createdAt": "2024-01-01T10:00:00Z" 
+    }
+
+  ],
+  "events": [
+    {
+      "id": "1",
+      "title": "Web Development Workshop",
+      "description": "Learn modern web technologies including React, Node.js, and MongoDB",
+      "date": "2024-05-15",
+      "time": "2:00 PM - 5:00 PM",
+      "actionText": "Join",
+      "actionLink": "/events/web-development-workshop",
+      "type": "workshop"
+    },
+    {
+      "id": "2",
+      "title": "AI & Machine Learning Seminar",
+      "description": "Introduction to artificial intelligence and machine learning fundamentals",
+      "date": "2024-05-22",
+      "time": "1:00 PM - 4:00 PM",
+      "actionText": "Join",
+      "actionLink": "/events/ai-ml-seminar",
+      "type": "seminar"
+    },
+    {
+      "id": "3",
+      "title": "Hackathon 2024",
+      "description": "24-hour coding challenge to solve real-world problems",
+      "date": "2024-05-29",
+      "time": "9:00 AM - 9:00 AM (Next Day)",
+      "actionText": "Register",
+      "actionLink": "/events/hackathon-2024",
+      "type": "hackathon"
+    }
+  ],
+  "projects": [
+    {
+      "id": "1",
+      "title": "Smart Campus App",
+      "description": "A mobile application to help students navigate campus, find study spaces, and track their academic progress.",
+      "icon": "mobile",
+      "technologies": ["React Native", "Firebase", "Node.js"],
+      "status": "in_progress",
+      "progress": 75,
+      "completionText": "75% Complete"
+    },
+    {
+      "id": "2",
+      "title": "AI Study Assistant",
+      "description": "An intelligent chatbot that helps students with homework, provides study tips, and answers academic questions.",
+      "icon": "robot",
+      "technologies": ["Python", "TensorFlow", "NLP"],
+      "status": "in_progress",
+      "progress": 60,
+      "completionText": "60% Complete"
+    },
+    {
+      "id": "3",
+      "title": "Data Analytics Dashboard",
+      "description": "A comprehensive dashboard for analyzing student performance and academic trends across different courses.",
+      "icon": "chart",
+      "technologies": ["Vue.js", "D3.js", "PostgreSQL"],
+      "status": "completed",
+      "progress": 100,
+      "completionText": "100% Complete"
+    },
+     {
+      "id": "4",
+      "title": "Projetro 35",
+      "description": "A comprehensive dashboard for analyzing student performance and academic trends across different courses.",
+      "icon": "chart",
+      "technologies": ["Vue.js", "D3.js", "PostgreSQL"],
+      "status": "completed",
+      "progress": 100,
+      "completionText": "100% Complete"
+    }
+  ],
+  "news": [
+    {
+      "id": "1",
+      "title": "Our Team Wins National Coding Competition",
+      "description": "Congratulations to our students who secured first place in the National Collegiate Programming Contest, showcasing exceptional problem-solving skills and teamwork.",
+      "content": "In an outstanding display of computational prowess and collaborative excellence, our Computer Science team has emerged victorious at the National Collegiate Programming Contest (NCPC), marking a historic achievement for our institution.\n\nThe competition, held at the Federal University of São Paulo, brought together 150 teams from universities across Brazil. Our team, consisting of final-year students Ana Silva, Carlos Rodriguez, and Marina Santos, solved 8 out of 12 challenging algorithmic problems within the 5-hour time limit.\n\n\"This victory represents months of dedicated preparation and countless hours of practice,\" said team captain Ana Silva. \"We focused intensively on dynamic programming, graph theory, and optimization algorithms.\"\n\nThe winning solution involved implementing a sophisticated algorithm for the maximum flow problem, which our team completed in just 45 minutes – faster than any other competing team.\n\nProfessor Dr. Miguel Costa, who coached the team, emphasized the importance of this achievement: \"This demonstrates the quality of our computer science program and our students' exceptional analytical capabilities.\"\n\nThe team will now represent Brazil at the International Collegiate Programming Contest (ICPC) World Finals in April 2024, to be held in Kazakhstan.\n\nThis marks the third consecutive year our program has placed in the top 3 nationally, establishing our institution as a powerhouse in competitive programming education.",
+      "author": "Prof. Ana Santos",
+      "readTime": 3,
+      "image": "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      "tags": ["programming", "competition", "achievement", "algorithms"],
+      "date": "March 10, 2024",
+      "category": "Achievement",
+      "icon": "trophy",
+      "gradient": "from-blue-500 to-orange-500",
+      "readMoreLink": "/noticias/1"
+    },
+    {
+      "id": "2",
+      "title": "Alumni Success Story: From Student to Tech Lead",
+      "description": "Former student Maria Santos shares her journey from our program to becoming a Senior Software Engineer at Google.",
+      "content": "Maria Santos, who graduated from our Computer Science program in 2019, has recently been promoted to Senior Software Engineer at Google, where she leads a team developing machine learning infrastructure for Google Cloud Platform.\n\n\"My journey started right here in these classrooms,\" Maria reflects during our interview. \"The solid foundation in algorithms, data structures, and software engineering principles I received here was crucial for my success.\"\n\nAfter graduation, Maria began her career as a Junior Developer at a local tech startup, where she worked on web applications using React and Node.js. Her exceptional performance and leadership skills quickly caught the attention of larger companies.\n\nIn 2021, she joined Google as a Software Engineer II, working on the Google Cloud team. Within just two years, her contributions to improving the performance of machine learning workloads led to her promotion to Senior Software Engineer.\n\n\"One of the projects I'm most proud of is the optimization system I developed that reduced ML model training time by 40% for our enterprise customers,\" Maria explains.\n\nHer advice to current students is clear: \"Focus on fundamentals, but don't be afraid to explore new technologies. The programming languages and frameworks may change, but strong problem-solving skills and the ability to learn quickly will always be valuable.\"\n\nMaria regularly returns to campus as a guest lecturer and maintains an active mentorship program for current students interested in machine learning and cloud computing.\n\nHer success story serves as an inspiration to our current students and demonstrates the excellent career prospects available to graduates of our program.",
+      "author": "Equipe de Comunicação",
+      "readTime": 4,
+      "image": "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      "tags": ["alumni", "career", "google", "success-story"],
+      "date": "March 8, 2024",
+      "category": "Alumni",
+      "icon": "graduation",
+      "gradient": "from-blue-500 to-orange-500",
+      "readMoreLink": "/noticias/2"
+    },
+    {
+      "id": "3",
+      "title": "New Lab Equipment Arrives for Fall Semester",
+      "description": "State-of-the-art workstations and development tools are now available to enhance our students' learning experience.",
+      "content": "The Computer Science Department is excited to announce the arrival of cutting-edge laboratory equipment that will significantly enhance our students' hands-on learning experience beginning this fall semester.\n\nThe new equipment includes 40 high-performance workstations, each featuring the latest Intel Core i9 processors, 32GB RAM, and NVIDIA RTX 4080 graphics cards. These powerful machines will support intensive computational tasks, machine learning projects, and advanced graphics programming.\n\n\"This investment represents our commitment to providing students with industry-standard tools and technologies,\" said Department Head Dr. Carlos Silva. \"Students will now have access to the same caliber of equipment used in leading tech companies.\"\n\nKey additions to our laboratories include:\n\n• High-Performance Computing Cluster: A 16-node cluster for parallel programming and distributed systems courses\n• Virtual Reality Development Station: Equipped with Oculus Quest 3 and HTC Vive headsets for VR/AR coursework\n• IoT Development Lab: Arduino, Raspberry Pi, and various sensors for Internet of Things projects\n• Network Security Lab: Dedicated environment for cybersecurity training and penetration testing\n\nThe equipment was acquired through a combination of university funding and partnerships with industry leaders including Intel, NVIDIA, and Microsoft, who provided educational discounts and additional software licenses.\n\nStudents will have access to professional development tools including the latest versions of Visual Studio, IntelliJ IDEA, Docker Enterprise, and cloud computing credits for AWS and Google Cloud Platform.\n\n\"I'm excited to work with the new VR equipment for my final project,\" said final-year student João Silva. \"Having access to professional-grade tools will definitely help prepare us for the job market.\"\n\nThe new laboratory will be officially inaugurated during the Fall Semester Opening Ceremony on March 15th.",
+      "author": "Dr. Carlos Silva",
+      "readTime": 5,
+      "image": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      "tags": ["infrastructure", "equipment", "laboratory", "technology"],
+      "date": "March 5, 2024",
+      "category": "Infrastructure",
+      "icon": "laptop",
+      "gradient": "from-blue-500 to-orange-500",
+      "readMoreLink": "/noticias/3"
+    }
+  ],
+  "faculty": [
+    {
+      "id": "1",
+      "name": "Dr. Carlos Silva",
+      "title": "Dr.",
+      "position": "Head of Computer Science",
+      "specialization": "Artificial Intelligence & Machine Learning",
+      "image": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+      "social": {
+        "linkedin": "https://linkedin.com/in/carlos-silva",
+        "github": "https://github.com/carlos-silva",
+        "email": "carlos.silva@corujaoverflow.com"
+      }
+    },
+    {
+      "id": "2",
+      "name": "Prof. Ana Santos",
+      "title": "Prof.",
+      "position": "Associate Professor",
+      "specialization": "Blockchain & Distributed Systems",
+      "image": "https://images.unsplash.com/photo-1611432579402-7037e3e2c1e4?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "social": {
+        "linkedin": "https://linkedin.com/in/ana-santos",
+        "github": "https://github.com/ana-santos",
+        "email": "ana.santos@corujaoverflow.com"
+      }
+    },
+    {
+      "id": "3",
+      "name": "Dr. Miguel Costa",
+      "title": "Dr.",
+      "position": "Assistant Professor",
+      "specialization": "Internet of Things & Embedded Systems",
+      "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+      "social": {
+        "linkedin": "https://linkedin.com/in/miguel-costa",
+        "github": "https://github.com/miguel-costa",
+        "email": "miguel.costa@corujaoverflow.com"
+      }},
+      {
+        "id": "4",
+        "name": "Dr. Carlos Silva",
+        "title": "Dr.",
+        "position": "Head of Computer Science",
+        "specialization": "Artificial Intelligence & Machine Learning",
+        "image": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+        "social": {
+          "linkedin": "https://linkedin.com/in/carlos-silva",
+          "github": "https://github.com/carlos-silva",
+          "email": "carlos.silva@corujaoverflow.com"
+        }
+      },
+      {
+        "id": "5",
+        "name": "Prof. Ana Santos",
+        "title": "Prof.",
+        "position": "Associate Professor",
+        "specialization": "Blockchain & Distributed Systems",
+        "image": "https://images.unsplash.com/photo-1611432579402-7037e3e2c1e4?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "social": {
+          "linkedin": "https://linkedin.com/in/ana-santos",
+          "github": "https://github.com/ana-santos",
+          "email": "ana.santos@corujaoverflow.com"
+        }
+      },
+      {
+        "id": "6",
+        "name": "Dr. Miguel Costa",
+        "title": "Dr.",
+        "position": "Assistant Professor",
+        "specialization": "Internet of Things & Embedded Systems",
+        "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+        "social": {
+          "linkedin": "https://linkedin.com/in/miguel-costa",
+          "github": "https://github.com/miguel-costa",
+          "email": "miguel.costa@corujaoverflow.com"
+        }},
+        {
+          "id": "7",
+          "name": "Dr. Carlos Silva",
+          "title": "Dr.",
+          "position": "Head of Computer Science",
+          "specialization": "Artificial Intelligence & Machine Learning",
+          "image": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+          "social": {
+            "linkedin": "https://linkedin.com/in/carlos-silva",
+            "github": "https://github.com/carlos-silva",
+            "email": "carlos.silva@corujaoverflow.com"
+          }
+        },
+        {
+          "id": "8",
+          "name": "Prof. Ana Santos",
+          "title": "Prof.",
+          "position": "Associate Professor",
+          "specialization": "Blockchain & Distributed Systems",
+          "image": "https://images.unsplash.com/photo-1611432579402-7037e3e2c1e4?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          "social": {
+            "linkedin": "https://linkedin.com/in/ana-santos",
+            "github": "https://github.com/ana-santos",
+            "email": "ana.santos@corujaoverflow.com"
+          }
+        },
+        {
+          "id": "9",
+          "name": "Dr. Miguel Costa",
+          "title": "Dr.",
+          "position": "Assistant Professor",
+          "specialization": "Internet of Things & Embedded Systems",
+          "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+          "social": {
+            "linkedin": "https://linkedin.com/in/miguel-costa",
+            "github": "https://github.com/miguel-costa",
+            "email": "miguel.costa@corujaoverflow.com"
+          }
+    }
+  ],
+  "products": [
+    {
+      "id": "1",
+      "name": "Coruja Overflow T-Shirt",
+      "description": "Classic black t-shirt with the iconic Coruja Overflow logo",
+      "detailedDescription": "Nossa camiseta premium Coruja Overflow é mais do que apenas uma peça de roupa – é uma declaração da sua paixão pela ciência da computação e excelência em programação. Feita de 100% algodão orgânico, esta camisa oferece conforto incomparável, seja você passando uma madrugada depurando código ou apresentando seu projeto mais recente.\n\nO design apresenta nosso icônico logo Coruja Overflow, simbolizando sabedoria e destreza técnica. A impressão de alta qualidade é resistente ao desbotamento e mantém suas cores vibrantes mesmo após várias lavagens.",
+      "perfectFor": [
+        "Sessões de programação e hackathons",
+        "Aulas de ciência da computação",
+        "Meetups e conferências de tecnologia",
+        "Uso casual do dia a dia",
+        "Demonstrar seu orgulho CS"
+      ],
+      "price": 29.99,
+      "originalPrice": 39.99,
+      "category": "tshirts",
+      "inStock": true,
+      "stockCount": 50,
+      "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+        "https://images.unsplash.com/photo-1503341504253-dff4815485f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+        "https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+      ],
+      "sizes": ["XS", "S", "M", "L", "XL", "XXL"],
+      "colors": ["Black", "Navy", "White"],
+      "featured": true,
+      "rating": 4.8,
+      "reviews": 124,
+      "specifications": [
+        { "name": "Material", "value": "100% Algodão Orgânico" },
+        { "name": "Peso do tecido", "value": "180 GSM" },
+        { "name": "Tipo de gola", "value": "Gola redonda" },
+        { "name": "Tipo de manga", "value": "Manga curta" },
+        { "name": "Corte", "value": "Unissex regular" },
+        { "name": "Método de impressão", "value": "Serigrafia de alta qualidade" },
+        { "name": "Cuidados", "value": "Lavagem à máquina em água fria" },
+        { "name": "País de origem", "value": "Brasil" }
+      ],
+      "reviewsList": [
+        {
+          "id": "r1",
+          "userId": "u1",
+          "userName": "Carlos Silva",
+          "userAvatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
+          "rating": 5,
+          "title": "Qualidade excepcional!",
+          "comment": "Comprei esta camiseta para usar durante as aulas e estou impressionado com a qualidade. O tecido é super macio e o logo ficou perfeito. Já recebi vários elogios!",
+          "date": "2024-01-15",
+          "verified": true,
+          "helpful": 12
+        },
+        {
+          "id": "r2",
+          "userId": "u2",
+          "userName": "Ana Costa",
+          "userAvatar": "https://images.unsplash.com/photo-1494790108755-2616b612b98c?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
+          "rating": 4,
+          "title": "Muito confortável",
+          "comment": "Ótima camiseta para o dia a dia. O tamanho M ficou perfeito em mim. A única coisa é que gostaria que tivesse mais opções de cores.",
+          "date": "2024-01-12",
+          "verified": true,
+          "helpful": 8
+        },
+        {
+          "id": "r3",
+          "userId": "u3",
+          "userName": "Rafael Santos",
+          "userAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
+          "rating": 5,
+          "title": "Perfeita para hackathons!",
+          "comment": "Usei durante o último hackathon da faculdade e foi perfeita. Tecido respira bem e o design representa muito bem nosso curso. Recomendo!",
+          "date": "2024-01-10",
+          "verified": true,
+          "helpful": 15
+        }
+      ],
+      "shippingInfo": {
+        "freeShipping": true,
+        "estimatedDays": "3-5 dias úteis",
+        "shippingCost": 0,
+        "returnPolicy": "Devolução gratuita em até 30 dias",
+        "warranty": "Garantia de 6 meses contra defeitos de fabricação"
+      },
+      "createdAt": "2024-01-01T10:00:00Z"
+    },
+    {
+      "id": "2",
+      "name": "Code Master Hoodie",
+      "description": "Comfortable hoodie perfect for long coding sessions",
+      "price": 49.99,
+      "originalPrice": 59.99,
+      "category": "hoodies",
+      "inStock": true,
+      "stockCount": 30,
+      "image": "https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+      ],
+      "sizes": ["S", "M", "L", "XL", "XXL"],
+      "colors": ["Gray", "Black", "Navy"],
+      "featured": true,
+      "rating": 4.9,
+      "reviews": 89,
+      "createdAt": "2024-01-02T10:00:00Z"
+    },
+    {
+      "id": "3",
+      "name": "Developer Coffee Mug",
+      "description": "11oz ceramic mug with funny programming quotes",
+      "price": 14.99,
+      "originalPrice": 19.99,
+      "category": "cups",
+      "inStock": true,
+      "stockCount": 75,
+      "image": "https://images.unsplash.com/photo-1514228742587-6b1558fcf400?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1514228742587-6b1558fcf400?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+      ],
+      "sizes": ["11oz"],
+      "colors": ["White", "Black"],
+      "featured": false,
+      "rating": 4.6,
+      "reviews": 67,
+      "createdAt": "2024-01-03T10:00:00Z"
+    },
+    {
+      "id": "4",
+      "name": "Coding Laptop Stickers Pack",
+      "description": "Set of 20 waterproof stickers with programming themes",
+      "price": 9.99,
+      "originalPrice": 12.99,
+      "category": "stickers",
+      "inStock": true,
+      "stockCount": 100,
+      "image": "https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+      ],
+      "sizes": ["One Size"],
+      "colors": ["Multicolor"],
+      "featured": false,
+      "rating": 4.7,
+      "reviews": 156,
+      "createdAt": "2024-01-04T10:00:00Z"
+    },
+    {
+      "id": "5",
+      "name": "CS Department Cap",
+      "description": "Adjustable baseball cap with embroidered logo",
+      "price": 24.99,
+      "originalPrice": 29.99,
+      "category": "accessories",
+      "inStock": true,
+      "stockCount": 40,
+      "image": "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+      ],
+      "sizes": ["One Size"],
+      "colors": ["Navy", "Black", "White"],
+      "featured": false,
+      "rating": 4.5,
+      "reviews": 43,
+      "createdAt": "2024-01-05T10:00:00Z"
+    },
+    {
+      "id": "6",
+      "name": "Algorithm Master T-Shirt",
+      "description": "White t-shirt with creative algorithm visualization",
+      "price": 32.99,
+      "originalPrice": null,
+      "category": "tshirts",
+      "inStock": true,
+      "stockCount": 25,
+      "image": "https://images.unsplash.com/photo-1503341504253-dff4815485f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1503341504253-dff4815485f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+      ],
+      "sizes": ["XS", "S", "M", "L", "XL"],
+      "colors": ["White", "Light Gray"],
+      "featured": true,
+      "rating": 4.9,
+      "reviews": 78,
+      "createdAt": "2024-01-06T10:00:00Z"
+    },
+    {
+      "id": "7",
+      "name": "Full Stack Hoodie",
+      "description": "Premium zip-up hoodie for full-stack developers",
+      "price": 59.99,
+      "originalPrice": 69.99,
+      "category": "hoodies",
+      "inStock": true,
+      "stockCount": 20,
+      "image": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+      ],
+      "sizes": ["S", "M", "L", "XL"],
+      "colors": ["Black", "Charcoal"],
+      "featured": false,
+      "rating": 4.8,
+      "reviews": 52,
+      "createdAt": "2024-01-07T10:00:00Z"
+    },
+    {
+      "id": "8",
+      "name": "Binary Coffee Cup",
+      "description": "Temperature-changing mug that reveals binary code",
+      "price": 19.99,
+      "originalPrice": 24.99,
+      "category": "cups",
+      "inStock": false,
+      "stockCount": 0,
+      "image": "https://images.unsplash.com/photo-1559825481-12a05cc00344?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1559825481-12a05cc00344?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+      ],
+      "sizes": ["12oz"],
+      "colors": ["Black"],
+      "featured": false,
+      "rating": 4.4,
+      "reviews": 29,
+      "createdAt": "2024-01-08T10:00:00Z"
+    },
+    {
+      "id": "9",
+      "name": "Git Commands Sticker Set",
+      "description": "Essential Git commands stickers for your laptop",
+      "price": 7.99,
+      "originalPrice": null,
+      "category": "stickers",
+      "inStock": true,
+      "stockCount": 150,
+      "image": "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+      ],
+      "sizes": ["Small Pack"],
+      "colors": ["Multicolor"],
+      "featured": false,
+      "rating": 4.3,
+      "reviews": 91,
+      "createdAt": "2024-01-09T10:00:00Z"
+    },
+    {
+      "id": "10",
+      "name": "Programmer Backpack",
+      "description": "Laptop backpack with multiple compartments",
+      "price": 79.99,
+      "originalPrice": 99.99,
+      "category": "accessories",
+      "inStock": true,
+      "stockCount": 15,
+      "image": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+      ],
+      "sizes": ["One Size"],
+      "colors": ["Black", "Gray"],
+      "featured": true,
+      "rating": 4.7,
+      "reviews": 34,
+      "createdAt": "2024-01-10T10:00:00Z"
+    },
+    {
+      "id": "11",
+      "name": "Debug Mode T-Shirt",
+      "description": "Funny t-shirt for when you're in debug mode",
+      "price": 27.99,
+      "originalPrice": 34.99,
+      "category": "tshirts",
+      "inStock": true,
+      "stockCount": 60,
+      "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+      ],
+      "sizes": ["XS", "S", "M", "L", "XL", "XXL"],
+      "colors": ["Red", "Blue", "Green"],
+      "featured": false,
+      "rating": 4.6,
+      "reviews": 87,
+      "createdAt": "2024-01-11T10:00:00Z"
+    },
+    {
+      "id": "12",
+      "name": "Syntax Error Travel Mug",
+      "description": "Insulated travel mug for coding on the go",
+      "price": 22.99,
+      "originalPrice": 27.99,
+      "category": "cups",
+      "inStock": true,
+      "stockCount": 35,
+      "image": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1544787219-7f47ccb76574?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+      ],
+      "sizes": ["16oz"],
+      "colors": ["Silver", "Black"],
+      "featured": false,
+      "rating": 4.5,
+      "reviews": 42,
+      "createdAt": "2024-01-12T10:00:00Z"
+    }
+  ],
+  "forumCategories": [
+    {
+      "id": "all",
+      "name": "All Discussions",
+      "threadCount": 1234,
+      "description": "All forum discussions across all categories"
+    },
+    {
+      "id": "general",
+      "name": "General Discussion",
+      "threadCount": 245,
+      "description": "General computer science discussions and non-technical topics"
+    },
+    {
+      "id": "programming",
+      "name": "Programming Help",
+      "threadCount": 567,
+      "description": "Get help with programming assignments and coding challenges"
+    },
+    {
+      "id": "projects",
+      "name": "Project Showcase",
+      "threadCount": 123,
+      "description": "Share your projects and get feedback from the community"
+    },
+    {
+      "id": "career",
+      "name": "Career & Internships",
+      "threadCount": 89,
+      "description": "Career advice, internship opportunities, and job market discussions"
+    },
+    {
+      "id": "study",
+      "name": "Study",
+      "threadCount": 156,
+      "description": "Study groups, exam tips, and academic support"
+    }
+  ],
+  "forumThreads": [
+    {
+      "id": "1",
+      "title": "Best practices for React hooks?",
+      "content": "I'm new to React hooks and wondering what are the best practices when using useState and useEffect. Any recommendations?",
+      "authorId": "1",
+      "authorName": "John Doe",
+      "authorAvatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
+      "categoryId": "programming",
+      "replies": 12,
+      "views": 256,
+      "lastActivity": "2024-01-15T14:30:00Z",
+      "createdAt": "2024-01-15T10:00:00Z",
+      "isPinned": false,
+      "isLocked": false,
+      "tags": ["react", "hooks", "javascript"]
+    },
+    {
+      "id": "2",
+      "title": "My first full-stack project - Todo App",
+      "content": "Just finished building my first full-stack todo application using Node.js, Express, and MongoDB. Would love to get some feedback!",
+      "authorId": "2",
+      "authorName": "Jane Smith",
+      "authorAvatar": "https://images.unsplash.com/photo-1494790108755-2616b612b98c?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
+      "categoryId": "projects",
+      "replies": 8,
+      "views": 189,
+      "lastActivity": "2024-01-14T16:45:00Z",
+      "createdAt": "2024-01-14T12:00:00Z",
+      "isPinned": false,
+      "isLocked": false,
+      "tags": ["nodejs", "express", "mongodb", "fullstack"]
+    },
+    {
+      "id": "3",
+      "title": "Internship opportunities for CS students",
+      "content": "Anyone know of good internship opportunities for computer science students? Looking for summer 2024 positions.",
+      "authorId": "3",
+      "authorName": "Bob Johnson",
+      "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
+      "categoryId": "career",
+      "replies": 15,
+      "views": 432,
+      "lastActivity": "2024-01-13T18:20:00Z",
+      "createdAt": "2024-01-13T09:00:00Z",
+      "isPinned": true,
+      "isLocked": false,
+      "tags": ["internship", "career", "summer2024"]
+    },
+    {
+      "id": "4",
+      "title": "Algorithm study group - Data Structures",
+      "content": "Starting a study group for data structures and algorithms. We'll meet weekly to solve LeetCode problems together. Who's interested?",
+      "authorId": "1",
+      "authorName": "John Doe",
+      "authorAvatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
+      "categoryId": "study",
+      "replies": 23,
+      "views": 567,
+      "lastActivity": "2024-01-12T20:15:00Z",
+      "createdAt": "2024-01-12T14:00:00Z",
+      "isPinned": false,
+      "isLocked": false,
+      "tags": ["algorithms", "datastructures", "studygroup", "leetcode"]
+    },
+    {
+      "id": "5",
+      "title": "Help with Python recursion",
+      "content": "I'm struggling with understanding recursion in Python. Can someone explain it with simple examples?",
+      "authorId": "2",
+      "authorName": "Jane Smith",
+      "authorAvatar": "https://images.unsplash.com/photo-1494790108755-2616b612b98c?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
+      "categoryId": "programming",
+      "replies": 18,
+      "views": 345,
+      "lastActivity": "2024-01-11T15:30:00Z",
+      "createdAt": "2024-01-11T11:00:00Z",
+      "isPinned": false,
+      "isLocked": false,
+      "tags": ["python", "recursion", "help"]
+    },
+    {
+      "id": "6",
+      "title": "Welcome to the CS Forum!",
+      "content": "Welcome everyone! This is our new forum for computer science students. Feel free to introduce yourself and share what you're working on.",
+      "authorId": "3",
+      "authorName": "Bob Johnson",
+      "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
+      "categoryId": "general",
+      "replies": 45,
+      "views": 1234,
+      "lastActivity": "2024-01-10T19:45:00Z",
+      "createdAt": "2024-01-10T08:00:00Z",
+      "isPinned": true,
+      "isLocked": false,
+      "tags": ["welcome", "introduction", "general"]
+    },
+    {
+      "id": "7",
+      "title": "Machine Learning project ideas",
+      "content": "Looking for interesting ML project ideas for my final year project. Any suggestions would be appreciated!",
+      "authorId": "1",
+      "authorName": "John Doe",
+      "authorAvatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
+      "categoryId": "projects",
+      "replies": 11,
+      "views": 298,
+      "lastActivity": "2024-01-09T13:20:00Z",
+      "createdAt": "2024-01-09T10:00:00Z",
+      "isPinned": false,
+      "isLocked": false,
+      "tags": ["machinelearning", "projects", "finalyear"]
+    },
+    {
+      "id": "8",
+      "title": "Database design best practices",
+      "content": "Working on a database design for my web application. What are some best practices I should follow?",
+      "authorId": "2",
+      "authorName": "Jane Smith",
+      "authorAvatar": "https://images.unsplash.com/photo-1494790108755-2616b612b98c?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
+      "categoryId": "programming",
+      "replies": 9,
+      "views": 178,
+      "lastActivity": "2024-01-08T16:10:00Z",
+      "createdAt": "2024-01-08T12:00:00Z",
+      "isPinned": false,
+      "isLocked": false,
+      "tags": ["database", "design", "bestpractices"]
+    },
+    {
+      "id": "9",
+      "title": "How to prepare for technical interviews?",
+      "content": "I have some technical interviews coming up. Any tips on how to prepare effectively?",
+      "authorId": "3",
+      "authorName": "Bob Johnson",
+      "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
+      "categoryId": "career",
+      "replies": 27,
+      "views": 654,
+      "lastActivity": "2024-01-07T21:00:00Z",
+      "createdAt": "2024-01-07T15:00:00Z",
+      "isPinned": false,
+      "isLocked": false,
+      "tags": ["interviews", "technical", "preparation", "career"]
+    },
+    {
+      "id": "10",
+      "title": "Git workflow for team projects",
+      "content": "Our team is starting a new project and we need to establish a good Git workflow. What do you recommend?",
+      "authorId": "1",
+      "authorName": "John Doe",
+      "authorAvatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80",
+      "categoryId": "programming",
+      "replies": 14,
+      "views": 321,
+      "lastActivity": "2024-01-06T14:45:00Z",
+      "createdAt": "2024-01-06T11:00:00Z",
+      "isPinned": false,
+      "isLocked": false,
+      "tags": ["git", "workflow", "teamwork", "collaboration"]
+    }
+  ]
+}
