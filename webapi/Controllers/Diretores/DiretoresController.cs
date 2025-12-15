@@ -21,6 +21,7 @@ namespace DaccApi.Controllers.Diretores
             _diretoresService = diretoresService;
         }
 
+        [AllowAnonymous]
         [PublicGetResponses]
         [HttpGet("")]
         [HasPermission(AppPermissions.Faculty.View)]
@@ -30,6 +31,7 @@ namespace DaccApi.Controllers.Diretores
             return response;
         }
         
+        [AllowAnonymous]
         [PublicGetResponses]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetDiretorById([FromRoute] Guid id)

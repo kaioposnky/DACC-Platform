@@ -77,6 +77,7 @@ namespace DaccApi.Controllers.Orders
             }
         }
 
+        [AllowAnonymous]
         [PublicGetResponses]
         [HttpGet("user/{userId:guid}")]
         public async Task<IActionResult> GetOrdersByUserId([FromRoute] Guid userId)

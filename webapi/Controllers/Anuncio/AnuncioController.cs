@@ -20,6 +20,7 @@ namespace DaccApi.Controllers.Anuncio
             _anuncioService = anuncioService;
         }
 
+        [AllowAnonymous]
         [PublicGetResponses]
         [HttpGet("")]
         public async Task<IActionResult> GetAllAnuncio()
@@ -27,7 +28,8 @@ namespace DaccApi.Controllers.Anuncio
             var response = await _anuncioService.GetAllAnuncio();
             return response;
         }
-        
+
+        [AllowAnonymous]
         [PublicGetResponses]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetAnunciosById([FromRoute] Guid id)
