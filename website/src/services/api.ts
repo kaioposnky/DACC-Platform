@@ -25,7 +25,7 @@ export interface ForumThread {
   tags: string[];
 }
 
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = 'http://localhost:3001/v1/api';
 
 class ApiService {
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
@@ -44,6 +44,20 @@ class ApiService {
     return response.json();
   }
 
+  async login(credentials: { email: string; senha: string }): Promise<{ accessToken: string; refreshToken: string; expiresIn: number; user: User }> {
+    return this.request<{ accessToken: string; refreshToken: string; expiresIn: number; user: User }>('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(credentials),
+    });
+  }
+
+  async register(userData: { nome: string; email: string; senha: string; ra: string; curso: string; }): Promise<User> {
+    return this.request<User>('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    });
+  }
+
   // Users
   async getUsers(): Promise<User[]> {
     return this.request<User[]>('/users');
@@ -51,13 +65,6 @@ class ApiService {
 
   async getUser(id: number): Promise<User> {
     return this.request<User>(`/users/${id}`);
-  }
-
-  async createUser(user: Omit<User, 'id'>): Promise<User> {
-    return this.request<User>('/users', {
-      method: 'POST',
-      body: JSON.stringify(user),
-    });
   }
 
   async updateUser(id: number, user: Partial<User>): Promise<User> {
@@ -142,11 +149,11 @@ class ApiService {
 
   // Events
   async getEvents(): Promise<Event[]> {
-    return this.request<Event[]>('/events');
+    return this.request<Event[]>('/eventos');
   }
 
   async getEvent(id: string): Promise<Event> {
-    return this.request<Event>(`/events/${id}`);
+    return this.request<Event>(`/eventos/${id}`);
   }
 
   // Projects
@@ -169,11 +176,11 @@ class ApiService {
 
   // Faculty
   async getFaculty(): Promise<Faculty[]> {
-    return this.request<Faculty[]>('/faculty');
+    return this.request<Faculty[]>('/diretores');
   }
 
   async getFacultyMember(id: string): Promise<Faculty> {
-    return this.request<Faculty>(`/faculty/${id}`);
+    return this.request<Faculty>(`/diretores/${id}`);
   }
 
   // Products
@@ -237,7 +244,7 @@ class ApiService {
   }
 
   async getProduct(id: string): Promise<Product> {
-    return this.request<Product>(`/products/${id}`);
+    return this.request<Product>(`/produtos/${id}`);
   }
 
   // Forum Categories
@@ -345,4 +352,4 @@ class ApiService {
   }
 }
 
-export const apiService = new ApiService(); 
+export const apiService = new ApiService();
