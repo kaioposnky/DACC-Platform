@@ -10,200 +10,239 @@ using Npgsql;
 
 namespace DaccApi.Infrastructure.Repositories.User
 {
-    public class UsuarioRepository : IUsuarioRepository
+    namespace DaccApi.Infrastructure.Repositories.User
     {
-        private readonly IRepositoryDapper _repositoryDapper;
-        private readonly IArgon2Utility _argon2Utility;
-        public UsuarioRepository(IRepositoryDapper repositoryDapper, 
-            IArgon2Utility argon2Utility)
+        /// <summary>
+        /// Implementação do repositório de usuários.
+        /// </summary>
+        public class UsuarioRepository : IUsuarioRepository
         {
-            _repositoryDapper = repositoryDapper;
-            _argon2Utility = argon2Utility;
-        }
+            private readonly IRepositoryDapper _repositoryDapper;
+            private readonly IArgon2Utility _argon2Utility;
 
-        public async Task CreateUser(Usuario usuario)
-        {
-            var insertSql = _repositoryDapper.GetQueryNamed("InsertUsuario");
-            var senhaHash = _argon2Utility.HashPassword(usuario.SenhaHash!);
-            var param = new
+            /// <summary>
+            /// Inicia uma nova instância da classe <see cref="UsuarioRepository"/>.
+            /// </summary>
+            public UsuarioRepository(IRepositoryDapper repositoryDapper,
+                IArgon2Utility argon2Utility)
             {
-                Nome = usuario.Nome,
-                Sobrenome = usuario.Sobrenome,
-                Ra = usuario.Ra,
-                Curso = usuario.Curso,
-                Email = usuario.Email,
-                Telefone = usuario.Telefone,
-                Senha = senhaHash,
-                Cargo = usuario.Cargo,
-            };
-
-            try
-            {
-                var userIdResult = await _repositoryDapper.QueryAsync<Guid>(insertSql, param);
-                var userId = userIdResult.SingleOrDefault();
-                
-
+                _repositoryDapper = repositoryDapper;
+                _argon2Utility = argon2Utility;
             }
-            catch (PostgresException ex)
+
+            /// <summary>
+            /// Cria um novo usuário.
+            /// </summary>
+            public async Task CreateUser(Usuario usuario)
             {
-                if (ex.SqlState == PostgresErrorCodes.UniqueViolation)
+                var insertSql = _repositoryDapper.GetQueryNamed("InsertUsuario");
+                var senhaHash = _argon2Utility.HashPassword(usuario.SenhaHash!);
+                var param = new
                 {
-                    throw ex.ConstraintName switch
-                    {
-                        "usuario_email_key" => new InvalidConstraintException("Já existe um usuário com esse email!"),
-                        "usuario_ra_key" => new InvalidConstraintException("Já existe um usuário com esse RA!"),
-                        _ => new Exception()
-                    };
+                    Nome = usuario.Nome,
+                    Sobrenome = usuario.Sobrenome,
+                    Ra = usuario.Ra,
+                    Curso = usuario.Curso,
+                    Email = usuario.Email,
+                    Telefone = usuario.Telefone,
+                    Senha = senhaHash,
+                    Cargo = usuario.Cargo,
+                };
+
+                try
+                {
+                    var userIdResult = await _repositoryDapper.QueryAsync<Guid>(insertSql, param);
+                    var userId = userIdResult.SingleOrDefault();
+
+
                 }
-            } 
-            catch (Exception ex)
-            {
-                throw new Exception("Ocorreu um erro ao tentar cadastrar o usuário, favor relatar ao suporte pelo: contato.daccfei@gmail.com", ex);
-            }
-        }
-
-        public async Task<List<Usuario>> GetAll()
-        {
-            try
-            {
-                var sql = _repositoryDapper.GetQueryNamed("GetAllUsers");
-                
-                var queryResult = await _repositoryDapper.QueryAsync<Usuario>(sql);
-                
-                var usuarios = queryResult.ToList();
-                
-                return usuarios;
-            } 
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao obter lista de usuários!", ex);
-            }
-        }
-
-        public async Task<Usuario?> GetUserById(Guid id)
-        {
-            try
-            {
-                var sql = _repositoryDapper.GetQueryNamed("GetUserById");
-
-                var param = new { Id = id };
-
-                var queryResult = await _repositoryDapper.QueryAsync<Usuario>(sql, param);
-
-                var usuario = queryResult.FirstOrDefault();
-
-                return usuario;
-            } catch(Exception ex)
-            {
-                throw new Exception("Erro ao obter usuário pelo Id na banco de dados!");
-            }
-            
-        }
-
-        public async Task<Usuario?> GetUserByEmail(string email)
-        {
-            try
-            {
-                var sql = _repositoryDapper.GetQueryNamed("GetUserByEmail");
-
-                var param = new { Email = email };
-
-                var queryResult = await _repositoryDapper.QueryAsync<Usuario>(sql, param);
-
-                var usuario = queryResult.FirstOrDefault();
-
-                return usuario;
-            } catch(Exception ex)
-            {
-                throw new Exception("Erro ao obter usuário pelo Email na banco de dados!" + ex.Message);
-            }
-
-        }
-
-        public async Task<int> UpdateUser(Usuario user)
-        {
-            try
-            {
-                var sql = _repositoryDapper.GetQueryNamed("UpdateUser");
-
-                var param = new
+                catch (PostgresException ex)
                 {
-                    Id = user.Id,
-                    Nome = user.Nome,
-                    Sobrenome = user.Sobrenome,
-                    Curso = user.Curso,
-                    Telefone = user.Telefone,
-                    ImagemUrl = user.ImagemUrl,
-                    NewsletterSubscriber = user.InscritoNoticia
-                };
-
-                return await _repositoryDapper.ExecuteAsync(sql, param);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao atualizar informações do usuário!" + ex.Message);
-            }
-        }
-
-        public async Task<int> DeleteUser(Guid id)
-        {
-            try
-            {
-                var sql = _repositoryDapper.GetQueryNamed("DeleteUser");
-
-                var param = new { Id = id };
-
-                return await _repositoryDapper.ExecuteAsync(sql, param);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao deletar usuário!"+ ex.Message);
-            }
-        }
-        
-        public async Task<TokensUsuario> GetUserTokens(Guid id)
-        {
-            try
-            {
-                var sql = _repositoryDapper.GetQueryNamed("GetUserTokens");
-                
-                var param = new { Id = id };
-                
-                var queryResult = await _repositoryDapper.QueryAsync<TokensUsuario>(sql, param);
-                
-                
-                var tokensUsuario = queryResult.FirstOrDefault();
-                
-                return tokensUsuario;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao obter tokens do usuário!" + ex.Message);
-            }
-        }
-
-        public async Task UpdateUserTokens(Guid id, TokensUsuario tokensUsuario)
-        {
-            try
-            {
-                var sql = _repositoryDapper.GetQueryNamed("UpdateUserTokens");
-
-                var param = new
+                    if (ex.SqlState == PostgresErrorCodes.UniqueViolation)
+                    {
+                        throw ex.ConstraintName switch
+                        {
+                            "usuario_email_key" => new InvalidConstraintException(
+                                "Já existe um usuário com esse email!"),
+                            "usuario_ra_key" => new InvalidConstraintException("Já existe um usuário com esse RA!"),
+                            _ => new Exception()
+                        };
+                    }
+                }
+                catch (Exception ex)
                 {
-                    Id = id,
-                    AccessToken = tokensUsuario.AccessToken,
-                    RefreshToken = tokensUsuario.RefreshToken
-                };
+                    throw new Exception(
+                        "Ocorreu um erro ao tentar cadastrar o usuário, favor relatar ao suporte pelo: contato.daccfei@gmail.com",
+                        ex);
+                }
+            }
 
-                await _repositoryDapper.ExecuteAsync(sql, param);
-            }
-            catch (PostgresException ex)
+            /// <summary>
+            /// Obtém todos os usuários.
+            /// </summary>
+            public async Task<List<Usuario>> GetAll()
             {
-                throw new Exception("Erro ao atualizar tokens do usuário!" + ex.Message);
+                try
+                {
+                    var sql = _repositoryDapper.GetQueryNamed("GetAllUsers");
+
+                    var queryResult = await _repositoryDapper.QueryAsync<Usuario>(sql);
+
+                    var usuarios = queryResult.ToList();
+
+                    return usuarios;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Erro ao obter lista de usuários!", ex);
+                }
             }
-            catch (Exception ex)
+
+            /// <summary>
+            /// Obtém um usuário específico pelo seu ID.
+            /// </summary>
+            public async Task<Usuario?> GetUserById(Guid id)
             {
-                throw new Exception("Erro ao atualizar tokens do usuário!" + ex.Message);
+                try
+                {
+                    var sql = _repositoryDapper.GetQueryNamed("GetUserById");
+
+                    var param = new { Id = id };
+
+                    var queryResult = await _repositoryDapper.QueryAsync<Usuario>(sql, param);
+
+                    var usuario = queryResult.FirstOrDefault();
+
+                    return usuario;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Erro ao obter usuário pelo Id na banco de dados!");
+                }
+
+            }
+
+            /// <summary>
+            /// Obtém um usuário específico pelo seu e-mail.
+            /// </summary>
+            public async Task<Usuario?> GetUserByEmail(string email)
+            {
+                try
+                {
+                    var sql = _repositoryDapper.GetQueryNamed("GetUserByEmail");
+
+                    var param = new { Email = email };
+
+                    var queryResult = await _repositoryDapper.QueryAsync<Usuario>(sql, param);
+
+                    var usuario = queryResult.FirstOrDefault();
+
+                    return usuario;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Erro ao obter usuário pelo Email na banco de dados!" + ex.Message);
+                }
+
+            }
+
+            /// <summary>
+            /// Atualiza um usuário existente.
+            /// </summary>
+            public async Task<int> UpdateUser(Usuario user)
+            {
+                try
+                {
+                    var sql = _repositoryDapper.GetQueryNamed("UpdateUser");
+
+                    var param = new
+                    {
+                        Id = user.Id,
+                        Nome = user.Nome,
+                        Sobrenome = user.Sobrenome,
+                        Curso = user.Curso,
+                        Telefone = user.Telefone,
+                        ImagemUrl = user.ImagemUrl,
+                        NewsletterSubscriber = user.InscritoNoticia
+                    };
+
+                    return await _repositoryDapper.ExecuteAsync(sql, param);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Erro ao atualizar informações do usuário!" + ex.Message);
+                }
+            }
+
+            /// <summary>
+            /// Deleta um usuário existente.
+            /// </summary>
+            public async Task<int> DeleteUser(Guid id)
+            {
+                try
+                {
+                    var sql = _repositoryDapper.GetQueryNamed("DeleteUser");
+
+                    var param = new { Id = id };
+
+                    return await _repositoryDapper.ExecuteAsync(sql, param);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Erro ao deletar usuário!" + ex.Message);
+                }
+            }
+
+            /// <summary>
+            /// Obtém os tokens de um usuário.
+            /// </summary>
+            public async Task<TokensUsuario> GetUserTokens(Guid id)
+            {
+                try
+                {
+                    var sql = _repositoryDapper.GetQueryNamed("GetUserTokens");
+
+                    var param = new { Id = id };
+
+                    var queryResult = await _repositoryDapper.QueryAsync<TokensUsuario>(sql, param);
+
+
+                    var tokensUsuario = queryResult.FirstOrDefault();
+
+                    return tokensUsuario;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Erro ao obter tokens do usuário!" + ex.Message);
+                }
+            }
+
+            /// <summary>
+            /// Atualiza os tokens de um usuário.
+            /// </summary>
+            public async Task UpdateUserTokens(Guid id, TokensUsuario tokensUsuario)
+            {
+                try
+                {
+                    var sql = _repositoryDapper.GetQueryNamed("UpdateUserTokens");
+
+                    var param = new
+                    {
+                        Id = id,
+                        AccessToken = tokensUsuario.AccessToken,
+                        RefreshToken = tokensUsuario.RefreshToken
+                    };
+
+                    await _repositoryDapper.ExecuteAsync(sql, param);
+                }
+                catch (PostgresException ex)
+                {
+                    throw new Exception("Erro ao atualizar tokens do usuário!" + ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Erro ao atualizar tokens do usuário!" + ex.Message);
+                }
             }
         }
     }

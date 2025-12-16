@@ -4,8 +4,14 @@ using MimeKit;
 
 namespace DaccApi.EmailTemplates
 {
+    /// <summary>
+    /// Gera o template de e-mail de boas-vindas.
+    /// </summary>
     public static class WelcomeEmailTemplate
     {
+        /// <summary>
+        /// Gera o corpo do e-mail em HTML para dar as boas-vindas a um novo usuário.
+        /// </summary>
         public static TextPart GenerateBodyHtml(Usuario user)
         {
             var html = new StringBuilder();

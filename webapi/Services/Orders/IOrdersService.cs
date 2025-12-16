@@ -1,6 +1,7 @@
 using DaccApi.Model.Objects.Order;
 using DaccApi.Model.Requests;
 using DaccApi.Model.Responses;
+using DaccApi.Model.Responses.Order;
 
 namespace DaccApi.Services.Orders
 {

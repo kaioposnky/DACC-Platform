@@ -3,113 +3,130 @@ using DaccApi.Model;
 
 namespace DaccApi.Infrastructure.Repositories.Noticias
 {
-    
-    
-
-
-public class NoticiasRepository : INoticiasRepository
-{
-    private readonly IRepositoryDapper _repositoryDapper;
-
-    public NoticiasRepository(IRepositoryDapper repositoryDapper)
+    /// <summary>
+    /// Implementação do repositório de notícias.
+    /// </summary>
+    public class NoticiasRepository : INoticiasRepository
     {
-        _repositoryDapper = repositoryDapper;
-    }
+        private readonly IRepositoryDapper _repositoryDapper;
 
-    public async Task<List<Noticia>> GetAllNoticias()
-    {
-        try
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="NoticiasRepository"/>.
+        /// </summary>
+        public NoticiasRepository(IRepositoryDapper repositoryDapper)
         {
-            var sql = _repositoryDapper.GetQueryNamed("GetAllNoticias");
-    
-            var queryResult = await _repositoryDapper.QueryAsync<Noticia>(sql);
-
-            var noticias = queryResult.ToList();
-            return noticias;
+            _repositoryDapper = repositoryDapper;
         }
-        catch (Exception ex)
-        {
-            throw new Exception("Erro ao obter todas as notícias no banco de dados." + ex.Message);
-        }
-    }
 
-    public async Task CreateNoticia(Noticia noticia)
-    {
-        try
+        /// <summary>
+        /// Obtém todas as notícias.
+        /// </summary>
+        public async Task<List<Noticia>> GetAllNoticias()
         {
-            var sql = _repositoryDapper.GetQueryNamed("CreateNoticia");
-            
-            var param = new
+            try
             {
-                Titulo = noticia.Titulo,
-                Descricao = noticia.Descricao,
-                Conteudo = noticia.Conteudo,
-                AutorId = noticia.AutorId
-            };
+                var sql = _repositoryDapper.GetQueryNamed("GetAllNoticias");
+        
+                var queryResult = await _repositoryDapper.QueryAsync<Noticia>(sql);
 
-            await _repositoryDapper.ExecuteAsync(sql, param);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Erro ao criar notícia." + ex.Message);
-        }
-    }
-
-    public async Task DeleteNoticia(Guid id)
-    {
-        try
-        {
-            var sql = _repositoryDapper.GetQueryNamed("DeleteNoticia");
-            var param = new { id = id };
-            await _repositoryDapper.ExecuteAsync(sql, param);
-            
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Erro ao deletar notícia." + ex.Message);
-        }
-    }
-    
-    public async Task<Noticia?> GetNoticiaById(Guid id)
-    {
-        try
-        {
-            var sql = _repositoryDapper.GetQueryNamed("GetNoticiaById");
-            
-            var param = new { id = id };
-            
-            var queryResult = await _repositoryDapper.QueryAsync<Noticia>(sql,param);
-
-            var noticias = queryResult.FirstOrDefault();
-            
-            return noticias;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Erro ao obter a notícia." + ex.Message);
-        }
-    }
-
-    public async Task UpdateNoticia(Guid id, Noticia noticia)
-    {
-        try
-        {
-            var sql = _repositoryDapper.GetQueryNamed("UpdateNoticia");
-            var param = new
+                var noticias = queryResult.ToList();
+                return noticias;
+            }
+            catch (Exception ex)
             {
-                id = id,
-                Titulo = noticia.Titulo,
-                Conteudo = noticia.Conteudo,
-                Categoria = noticia.Categoria,
-                Descricao = noticia.Descricao,
-            };
-            await _repositoryDapper.ExecuteAsync(sql, param);
-            
+                throw new Exception("Erro ao obter todas as notícias no banco de dados." + ex.Message);
+            }
         }
-        catch (Exception ex)
+
+        /// <summary>
+        /// Cria uma nova notícia.
+        /// </summary>
+        public async Task CreateNoticia(Noticia noticia)
         {
-            throw new Exception("Erro ao obter a notícia especificada no banco de dados." + ex.Message);
-        };
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("CreateNoticia");
+                
+                var param = new
+                {
+                    Titulo = noticia.Titulo,
+                    Descricao = noticia.Descricao,
+                    Conteudo = noticia.Conteudo,
+                    AutorId = noticia.AutorId
+                };
+
+                await _repositoryDapper.ExecuteAsync(sql, param);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao criar notícia." + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Deleta uma notícia existente.
+        /// </summary>
+        public async Task DeleteNoticia(Guid id)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("DeleteNoticia");
+                var param = new { id = id };
+                await _repositoryDapper.ExecuteAsync(sql, param);
+                
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao deletar notícia." + ex.Message);
+            }
+        }
+        
+        /// <summary>
+        /// Obtém uma notícia específica pelo seu ID.
+        /// </summary>
+        public async Task<Noticia?> GetNoticiaById(Guid id)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("GetNoticiaById");
+                
+                var param = new { id = id };
+                
+                var queryResult = await _repositoryDapper.QueryAsync<Noticia>(sql,param);
+
+                var noticias = queryResult.FirstOrDefault();
+                
+                return noticias;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao obter a notícia." + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Atualiza uma notícia existente.
+        /// </summary>
+        public async Task UpdateNoticia(Guid id, Noticia noticia)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("UpdateNoticia");
+                var param = new
+                {
+                    id = id,
+                    Titulo = noticia.Titulo,
+                    Conteudo = noticia.Conteudo,
+                    Categoria = noticia.Categoria,
+                    Descricao = noticia.Descricao,
+                };
+                await _repositoryDapper.ExecuteAsync(sql, param);
+                
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao obter a notícia especificada no banco de dados." + ex.Message);
+            };
+        }
     }
- }
 }

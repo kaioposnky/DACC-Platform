@@ -5,8 +5,14 @@ using MimeKit;
 
 namespace DaccApi.EmailTemplates
 {
+    /// <summary>
+    /// Gera o template de e-mail de confirmação de pedido.
+    /// </summary>
     public static class OrderConfirmationEmailTemplate
     {
+        /// <summary>
+        /// Gera o corpo do e-mail em HTML para a confirmação de um pedido.
+        /// </summary>
         public static TextPart GenerateBodyHtml(Usuario user, Order order)
         {
             var html = new StringBuilder();

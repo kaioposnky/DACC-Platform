@@ -1,4 +1,4 @@
-﻿using DaccApi.Helpers;
+﻿ using DaccApi.Helpers;
 using DaccApi.Infrastructure.Authentication;
 using DaccApi.Model;
 using DaccApi.Services.Auth;
@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Controllers.Auth
 {
+    /// <summary>
+    /// Controlador para gerenciar autenticação, registro e sessões de usuário.
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("v1/api/[controller]")]
@@ -15,11 +18,17 @@ namespace DaccApi.Controllers.Auth
     {
         private readonly IAuthService _authService;
 
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="AuthController"/>.
+        /// </summary>
         public AuthController(IAuthService authService)
         {
             _authService = authService;
         }
         
+        /// <summary>
+        /// Autentica um usuário e retorna um token de acesso.
+        /// </summary>
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> LoginUser([FromBody] RequestLogin request)
@@ -28,6 +37,9 @@ namespace DaccApi.Controllers.Auth
             return response;
         }
         
+        /// <summary>
+        /// Registra um novo usuário no sistema.
+        /// </summary>
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] RequestCreateUsuario requestCreate)
@@ -36,6 +48,9 @@ namespace DaccApi.Controllers.Auth
             return response;
         }
         
+        /// <summary>
+        /// Atualiza o token de acesso de um usuário usando um refresh token.
+        /// </summary>
         [AllowAnonymous]
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshToken([FromForm] string refreshToken)
@@ -44,6 +59,9 @@ namespace DaccApi.Controllers.Auth
             return response;
         }
         
+        /// <summary>
+        /// Realiza o logout do usuário autenticado.
+        /// </summary>
         [AuthenticatedDeleteResponses]
         [HasPermission(AppPermissions.Users.Logout)]
         [HttpPost("logout")]

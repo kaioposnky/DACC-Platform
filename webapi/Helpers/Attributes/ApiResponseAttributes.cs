@@ -10,12 +10,21 @@ namespace DaccApi.Helpers.Attributes
     /// </summary>
     public abstract class BaseApiResponseAttribute : Attribute, IApiResponseMetadataProvider
     {
+        /// <summary>
+        /// Define os tipos de conteúdo da resposta.
+        /// </summary>
         public void SetContentTypes(MediaTypeCollection contentTypes)
         {
             contentTypes.Add("application/json");
         }
 
+        /// <summary>
+        /// Obtém o tipo da resposta.
+        /// </summary>
         public abstract Type Type { get; }
+        /// <summary>
+        /// Obtém o código de status da resposta.
+        /// </summary>
         public abstract int StatusCode { get; }
     }
 
@@ -26,6 +35,9 @@ namespace DaccApi.Helpers.Attributes
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class PublicGetResponsesAttribute : Attribute
     {
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="PublicGetResponsesAttribute"/>.
+        /// </summary>
         public PublicGetResponsesAttribute()
         {
             // Este atributo será processado via reflection para adicionar múltiplos ProducesResponseType

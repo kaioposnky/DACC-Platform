@@ -5,15 +5,26 @@ using Npgsql;
 
 namespace DaccApi.Infrastructure.Repositories.Orders
 {
+    namespace DaccApi.Infrastructure.Repositories.Orders
+{
+    /// <summary>
+    /// Implementação do repositório de pedidos.
+    /// </summary>
     public class OrdersRepository : IOrdersRepository
     {
         private readonly IRepositoryDapper _repositoryDapper;
 
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="OrdersRepository"/>.
+        /// </summary>
         public OrdersRepository(IRepositoryDapper repositoryDapper)
         {
             _repositoryDapper = repositoryDapper;
         }
 
+        /// <summary>
+        /// Cria um novo pedido.
+        /// </summary>
         public async Task<Guid> CreateOrder(Order order, IDbTransaction? transaction = null)
         {
             try
@@ -48,6 +59,9 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
 
+        /// <summary>
+        /// Cria um novo item de pedido.
+        /// </summary>
         public async Task CreateOrderItem(Guid orderId, OrderItem item, IDbTransaction? transaction = null)
         {
             try
@@ -77,6 +91,9 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
 
+        /// <summary>
+        /// Cria múltiplos itens de pedido.
+        /// </summary>
         public async Task CreateOrderItems(Guid orderId, List<OrderItem> items, IDbTransaction? transaction = null)
         {
             try
@@ -110,6 +127,9 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
 
+        /// <summary>
+        /// Obtém um pedido específico pelo seu ID.
+        /// </summary>
         public async Task<Order?> GetOrderById(Guid id)
         {
             try
@@ -125,6 +145,9 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
 
+        /// <summary>
+        /// Obtém todos os itens de um pedido específico.
+        /// </summary>
         public async Task<List<OrderItem>> GetOrderItemsByOrderId(Guid orderId, IDbTransaction? transaction = null)
         {
             try
@@ -150,6 +173,9 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
 
+        /// <summary>
+        /// Obtém todos os pedidos de um usuário específico.
+        /// </summary>
         public async Task<List<Order>> GetOrdersByUserId(Guid userId)
         {
             try
@@ -165,6 +191,9 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
 
+        /// <summary>
+        /// Atualiza o status de um pedido.
+        /// </summary>
         public async Task UpdateOrderStatus(Guid id, string status, IDbTransaction? transaction = null)
         {
             try
@@ -187,6 +216,9 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
 
+        /// <summary>
+        /// Atualiza as informações de pagamento de um pedido.
+        /// </summary>
         public async Task UpdateOrderPaymentInfo(Guid orderId, long paymentId, string paymentMethod, string status, IDbTransaction? transaction = null)
         {
             try
@@ -215,6 +247,9 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
         
+        /// <summary>
+        /// Atualiza o ID da preferência de pagamento de um pedido.
+        /// </summary>
         public async Task UpdateOrderPreferenceId(Guid orderId, string preferenceId, IDbTransaction? transaction = null)
         {
             try
@@ -241,4 +276,5 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
     }
+}
 }

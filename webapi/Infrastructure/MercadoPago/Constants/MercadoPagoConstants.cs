@@ -1,7 +1,13 @@
 ﻿namespace DaccApi.Infrastructure.MercadoPago.Constants
 {
+    /// <summary>
+    /// Contém constantes relacionadas à integração com o Mercado Pago.
+    /// </summary>
     public static class MercadoPagoConstants
     {
+        /// <summary>
+        /// Define os tipos de webhooks do Mercado Pago.
+        /// </summary>
         public static class WebhookTypes
         {
             public const string Payment = "payment";
@@ -11,6 +17,9 @@
             public const string Invoice = "invoice";
         }
 
+        /// <summary>
+        /// Define as ações de webhooks do Mercado Pago.
+        /// </summary>
         public static class WebhookActions
         {
             public const string PaymentCreated = "payment.created";
@@ -18,6 +27,9 @@
             public const string MerchantOrderUpdated = "merchant_order.updated";
         }
 
+        /// <summary>
+        /// Define os status de pagamento do Mercado Pago.
+        /// </summary>
         public static class PaymentStatus
         {
             public const string Pending = "pending";
@@ -30,6 +42,9 @@
             public const string Refunded = "refunded";
         }
 
+        /// <summary>
+        /// Define os métodos de pagamento do Mercado Pago.
+        /// </summary>
         public static class PaymentMethods
         {
             public const string Pix = "pix";
@@ -40,6 +55,9 @@
             public const string Boleto = "bolbradesco";
         }
 
+        /// <summary>
+        /// Define os tipos de pagamento do Mercado Pago.
+        /// </summary>
         public static class PaymentTypes
         {
             public const string CreditCard = "credit_card";

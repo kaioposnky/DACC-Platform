@@ -1,22 +1,33 @@
-﻿using DaccApi.Infrastructure.Authentication;
+﻿ using DaccApi.Infrastructure.Authentication;
 using DaccApi.Helpers.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Model;
 using DaccApi.Services.User;
+using System;
+using System.Threading.Tasks;
 
 namespace DaccApi.Controllers.Usuario
 {
+    /// <summary>
+    /// Controlador para gerenciar usuários.
+    /// </summary>
     [ApiController]
     [Route("v1/api/users")]
     public class UsuarioController : ControllerBase
     {
         private readonly IUsuarioService _usuarioService;
 
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="UsuarioController"/>.
+        /// </summary>
         public UsuarioController(IUsuarioService usuarioService)
         {
             _usuarioService = usuarioService;
         }
         
+        /// <summary>
+        /// Obtém todos os usuários.
+        /// </summary>
         [AuthenticatedGetResponses]
         [HasPermission(AppPermissions.Users.ViewAll)]
         [HttpGet("")]
@@ -26,6 +37,9 @@ namespace DaccApi.Controllers.Usuario
             return response;
         }
 
+        /// <summary>
+        /// Obtém um usuário específico pelo seu ID.
+        /// </summary>
         [AuthenticatedGetResponses]
         [HasPermission(AppPermissions.Users.View)]
         [HttpGet("{id:guid}")]
@@ -35,6 +49,9 @@ namespace DaccApi.Controllers.Usuario
             return response;
         }
         
+        /// <summary>
+        /// Atualiza um usuário existente.
+        /// </summary>
         [AuthenticatedPatchResponses]
         [HasPermission(AppPermissions.Users.Update)]
         [HttpPatch("{id:guid}")]
@@ -44,6 +61,9 @@ namespace DaccApi.Controllers.Usuario
             return response;
         }
         
+        /// <summary>
+        /// Deleta um usuário existente.
+        /// </summary>
         [AuthenticatedDeleteResponses]
         [HasPermission(AppPermissions.Users.Delete)]
         [HttpDelete("{id:guid}")]

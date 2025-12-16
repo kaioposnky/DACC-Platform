@@ -3,12 +3,20 @@ using Microsoft.AspNetCore.Http;
 
 namespace DaccApi.Model.Validation
 {
+    /// <summary>
+    /// Valida arquivos de imagem com base no tamanho, contagem e extensão.
+    /// </summary>
     public class ImageValidationAttribute : ValidationAttribute
     {
         private readonly long _maxFileSize; // padrão 5MB
         private readonly int _maxFileCount;
         private readonly string[] _allowedExtensions;
         
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="ImageValidationAttribute"/>.
+        /// </summary>
+        /// <param name="maxFileSize">O tamanho máximo do arquivo em bytes.</param>
+        /// <param name="maxFileCount">O número máximo de arquivos permitidos.</param>
         public ImageValidationAttribute(long maxFileSize = 5 * 1024 * 1024, int maxFileCount = 10)
         {
             _maxFileSize = maxFileSize;
@@ -16,6 +24,9 @@ namespace DaccApi.Model.Validation
             _allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
         }
 
+        /// <summary>
+        /// Valida os arquivos de imagem fornecidos.
+        /// </summary>
         protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
         {
             if (value == null)

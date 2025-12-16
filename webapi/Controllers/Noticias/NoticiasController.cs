@@ -1,26 +1,36 @@
-﻿using DaccApi.Helpers;
+﻿ using DaccApi.Helpers;
 using DaccApi.Helpers.Attributes;
 using DaccApi.Model;
-using DaccApi.Responses;
 using DaccApi.Services.Noticias;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Infrastructure.Authentication;
 using DaccApi.Model.Requests;
+using System.Threading.Tasks;
 
 namespace DaccApi.Controllers.Noticias
 {
+    /// <summary>
+    /// Controlador para gerenciar notícias.
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("v1/api/news")]
     public class NoticiasController : ControllerBase
     {
         private readonly INoticiasServices _noticiasServices;
+
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="NoticiasController"/>.
+        /// </summary>
         public NoticiasController(INoticiasServices noticiasServices)
         {
             _noticiasServices = noticiasServices;
         }
 
+        /// <summary>
+        /// Obtém todas as notícias.
+        /// </summary>
         [PublicGetResponses]
         [AllowAnonymous]
         [HttpGet("")]
@@ -30,6 +40,9 @@ namespace DaccApi.Controllers.Noticias
             return response;
         }
         
+        /// <summary>
+        /// Cria uma nova notícia.
+        /// </summary>
         [AuthenticatedPostResponses]
         [HttpPost("")]
         [HasPermission(AppPermissions.Noticias.Create)]
@@ -40,6 +53,9 @@ namespace DaccApi.Controllers.Noticias
             return response;
         }
 
+        /// <summary>
+        /// Atualiza a imagem de uma notícia existente.
+        /// </summary>
         [HttpPatch("{id:guid}/image")]
         [HasPermission(AppPermissions.Noticias.Update)]
         public async Task<IActionResult> UpdateNoticiaImage([FromRoute] Guid id, [FromForm] ImageRequest request)
@@ -48,6 +64,9 @@ namespace DaccApi.Controllers.Noticias
             return response;
         }
         
+        /// <summary>
+        /// Obtém uma notícia específica pelo seu ID.
+        /// </summary>
         [PublicGetResponses]
         [AllowAnonymous]
         [HttpGet("{id:guid}")]
@@ -57,6 +76,9 @@ namespace DaccApi.Controllers.Noticias
             return response;
         }
         
+        /// <summary>
+        /// Deleta uma notícia existente.
+        /// </summary>
         [AuthenticatedDeleteResponses]
         [HttpDelete("{id:guid}")]
         [HasPermission(AppPermissions.Noticias.Delete)]
@@ -66,6 +88,9 @@ namespace DaccApi.Controllers.Noticias
             return response;
         }
         
+        /// <summary>
+        /// Atualiza uma notícia existente.
+        /// </summary>
         [AuthenticatedPatchResponses]
         [HttpPatch("{id:guid}")]
         [HasPermission(AppPermissions.Noticias.Update)]
@@ -76,4 +101,3 @@ namespace DaccApi.Controllers.Noticias
         }
     }
 }
-

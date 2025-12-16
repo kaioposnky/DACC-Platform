@@ -48,6 +48,9 @@ namespace DaccApi.Helpers
             return new ObjectResult(successResponse) { StatusCode = successResponse.StatusCode };
         }
         
+        /// <summary>
+        /// Escreve uma resposta de erro diretamente no HttpContext.
+        /// </summary>
         public static async Task WriteResponseErrorAsync(HttpContext httpContext, HttpStatusCode statusCode, ResponseError responseError, string? message = null)
         {
             var response = (ObjectResult)ResponseHelper.CreateErrorResponse(responseError, message);

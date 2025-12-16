@@ -1,13 +1,17 @@
-using DaccApi.Helpers.Attributes;
+﻿using DaccApi.Helpers.Attributes;
 using DaccApi.Infrastructure.Authentication;
 using DaccApi.Model;
-using DaccApi.Responses;
 using DaccApi.Services.Products;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
 namespace DaccApi.Controllers.Produtos
 {
+    /// <summary>
+    /// Controlador para gerenciar produtos, suas variações e imagens.
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("v1/api/[controller]")]
@@ -15,11 +19,17 @@ namespace DaccApi.Controllers.Produtos
     {
         private readonly IProdutosService _produtosService;
 
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="ProdutosController"/>.
+        /// </summary>
         public ProdutosController(IProdutosService produtosService)
         {
             _produtosService = produtosService;
         }
 
+        /// <summary>
+        /// Obtém todos os produtos.
+        /// </summary>
         [PublicGetResponses]
         [AllowAnonymous]
         [HttpGet("")]
@@ -29,6 +39,9 @@ namespace DaccApi.Controllers.Produtos
             return products;
         }
 
+        /// <summary>
+        /// Obtém um produto específico pelo seu ID.
+        /// </summary>
         [PublicGetResponses]
         [AllowAnonymous]
         [HttpGet("{id:guid}")]
@@ -38,6 +51,9 @@ namespace DaccApi.Controllers.Produtos
             return products;
         }
 
+        /// <summary>
+        /// Cria um novo produto.
+        /// </summary>
         [AuthenticatedPostResponses]
         [HttpPost("")]
         [HasPermission(AppPermissions.Produtos.Create)]
@@ -49,6 +65,9 @@ namespace DaccApi.Controllers.Produtos
             return response;
         }
 
+        /// <summary>
+        /// Busca produtos com base em filtros de consulta.
+        /// </summary>
         [PaginatedListResponses]
         [AllowAnonymous]
         [HttpGet("search")]
@@ -58,6 +77,9 @@ namespace DaccApi.Controllers.Produtos
             return response;
         }
 
+        /// <summary>
+        /// Remove um produto existente.
+        /// </summary>
         [AuthenticatedDeleteResponses]
         [HttpDelete("{id:guid}")]
         [HasPermission(AppPermissions.Produtos.Delete)]
@@ -67,6 +89,9 @@ namespace DaccApi.Controllers.Produtos
             return response;
         }
 
+        /// <summary>
+        /// Atualiza um produto existente.
+        /// </summary>
         [AuthenticatedPatchResponses]
         [HttpPatch("{id:guid}")]
         [HasPermission(AppPermissions.Produtos.Update)]
@@ -79,6 +104,9 @@ namespace DaccApi.Controllers.Produtos
             return response;
         }
 
+        /// <summary>
+        /// Cria uma nova variação para um produto.
+        /// </summary>
         [AuthenticatedPostResponses]
         [HttpPost("{id:guid}/variations")]
         [HasPermission(AppPermissions.Produtos.Create)]
@@ -91,6 +119,9 @@ namespace DaccApi.Controllers.Produtos
             return response;
         }
 
+        /// <summary>
+        /// Obtém todas as variações de um produto.
+        /// </summary>
         [PublicGetResponses]
         [AllowAnonymous]
         [HttpGet("{id:guid}/variations")]
@@ -100,6 +131,9 @@ namespace DaccApi.Controllers.Produtos
             return response;
         }
 
+        /// <summary>
+        /// Atualiza uma variação de produto existente.
+        /// </summary>
         [AuthenticatedPatchResponses]
         [HttpPatch("{id:guid}/variations/{variationId:guid}")]
         [HasPermission(AppPermissions.Produtos.Update)]
@@ -113,6 +147,9 @@ namespace DaccApi.Controllers.Produtos
             return response;
         }
 
+        /// <summary>
+        /// Deleta uma variação de produto existente.
+        /// </summary>
         [AuthenticatedDeleteResponses]
         [HttpDelete("{id:guid}/variations/{variationId:guid}")]
         [HasPermission(AppPermissions.Produtos.Delete)]
@@ -125,6 +162,9 @@ namespace DaccApi.Controllers.Produtos
             return response;
         }
 
+        /// <summary>
+        /// Adiciona uma nova imagem a uma variação de produto.
+        /// </summary>
         [FileUploadResponses]
         [HttpPost("{productId:guid}/variations/{variationId:guid}/images")]
         [HasPermission(AppPermissions.Produtos.Create)]
@@ -142,6 +182,9 @@ namespace DaccApi.Controllers.Produtos
             return response;
         }
 
+        /// <summary>
+        /// Obtém uma imagem específica pelo seu ID.
+        /// </summary>
         [PublicGetResponses]
         [HttpGet("images/{imageId:guid}")]
         [AllowAnonymous]
@@ -151,6 +194,9 @@ namespace DaccApi.Controllers.Produtos
             return response;
         }
 
+        /// <summary>
+        /// Atualiza os detalhes de uma imagem de produto.
+        /// </summary>
         [FileUploadResponses]
         [HttpPatch("images/{imageId:guid}")]
         [HasPermission(AppPermissions.Produtos.Update)]
@@ -163,6 +209,9 @@ namespace DaccApi.Controllers.Produtos
             return response;
         }
 
+        /// <summary>
+        /// Deleta uma imagem de produto.
+        /// </summary>
         [AuthenticatedDeleteResponses]
         [HttpDelete("images/{imageId:guid}")]
         [HasPermission(AppPermissions.Produtos.Delete)]

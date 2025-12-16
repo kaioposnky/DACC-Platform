@@ -1,19 +1,16 @@
-﻿using DaccApi.Helpers;
+﻿ using DaccApi.Helpers;
 using DaccApi.Helpers.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Infrastructure.Authentication;
 using DaccApi.Services.Eventos;
-using DaccApi.Responses;
 using DaccApi.Model;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using DaccApi.Infrastructure.Authentication;
-
-
 
 namespace DaccApi.Controllers.Eventos
 {
+    /// <summary>
+    /// Controlador para gerenciar eventos.
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("v1/api/[controller]")]
@@ -21,11 +18,17 @@ namespace DaccApi.Controllers.Eventos
     {
         private readonly IEventosService _eventosService;
         
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="EventosController"/>.
+        /// </summary>
         public EventosController(IEventosService eventosService)
         {
             _eventosService = eventosService;
         }
         
+        /// <summary>
+        /// Obtém todos os eventos.
+        /// </summary>
         [PublicGetResponses]
         [AllowAnonymous]
         [HttpGet("")]
@@ -35,6 +38,9 @@ namespace DaccApi.Controllers.Eventos
             return response;
         }
 
+        /// <summary>
+        /// Cria um novo evento.
+        /// </summary>
         [AuthenticatedPostResponses]
         [HttpPost("")]
         [HasPermission(AppPermissions.Eventos.Create)]
@@ -45,6 +51,9 @@ namespace DaccApi.Controllers.Eventos
             return response;
         }
 
+        /// <summary>
+        /// Obtém um evento específico pelo seu ID.
+        /// </summary>
         [PublicGetResponses]
         [AllowAnonymous]
         [HttpGet("{id:guid}")]
@@ -54,6 +63,9 @@ namespace DaccApi.Controllers.Eventos
             return response;
         }
 
+        /// <summary>
+        /// Deleta um evento existente.
+        /// </summary>
         [AuthenticatedDeleteResponses]
         [HttpDelete("{id:guid}")]
         [HasPermission(AppPermissions.Eventos.Delete)]
@@ -63,6 +75,9 @@ namespace DaccApi.Controllers.Eventos
             return response;
         }
 
+        /// <summary>
+        /// Atualiza um evento existente.
+        /// </summary>
         [AuthenticatedPatchResponses]
         [HttpPatch("{id:guid}")]
         [HasPermission(AppPermissions.Eventos.Update)]

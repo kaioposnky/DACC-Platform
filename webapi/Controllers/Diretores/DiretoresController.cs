@@ -1,4 +1,4 @@
-﻿using DaccApi.Helpers.Attributes;
+﻿ using DaccApi.Helpers.Attributes;
 using DaccApi.Responses;
 using DaccApi.Model;
 using Microsoft.AspNetCore.Authorization;
@@ -8,6 +8,9 @@ using DaccApi.Services.Diretores;
 
 namespace DaccApi.Controllers.Diretores
 {
+    /// <summary>
+    /// Controlador para gerenciar os diretores do DACC.
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("v1/api/[controller]")]
@@ -16,11 +19,17 @@ namespace DaccApi.Controllers.Diretores
     {
         private readonly IDiretoresService _diretoresService;
 
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="DiretoresController"/>.
+        /// </summary>
         public DiretoresController(IDiretoresService diretoresService)
         {
             _diretoresService = diretoresService;
         }
 
+        /// <summary>
+        /// Obtém todos os diretores.
+        /// </summary>
         [AllowAnonymous]
         [PublicGetResponses]
         [HttpGet("")]
@@ -31,6 +40,9 @@ namespace DaccApi.Controllers.Diretores
             return response;
         }
         
+        /// <summary>
+        /// Obtém um diretor específico pelo seu ID.
+        /// </summary>
         [AllowAnonymous]
         [PublicGetResponses]
         [HttpGet("{id:guid}")]
@@ -40,6 +52,9 @@ namespace DaccApi.Controllers.Diretores
             return response;
         }
 
+        /// <summary>
+        /// Cria um novo diretor.
+        /// </summary>
         [AuthenticatedPostResponses]
         [HttpPost("")]
         public async Task<IActionResult> CreateDiretor([FromBody] RequestDiretor request)
@@ -48,6 +63,9 @@ namespace DaccApi.Controllers.Diretores
             return response;
         }
         
+        /// <summary>
+        /// Deleta um diretor existente.
+        /// </summary>
         [AuthenticatedDeleteResponses]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteDiretor([FromRoute] Guid id)
@@ -56,6 +74,9 @@ namespace DaccApi.Controllers.Diretores
             return response;
         }
         
+        /// <summary>
+        /// Atualiza um diretor existente.
+        /// </summary>
         [AuthenticatedPatchResponses]
         [HttpPatch("{id:guid}")]
         public async Task<IActionResult> UpdateDiretor([FromRoute] Guid id, [FromBody] RequestDiretor request)
@@ -63,8 +84,5 @@ namespace DaccApi.Controllers.Diretores
             var response = await _diretoresService.UpdateDiretor(id, request);
             return response;
         }
-        
-        
-
     }
 }

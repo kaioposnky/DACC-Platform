@@ -4,15 +4,24 @@ using DaccApi.Model;
 namespace DaccApi.Infrastructure.Repositories.Anuncio
 
 {
+    /// <summary>
+    /// Implementação do repositório de anúncios.
+    /// </summary>
     public class AnuncioRepository : IAnuncioRepository
     {
         private readonly IRepositoryDapper _repositoryDapper;
 
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="AnuncioRepository"/>.
+        /// </summary>
         public AnuncioRepository(IRepositoryDapper repositoryDapper)
         {
             _repositoryDapper = repositoryDapper;
         }
 
+        /// <summary>
+        /// Obtém todos os anúncios.
+        /// </summary>
         public async Task<List<Model.Anuncio>> GetAllAnuncio()
         {
             try
@@ -32,6 +41,9 @@ namespace DaccApi.Infrastructure.Repositories.Anuncio
         }
         
         
+        /// <summary>
+        /// Obtém um anúncio específico pelo seu ID.
+        /// </summary>
         public async Task<Model.Anuncio> GetAnuncioById(Guid id)
         {
             try
@@ -56,6 +68,9 @@ namespace DaccApi.Infrastructure.Repositories.Anuncio
         
         
         
+        /// <summary>
+        /// Cria um novo anúncio.
+        /// </summary>
         public async Task CreateAnuncio(RequestAnuncio anuncio)
         {
             try
@@ -71,6 +86,9 @@ namespace DaccApi.Infrastructure.Repositories.Anuncio
         }
         
         
+        /// <summary>
+        /// Deleta um anúncio existente.
+        /// </summary>
         public async Task DeleteAnuncio(Guid id)
         {
             try
@@ -86,6 +104,9 @@ namespace DaccApi.Infrastructure.Repositories.Anuncio
         }
         
         
+        /// <summary>
+        /// Atualiza um anúncio existente.
+        /// </summary>
         public async Task UpdateAnuncio(Guid id, Model.Anuncio anuncio)
         {
             try
@@ -115,4 +136,3 @@ namespace DaccApi.Infrastructure.Repositories.Anuncio
         
     }
 }
-

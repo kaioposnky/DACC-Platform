@@ -1,4 +1,4 @@
-﻿using DaccApi.Helpers;
+﻿ using DaccApi.Helpers;
 using DaccApi.Helpers.Attributes;
 using DaccApi.Model;
 using DaccApi.Services.Avaliacao;
@@ -8,6 +8,9 @@ using DaccApi.Infrastructure.Authentication;
 
 namespace DaccApi.Controllers.Avaliacao
 {
+    /// <summary>
+    /// Controlador para gerenciar avaliações de produtos.
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("v1/api/ratings")]
@@ -15,11 +18,17 @@ namespace DaccApi.Controllers.Avaliacao
     {
         private readonly IAvaliacaoService _avaliacaoService;
 
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="AvaliacaoController"/>.
+        /// </summary>
         public AvaliacaoController(IAvaliacaoService avaliacaoService)
         {
             _avaliacaoService = avaliacaoService;
         }
 
+        /// <summary>
+        /// Obtém todas as avaliações.
+        /// </summary>
         [AuthenticatedGetResponses]
         [HttpGet("")]
         [HasPermission(AppPermissions.Reviews.View)]
@@ -29,6 +38,9 @@ namespace DaccApi.Controllers.Avaliacao
             return response;
         }
 
+        /// <summary>
+        /// Obtém uma avaliação específica pelo seu ID.
+        /// </summary>
         [AuthenticatedGetResponses]
         [HttpGet("{id:guid}")]
         [HasPermission(AppPermissions.Reviews.View)]
@@ -38,6 +50,9 @@ namespace DaccApi.Controllers.Avaliacao
             return response;
         }
 
+        /// <summary>
+        /// Cria uma nova avaliação para um produto.
+        /// </summary>
         [AuthenticatedPostResponses]
         [HttpPost("")]
         [HasPermission(AppPermissions.Reviews.Create)]
@@ -48,6 +63,9 @@ namespace DaccApi.Controllers.Avaliacao
             return response;
         }
 
+        /// <summary>
+        /// Obtém todas as avaliações de um produto específico.
+        /// </summary>
         [PublicGetResponses]
         [AllowAnonymous]
         [HttpGet("products/{produtoId:guid}")]
@@ -57,6 +75,9 @@ namespace DaccApi.Controllers.Avaliacao
             return response;
         }
 
+        /// <summary>
+        /// Obtém todas as avaliações de um usuário específico.
+        /// </summary>
         [AuthenticatedGetResponses]
         [HttpGet("users/{usuarioId:int}")]
         [HasPermission(AppPermissions.Reviews.View)]
@@ -66,6 +87,9 @@ namespace DaccApi.Controllers.Avaliacao
             return response;
         }
 
+        /// <summary>
+        /// Deleta uma avaliação existente.
+        /// </summary>
         [AuthenticatedDeleteResponses]
         [HttpDelete("{id:guid}")]
         [HasPermission(AppPermissions.Reviews.Delete)]
@@ -75,6 +99,9 @@ namespace DaccApi.Controllers.Avaliacao
             return response;
         }
         
+        /// <summary>
+        /// Atualiza uma avaliação existente.
+        /// </summary>
         [AuthenticatedPatchResponses]
         [HttpPatch("{id:guid}")]
         [HasPermission(AppPermissions.Reviews.Update)]
@@ -85,4 +112,3 @@ namespace DaccApi.Controllers.Avaliacao
         }
     }
 }
-    

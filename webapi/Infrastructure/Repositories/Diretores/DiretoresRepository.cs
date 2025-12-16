@@ -3,15 +3,24 @@ using DaccApi.Model;
 
 namespace DaccApi.Infrastructure.Repositories.Diretores
 {
+    /// <summary>
+    /// Implementação do repositório de diretores.
+    /// </summary>
     public class DiretoresRepository : IDiretoresRepository
     {
         private readonly IRepositoryDapper _repositoryDapper;
 
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="DiretoresRepository"/>.
+        /// </summary>
         public DiretoresRepository(IRepositoryDapper repositoryDapper)
         {
             _repositoryDapper = repositoryDapper;
         }
 
+        /// <summary>
+        /// Obtém todos os diretores.
+        /// </summary>
         public async Task<List<Diretor>> GetAllDiretores()
         {
             try
@@ -29,6 +38,9 @@ namespace DaccApi.Infrastructure.Repositories.Diretores
             }
         }
 
+        /// <summary>
+        /// Cria um novo diretor.
+        /// </summary>
         public async Task CreateDiretor(Diretor diretor)
         {
             try
@@ -56,6 +68,9 @@ namespace DaccApi.Infrastructure.Repositories.Diretores
         }
 
 
+        /// <summary>
+        /// Deleta um diretor existente.
+        /// </summary>
         public async Task DeleteDiretor(Guid id)
         {
             try
@@ -70,6 +85,9 @@ namespace DaccApi.Infrastructure.Repositories.Diretores
             }
         }
 
+        /// <summary>
+        /// Atualiza um diretor existente.
+        /// </summary>
         public async Task UpdateDiretor(Guid id, Diretor diretor)
         {
             try
@@ -96,6 +114,9 @@ namespace DaccApi.Infrastructure.Repositories.Diretores
             };
         }
 
+        /// <summary>
+        /// Obtém um diretor específico pelo seu ID.
+        /// </summary>
         public async Task<Diretor?> GetDiretorById(Guid id)
         {
             try

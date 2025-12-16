@@ -3,14 +3,23 @@ using DaccApi.Model;
 
 namespace DaccApi.Infrastructure.Repositories.Avaliacao;
 
+/// <summary>
+/// Implementação do repositório de avaliações de produtos.
+/// </summary>
 public class AvaliacaoRepository : IAvaliacaoRepository
 {
     private readonly IRepositoryDapper _repositoryDapper;
 
+    /// <summary>
+    /// Inicia uma nova instância da classe <see cref="AvaliacaoRepository"/>.
+    /// </summary>
     public AvaliacaoRepository(IRepositoryDapper repositoryDapper)
     {
         _repositoryDapper = repositoryDapper;
     }
+    /// <summary>
+    /// Cria uma nova avaliação de produto.
+    /// </summary>
     public async Task CreateAvaliacao(AvaliacaoProduto avaliacao)
     {
         try
@@ -25,6 +34,9 @@ public class AvaliacaoRepository : IAvaliacaoRepository
         }
     }
     
+    /// <summary>
+    /// Obtém todas as avaliações.
+    /// </summary>
     public async Task<List<AvaliacaoProduto>> GetAllAvaliacoes()
     {
         try
@@ -42,6 +54,9 @@ public class AvaliacaoRepository : IAvaliacaoRepository
         }
     }
 
+    /// <summary>
+    /// Obtém uma avaliação específica pelo seu ID.
+    /// </summary>
     public async Task<AvaliacaoProduto?> GetAvaliacaoById(Guid id)
     {
         try
@@ -62,7 +77,9 @@ public class AvaliacaoRepository : IAvaliacaoRepository
         }
     }
     
-
+    /// <summary>
+    /// Obtém todas as avaliações de um produto específico.
+    /// </summary>
     public async Task<List<AvaliacaoProduto>> GetAvaliacoesByProductId(Guid produtoId)
     {
         try
@@ -82,6 +99,9 @@ public class AvaliacaoRepository : IAvaliacaoRepository
         
     }
 
+    /// <summary>
+    /// Obtém todas as avaliações de um usuário específico.
+    /// </summary>
     public async Task<List<AvaliacaoProduto>> GetAvaliacoesByUserId(Guid usuarioId)
     {
         try
@@ -100,6 +120,9 @@ public class AvaliacaoRepository : IAvaliacaoRepository
         }
     }
     
+    /// <summary>
+    /// Deleta uma avaliação existente.
+    /// </summary>
     public async Task DeleteAvaliacao(Guid id)
     {
         try
@@ -115,7 +138,9 @@ public class AvaliacaoRepository : IAvaliacaoRepository
         
     }
 
-
+    /// <summary>
+    /// Atualiza uma avaliação existente.
+    /// </summary>
     public async Task UpdateAvaliacao(Guid id, RequestUpdateAvaliacao avaliacao)
     {
         try

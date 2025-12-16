@@ -8,24 +8,28 @@ using MimeKit;
 
 namespace DaccApi.Infrastructure.Mail
 {
+    /// <summary>
+    /// Implementação do serviço de envio de e-mails usando SMTP.
+    /// </summary>
     public class MailService : IMailService
     {
         private readonly SmtpSettings _smtpSettings;
 
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="MailService"/>.
+        /// </summary>
         public MailService(IOptions<SmtpSettings> smtpSettings)
         {
             _smtpSettings = smtpSettings.Value;
         }
 
-        /**
-         * <summary>
-         * Envia um email para o usuário informado.
-         * <param name="name">Nome do usuário.</param>
-         * <param name="email">Endereço de e-mail do usuário.</param>
-         * <param name="subject">Assunto do email.</param>
-         * <param name="body">Corpo do email.</param>
-         * </summary>
-         */
+        /// <summary>
+        /// Envia um email para o usuário informado.
+        /// </summary>
+        /// <param name="name">Nome do usuário.</param>
+        /// <param name="email">Endereço de e-mail do usuário.</param>
+        /// <param name="subject">Assunto do email.</param>
+        /// <param name="body">Corpo do email.</param>
         public async Task SendCustomEmailAsync(string name, string email, string subject, string body)
         {
             try
@@ -47,6 +51,9 @@ namespace DaccApi.Infrastructure.Mail
             }
         }
 
+        /// <summary>
+        /// Envia um e-mail de confirmação de pedido.
+        /// </summary>
         public async Task SendOrderConfirmationEmailAsync(Usuario user, Order order)
         {
             try
@@ -63,6 +70,9 @@ namespace DaccApi.Infrastructure.Mail
             }
         }
 
+        /// <summary>
+        /// Envia um e-mail de notificação de pedido criado.
+        /// </summary>
         public async Task SendOrderCreatedEmailAsync(Usuario user, Order order)
         {
             try
@@ -80,6 +90,9 @@ namespace DaccApi.Infrastructure.Mail
             }
         }
 
+        /// <summary>
+        /// Envia um e-mail de boas-vindas para um novo usuário.
+        /// </summary>
         public async Task SendWelcomeEmailAsync(Usuario user)
         {
             try

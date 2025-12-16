@@ -5,6 +5,9 @@
     using System.Text;
     using Konscious.Security.Cryptography;
 
+    /// <summary>
+    /// Implementação do utilitário de criptografia Argon2 para hashing de senhas.
+    /// </summary>
     public class Argon2Utility : IArgon2Utility
     {
         private const int SaltSize = 16; 
@@ -12,6 +15,9 @@
         private const int Iterations = 4; 
         private const int MemorySize = 65536; 
 
+        /// <summary>
+        /// Gera o hash de uma senha usando Argon2id.
+        /// </summary>
         public string HashPassword(string password)
         {
             if (string.IsNullOrEmpty(password))
@@ -32,6 +38,9 @@
             return $"{Convert.ToBase64String(salt)}.{Convert.ToBase64String(hash)}";
         }
 
+        /// <summary>
+        /// Verifica se uma senha fornecida corresponde a um hash existente.
+        /// </summary>
         public bool VerifyPassword(string password, string hashedPassword)
         {
             if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(hashedPassword))
@@ -56,6 +65,10 @@
 
             return CryptographicOperations.FixedTimeEquals(hashStored, hashComputed);
         }
+
+        /// <summary>
+        /// Gera um salt criptograficamente seguro.
+        /// </summary>
         public byte[] GenerateSalt()
         {
             byte[] salt = new byte[SaltSize];

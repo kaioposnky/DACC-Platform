@@ -10,6 +10,9 @@ namespace DaccApi.Responses
         /// </summary>
         public int StatusCode { get; }
 
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="ResponseSuccess"/>.
+        /// </summary>
         public ResponseSuccess(int statusCode, string code, string message, object? data = null)
             : base(true, code, message, data, null)
         {
@@ -49,8 +52,11 @@ namespace DaccApi.Responses
         }
         
         // Respostas de Sucesso Padrão
+        /// <summary>Sucesso: A requisição foi bem-sucedida.</summary>
         public static readonly ResponseSuccess OK = new(200, "OK", "Requisição bem-sucedida");
+        /// <summary>Sucesso: O recurso foi criado com sucesso.</summary>
         public static readonly ResponseSuccess CREATED = new(201, "CREATED", "Recurso criado com sucesso");
+        /// <summary>Sucesso: A requisição foi bem-sucedida, mas não há conteúdo para retornar.</summary>
         public static readonly ResponseSuccess NO_CONTENT = new(204, "NO_CONTENT", "Requisição bem-sucedida, mas não há conteúdo para retornar");
     }
 }

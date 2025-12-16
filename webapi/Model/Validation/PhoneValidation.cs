@@ -3,8 +3,14 @@ using System.Text.RegularExpressions;
 
 namespace DaccApi.Model.Validation
 {
+    /// <summary>
+    /// Valida um número de telefone.
+    /// </summary>
     public partial class PhoneValidation : ValidationAttribute
     {
+        /// <summary>
+        /// Valida o valor do número de telefone.
+        /// </summary>
         protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
         {
             var phone = value as string;

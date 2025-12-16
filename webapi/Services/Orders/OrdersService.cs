@@ -13,6 +13,7 @@ using DaccApi.Model;
 using DaccApi.Model.Objects.Order;
 using DaccApi.Model.Requests;
 using DaccApi.Model.Responses;
+using DaccApi.Model.Responses.Order;
 using DaccApi.Responses;
 
 namespace DaccApi.Services.Orders

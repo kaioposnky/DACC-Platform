@@ -30,6 +30,9 @@ namespace DaccApi.Responses
         /// </summary>
         public object[]? Details { get; set; }
 
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="ApiResponse"/>.
+        /// </summary>
         public ApiResponse(bool success, string code, string message, object? data = null, object[]? details = null)
         {
             Success = success;

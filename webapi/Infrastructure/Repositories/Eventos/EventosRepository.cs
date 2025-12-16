@@ -4,15 +4,24 @@ using DaccApi.Model;
 namespace DaccApi.Infrastructure.Repositories.Eventos
 {
 
+    /// <summary>
+    /// Implementação do repositório de eventos.
+    /// </summary>
     public class EventosRepository : IEventosRepository
     {
         private readonly IRepositoryDapper _repositoryDapper;
 
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="EventosRepository"/>.
+        /// </summary>
         public EventosRepository(IRepositoryDapper repositoryDapper)
         {
             _repositoryDapper = repositoryDapper;
         }
 
+        /// <summary>
+        /// Obtém todos os eventos.
+        /// </summary>
         public async Task<List<Evento>> GetAllEventos()
         {
             try
@@ -30,6 +39,9 @@ namespace DaccApi.Infrastructure.Repositories.Eventos
             }
         }
 
+        /// <summary>
+        /// Obtém um evento específico pelo seu ID.
+        /// </summary>
         public async Task<Evento?> GetEventoById(Guid id)
         {
             try
@@ -50,6 +62,9 @@ namespace DaccApi.Infrastructure.Repositories.Eventos
             }
         }
 
+        /// <summary>
+        /// Cria um novo evento.
+        /// </summary>
         public async Task<Guid> CreateEvento(Evento evento)
         {
             try
@@ -76,6 +91,9 @@ namespace DaccApi.Infrastructure.Repositories.Eventos
             }
         }
 
+        /// <summary>
+        /// Deleta um evento existente.
+        /// </summary>
         public async Task DeleteEvento(Guid id)
         {
             try
@@ -90,6 +108,9 @@ namespace DaccApi.Infrastructure.Repositories.Eventos
             }
         }
 
+        /// <summary>
+        /// Atualiza um evento existente.
+        /// </summary>
         public async Task UpdateEvento(Guid id, Evento evento)
         {
             try

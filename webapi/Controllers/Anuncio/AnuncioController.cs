@@ -8,6 +8,9 @@ using DaccApi.Services.Anuncios;
 
 namespace DaccApi.Controllers.Anuncio
 {
+    /// <summary>
+    /// Controlador para gerenciar anúncios.
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("v1/api/announcements")]
@@ -15,11 +18,17 @@ namespace DaccApi.Controllers.Anuncio
     {
         private readonly IAnuncioService _anuncioService;
 
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="AnuncioController"/>.
+        /// </summary>
         public AnuncioController(IAnuncioService anuncioService)
         {
             _anuncioService = anuncioService;
         }
 
+        /// <summary>
+        /// Obtém todos os anúncios.
+        /// </summary>
         [AllowAnonymous]
         [PublicGetResponses]
         [HttpGet("")]
@@ -28,7 +37,10 @@ namespace DaccApi.Controllers.Anuncio
             var response = await _anuncioService.GetAllAnuncio();
             return response;
         }
-
+        
+        /// <summary>
+        /// Obtém um anúncio específico pelo seu ID.
+        /// </summary>
         [AllowAnonymous]
         [PublicGetResponses]
         [HttpGet("{id:guid}")]
@@ -38,6 +50,9 @@ namespace DaccApi.Controllers.Anuncio
             return response;
         }
         
+        /// <summary>
+        /// Cria um novo anúncio.
+        /// </summary>
         [AuthenticatedPostResponses]
         [HttpPost("")]
         public async Task<IActionResult> CreateAnuncio([FromBody] RequestAnuncio anuncio)
@@ -46,6 +61,9 @@ namespace DaccApi.Controllers.Anuncio
             return response;
         }
         
+        /// <summary>
+        /// Adiciona uma imagem a um anúncio existente.
+        /// </summary>
         [HttpPost("{id:guid}")]
 
         public async Task<IActionResult> AddAnuncioImage([FromRoute] Guid id, [FromForm] ImageRequest request)
@@ -54,6 +72,9 @@ namespace DaccApi.Controllers.Anuncio
             return response;
         }
         
+        /// <summary>
+        /// Deleta um anúncio existente.
+        /// </summary>
         [AuthenticatedDeleteResponses]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteAnuncio([FromRoute] Guid id)
@@ -62,6 +83,9 @@ namespace DaccApi.Controllers.Anuncio
             return response;
         }
         
+        /// <summary>
+        /// Atualiza um anúncio existente.
+        /// </summary>
         [AuthenticatedPatchResponses]
         [HttpPatch("{id:guid}")]
         public async Task<IActionResult> UpdateAnuncio([FromRoute] Guid id, [FromForm] RequestAnuncio anuncio)
@@ -74,3 +98,4 @@ namespace DaccApi.Controllers.Anuncio
 
     }
 }
+

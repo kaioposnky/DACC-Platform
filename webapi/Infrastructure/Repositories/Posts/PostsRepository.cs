@@ -6,15 +6,24 @@ using DaccApi.Model;
 namespace DaccApi.Infrastructure.Repositories.Posts
 
 {
+    /// <summary>
+    /// Implementação do repositório de posts.
+    /// </summary>
     public class PostsRepository : IPostsRepository
 {
     private readonly IRepositoryDapper _repositoryDapper;
 
+    /// <summary>
+    /// Inicia uma nova instância da classe <see cref="PostsRepository"/>.
+    /// </summary>
     public PostsRepository(IRepositoryDapper repositoryDapper)
     {
         _repositoryDapper = repositoryDapper;
     }
 
+    /// <summary>
+    /// Obtém todos os posts.
+    /// </summary>
     public async Task<List<Post>> GetAllPosts()
     {
         try
@@ -31,6 +40,9 @@ namespace DaccApi.Infrastructure.Repositories.Posts
   
     }
 
+    /// <summary>
+    /// Cria um novo post.
+    /// </summary>
     public async Task CreatePost(RequestPost post)
     {
         try
@@ -52,6 +64,9 @@ namespace DaccApi.Infrastructure.Repositories.Posts
         }
     }
 
+    /// <summary>
+    /// Deleta um post existente.
+    /// </summary>
     public async Task DeletePost(int id)
     {
         try
@@ -67,6 +82,9 @@ namespace DaccApi.Infrastructure.Repositories.Posts
         }
     }
     
+    /// <summary>
+    /// Obtém um post específico pelo seu ID.
+    /// </summary>
     public async Task<Post?> GetPostById(int id)
     {
         try
@@ -85,6 +103,9 @@ namespace DaccApi.Infrastructure.Repositories.Posts
     }
     
     
+    /// <summary>
+    /// Atualiza um post existente.
+    /// </summary>
     public async Task UpdatePost(int id, RequestPost post)
     {
         try
@@ -109,4 +130,3 @@ namespace DaccApi.Infrastructure.Repositories.Posts
     
     
 }
-

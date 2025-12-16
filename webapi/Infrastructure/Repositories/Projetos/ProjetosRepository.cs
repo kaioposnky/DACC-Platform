@@ -4,13 +4,22 @@ using DaccApi.Model;
 
 namespace DaccApi.Infrastructure.Repositories.Projetos
 {
+    /// <summary>
+    /// Implementação do repositório de projetos.
+    /// </summary>
     public class ProjetosRepository : IProjetosRepository
     {
         private readonly IRepositoryDapper _repositoryDapper;
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="ProjetosRepository"/>.
+        /// </summary>
         public ProjetosRepository(IRepositoryDapper repositoryDapper)
         {
             _repositoryDapper = repositoryDapper;
         }
+        /// <summary>
+        /// Obtém todos os projetos.
+        /// </summary>
         public async Task<List<Projeto>> GetAllProjetos()
         {
             var sql = _repositoryDapper.GetQueryNamed("GetAllProjetos");
@@ -22,6 +31,9 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
             return projetos;
         }
 
+        /// <summary>
+        /// Obtém um projeto específico pelo seu ID.
+        /// </summary>
         public async Task<Projeto?> GetProjetoById(Guid id)
         {
             var sql = _repositoryDapper.GetQueryNamed("GetProjetoById");
@@ -32,6 +44,9 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
             return projeto;
         }
 
+        /// <summary>
+        /// Cria um novo projeto.
+        /// </summary>
         public async Task CreateProjeto(Projeto projeto)
         {
             try
@@ -57,6 +72,9 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
             }
         }
 
+        /// <summary>
+        /// Deleta um projeto existente.
+        /// </summary>
         public async Task DeleteProjeto(Guid id)
         {
             try
@@ -71,6 +89,9 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
             }
         }
 
+        /// <summary>
+        /// Atualiza um projeto existente.
+        /// </summary>
         public async Task UpdateProjeto(Guid id, Projeto projeto)
         {
             try

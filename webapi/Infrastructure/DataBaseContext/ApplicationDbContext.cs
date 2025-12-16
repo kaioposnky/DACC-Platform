@@ -3,16 +3,28 @@ using DaccApi.Model;
 
 namespace DaccApi.Infrastructure.DataBaseContext
 {
+    /// <summary>
+    /// Representa o contexto do banco de dados da aplicação.
+    /// </summary>
     public class ApplicationDbContext : DbContext
     {
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="ApplicationDbContext"/>.
+        /// </summary>
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
 
         }
 
+        /// <summary>
+        /// Obtém ou define a tabela de usuários no banco de dados.
+        /// </summary>
         public DbSet<Usuario> Usuarios { get; set; }
 
+        /// <summary>
+        /// Configura o modelo de dados para o contexto.
+        /// </summary>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Usuario>(entity =>

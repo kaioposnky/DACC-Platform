@@ -5,8 +5,14 @@ using MimeKit;
 
 namespace DaccApi.EmailTemplates
 {
+    /// <summary>
+    /// Gera o template de e-mail de criação de pedido.
+    /// </summary>
     public static class OrderCreatedEmailTemplate
     {
+        /// <summary>
+        /// Gera o corpo do e-mail em HTML para a notificação de um pedido criado.
+        /// </summary>
         public static TextPart GenerateBodyHtml(Usuario user, Order order)
         {
             var html = new StringBuilder();

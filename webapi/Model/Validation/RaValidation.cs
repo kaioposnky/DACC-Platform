@@ -3,8 +3,14 @@ using System.Text.RegularExpressions;
 
 namespace DaccApi.Model.Validation
 {
+    /// <summary>
+    /// Valida um RA (Registro de Aluno).
+    /// </summary>
     public partial class RaValidation : ValidationAttribute
     {
+        /// <summary>
+        /// Valida o valor do RA.
+        /// </summary>
         protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
         {
             var ra = value as string;

@@ -1,7 +1,13 @@
 ﻿namespace DaccApi.Infrastructure.Authentication
 {
+    /// <summary>
+    /// Define as constantes de permissão usadas em toda a aplicação.
+    /// </summary>
     public static class AppPermissions
     {
+        /// <summary>
+        /// Permissões relacionadas a usuários.
+        /// </summary>
         public static class Users
         {
             public const string View = "users.view";
@@ -13,6 +19,9 @@
             public const string Logout = "users.logout";
         }
 
+        /// <summary>
+        /// Permissões relacionadas a notícias.
+        /// </summary>
         public static class Noticias
         {
             public const string View = "noticias.view";
@@ -21,6 +30,9 @@
             public const string Delete = "noticias.delete";
         }
 
+        /// <summary>
+        /// Permissões relacionadas a projetos.
+        /// </summary>
         public static class Projetos
         {
             public const string View = "projetos.view";
@@ -31,6 +43,9 @@
             public const string RemoveMembers = "projetos.members.remove";
         }
 
+        /// <summary>
+        /// Permissões relacionadas a produtos.
+        /// </summary>
         public static class Produtos
         {
             public const string View = "produtos.view";
@@ -39,6 +54,9 @@
             public const string Delete = "produtos.delete";
         }
 
+        /// <summary>
+        /// Permissões relacionadas a eventos.
+        /// </summary>
         public static class Eventos
         {
             public const string View = "eventos.view";
@@ -48,6 +66,9 @@
             public const string Register = "eventos.register";
         }
 
+        /// <summary>
+        /// Permissões relacionadas ao fórum.
+        /// </summary>
         public static class Forum
         {
             public const string ViewPosts = "forum.posts.view";
@@ -61,6 +82,9 @@
             public const string VoteOnComment = "forum.comments.vote";
             public const string AcceptComment = "forum.comments.accept";
             
+            /// <summary>
+            /// Permissões de administrador para o fórum.
+            /// </summary>
             public static class Admin
             {
                 public const string UpdateAnyPost = "forum.admin.posts.update";
@@ -70,6 +94,9 @@
             }
         }
 
+        /// <summary>
+        /// Permissões relacionadas a diretores (faculty).
+        /// </summary>
         public static class Faculty
         {
             public const string View = "faculty.view";
@@ -78,6 +105,9 @@
             public const string Delete = "faculty.delete";
         }
 
+        /// <summary>
+        /// Permissões relacionadas ao carrinho de compras.
+        /// </summary>
         public static class Cart
         {
             public const string View = "cart.view";
@@ -87,6 +117,9 @@
             public const string Clear = "cart.clear";
         }
 
+        /// <summary>
+        /// Permissões relacionadas a avaliações (reviews).
+        /// </summary>
         public static class Reviews
         {
             public const string View = "reviews.view";

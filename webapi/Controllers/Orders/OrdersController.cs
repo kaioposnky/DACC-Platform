@@ -1,4 +1,4 @@
-using DaccApi.Exceptions;
+﻿using DaccApi.Exceptions;
 using DaccApi.Helpers;
 using DaccApi.Helpers.Attributes;
 using DaccApi.Infrastructure.MercadoPago.Constants;
@@ -8,11 +8,18 @@ using DaccApi.Model.Requests;
 using DaccApi.Services.Orders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 using DaccApi.Responses;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace DaccApi.Controllers.Orders
 {
+    /// <summary>
+    /// Controlador para gerenciar pedidos e pagamentos.
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("v1/api/[controller]")]
@@ -21,12 +28,18 @@ namespace DaccApi.Controllers.Orders
         private readonly IOrdersService _ordersService;
         private readonly IMercadoPagoService _mercadoPagoService;
 
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="OrdersController"/>.
+        /// </summary>
         public OrdersController(IOrdersService ordersService, IMercadoPagoService mercadoPagoService)
         {
             _ordersService = ordersService;
             _mercadoPagoService = mercadoPagoService;
         }
 
+        /// <summary>
+        /// Cria um novo pedido e inicia o processo de pagamento.
+        /// </summary>
         [AuthenticatedPostResponses]
         [HttpPost("")]
         public async Task<IActionResult> CreateOrderWithPayment([FromBody] CreateOrderRequest request)
@@ -57,6 +70,9 @@ namespace DaccApi.Controllers.Orders
             }
         }
 
+        /// <summary>
+        /// Obtém um pedido específico pelo seu ID.
+        /// </summary>
         [AuthenticatedGetResponses]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetOrderById([FromRoute] Guid id)
@@ -77,6 +93,9 @@ namespace DaccApi.Controllers.Orders
             }
         }
 
+        /// <summary>
+        /// Obtém todos os pedidos de um usuário específico.
+        /// </summary>
         [AllowAnonymous]
         [PublicGetResponses]
         [HttpGet("user/{userId:guid}")]
@@ -97,6 +116,9 @@ namespace DaccApi.Controllers.Orders
             }
         }
 
+        /// <summary>
+        /// Atualiza o status de um pedido existente.
+        /// </summary>
         [AuthenticatedPatchResponses]
         [HttpPut("{id:guid}/status")]
         public async Task<IActionResult> UpdateOrderStatus([FromRoute] Guid id, [FromBody] string status)
@@ -116,6 +138,9 @@ namespace DaccApi.Controllers.Orders
             }
         }
 
+        /// <summary>
+        /// Processa webhooks de pagamento do Mercado Pago.
+        /// </summary>
         // Precisa deixar anonimo para liberar a API do mercadopago mandar o webhook
         [AllowAnonymous]
         [HttpPost("webhook")]

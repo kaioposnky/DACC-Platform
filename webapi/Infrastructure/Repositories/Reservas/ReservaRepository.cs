@@ -4,15 +4,24 @@ using DaccApi.Model;
 
 namespace DaccApi.Infrastructure.Repositories.Reservas
 {
+    /// <summary>
+    /// Implementação do repositório de reservas de produtos.
+    /// </summary>
     public class ReservaRepository : IReservaRepository
     {
         private readonly IRepositoryDapper _repositoryDapper;
         
+        /// <summary>
+        /// Inicia uma nova instância da classe <see cref="ReservaRepository"/>.
+        /// </summary>
         public ReservaRepository(IRepositoryDapper repositoryDapper)
         {
             _repositoryDapper = repositoryDapper;
         }
 
+        /// <summary>
+        /// Cria uma nova reserva de produto.
+        /// </summary>
         public async Task CreateReserva(ProdutoReserva produtoReserva)
         {
             try
@@ -34,6 +43,9 @@ namespace DaccApi.Infrastructure.Repositories.Reservas
             }
         }
 
+        /// <summary>
+        /// Obtém todas as reservas ativas para uma variação de produto.
+        /// </summary>
         public async Task<List<ProdutoReserva>> GetReservasAtivasByVariacao(Guid produtoVariacaoId)
         {
             try
@@ -57,6 +69,9 @@ namespace DaccApi.Infrastructure.Repositories.Reservas
             }
         }
 
+        /// <summary>
+        /// Obtém a quantidade total reservada para uma variação de produto.
+        /// </summary>
         public async Task<int> GetQuantidadeReservadaByVariacao(Guid produtoVariacaoId)
         {
             try
@@ -71,6 +86,9 @@ namespace DaccApi.Infrastructure.Repositories.Reservas
             }
         }
 
+        /// <summary>
+        /// Confirma uma reserva de produto.
+        /// </summary>
         public async Task ConfirmarReserva(Guid pedidoId, IDbTransaction? transaction = null)
         {
             try
@@ -93,6 +111,9 @@ namespace DaccApi.Infrastructure.Repositories.Reservas
             }
         }
 
+        /// <summary>
+        /// Cancela uma reserva de produto.
+        /// </summary>
         public async Task CancelarReserva(Guid pedidoId, IDbTransaction? transaction = null)
         {
             try
@@ -115,6 +136,9 @@ namespace DaccApi.Infrastructure.Repositories.Reservas
             }
         }
 
+        /// <summary>
+        /// Cria múltiplas reservas de produto em lote.
+        /// </summary>
         public async Task CreateReservasLote(List<ProdutoReserva> reservas)
         {
             try
@@ -137,6 +161,9 @@ namespace DaccApi.Infrastructure.Repositories.Reservas
             }
         }
 
+        /// <summary>
+        /// Cria múltiplas reservas de produto em lote de forma atômica.
+        /// </summary>
         public async Task<int> CreateReservasLoteAtomica(List<ProdutoReserva> reservas, IDbTransaction? transaction = null)
         {
             try
@@ -169,6 +196,9 @@ namespace DaccApi.Infrastructure.Repositories.Reservas
             }
         }
 
+        /// <summary>
+        /// Limpa todas as reservas expiradas.
+        /// </summary>
         public async Task LimparReservasExpiradas()
         {
             try

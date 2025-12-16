@@ -3,11 +3,17 @@ using System.Text.RegularExpressions;
 
 namespace DaccApi.Model.Validation
 {
+    /// <summary>
+    /// Valida se o nome de uma cor é válido.
+    /// </summary>
     public partial class ColorValidationAttribute : ValidationAttribute
     {
         private readonly string[] _forbiddenWords = { "admin", "null", "undefined", "test" };
         private readonly Regex _colorNameRegex = MyRegex();
 
+        /// <summary>
+        /// Valida o valor da cor.
+        /// </summary>
         protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
         {
             if (value == null)
