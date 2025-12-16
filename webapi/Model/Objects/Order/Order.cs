@@ -49,15 +49,7 @@ namespace DaccApi.Model.Objects.Order
         /// </summary>
         public OrderResponse ToOrderResponse()
         {
-            return new OrderResponse
-            {
-                Id = Id,
-                UserId = UserId,
-                OrderDate = OrderDate,
-                Status = Status,
-                TotalAmount = TotalAmount,
-                OrderItems = OrderItems
-            };
+            return new OrderResponse(this);
         }
     }
 }

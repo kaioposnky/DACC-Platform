@@ -61,26 +61,6 @@ namespace DaccApi.Model
         public static ResponseProdutoVariacao MapToResponseVariacao(ProdutoVariacao variation)
         {
             return new ResponseProdutoVariacao(variation);
-            return new ResponseProdutoVariacao
-            {
-                Id = variation.Id,
-                ProdutoId = variation.ProdutoId,
-                Cor = variation.Cor,
-                Tamanho = variation.Tamanho,
-                Estoque = variation.Estoque,
-                Sku = variation.Sku,
-                Ordem = variation.Ordem,
-                Imagens = variation.Imagens?.Select(img => new ResponseProdutoImagem
-                {
-                    Id = img.Id,
-                    ProdutoVariacaoId = img.ProdutoVariacaoId,
-                    ImagemUrl = img.ImagemUrl,
-                    ImagemAlt = img.ImagemAlt,
-                    Ordem = img.Ordem,
-                }).ToList() ?? new List<ResponseProdutoImagem>(),
-                DataCriacao = variation.DataCriacao,
-                DataAtualizacao = variation.DataAtualizacao
-            };
         }
 
         /// <summary>
@@ -88,18 +68,8 @@ namespace DaccApi.Model
         /// </summary>
         public static ResponseProduto MapToResponseProduto(Produto product, List<ProdutoVariacao> variations)
         {
-            return new ResponseProduto
-            {
-                Id = product.Id,
-                Nome = product.Nome,
-                Descricao = product.Descricao,
-                Preco = product.Preco,
-                Categoria = product.Categoria,
-                Subcategoria = product.Subcategoria,
-                Variacoes = variations.Select(MapToResponseVariacao).ToList(),
-                DataCriacao = product.DataCriacao,
-                DataAtualizacao = product.DataAtualizacao
-            };
+            product.Variacoes = variations;
+            return new ResponseProduto(product);
         }
 
         /// <summary>

@@ -95,7 +95,7 @@ namespace DaccApi.Model.Responses
             Role = usuario.Cargo;
             CreatedAt = usuario.DataCriacao;
             UpdatedAt = usuario.DataAtualizacao;
-            IsLoggedIn = isLoggedIn; // Set based on provided parameter
+            IsLoggedIn = isLoggedIn; // Propriedade específica do frontend
         }
 
         /// <summary>

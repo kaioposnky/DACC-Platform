@@ -45,5 +45,9 @@
         /// Obtém ou define a data de publicação.
         /// </summary>
         public DateTime? DataPublicacao { get; set; }
+        /// <summary>
+        /// Obtém ou define as tags associadas à notícia.
+        /// </summary>
+        public List<string> Tags { get; set; }
     }
 }

@@ -80,7 +80,7 @@ public class ResponseNoticia
         // Propriedades específicas do frontend sem correspondência direta
         Author = string.Empty; // Preencher via serviço ou lógica adicional
         ReadTime = null; // Valor padrão
-        Tags = noticia.Tags?.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToArray() ?? Array.Empty<string>();
+        Tags = noticia.Tags?.ToArray() ?? [];
         Icon = string.Empty; // Valor padrão
         Gradient = string.Empty; // Valor padrão
         ReadMoreLink = string.Empty; // Valor padrão

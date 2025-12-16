@@ -113,18 +113,7 @@ namespace DaccApi.Model
         /// </summary>
         public ResponseUsuario ToResponse()
         {
-            return new ResponseUsuario()
-            {
-                Nome = Nome,
-                Sobrenome = Sobrenome,
-                Ra = Ra,
-                Email = Email,
-                Telefone = Telefone,
-                ImagemUrl = ImagemUrl,
-                Cargo = Cargo,
-                DataCriacao = DataCriacao,
-                DataAtualizacao = DataAtualizacao
-            };
+            return new ResponseUsuario(this);
         }
         
     }

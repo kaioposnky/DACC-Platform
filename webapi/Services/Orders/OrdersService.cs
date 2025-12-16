@@ -154,17 +154,8 @@ namespace DaccApi.Services.Orders
                     transaction.Rollback();
                     throw;
                 }
-                
-                return new CreateOrderResponse
-                {
-                    Id = order.Id,
-                    UserId = order.UserId,
-                    PaymentUrl = preference.PaymentUrl,
-                    OrderItems = order.OrderItems,
-                    Status = MercadoPagoConstants.PaymentStatus.Pending,
-                    TotalAmount = order.TotalAmount,
-                    OrderDate = order.OrderDate
-                };
+
+                return new CreateOrderResponse(order);
             }
             catch (ArgumentException)
             {
