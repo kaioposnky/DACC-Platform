@@ -19,14 +19,9 @@ Para instruções específicas de instalação e execução, por favor acesse o 
 
 Agradecimento aos colaboradores que contribuíram para a criação da plataforma:
 
-| Avatar | Contribuidor |
-
-| :---: | :--- |
-
-| <img src="https://github.com/kaioposnky.png?size=64" alt="Kaio" width="64"> | [Kaio](https://github.com/kaioposnky) |
-
-| <img src="https://github.com/LuiisMarim.png?size=64" alt="Luis" width="64"> | [Luis](https://github.com/LuiisMarim) |
-
-| <img src="https://github.com/sergiomos.png?size=64" alt="Sérgio" width="64"> | [Sérgio](https://github.com/sergiomos) |
-
-| <img src="https://github.com/GuiJustica.png?size=64" alt="Guilherme" width="64"> | [Guilherme](https://github.com/GuiJustica) |
+| Avatar | Contribuidor | Área     |
+| :---: | :--- |----------|
+| <img src="https://github.com/kaioposnky.png?size=64" alt="Kaio" width="64"> | [Kaio](https://github.com/kaioposnky) | BackEnd  |
+| <img src="https://github.com/LuiisMarim.png?size=64" alt="Luis" width="64"> | [Luis](https://github.com/LuiisMarim) | BackEnd  |
+| <img src="https://github.com/sergiomos.png?size=64" alt="Sérgio" width="64"> | [Sérgio](https://github.com/sergiomos) | FrontEnd |
+| <img src="https://github.com/GuiJustica.png?size=64" alt="Guilherme" width="64"> | [Guilherme](https://github.com/GuiJustica) | BackEnd  |
