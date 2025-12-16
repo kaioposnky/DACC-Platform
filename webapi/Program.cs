@@ -7,7 +7,6 @@ using DaccApi.Infrastructure.Authentication;
 using DaccApi.Infrastructure.BackgroundServices;
 using DaccApi.Infrastructure.Cryptography;
 using DaccApi.Infrastructure.Dapper;
-using DaccApi.Infrastructure.DataBaseContext;
 using DaccApi.Infrastructure.Mail;
 using DaccApi.Infrastructure.MercadoPago.Services;
 using DaccApi.Infrastructure.MercadoPago.Services.DaccApi.Infrastructure.MercadoPago.Services;
@@ -170,10 +169,6 @@ builder.Services.AddRateLimiter(options =>
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddMemoryCache();
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
-);
 
 builder.Services.AddScoped<IDbConnection>(sp => new NpgsqlConnection(
     builder.Configuration.GetConnectionString("DefaultConnection")
