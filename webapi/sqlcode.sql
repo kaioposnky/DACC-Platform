@@ -125,13 +125,13 @@ CREATE TABLE anuncio
     id                     UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     titulo                 VARCHAR(50) NOT NULL,
     conteudo               TEXT        NOT NULL,
-    tipo_anuncio           VARCHAR(50) REFERENCES tipos_anuncio (nome),
-    botao_primario_texto   VARCHAR(20),
-    botao_primario_link    VARCHAR(255),
-    botao_secundario_texto VARCHAR(20),
-    botao_secundario_link  VARCHAR(255),
-    imagem_url             VARCHAR(255),
-    imagem_alt             VARCHAR(100),
+    tipo_anuncio           VARCHAR(50) REFERENCES tipos_anuncio (nome) NOT NULL,
+    botao_primario_texto   VARCHAR(20) NOT NULL,
+    botao_primario_link    VARCHAR(255) NOT NULL,
+    botao_secundario_texto VARCHAR(20) NOT NULL,
+    botao_secundario_link  VARCHAR(255) NOT NULL,
+    imagem_url             VARCHAR(255) NOT NULL,
+    imagem_alt             VARCHAR(100) NOT NULL,
     ativo                  BOOLEAN     NOT NULL DEFAULT FALSE,
     autor_id               UUID REFERENCES usuario (id),
     data_criacao           TIMESTAMP DEFAULT  CURRENT_TIMESTAMP NOT NULL,
@@ -162,8 +162,8 @@ CREATE TABLE evento
     data             TIMESTAMP   NOT NULL,
     tipo_evento      VARCHAR(50) REFERENCES tipos_evento (nome),
     autor_id         UUID REFERENCES usuario (id),
-    texto_acao       VARCHAR(20),
-    link_acao        VARCHAR(255),
+    texto_acao       VARCHAR(20) NOT NULL,
+    link_acao        VARCHAR(255) NOT NULL,
     data_criacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -179,21 +179,23 @@ CREATE TABLE diretoria
     descricao TEXT
 );
 
--- Depois definir a tabela diretores
--- Tabela: Diretores
--- Armazena informações sobre diretores
-DROP TABLE IF EXISTS diretores CASCADE;
-CREATE TABLE diretores
+-- Tabela: Professores
+-- Armazena informações sobre o corpo docente
+DROP TABLE IF EXISTS professores CASCADE;
+CREATE TABLE professores
 (
-    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    nome          VARCHAR(100) NOT NULL,
-    descricao     TEXT         NOT NULL,
-    imagem_url    VARCHAR(255),
-    usuario_id    UUID REFERENCES usuario (id),
-    diretoria_id  UUID REFERENCES diretoria (id),
-    email         VARCHAR(150) NOT NULL,
-    github_link   VARCHAR(150) NOT NULL,
-    linkedin_link VARCHAR(150) NOT NULL
+    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome           VARCHAR(100) NOT NULL,
+    titulo         VARCHAR(50) NOT NULL,
+    cargo          VARCHAR(100) NOT NULL,
+    especializacao VARCHAR(200) NOT NULL,
+    imagem_url     VARCHAR(255) NOT NULL,
+    email          VARCHAR(150),
+    linkedin       VARCHAR(255),
+    github         VARCHAR(255),
+    usuario_id     UUID REFERENCES usuario (id),
+    data_criacao   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabela: Cores
@@ -380,6 +382,8 @@ CREATE TABLE projeto
     descricao        TEXT         NOT NULL,
     imagem_url       VARCHAR(255),
     status           VARCHAR(50) REFERENCES tipos_progresso (nome),
+    progresso        INT DEFAULT 0,
+    texto_conclusao  VARCHAR(100) NOT NULL,
     diretoria        VARCHAR(100) REFERENCES diretoria (nome),
     tags             VARCHAR(20)[],
     data_criacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -535,10 +539,10 @@ VALUES
     ('forum.admin.comments.delete', 'Deletar qualquer comentário no fórum'),
 
     -- Permissões de Diretorias/Professores
-    ('faculty.view', 'Visualizar diretores/professores'),
-    ('faculty.create', 'Criar novos diretores/professores'),
-    ('faculty.update', 'Atualizar diretores/professores'),
-    ('faculty.delete', 'Deletar diretores/professores'),
+    ('faculty.view', 'Visualizar professores'),
+    ('faculty.create', 'Criar novos professores'),
+    ('faculty.update', 'Atualizar professores'),
+    ('faculty.delete', 'Deletar professores'),
 
     -- Permissões de Avaliações de Produtos
     ('reviews.view', 'Visualizar avaliações de um produto'),
