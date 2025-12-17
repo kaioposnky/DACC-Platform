@@ -53,6 +53,8 @@ using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
+Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
 builder
     .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
