@@ -179,10 +179,10 @@ CREATE TABLE diretoria
     descricao TEXT
 );
 
--- Tabela: Professores
--- Armazena informações sobre o corpo docente
-DROP TABLE IF EXISTS professores CASCADE;
-CREATE TABLE professores
+-- Tabela: Diretores
+-- Armazena informações sobre os diretores (Faculty no frontend)
+DROP TABLE IF EXISTS diretores CASCADE;
+CREATE TABLE diretores
 (
     id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome           VARCHAR(100) NOT NULL,
