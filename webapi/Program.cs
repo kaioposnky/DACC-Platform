@@ -24,7 +24,6 @@ using DaccApi.Infrastructure.Repositories.Products.DaccApi.Infrastructure.Reposi
 using DaccApi.Infrastructure.Repositories.Projetos;
 using DaccApi.Infrastructure.Repositories.Reservas;
 using DaccApi.Infrastructure.Repositories.User;
-using DaccApi.Infrastructure.Repositories.User.DaccApi.Infrastructure.Repositories.User;
 using DaccApi.Infrastructure.Services.MercadoPago;
 using DaccApi.Middlewares;
 using DaccApi.Responses;
