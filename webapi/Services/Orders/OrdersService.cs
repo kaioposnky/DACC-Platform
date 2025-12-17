@@ -1,5 +1,4 @@
 using DaccApi.Exceptions;
-using DaccApi.Helpers;
 using DaccApi.Infrastructure.Dapper;
 using DaccApi.Infrastructure.Mail;
 using DaccApi.Infrastructure.MercadoPago.Constants;
@@ -12,9 +11,7 @@ using DaccApi.Infrastructure.Services.MercadoPago;
 using DaccApi.Model;
 using DaccApi.Model.Objects.Order;
 using DaccApi.Model.Requests;
-using DaccApi.Model.Responses;
 using DaccApi.Model.Responses.Order;
-using DaccApi.Responses;
 
 namespace DaccApi.Services.Orders
 {

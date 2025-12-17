@@ -1,6 +1,7 @@
 ﻿using DaccApi.Model;
 using DaccApi.Infrastructure.Repositories.Eventos;
 using DaccApi.Helpers;
+using DaccApi.Model.Responses;
 using DaccApi.Responses;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,10 +24,10 @@ namespace DaccApi.Services.Eventos
             {
                 var eventos = await _eventosRepository.GetAllEventos();
 
-                if (eventos.Count() == 0)
+                if (eventos.Count == 0)
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
-
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { eventos = eventos}));
+                var response = eventos.Select(evento => new ResponseEvento(evento));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { eventos = response}));
             }
             catch (Exception ex)
             {
@@ -63,7 +64,7 @@ namespace DaccApi.Services.Eventos
                     var eventoId = await _eventosRepository.CreateEvento(evento);
                     evento.Id = eventoId;
                     
-                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED.WithData(evento));
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
                 }
                 catch (Exception ex)
                 {
@@ -82,7 +83,7 @@ namespace DaccApi.Services.Eventos
                     {
                         return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
                     }
-                    _eventosRepository.DeleteEvento(id);
+                    await _eventosRepository.DeleteEvento(id);
 
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
                 }
@@ -102,8 +103,9 @@ namespace DaccApi.Services.Eventos
                     
                     if (evento == null) 
                         return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
-
-                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { evento = evento}));
+                    var response = new ResponseEvento(evento);
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
+                        new { evento = response}));
                 }
                 catch (Exception ex)
                 {
@@ -134,7 +136,7 @@ namespace DaccApi.Services.Eventos
                     
                     await _eventosRepository.UpdateEvento(id, evento);
 
-                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { evento = request }));
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
                 }
                 catch (Exception ex)
                 {

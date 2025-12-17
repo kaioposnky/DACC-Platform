@@ -1,7 +1,7 @@
 ﻿using DaccApi.Helpers;
-using DaccApi.Infrastructure.Cryptography;
 using DaccApi.Infrastructure.Repositories.User;
 using DaccApi.Model;
+using DaccApi.Model.Responses;
 using DaccApi.Responses;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,12 +10,10 @@ namespace DaccApi.Services.User
     public class UsuarioService : IUsuarioService
     {
         private readonly IUsuarioRepository _usuarioRepository;
-        private readonly IArgon2Utility _argon2Utility;
 
-        public UsuarioService(IUsuarioRepository usuarioRepository, IArgon2Utility argon2Utility)
+        public UsuarioService(IUsuarioRepository usuarioRepository)
         {
             _usuarioRepository = usuarioRepository;
-            _argon2Utility = argon2Utility;
         }
 
         public async Task<IActionResult> GetAllUsers()
@@ -28,7 +26,8 @@ namespace DaccApi.Services.User
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
                 }
 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { users = Usuario.ToListResponse(users) }), 
+                var response = users.Select(user => new ResponseUsuario(user));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { users = response }),
                     "Usuários obtidos com sucesso!");
             }
             catch (Exception ex)
@@ -61,7 +60,7 @@ namespace DaccApi.Services.User
                 
                 await _usuarioRepository.UpdateUser(user);
                 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { users = user.ToResponse() }));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
             }
             catch (Exception ex)
             {
@@ -99,7 +98,7 @@ namespace DaccApi.Services.User
                 if (usuario == null)
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Usuário não encontrado!");
                 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(usuario.ToResponse()), "Usuário obtido com sucesso!");
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK,"Usuário obtido com sucesso!");
             }
             catch (Exception ex)
             {
@@ -123,12 +122,11 @@ namespace DaccApi.Services.User
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Usuário não encontrado!");
                 }
 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(usuario.ToResponse()), "Usuário obtido com sucesso!");
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { user = usuario.ToResponse() }), "Usuário obtido com sucesso!");
             } catch(Exception ex)
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, "Erro ao obter usuário pelo Email! " + ex.Message);
             }
-            
         }
     }
 }

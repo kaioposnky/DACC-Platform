@@ -2,6 +2,7 @@
 using DaccApi.Infrastructure.Repositories.Noticias;
 using DaccApi.Model;
 using DaccApi.Model.Requests;
+using DaccApi.Model.Responses;
 using DaccApi.Responses;
 using DaccApi.Services.FileStorage;
 using Microsoft.AspNetCore.Mvc;
@@ -28,8 +29,9 @@ public class NoticiasServices : INoticiasServices
 
             if (noticias.Count == 0) 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
-
-            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { noticias = noticias}));
+            var response = noticias.Select(noticia => new ResponseNoticia(noticia));
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
+                new { noticias = response}));
         }
         catch (Exception ex)
         {
@@ -84,7 +86,7 @@ public class NoticiasServices : INoticiasServices
             
             await _noticiasRepository.UpdateNoticia(noticiaId, noticia);
 
-            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(noticia));
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
         }
         catch (Exception ex)
         {
@@ -103,7 +105,7 @@ public class NoticiasServices : INoticiasServices
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
             }
-            _noticiasRepository.DeleteNoticia(id);
+            await _noticiasRepository.DeleteNoticia(id);
 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
         }
@@ -123,7 +125,8 @@ public class NoticiasServices : INoticiasServices
             if (noticia == null) 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
 
-            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { noticias = noticia}));
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
+                new { noticias = new ResponseNoticia(noticia)}));
         }
         catch (Exception ex)
         {
@@ -150,7 +153,7 @@ public class NoticiasServices : INoticiasServices
             
             await _noticiasRepository.UpdateNoticia(id, noticia);
 
-            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { noticias = request}));
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
         }
         catch (Exception ex)
         {

@@ -1,10 +1,6 @@
-using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text;
-using DaccApi.Infrastructure.Repositories.Permission;
 using DaccApi.Infrastructure.Repositories.User;
 using DaccApi.Model;
 using Microsoft.IdentityModel.Tokens;
@@ -15,14 +11,12 @@ namespace DaccApi.Services.Token
     {
         private readonly IConfiguration _configuration;
         private readonly IUsuarioRepository _usuarioRepository;
-        private readonly IPermissionRepository _permissionRepository;
         private readonly JwtSecurityTokenHandler _tokenHandler = new();
 
-        public TokenService(IConfiguration configuration, IUsuarioRepository usuarioRepository, IPermissionRepository permissionRepository)
+        public TokenService(IConfiguration configuration, IUsuarioRepository usuarioRepository)
         {
             _configuration = configuration;
             _usuarioRepository = usuarioRepository;
-            _permissionRepository = permissionRepository;
         }
 
         public string GenerateAccessToken(Usuario usuario, HashSet<string> permissions)

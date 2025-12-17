@@ -1,6 +1,7 @@
 ﻿using DaccApi.Helpers;
 using DaccApi.Infrastructure.Repositories.Posts;
 using DaccApi.Model;
+using DaccApi.Model.Responses.Post;
 using DaccApi.Responses;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,16 +16,18 @@ namespace DaccApi.Services.Posts
         _postsRepository = postsRepository;
     }
 
-    public IActionResult GetAllPosts()
+    public async Task<IActionResult> GetAllPosts()
     {
         try
         {
-            var posts = _postsRepository.GetAllPosts().Result;
+            var posts = await _postsRepository.GetAllPosts();
 
             if (posts.Count == 0)
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+
+            var response = posts.Select(post => new ResponsePost(post));
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
-                new {posts = posts}));
+                new {posts = response}));
         }
         catch (Exception ex)
         {
@@ -32,7 +35,7 @@ namespace DaccApi.Services.Posts
         }
     }
     
-    public IActionResult CreatePost(RequestPost post)
+    public async Task<IActionResult> CreatePost(RequestPost post)
     {
         try
         {
@@ -44,7 +47,7 @@ namespace DaccApi.Services.Posts
                 // TODO: Adicionar campo de detalhes no request
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
-            _postsRepository.CreatePost(post);
+            await _postsRepository.CreatePost(post);
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
         }
         catch (Exception ex)
@@ -53,17 +56,17 @@ namespace DaccApi.Services.Posts
         }
     }
 
-    public IActionResult DeletePost(int id)
+    public async Task<IActionResult> DeletePost(int id)
     {
         try
         {
-            var posts = _postsRepository.GetPostById(id).Result;
+            var posts = await _postsRepository.GetPostById(id);
             
             if (posts == null)
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
             }
-            _postsRepository.DeletePost(id);
+            await _postsRepository.DeletePost(id);
 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
         }
@@ -73,16 +76,17 @@ namespace DaccApi.Services.Posts
         }
     }
 
-    public IActionResult GetPostById(int id)
+    public async Task<IActionResult> GetPostById(int id)
     {
         try
         {
-            var post = _postsRepository.GetPostById(id).Result;
+            var post = await _postsRepository.GetPostById(id);
 
             if (post == null) 
                 return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
-
-            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { posts = post}));
+            var response = new ResponsePost(post);
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
+                new { post = response}));
         }
         catch (Exception ex)
         {
@@ -91,27 +95,27 @@ namespace DaccApi.Services.Posts
     }
     
     
-    public IActionResult VotePosts()
+    public async Task<IActionResult> VotePosts()
     {
         throw new NotImplementedException();
     }
 
-    public IActionResult UpdatePost(int id, RequestPost postUpdated)
+    public async Task<IActionResult> UpdatePost(int id, RequestPost postUpdated)
     {
         try
         {
-            var post = _postsRepository.GetPostById(id).Result;
+            var post = await _postsRepository.GetPostById(id);
             if (post == null)
             {
                 ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
             }
-            else if ( String.IsNullOrWhiteSpace(postUpdated.Conteudo) ||
+            else if (string.IsNullOrWhiteSpace(postUpdated.Conteudo) ||
                 postUpdated.Tags.Length == 0)
             {
                 // TODO: Adicionar campo de detalhes no request
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
-            _postsRepository.UpdatePost(id, postUpdated);
+            await _postsRepository.UpdatePost(id, postUpdated);
 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { posts = postUpdated}));
         }

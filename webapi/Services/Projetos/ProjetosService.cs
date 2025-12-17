@@ -3,6 +3,7 @@ using DaccApi.Infrastructure.Repositories.Projetos;
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Model;
 using DaccApi.Model.Requests;
+using DaccApi.Model.Responses;
 using DaccApi.Responses;
 using DaccApi.Services.FileStorage;
 
@@ -27,8 +28,8 @@ namespace DaccApi.Services.Projetos
                 if (projetos.Count == 0)
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
 
-
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { Projetos = projetos }));
+                var response = projetos.Select(projeto => new ResponseProjeto(projeto));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { projetos = response }));
             }
             catch (Exception ex)
             {
@@ -44,8 +45,9 @@ namespace DaccApi.Services.Projetos
                 var projeto = await _projetosRepository.GetProjetoById(id);
                 if (projeto == null)
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { projetos = projeto}));
-                
+
+                var response = new ResponseProjeto(projeto);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { projeto = response}));
             }
             catch (Exception ex)
             {
@@ -68,8 +70,6 @@ namespace DaccApi.Services.Projetos
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
-                
-                
 
                 var projeto = new Projeto()
                 {
@@ -109,7 +109,7 @@ namespace DaccApi.Services.Projetos
             
                 await _projetosRepository.UpdateProjeto(id, projeto);
 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(request));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
             }
             catch (Exception ex)
             {
@@ -165,7 +165,7 @@ namespace DaccApi.Services.Projetos
                 };
                 await _projetosRepository.UpdateProjeto(id, projeto);
 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { projetos = request}));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
             }
             catch (Exception ex)
             {

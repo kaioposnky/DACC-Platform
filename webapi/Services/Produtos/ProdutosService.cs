@@ -75,7 +75,7 @@ namespace DaccApi.Services.Products
                 var product = await CreateProductEntityAsync(requestCreateProduto, productId);
 
                 return ResponseHelper.CreateSuccessResponse(
-                    ResponseSuccess.CREATED.WithData(new { product }), 
+                    ResponseSuccess.CREATED,
                     "Produto criado com sucesso! Use o endpoint de variações para adicionar opções de compra.");
             }
             catch (Exception ex)
@@ -96,7 +96,6 @@ namespace DaccApi.Services.Products
         {
             try
             {
-
                 var product = await _produtosRepository.GetProductByIdAsync(produtoId);
                 if (product == null)
                 {
@@ -124,8 +123,8 @@ namespace DaccApi.Services.Products
                 if (products.Count == 0)
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND,
                         "Nenhum produto encontrado com os critérios de busca!");
-
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { products }), 
+                var response = products.Select(produto => new ResponseProduto(produto));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { products = response }),
                     "Produtos encontrados com sucesso!");
             }
             catch (Exception ex)
@@ -163,7 +162,7 @@ namespace DaccApi.Services.Products
                 var response = Produto.MapToResponseVariacao(createdVariation ?? variation);
                 
                 return ResponseHelper.CreateSuccessResponse(
-                    ResponseSuccess.CREATED.WithData(new { variation = response }),
+                    ResponseSuccess.CREATED,
                     "Variação criada com sucesso! Use o endpoint de imagens para adicionar fotos.");
             }
             catch (ArgumentException ex)
@@ -258,7 +257,7 @@ namespace DaccApi.Services.Products
                 var response = Produto.MapToResponseVariacao(updatedVariation ?? existingVariation);
                 
                 return ResponseHelper.CreateSuccessResponse(
-                    ResponseSuccess.OK.WithData(new { variation = response }),
+                    ResponseSuccess.OK,
                     "Variação atualizada com sucesso!");
             }
             catch (ArgumentException ex)
@@ -416,7 +415,7 @@ namespace DaccApi.Services.Products
                 await _produtosRepository.AddProductImagesAsync(produtoImagem);
                 
                 return ResponseHelper.CreateSuccessResponse(
-                    ResponseSuccess.CREATED.WithData(new { image = produtoImagem }), 
+                    ResponseSuccess.CREATED,
                     "Imagem adicionada com sucesso!");
             }
             catch (ArgumentException ex)

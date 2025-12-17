@@ -6,14 +6,14 @@ namespace DaccApi.Services.Posts
     
     public interface IPostsServices
     {
-        public IActionResult CreatePost(RequestPost post);
+        public Task<IActionResult> CreatePost(RequestPost post);
     
-        public IActionResult GetAllPosts();
-        public IActionResult UpdatePost(int id, RequestPost post);
+        public Task<IActionResult> GetAllPosts();
+        public Task<IActionResult> UpdatePost(int id, RequestPost post);
     
-        public IActionResult GetPostById(int id);
-        public IActionResult DeletePost(int id);
-        public IActionResult VotePosts();
+        public Task<IActionResult> GetPostById(int id);
+        public Task<IActionResult> DeletePost(int id);
+        public Task<IActionResult> VotePosts();
     }
     
     

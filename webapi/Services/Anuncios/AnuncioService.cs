@@ -2,12 +2,16 @@
 using DaccApi.Infrastructure.Repositories.Anuncio;
 using DaccApi.Model;
 using DaccApi.Model.Requests;
+using DaccApi.Model.Responses;
 using DaccApi.Responses;
 using DaccApi.Services.FileStorage;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.Anuncios
 {
+    /// <summary>
+    /// Classe que gerencia serviços dos anúncios
+    /// </summary>
     public class AnuncioService : IAnuncioService
     {
         private readonly IAnuncioRepository _anuncioRepository;
@@ -24,33 +28,35 @@ namespace DaccApi.Services.Anuncios
             try
             {
                 var anuncios = await _anuncioRepository.GetAllAnuncio();
-                if (anuncios.Count == 0) 
+                if (anuncios.Count == 0)
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { anuncios = anuncios}));
+                // Mapeia os anuncios para responses
+                var anunciosResponse = anuncios.Select(anuncio => new ResponseAnuncio(anuncio));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
+                    new { anuncios = anunciosResponse }));
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
             }
-            
         }
-        
+
         public async Task<IActionResult> GetAnuncioById(Guid id)
         {
             try
             {
                 var anuncio = await _anuncioRepository.GetAnuncioById(id);
-                if (anuncio == null) 
+                if (anuncio == null)
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
-
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { anuncio = anuncio}));
+                var anuncioResponse = new ResponseAnuncio(anuncio);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
+                    new { anuncio = anuncioResponse }));
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
             }
-            
         }
 
         public async Task<IActionResult> CreateAnuncio(RequestAnuncio anuncio)
@@ -60,21 +66,21 @@ namespace DaccApi.Services.Anuncios
                 if (
                     String.IsNullOrEmpty(anuncio.Titulo) ||
                     String.IsNullOrEmpty(anuncio.Conteudo)
-                    )
+                )
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
-            
-                _anuncioRepository.CreateAnuncio(anuncio);
+
+                await _anuncioRepository.CreateAnuncio(anuncio);
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
             }
         }
-        
+
         public async Task<IActionResult> AddAnuncioImage(Guid id, ImageRequest request)
         {
             try
@@ -85,45 +91,46 @@ namespace DaccApi.Services.Anuncios
 
                 if (anuncio == null)
                 {
-                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Notícia não encontrada!");
+                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND,
+                        "Notícia não encontrada!");
                 }
-            
+
                 anuncio.ImagemUrl = imageUrl;
                 anuncio.ImagemAlt = request.ImageAlt;
-            
+
                 await _anuncioRepository.UpdateAnuncio(id, anuncio);
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(request));
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, "Erro ao adicionar anuncio na notícia." + ex.Message);
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,
+                    "Erro ao adicionar anuncio na notícia." + ex.Message);
             }
         }
-        
-        
-        
+
+
         public async Task<IActionResult> DeleteAnuncio(Guid id)
         {
-
             try
             {
                 var anuncio = await _anuncioRepository.GetAnuncioById(id);
-            
+
                 if (anuncio == null)
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
                 }
-                _anuncioRepository.DeleteAnuncio(id);
+
+                await _anuncioRepository.DeleteAnuncio(id);
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
             }
         }
-        
+
         // TODO: Substituir RequestAnuncio por DTO para atualização de anuncio
         public async Task<IActionResult> UpdateAnuncio(Guid id, RequestAnuncio request)
         {
@@ -132,29 +139,26 @@ namespace DaccApi.Services.Anuncios
                 var anuncioQuery = await _anuncioRepository.GetAnuncioById(id);
                 if (anuncioQuery == null)
                 {
-                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Anúncio não encontrado!");
+                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND,
+                        "Anúncio não encontrado!");
                 }
-                
-                
+
                 var anuncio = new Anuncio()
                 {
-                   Titulo = request.Titulo,
-                   Conteudo = request.Conteudo,
-                   TipoAnuncio = request.TipoAnuncio,
-                   Ativo = request.Ativo
+                    Titulo = request.Titulo,
+                    Conteudo = request.Conteudo,
+                    TipoAnuncio = request.TipoAnuncio,
+                    Ativo = request.Ativo
                 };
                 await _anuncioRepository.UpdateAnuncio(id, anuncio);
 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { anuncio = request}));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
+                    new { anuncio = request }));
             }
             catch (Exception ex)
             {
-                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
             }
         }
-        
-        
-        
     }
-    
 }

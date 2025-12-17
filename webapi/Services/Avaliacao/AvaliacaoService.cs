@@ -1,6 +1,7 @@
 ﻿using DaccApi.Helpers;
 using DaccApi.Infrastructure.Repositories.Avaliacao;
 using DaccApi.Model;
+using DaccApi.Model.Responses;
 using DaccApi.Responses;
 using Microsoft.AspNetCore.Mvc;
 
@@ -44,7 +45,8 @@ public class AvaliacaoService : IAvaliacaoService
 
             if (avaliacoes.Count == 0) return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
 
-            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { avaliacoes = avaliacoes}));
+            var responseAvaliacoes = avaliacoes.Select(avaliacao => new ResponseAvaliacaoProduto(avaliacao));
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { avaliacoes = responseAvaliacoes}));
         }
         catch (Exception ex)
         {
@@ -64,7 +66,8 @@ public class AvaliacaoService : IAvaliacaoService
             if (avaliacao == null) 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
 
-            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { avaliacao = avaliacao}));
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
+                new { avaliacao = new ResponseAvaliacaoProduto(avaliacao)}));
         }
         catch (Exception ex)
         {
@@ -83,7 +86,9 @@ public class AvaliacaoService : IAvaliacaoService
             if (avaliacoes.Count == 0) 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
 
-            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { avaliacoes = avaliacoes}));
+            var responseAvaliacoes = avaliacoes.Select(avaliacao => new ResponseAvaliacaoProduto(avaliacao));
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
+                new { avaliacoes = responseAvaliacoes}));
         }
         catch (Exception ex)
         {
@@ -101,7 +106,9 @@ public class AvaliacaoService : IAvaliacaoService
             if (avaliacoes.Count == 0)
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
 
-            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { avaliacoes = avaliacoes}));
+            var responseAvaliacoes = avaliacoes.Select(avaliacao => new ResponseAvaliacaoProduto(avaliacao));
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
+                new { avaliacoes = responseAvaliacoes}));
         }
         catch (Exception ex)
         {
@@ -119,7 +126,7 @@ public class AvaliacaoService : IAvaliacaoService
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
             }
-            _avaliacaoRepository.DeleteAvaliacao(id);
+            await _avaliacaoRepository.DeleteAvaliacao(id);
 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
         }
@@ -138,9 +145,9 @@ public class AvaliacaoService : IAvaliacaoService
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
-            _avaliacaoRepository.UpdateAvaliacao(id, avaliacao);
+            await _avaliacaoRepository.UpdateAvaliacao(id, avaliacao);
 
-            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { avaliacao = avaliacao}));
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
         }
         catch (Exception ex)
         {
