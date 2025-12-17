@@ -1,3 +1,5 @@
+using DaccApi.Model.Objects;
+
 namespace DaccApi.Model.Responses;
 
 /// <summary>
@@ -16,27 +18,22 @@ public Guid Id { get; set; }
 public string? Name { get; set; }
 
 /// <summary>
-/// Obtém ou define o título (cargo) do diretor (frontend specific).
+/// Obtém ou define o título acadêmico.
 /// </summary>
-public string? Title { get; set; }
+public string Title { get; set; }
 
 /// <summary>
-/// Obtém ou define a descrição/posição do diretor.
+/// Obtém ou define o cargo.
 /// </summary>
-public string? Description { get; set; } // Mapped from Descricao or used for Position
+public string Position { get; set; }
 
 /// <summary>
-/// Obtém ou define a posição do diretor (frontend specific).
+/// Obtém ou define a especialização.
 /// </summary>
-public string? Position { get; set; }
+public string Specialization { get; set; }
 
 /// <summary>
-/// Obtém ou define a especialização do diretor (frontend specific).
-/// </summary>
-public string? Specialization { get; set; }
-
-/// <summary>
-/// Obtém ou define a URL da imagem do diretor.
+/// Obtém ou define a URL da imagem.
 /// </summary>
 public string? Image { get; set; }
 
@@ -53,19 +50,16 @@ public ResponseDiretor(Diretor diretor)
 {
     Id = diretor.Id;
     Name = diretor.Nome;
-    Description = diretor.Descricao; // Maps to general description
+    Title = diretor.Titulo;
+    Position = diretor.Cargo;
+    Specialization = diretor.Especializacao;
     Image = diretor.ImagemUrl;
     Social = new SocialLinks
     {
-        Linkedin = diretor.LinkedinLink,
-        Github = diretor.GithubLink,
+        Linkedin = diretor.Linkedin,
+        Github = diretor.Github,
         Email = diretor.Email
     };
-
-   // Propriedades específicas do frontend sem correspondência direta
-    Title = string.Empty; // Preencher via lógica adicional no frontend ou serviço
-    Position = diretor.Descricao; // Pode ser mapeado da descrição
-    Specialization = string.Empty; // Preencher via lógica adicional no frontend ou serviço
 }
 
 /// <summary>

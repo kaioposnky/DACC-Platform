@@ -1,4 +1,5 @@
 ﻿using DaccApi.Model.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace DaccApi.Model
 {
@@ -8,42 +9,54 @@ namespace DaccApi.Model
     public class RequestDiretor
     {
         /// <summary>
-        /// Obtém ou define o ID do diretor.
+        /// Nome do diretor.
         /// </summary>
-        public Guid Id { get; set; }
-            /// <summary>
-            /// Obtém ou define o nome do diretor.
-            /// </summary>
-            public string? Nome { get; set; }
-            /// <summary>
-            /// Obtém ou define a descrição do diretor.
-            /// </summary>
-            public string? Descricao { get; set; }
-            /// <summary>
-            /// Obtém ou define o arquivo de imagem do diretor.
-            /// </summary>
-            [ImageValidation]
-            public IFormFile? ImageFile { get; set; }
-            /// <summary>
-            /// Obtém ou define o ID do usuário associado.
-            /// </summary>
-            public Guid? UsuarioId { get; set; }
-            /// <summary>
-            /// Obtém ou define o ID da diretoria.
-            /// </summary>
-            public Guid? DiretoriaId { get; set; }
-            /// <summary>
-            /// Obtém ou define o e-mail do diretor.
-            /// </summary>
-            public string? Email { get; set; }
-            /// <summary>
-            /// Obtém ou define o link do perfil do GitHub.
-            /// </summary>
-            public string? GithubLink    { get; set; }
-            /// <summary>
-            /// Obtém ou define o link do perfil do LinkedIn.
-            /// </summary>
-            public string? LinkedinLink   { get; set; }
+        [Required(ErrorMessage = "O nome é obrigatório")]
+        public string Nome { get; set; }
+
+        /// <summary>
+        /// Título acadêmico (Dr., Ms., etc).
+        /// </summary>
+        [Required(ErrorMessage = "O título é obrigatório")]
+        public string Titulo { get; set; }
+
+        /// <summary>
+        /// Cargo na instituição.
+        /// </summary>
+        [Required(ErrorMessage = "O cargo é obrigatório")]
+        public string Cargo { get; set; }
+
+        /// <summary>
+        /// Especialização ou área de atuação.
+        /// </summary>
+        [Required(ErrorMessage = "A especialização é obrigatória")]
+        public string Especializacao { get; set; }
+
+        /// <summary>
+        /// Arquivo de imagem de perfil.
+        /// </summary>
+        [ImageValidation]
+        public IFormFile ImageFile { get; set; }
+
+        /// <summary>
+        /// Email de contato.
+        /// </summary>
+        [EmailAddress(ErrorMessage = "Email inválido")]
+        public string? Email { get; set; }
+
+        /// <summary>
+        /// Link do LinkedIn.
+        /// </summary>
+        public string? Linkedin { get; set; }
+
+        /// <summary>
+        /// Link do GitHub.
+        /// </summary>
+        public string? Github { get; set; }
+
+        /// <summary>
+        /// ID do usuário vinculado (opcional).
+        /// </summary>
+        public Guid? UsuarioId { get; set; }
     }
-    
 }

@@ -1,5 +1,4 @@
-﻿ using DaccApi.Helpers.Attributes;
-using DaccApi.Responses;
+﻿using DaccApi.Helpers.Attributes;
 using DaccApi.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -57,7 +56,7 @@ namespace DaccApi.Controllers.Diretores
         /// </summary>
         [AuthenticatedPostResponses]
         [HttpPost("")]
-        public async Task<IActionResult> CreateDiretor([FromBody] RequestDiretor request)
+        public async Task<IActionResult> CreateDiretor([FromForm] RequestDiretor request)
         {
             var response = await _diretoresService.CreateDiretor(request);
             return response;
@@ -79,7 +78,7 @@ namespace DaccApi.Controllers.Diretores
         /// </summary>
         [AuthenticatedPatchResponses]
         [HttpPatch("{id:guid}")]
-        public async Task<IActionResult> UpdateDiretor([FromRoute] Guid id, [FromBody] RequestDiretor request)
+        public async Task<IActionResult> UpdateDiretor([FromRoute] Guid id, [FromForm] RequestDiretor request)
         {
             var response = await _diretoresService.UpdateDiretor(id, request);
             return response;

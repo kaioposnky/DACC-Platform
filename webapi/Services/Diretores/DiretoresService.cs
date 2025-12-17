@@ -1,9 +1,9 @@
 ﻿using DaccApi.Model;
-using DaccApi.Infrastructure.Repositories.Products;
 using DaccApi.Infrastructure.Repositories.Diretores;
 using DaccApi.Helpers;
+using DaccApi.Model.Objects;
+using DaccApi.Model.Responses;
 using DaccApi.Responses;
-using DaccApi.Services.Diretores;
 using DaccApi.Services.FileStorage;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,12 +23,13 @@ namespace DaccApi.Services.Diretores
         {
             try
             {
-                var diretores = await _diretoresRepository.GetAllDiretores();
+                var diretores = await _diretoresRepository.GetAllAsync();
 
                 if (diretores.Count == 0)
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
-
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { diretores = diretores}));
+                
+                var response = diretores.Select(d => new ResponseDiretor(d)).ToList();
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { diretores = response}));
             }
             catch (Exception ex)
             {
@@ -41,29 +42,10 @@ namespace DaccApi.Services.Diretores
         {
             try
             {
-                if (String.IsNullOrWhiteSpace(request.Nome) ||
-                    String.IsNullOrWhiteSpace(request.Descricao) ||
-                    String.IsNullOrWhiteSpace(request.GithubLink)||
-                    String.IsNullOrWhiteSpace(request.LinkedinLink)||
-                    String.IsNullOrWhiteSpace(request.Email)||
-                    request.DiretoriaId == null||
-                    request.UsuarioId == null)
-                {
-                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
-                }
-
-                var diretor = new Diretor()
-                {
-                    Nome = request.Nome,
-                    Descricao = request.Descricao,
-                    GithubLink = request.GithubLink,
-                    LinkedinLink = request.LinkedinLink,
-                    Email = request.Email,
-                    DiretoriaId = request.DiretoriaId,
-                    UsuarioId = request.UsuarioId,
-                };
+                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
                 
-                await _diretoresRepository.CreateDiretor(diretor);
+                var diretor = Diretor.FromRequest(request, imageUrl);
+                await _diretoresRepository.CreateAsync(diretor);
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
             }
@@ -78,13 +60,13 @@ namespace DaccApi.Services.Diretores
 
             try
             {
-                var diretor = await _diretoresRepository.GetDiretorById(id);
+                var diretor = await _diretoresRepository.GetByIdAsync(id);
             
                 if (diretor == null)
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
                 }
-                _diretoresRepository.DeleteDiretor(id);
+                await _diretoresRepository.DeleteAsync(id);
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
             }
@@ -99,13 +81,14 @@ namespace DaccApi.Services.Diretores
         {
             try
             {
-                var diretor = await _diretoresRepository.GetDiretorById(id);
+                var diretor = await _diretoresRepository.GetByIdAsync(id);
 
                 
                 if (diretor == null) 
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { diretor = diretor}));
+                var response = new ResponseDiretor(diretor);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { diretor = response}));
             }
             catch (Exception ex)
             {
@@ -117,33 +100,20 @@ namespace DaccApi.Services.Diretores
         {
             try
             {
-                var diretorQuery = await _diretoresRepository.GetDiretorById(id);
+                var diretorQuery = await _diretoresRepository.GetByIdAsync(id);
                 if (diretorQuery == null)
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
 
-                string? imageUrl = null;
-                if (request.ImageFile != null)
-                {
-                    imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
-                }
-                
-                var diretor = new Diretor
-                {
-                    Nome = request.Nome,
-                    Descricao = request.Descricao,
-                    GithubLink = request.GithubLink,
-                    LinkedinLink = request.LinkedinLink,
-                    Email = request.Email,
-                    DiretoriaId = request.DiretoriaId,
-                    UsuarioId = request.UsuarioId,
-                    ImagemUrl = imageUrl ?? diretorQuery.ImagemUrl
-                };
-                
-                await _diretoresRepository.UpdateDiretor(id, diretor);
+                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { diretor = request}));
+                var diretor = Diretor.FromRequest(request, imageUrl ?? diretorQuery.ImagemUrl);
+                
+                await _diretoresRepository.UpdateAsync(id, diretor);
+
+                var response = new ResponseDiretor(diretor);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { diretor = response}));
             }
             catch (Exception ex)
             {
