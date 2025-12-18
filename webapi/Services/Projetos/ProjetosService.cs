@@ -23,7 +23,7 @@ namespace DaccApi.Services.Projetos
         {
             try
             {
-                var projetos = await _projetosRepository.GetAllProjetos();
+                var projetos = await _projetosRepository.GetAllAsync();
                 
                 if (projetos.Count == 0)
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
@@ -42,7 +42,7 @@ namespace DaccApi.Services.Projetos
         {
             try
             {
-                var projeto = await _projetosRepository.GetProjetoById(id);
+                var projeto = await _projetosRepository.GetByIdAsync(id);
                 if (projeto == null)
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
 
@@ -73,14 +73,18 @@ namespace DaccApi.Services.Projetos
 
                 var projeto = new Projeto()
                 {
+                    Id = Guid.NewGuid(),
                     Titulo = request.Titulo,
                     Descricao = request.Descricao,
                     Status = request.Status,
                     Diretoria = request.Diretoria,
                     Tags = request.Tags,
+                    TextoConclusao = request.TextoConclusao ?? string.Empty,
+                    DataCriacao = DateTime.UtcNow,
+                    DataAtualizacao = DateTime.UtcNow
                 };
                 
-                await _projetosRepository.CreateProjeto(projeto);
+                await _projetosRepository.CreateAsync(projeto);
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
             }
@@ -97,7 +101,7 @@ namespace DaccApi.Services.Projetos
             {
                 var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
 
-                var projeto = await _projetosRepository.GetProjetoById(id);
+                var projeto = await _projetosRepository.GetByIdAsync(id);
 
                 if (projeto == null)
                 {
@@ -107,7 +111,7 @@ namespace DaccApi.Services.Projetos
                 projeto.ImagemUrl = imageUrl;
                 projeto.ImagemAlt = request.ImageAlt;
             
-                await _projetosRepository.UpdateProjeto(id, projeto);
+                await _projetosRepository.UpdateAsync(id, projeto);
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
             }
@@ -122,13 +126,13 @@ namespace DaccApi.Services.Projetos
         {
             try
             {
-                var projeto = await _projetosRepository.GetProjetoById(id);
+                var projeto = await _projetosRepository.GetByIdAsync(id);
             
                 if (projeto == null)
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
                 }
-                await _projetosRepository.DeleteProjeto(id);
+                await _projetosRepository.DeleteAsync(id);
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
             }
@@ -142,7 +146,7 @@ namespace DaccApi.Services.Projetos
         {
             try
             {
-                var projetoQuery = await _projetosRepository.GetProjetoById(id);
+                var projetoQuery = await _projetosRepository.GetByIdAsync(id);
                 if (projetoQuery == null ||
                     String.IsNullOrWhiteSpace(request.Titulo) ||
                     String.IsNullOrWhiteSpace(request.Descricao) ||
@@ -153,17 +157,15 @@ namespace DaccApi.Services.Projetos
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
                 
-
-                var projeto = new Projeto()
-                {
-                    Titulo = request.Titulo,
-                    Descricao = request.Descricao,
-                    Status = request.Status,
-                    Diretoria = request.Diretoria,
-                    Tags = request.Tags,
-
-                };
-                await _projetosRepository.UpdateProjeto(id, projeto);
+                projetoQuery.Titulo = request.Titulo;
+                projetoQuery.Descricao = request.Descricao;
+                projetoQuery.Status = request.Status;
+                projetoQuery.Diretoria = request.Diretoria;
+                projetoQuery.Tags = request.Tags;
+                projetoQuery.TextoConclusao = request.TextoConclusao ?? projetoQuery.TextoConclusao;
+                projetoQuery.DataAtualizacao = DateTime.UtcNow;
+                
+                await _projetosRepository.UpdateAsync(id, projetoQuery);
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
             }

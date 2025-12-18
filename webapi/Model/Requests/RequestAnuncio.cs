@@ -25,5 +25,35 @@ namespace DaccApi.Model
         /// Obtém ou define se o anúncio está ativo.
         /// </summary>
         public bool Ativo { get; set; }
+
+        /// <summary>
+        /// Obtém ou define o texto do botão primário.
+        /// </summary>
+        public string? BotaoPrimarioTexto { get; set; }
+
+        /// <summary>
+        /// Obtém ou define o link do botão primário.
+        /// </summary>
+        public string? BotaoPrimarioLink { get; set; }
+
+        /// <summary>
+        /// Obtém ou define o texto do botão secundário.
+        /// </summary>
+        public string? BotaoSecundarioTexto { get; set; }
+
+        /// <summary>
+        /// Obtém ou define o link do botão secundário.
+        /// </summary>
+        public string? BotaoSecundarioLink { get; set; }
+
+        /// <summary>
+        /// Obtém ou define a URL da imagem (caso já hospedada).
+        /// </summary>
+        public string? ImagemUrl { get; set; }
+
+        /// <summary>
+        /// Obtém ou define o texto alternativo da imagem.
+        /// </summary>
+        public string? ImagemAlt { get; set; }
     }
 }

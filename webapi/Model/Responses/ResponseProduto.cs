@@ -134,7 +134,7 @@ public class ResponseProduto
         Description = produto.Descricao;
         Price = produto.Preco;
         OriginalPrice = produto.PrecoOriginal;
-        Category = produto.Categoria;
+        Category = !string.IsNullOrEmpty(produto.CategoriaNome) ? produto.CategoriaNome : produto.Categoria.ToString();
         CreatedAt = produto.DataCriacao;
         UpdatedAt = produto.DataAtualizacao;
 

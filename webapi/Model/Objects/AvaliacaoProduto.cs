@@ -39,10 +39,16 @@ namespace DaccApi.Model
         [Column("produto_id")]
         public Guid ProdutoId { get; set; }
 
+        [Column("ativo")]
+        public bool Ativo { get; set; }
+
         /// <summary>
         /// Obtém ou define a data em que a avaliação foi postada.
         /// </summary>
         [Column("data_avaliacao")]
         public DateTime DataPostada { get; set; }
+
+        [Column("data_atualizacao")]
+        public DateTime DataAtualizacao { get; set; }
     }
 }

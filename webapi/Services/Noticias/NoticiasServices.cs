@@ -25,7 +25,7 @@ public class NoticiasServices : INoticiasServices
     {
         try
         {
-            var noticias =  await _noticiasRepository.GetAllNoticias();
+            var noticias =  await _noticiasRepository.GetAllAsync();
 
             if (noticias.Count == 0) 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
@@ -52,13 +52,16 @@ public class NoticiasServices : INoticiasServices
             
             var noticia = new Noticia()
             {
+                Id = Guid.NewGuid(),
                 Categoria = request.Categoria,
                 Descricao = request.Descricao,
                 Titulo = request.Titulo,
                 AutorId = autorId,
+                DataPublicacao = DateTime.UtcNow,
+                DataAtualizacao = DateTime.UtcNow
             };
             
-            await _noticiasRepository.CreateNoticia(noticia);
+            await _noticiasRepository.CreateAsync(noticia);
 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
         }
@@ -74,7 +77,7 @@ public class NoticiasServices : INoticiasServices
         {
             var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
 
-            var noticia = await _noticiasRepository.GetNoticiaById(noticiaId);
+            var noticia = await _noticiasRepository.GetByIdAsync(noticiaId);
 
             if (noticia == null)
             {
@@ -84,7 +87,7 @@ public class NoticiasServices : INoticiasServices
             noticia.ImagemUrl = imageUrl;
             noticia.ImagemAlt = request.ImageAlt;
             
-            await _noticiasRepository.UpdateNoticia(noticiaId, noticia);
+            await _noticiasRepository.UpdateAsync(noticiaId, noticia);
 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
         }
@@ -99,13 +102,13 @@ public class NoticiasServices : INoticiasServices
 
         try
         {
-            var noticia = await _noticiasRepository.GetNoticiaById(id);
+            var noticia = await _noticiasRepository.GetByIdAsync(id);
             
             if (noticia == null)
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
             }
-            await _noticiasRepository.DeleteNoticia(id);
+            await _noticiasRepository.DeleteAsync(id);
 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
         }
@@ -120,7 +123,7 @@ public class NoticiasServices : INoticiasServices
     {
         try
         {
-            var noticia =  await _noticiasRepository.GetNoticiaById(id);
+            var noticia =  await _noticiasRepository.GetByIdAsync(id);
 
             if (noticia == null) 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
@@ -138,20 +141,17 @@ public class NoticiasServices : INoticiasServices
     {
         try
         {
-            var noticiaQuery = await _noticiasRepository.GetNoticiaById(id);
+            var noticiaQuery = await _noticiasRepository.GetByIdAsync(id);
             if (noticiaQuery == null)
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
             
-            var noticia = new Noticia()
-            {
-                Titulo = request.Titulo,
-                Descricao = request.Descricao,
-                Categoria = request.Categoria,
-            };
+            noticiaQuery.Titulo = request.Titulo;
+            noticiaQuery.Descricao = request.Descricao;
+            noticiaQuery.Categoria = request.Categoria;
             
-            await _noticiasRepository.UpdateNoticia(id, noticia);
+            await _noticiasRepository.UpdateAsync(id, noticiaQuery);
 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
         }

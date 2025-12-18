@@ -1,30 +1,19 @@
 ﻿using System.Data;
-using System.Security.Authentication;
-using DaccApi.Enum.UserEnum;
+using DaccApi.Data.Orm;
 using DaccApi.Infrastructure.Cryptography;
 using DaccApi.Infrastructure.Dapper;
 using DaccApi.Model;
-using NHibernate.Exceptions;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Storage.ValueConversion;
 using Npgsql;
 
 namespace DaccApi.Infrastructure.Repositories.User
 {
-    namespace DaccApi.Infrastructure.Repositories.User
-    {
-        /// <summary>
-        /// Implementação do repositório de usuários.
-        /// </summary>
-        public class UsuarioRepository : IUsuarioRepository
+    public class UsuarioRepository : BaseRepository<Usuario>, IUsuarioRepository
         {
             private readonly IRepositoryDapper _repositoryDapper;
             private readonly IArgon2Utility _argon2Utility;
 
-            /// <summary>
-            /// Inicia uma nova instância da classe <see cref="UsuarioRepository"/>.
-            /// </summary>
             public UsuarioRepository(IRepositoryDapper repositoryDapper,
-                IArgon2Utility argon2Utility)
+                IArgon2Utility argon2Utility) : base(repositoryDapper)
             {
                 _repositoryDapper = repositoryDapper;
                 _argon2Utility = argon2Utility;
@@ -78,51 +67,6 @@ namespace DaccApi.Infrastructure.Repositories.User
             }
 
             /// <summary>
-            /// Obtém todos os usuários.
-            /// </summary>
-            public async Task<List<Usuario>> GetAll()
-            {
-                try
-                {
-                    var sql = _repositoryDapper.GetQueryNamed("GetAllUsers");
-
-                    var queryResult = await _repositoryDapper.QueryAsync<Usuario>(sql);
-
-                    var usuarios = queryResult.ToList();
-
-                    return usuarios;
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Erro ao obter lista de usuários!", ex);
-                }
-            }
-
-            /// <summary>
-            /// Obtém um usuário específico pelo seu ID.
-            /// </summary>
-            public async Task<Usuario?> GetUserById(Guid id)
-            {
-                try
-                {
-                    var sql = _repositoryDapper.GetQueryNamed("GetUserById");
-
-                    var param = new { Id = id };
-
-                    var queryResult = await _repositoryDapper.QueryAsync<Usuario>(sql, param);
-
-                    var usuario = queryResult.FirstOrDefault();
-
-                    return usuario;
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Erro ao obter usuário pelo Id na banco de dados!");
-                }
-
-            }
-
-            /// <summary>
             /// Obtém um usuário específico pelo seu e-mail.
             /// </summary>
             public async Task<Usuario?> GetUserByEmail(string email)
@@ -144,53 +88,6 @@ namespace DaccApi.Infrastructure.Repositories.User
                     throw new Exception("Erro ao obter usuário pelo Email na banco de dados!" + ex.Message);
                 }
 
-            }
-
-            /// <summary>
-            /// Atualiza um usuário existente.
-            /// </summary>
-            public async Task<int> UpdateUser(Usuario user)
-            {
-                try
-                {
-                    var sql = _repositoryDapper.GetQueryNamed("UpdateUser");
-
-                    var param = new
-                    {
-                        Id = user.Id,
-                        Nome = user.Nome,
-                        Sobrenome = user.Sobrenome,
-                        Curso = user.Curso,
-                        Telefone = user.Telefone,
-                        ImagemUrl = user.ImagemUrl,
-                        NewsletterSubscriber = user.InscritoNoticia
-                    };
-
-                    return await _repositoryDapper.ExecuteAsync(sql, param);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Erro ao atualizar informações do usuário!" + ex.Message);
-                }
-            }
-
-            /// <summary>
-            /// Deleta um usuário existente.
-            /// </summary>
-            public async Task<int> DeleteUser(Guid id)
-            {
-                try
-                {
-                    var sql = _repositoryDapper.GetQueryNamed("DeleteUser");
-
-                    var param = new { Id = id };
-
-                    return await _repositoryDapper.ExecuteAsync(sql, param);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Erro ao deletar usuário!" + ex.Message);
-                }
             }
 
             /// <summary>
@@ -245,5 +142,4 @@ namespace DaccApi.Infrastructure.Repositories.User
                 }
             }
         }
-    }
 }

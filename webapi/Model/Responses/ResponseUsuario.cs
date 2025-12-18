@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace DaccApi.Model.Responses
 {
     /// <summary>
@@ -8,71 +10,85 @@ namespace DaccApi.Model.Responses
         /// <summary>
         /// Obtém ou define o ID do usuário.
         /// </summary>
+        [JsonPropertyName("id")]
         public Guid Id { get; set; }
 
         /// <summary>
         /// Obtém ou define o nome do usuário.
         /// </summary>
+        [JsonPropertyName("name")]
         public string? Name { get; set; }
 
         /// <summary>
         /// Obtém ou define o sobrenome do usuário.
         /// </summary>
+        [JsonPropertyName("lastName")]
         public string? LastName { get; set; }
 
         /// <summary>
         /// Obtém ou define o RA do usuário.
         /// </summary>
+        [JsonPropertyName("ra")]
         public string? Ra { get; set; }
 
         /// <summary>
         /// Obtém ou define o e-mail do usuário.
         /// </summary>
+        [JsonPropertyName("email")]
         public string? Email { get; set; }
 
         /// <summary>
         /// Obtém ou define o curso do usuário.
         /// </summary>
+        [JsonPropertyName("course")]
         public string? Course { get; set; }
 
         /// <summary>
         /// Obtém ou define o telefone do usuário.
         /// </summary>
+        [JsonPropertyName("phone")]
         public string? Phone { get; set; }
 
         /// <summary>
         /// Obtém ou define a URL da imagem de perfil do usuário (avatar).
         /// </summary>
+        [JsonPropertyName("avatar")]
         public string? Avatar { get; set; }
 
         /// <summary>
         /// Obtém ou define se o usuário está ativo.
         /// </summary>
+        [JsonPropertyName("isActive")]
         public bool IsActive { get; set; }
 
         /// <summary>
         /// Obtém ou define se o usuário está inscrito na newsletter.
         /// </summary>
+        [JsonPropertyName("isSubscribedToNews")]
         public bool? IsSubscribedToNews { get; set; }
 
         /// <summary>
         /// Obtém ou define o cargo do usuário.
         /// </summary>
+        [JsonPropertyName("role")]
         public string? Role { get; set; }
 
         /// <summary>
         /// Obtém ou define se o usuário está logado (frontend specific).
         /// </summary>
+        [JsonPropertyName("isLoggedIn")]
         public bool IsLoggedIn { get; set; } // Frontend specific property
 
         /// <summary>
         /// Obtém ou define a data de criação da conta.
         /// </summary>
+        [JsonPropertyName("createdAt")]
         public DateTime? CreatedAt { get; set; }
 
         /// <summary>
         /// Obtém ou define a data da última atualização.
         /// </summary>
+        [JsonPropertyName("updatedAt")]
         public DateTime? UpdatedAt { get; set; }
 
         /// <summary>

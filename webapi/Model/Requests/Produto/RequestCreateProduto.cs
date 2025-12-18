@@ -27,14 +27,14 @@ namespace DaccApi.Model
         /// Obtém ou define a categoria do produto.
         /// </summary>
         [Required(ErrorMessage = "Categoria é obrigatória")]
-        [MinLength(3, ErrorMessage = "Categoria deve ter pelo menos 3 caracteres")]
+        // Recebe o ID como string
         public string Categoria { get; set; }
 
         /// <summary>
         /// Obtém ou define a subcategoria do produto.
         /// </summary>
         [Required(ErrorMessage = "Subcategoria é obrigatória")]
-        [MinLength(3, ErrorMessage = "Subcategoria deve ter pelo menos 3 caracteres")]
+        // Recebe o ID como string
         public string Subcategoria { get; set; }
 
         /// <summary>

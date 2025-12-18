@@ -22,7 +22,7 @@ namespace DaccApi.Services.Eventos
         {
             try
             {
-                var eventos = await _eventosRepository.GetAllEventos();
+                var eventos = await _eventosRepository.GetAllAsync();
 
                 if (eventos.Count == 0)
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
@@ -52,17 +52,17 @@ namespace DaccApi.Services.Eventos
 
                     var evento = new Evento()
                     {
-                        
+                        Id = Guid.NewGuid(),
                         Titulo = request.Titulo,
                         AutorId = autorId,
                         Descricao = request.Descricao,
                         LinkAcao = request.LinkAcao,
                         TextoAcao = request.TextoAcao,
-                        TipoEvento = request.TipoEvento
+                        TipoEvento = request.TipoEvento,
+                        Data = request.Data
                     };
 
-                    var eventoId = await _eventosRepository.CreateEvento(evento);
-                    evento.Id = eventoId;
+                    await _eventosRepository.CreateAsync(evento);
                     
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
                 }
@@ -77,13 +77,13 @@ namespace DaccApi.Services.Eventos
 
                 try
                 {
-                    var evento = await _eventosRepository.GetEventoById(id);
+                    var evento = await _eventosRepository.GetByIdAsync(id);
                 
                     if (evento == null)
                     {
                         return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
                     }
-                    await _eventosRepository.DeleteEvento(id);
+                    await _eventosRepository.DeleteAsync(id);
 
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
                 }
@@ -98,7 +98,7 @@ namespace DaccApi.Services.Eventos
             {
                 try
                 {
-                    var evento = await _eventosRepository.GetEventoById(id);
+                    var evento = await _eventosRepository.GetByIdAsync(id);
 
                     
                     if (evento == null) 
@@ -118,23 +118,20 @@ namespace DaccApi.Services.Eventos
             {
                 try
                 {
-                    var eventoQuery = await _eventosRepository.GetEventoById(id);
+                    var eventoQuery = await _eventosRepository.GetByIdAsync(id);
                     if (eventoQuery == null)
                     {
                         return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                     }
 
-                    var evento = new Evento()
-                    {
-                        Titulo = request.Titulo,
-                        TextoAcao = request.TextoAcao,
-                        Descricao = request.Descricao,
-                        LinkAcao = request.LinkAcao,
-                        TipoEvento = request.TipoEvento,
-                        Data = request.Data,
-                    };
+                    eventoQuery.Titulo = request.Titulo;
+                    eventoQuery.TextoAcao = request.TextoAcao;
+                    eventoQuery.Descricao = request.Descricao;
+                    eventoQuery.LinkAcao = request.LinkAcao;
+                    eventoQuery.TipoEvento = request.TipoEvento;
+                    eventoQuery.Data = request.Data;
                     
-                    await _eventosRepository.UpdateEvento(id, evento);
+                    await _eventosRepository.UpdateAsync(id, eventoQuery);
 
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
                 }
@@ -145,4 +142,3 @@ namespace DaccApi.Services.Eventos
             }
     }
 } 
-

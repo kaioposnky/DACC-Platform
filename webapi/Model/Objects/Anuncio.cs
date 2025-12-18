@@ -33,12 +33,6 @@ namespace DaccApi.Model
         public string TipoAnuncio { get; set; }
 
         /// <summary>
-        /// Obtém ou define o ícone do anúncio.
-        /// </summary>
-        [Column("icone")]
-        public string Icone { get; set; }
-
-        /// <summary>
         /// Obtém ou define o texto do botão primário.
         /// </summary>
         [Column("botao_primario_texto")]
@@ -84,18 +78,18 @@ namespace DaccApi.Model
         /// Obtém ou define o ID do autor do anúncio.
         /// </summary>
         [Column("autor_id")]
-        public Guid AutorId { get; set; }
+        public Guid? AutorId { get; set; }
 
         /// <summary>
         /// Obtém ou define a data de criação do anúncio.
         /// </summary>
         [Column("data_criacao")]
-        public DateTime? DataCriacao { get; set; }
+        public DateTime DataCriacao { get; set; }
 
         /// <summary>
         /// Obtém ou define a data de atualização do anúncio.
         /// </summary>
         [Column("data_atualizacao")]
-        public DateTime? DataAtualizacao { get; set; }
+        public DateTime DataAtualizacao { get; set; }
     }
 }

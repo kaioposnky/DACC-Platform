@@ -53,7 +53,7 @@ public class ResponseEvento
         ActionLink = evento.LinkAcao;
 
         // Propriedades específicas do frontend sem correspondência direta
-        Time = evento.Data?.ToString("HH:mm") ?? string.Empty; // Extrai apenas a hora e minuto
+        Time = evento.Data.ToString("HH:mm") ?? string.Empty; // Extrai apenas a hora e minuto
     }
 
     /// <summary>

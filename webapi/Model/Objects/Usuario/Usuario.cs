@@ -58,7 +58,7 @@ namespace DaccApi.Model
         /// Obtém ou define o hash da senha do usuário.
         /// </summary>
         [Column("senha_hash")]
-        public string? SenhaHash { get; set; }
+        public string SenhaHash { get; set; }
 
         /// <summary>
         /// Obtém ou define a URL da imagem de perfil do usuário.

@@ -20,7 +20,6 @@ using DaccApi.Infrastructure.Repositories.Orders.DaccApi.Infrastructure.Reposito
 using DaccApi.Infrastructure.Repositories.Permission;
 using DaccApi.Infrastructure.Repositories.Posts;
 using DaccApi.Infrastructure.Repositories.Products;
-using DaccApi.Infrastructure.Repositories.Products.DaccApi.Infrastructure.Repositories.Products;
 using DaccApi.Infrastructure.Repositories.Projetos;
 using DaccApi.Infrastructure.Repositories.Reservas;
 using DaccApi.Infrastructure.Repositories.User;

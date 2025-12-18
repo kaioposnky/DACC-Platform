@@ -1,5 +1,6 @@
 ﻿using DaccApi.Helpers;
 using DaccApi.Infrastructure.Repositories.Posts;
+using DaccApi.Model.Post;
 using DaccApi.Model;
 using DaccApi.Model.Responses.Post;
 using DaccApi.Responses;
@@ -20,7 +21,7 @@ namespace DaccApi.Services.Posts
     {
         try
         {
-            var posts = await _postsRepository.GetAllPosts();
+            var posts = await _postsRepository.GetAllAsync();
 
             if (posts.Count == 0)
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
@@ -47,7 +48,17 @@ namespace DaccApi.Services.Posts
                 // TODO: Adicionar campo de detalhes no request
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
-            await _postsRepository.CreatePost(post);
+
+            var newPost = new Post
+            {
+                Id = Guid.NewGuid(),
+                Titulo = post.Titulo,
+                Conteudo = post.Conteudo,
+                Tags = post.Tags,
+                DataCriacao = DateTime.UtcNow,
+                DataAtualizacao = DateTime.UtcNow
+            };
+            await _postsRepository.CreateAsync(newPost);
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
         }
         catch (Exception ex)
@@ -56,17 +67,17 @@ namespace DaccApi.Services.Posts
         }
     }
 
-    public async Task<IActionResult> DeletePost(int id)
+    public async Task<IActionResult> DeletePost(Guid id)
     {
         try
         {
-            var posts = await _postsRepository.GetPostById(id);
+            var posts = await _postsRepository.GetByIdAsync(id);
             
             if (posts == null)
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
             }
-            await _postsRepository.DeletePost(id);
+            await _postsRepository.DeleteAsync(id);
 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
         }
@@ -76,11 +87,11 @@ namespace DaccApi.Services.Posts
         }
     }
 
-    public async Task<IActionResult> GetPostById(int id)
+    public async Task<IActionResult> GetPostById(Guid id)
     {
         try
         {
-            var post = await _postsRepository.GetPostById(id);
+            var post = await _postsRepository.GetByIdAsync(id);
 
             if (post == null) 
                 return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
@@ -100,11 +111,11 @@ namespace DaccApi.Services.Posts
         throw new NotImplementedException();
     }
 
-    public async Task<IActionResult> UpdatePost(int id, RequestPost postUpdated)
+    public async Task<IActionResult> UpdatePost(Guid id, RequestPost postUpdated)
     {
         try
         {
-            var post = await _postsRepository.GetPostById(id);
+            var post = await _postsRepository.GetByIdAsync(id);
             if (post == null)
             {
                 ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
@@ -115,7 +126,13 @@ namespace DaccApi.Services.Posts
                 // TODO: Adicionar campo de detalhes no request
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
-            await _postsRepository.UpdatePost(id, postUpdated);
+            
+            post.Titulo = postUpdated.Titulo;
+            post.Conteudo = postUpdated.Conteudo;
+            post.Tags = postUpdated.Tags;
+            post.DataAtualizacao = DateTime.UtcNow;
+            
+            await _postsRepository.UpdateAsync(id, post);
 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { posts = postUpdated}));
         }
@@ -128,5 +145,3 @@ namespace DaccApi.Services.Posts
     
 }
 }
-
-

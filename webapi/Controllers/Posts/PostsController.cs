@@ -30,9 +30,9 @@ namespace DaccApi.Controllers.Posts
         /// </summary>
         [AllowAnonymous]
         [HttpGet("")]
-        public IActionResult GetPosts()
+        public async Task<IActionResult> GetPosts()
         {
-            var response = _postsServices.GetAllPosts();
+            var response = await _postsServices.GetAllPosts();
             return response;
         }
 
@@ -41,9 +41,9 @@ namespace DaccApi.Controllers.Posts
         /// </summary>
         [HttpPost("")]
         [HasPermission(AppPermissions.Forum.CreatePost)]
-        public IActionResult CreatePost([FromBody] RequestPost request)
+        public async Task<IActionResult> CreatePost([FromBody] RequestPost request)
         {
-            var response = _postsServices.CreatePost(request);
+            var response = await _postsServices.CreatePost(request);
             return response;
         }
 
@@ -52,9 +52,9 @@ namespace DaccApi.Controllers.Posts
         /// </summary>
         [AllowAnonymous]
         [HttpGet("{id:int}")]
-        public IActionResult GetPostById([FromRoute] int id)
+        public async Task<IActionResult> GetPostById([FromRoute] Guid id)
         {
-            var response = _postsServices.GetPostById(id);
+            var response = await _postsServices.GetPostById(id);
             return response;
         }
 
@@ -63,9 +63,9 @@ namespace DaccApi.Controllers.Posts
         /// </summary>
         [HttpDelete("{id:int}")]
         [HasPermission(AppPermissions.Forum.DeleteOwnPost)]
-        public IActionResult DeletePost([FromRoute] int id)
+        public async Task<IActionResult> DeletePost([FromRoute] Guid id)
         {
-            var response = _postsServices.DeletePost(id);
+            var response = await _postsServices.DeletePost(id);
             return response;
         }
 
@@ -74,9 +74,9 @@ namespace DaccApi.Controllers.Posts
         /// </summary>
         [HttpPatch("{id:int}")]
         [HasPermission(AppPermissions.Forum.UpdateOwnPost)]
-        public IActionResult UpdatePost([FromRoute] int id, [FromBody] RequestPost request)
+        public async Task<IActionResult> UpdatePost([FromRoute] Guid id, [FromBody] RequestPost request)
         {
-            var response = _postsServices.UpdatePost(id, request);
+            var response = await _postsServices.UpdatePost(id, request);
             return response;
         }
     }

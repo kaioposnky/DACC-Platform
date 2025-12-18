@@ -1,80 +1,16 @@
-﻿using DaccApi.Infrastructure.Dapper;
+﻿using DaccApi.Data.Orm;
+using DaccApi.Infrastructure.Dapper;
 using DaccApi.Model;
 
 namespace DaccApi.Infrastructure.Repositories.Avaliacao;
 
-/// <summary>
-/// Implementação do repositório de avaliações de produtos.
-/// </summary>
-public class AvaliacaoRepository : IAvaliacaoRepository
+public class AvaliacaoRepository : BaseRepository<AvaliacaoProduto>, IAvaliacaoRepository
 {
     private readonly IRepositoryDapper _repositoryDapper;
 
-    /// <summary>
-    /// Inicia uma nova instância da classe <see cref="AvaliacaoRepository"/>.
-    /// </summary>
-    public AvaliacaoRepository(IRepositoryDapper repositoryDapper)
+    public AvaliacaoRepository(IRepositoryDapper repositoryDapper) : base(repositoryDapper)
     {
         _repositoryDapper = repositoryDapper;
-    }
-    /// <summary>
-    /// Cria uma nova avaliação de produto.
-    /// </summary>
-    public async Task CreateAvaliacao(AvaliacaoProduto avaliacao)
-    {
-        try
-        {
-            var sql = _repositoryDapper.GetQueryNamed("CreateAvaliacao");
-
-            await _repositoryDapper.ExecuteAsync(sql, avaliacao);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Erro ao adicionar avaliação do produto no banco de dados" + ex.Message);
-        }
-    }
-    
-    /// <summary>
-    /// Obtém todas as avaliações.
-    /// </summary>
-    public async Task<List<AvaliacaoProduto>> GetAllAvaliacoes()
-    {
-        try
-        {
-            var sql = _repositoryDapper.GetQueryNamed("GetAllAvaliacoes");
-
-            var queryResult = await _repositoryDapper.QueryAsync<AvaliacaoProduto>(sql);
-
-            var avaliacoes = queryResult.ToList();
-            return avaliacoes;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Erro ao obter todas as avaliações no banco de dados!" + ex.Message);
-        }
-    }
-
-    /// <summary>
-    /// Obtém uma avaliação específica pelo seu ID.
-    /// </summary>
-    public async Task<AvaliacaoProduto?> GetAvaliacaoById(Guid id)
-    {
-        try
-        {
-            var sql = _repositoryDapper.GetQueryNamed("GetAvaliacaoById");
-            
-            var param = new { id = id };
-
-            var queryResult = await _repositoryDapper.QueryAsync<AvaliacaoProduto>(sql,param);
-
-            var avaliacao = queryResult.FirstOrDefault();
-            
-            return avaliacao;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Erro ao obter avaliações no banco de dados!" + ex.Message);
-        }
     }
     
     /// <summary>
@@ -120,46 +56,4 @@ public class AvaliacaoRepository : IAvaliacaoRepository
         }
     }
     
-    /// <summary>
-    /// Deleta uma avaliação existente.
-    /// </summary>
-    public async Task DeleteAvaliacao(Guid id)
-    {
-        try
-        {
-            var sql = _repositoryDapper.GetQueryNamed("DeleteAvaliacao");
-            var param = new { id = id };
-            await _repositoryDapper.ExecuteAsync(sql, param);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Erro ao deletar avalaicao." +  ex.Message);
-        }
-        
-    }
-
-    /// <summary>
-    /// Atualiza uma avaliação existente.
-    /// </summary>
-    public async Task UpdateAvaliacao(Guid id, RequestUpdateAvaliacao avaliacao)
-    {
-        try
-        {
-            var sql = _repositoryDapper.GetQueryNamed("UpdateAvaliacao");
-            var param = new
-            {
-                id = id,
-                Nota = avaliacao.Nota,
-                Comentario = avaliacao.Comentario,
-                   
-            };
-            await _repositoryDapper.ExecuteAsync(sql, param);
-            
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("Erro ao atualizar avaliação." + ex.Message);
-        };
-        
-    }
 }

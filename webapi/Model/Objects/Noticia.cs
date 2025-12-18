@@ -19,13 +19,13 @@ namespace DaccApi.Model
         /// Obtém ou define o título da notícia.
         /// </summary>
         [Column("titulo")]
-        public string? Titulo { get; set; } = string.Empty;
+        public string Titulo { get; set; } = string.Empty;
 
         /// <summary>
         /// Obtém ou define a descrição da notícia.
         /// </summary>
         [Column("descricao")]
-        public string? Descricao { get; set; } = string.Empty;
+        public string Descricao { get; set; } = string.Empty;
 
         /// <summary>
         /// Obtém ou define o conteúdo da notícia.

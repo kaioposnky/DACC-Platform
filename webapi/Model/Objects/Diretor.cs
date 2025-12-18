@@ -68,6 +68,12 @@ namespace DaccApi.Model.Objects
         [Column("usuario_id")]
         public Guid? UsuarioId { get; set; }
 
+        [Column("data_criacao")]
+        public DateTime DataCriacao { get; set; }
+
+        [Column("data_atualizacao")]
+        public DateTime DataAtualizacao { get; set; }
+
         /// <summary>
         /// Cria uma instância de Diretor a partir de um RequestDiretor.
         /// </summary>

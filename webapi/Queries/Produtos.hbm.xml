@@ -20,6 +20,56 @@
         ORDER BY p.data_criacao DESC;
     </query>
 
+    <!-- Consulta para obter todos os produtos com suas variações e imagens para evitar N+1 -->
+    <query name="GetAllProductsWithDetails">
+        SELECT
+            p.id AS Id,
+            p.nome AS Nome,
+            p.descricao AS Descricao,
+            p.preco AS Preco,
+            p.preco_original AS PrecoOriginal,
+            COALESCE(pc.nome, '') AS Categoria,
+            COALESCE(ps.nome, '') AS Subcategoria,
+            p.ativo AS Ativo,
+            p.data_criacao AS DataCriacao,
+            p.data_atualizacao AS DataAtualizacao,
+
+            v.id AS Id,
+            v.produto_id AS ProdutoId,
+            v.cor_id AS CorId,
+            c.nome AS Cor,
+            v.tamanho_id AS TamanhoId,
+            t.nome AS Tamanho,
+            v.estoque AS Estoque,
+            COALESCE(r.quantidade_reservada, 0) as EstoqueReservado,
+            (v.estoque - COALESCE(r.quantidade_reservada, 0)) as EstoqueDisponivel,
+            v.sku AS Sku,
+            v.ordem AS Ordem,
+            v.data_criacao AS DataCriacao,
+            v.data_atualizacao AS DataAtualizacao,
+
+            pi.id as Id,
+            pi.produto_variacao_id as ProdutoVariacaoId,
+            pi.imagem_url as ImagemUrl,
+            pi.imagem_alt as ImagemAlt,
+            pi.ordem as Ordem
+        FROM produto p
+        LEFT JOIN produto_subcategoria ps ON p.subcategoria_id = ps.id
+        LEFT JOIN produto_categoria pc ON ps.categoria_id = pc.id
+        LEFT JOIN produto_variacao v ON v.produto_id = p.id
+        LEFT JOIN produto_cor c ON v.cor_id = c.id
+        LEFT JOIN produto_tamanho t ON v.tamanho_id = t.id
+        LEFT JOIN (
+            SELECT produto_variacao_id, SUM(quantidade) as quantidade_reservada
+            FROM reserva_produto
+            WHERE ativo = true AND data_expira > NOW()
+            GROUP BY produto_variacao_id
+        ) r ON r.produto_variacao_id = v.id
+        LEFT JOIN produto_imagem pi ON pi.produto_variacao_id = v.id
+        WHERE p.ativo = true
+        ORDER BY p.data_criacao DESC, v.ordem, pi.ordem;
+    </query>
+
     <!-- Consulta para obter um produto por ID -->
     <query name="GetProductById">
         SELECT
@@ -175,7 +225,12 @@
             v.sku AS Sku,
             v.ordem AS Ordem,
             v.data_criacao AS DataCriacao,
-            v.data_atualizacao AS DataAtualizacao
+            v.data_atualizacao AS DataAtualizacao,
+            pi.id AS Id,
+            pi.produto_variacao_id AS ProdutoVariacaoId,
+            pi.imagem_url AS ImagemUrl,
+            pi.imagem_alt AS ImagemAlt,
+            pi.ordem AS Ordem
         FROM produto_variacao v
         INNER JOIN produto_cor c ON v.cor_id = c.id
         INNER JOIN produto_tamanho t ON v.tamanho_id = t.id
@@ -185,8 +240,9 @@
             WHERE ativo = true AND data_expira > NOW()
             GROUP BY produto_variacao_id
         ) r ON r.produto_variacao_id = v.id
+        LEFT JOIN produto_imagem pi ON pi.produto_variacao_id = v.id
         WHERE v.produto_id = @ProductId
-        ORDER BY v.ordem;
+        ORDER BY v.ordem, pi.ordem;
     </query>
 
     <!-- Query para obter uma variação específica por ID -->

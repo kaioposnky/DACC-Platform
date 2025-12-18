@@ -21,13 +21,17 @@ public class AvaliacaoService : IAvaliacaoService
         {
             var newProductRating = new AvaliacaoProduto()
             {
+                Id = Guid.NewGuid(),
                 ProdutoId = avaliacao.ProdutoId,
                 UsuarioId = userId,
                 Comentario = avaliacao.Comentario,
                 Nota = avaliacao.Nota,
+                DataPostada = DateTime.UtcNow,
+                DataAtualizacao = DateTime.UtcNow,
+                Ativo = true
             };
 
-            await _avaliacaoRepository.CreateAvaliacao(newProductRating);
+            await _avaliacaoRepository.CreateAsync(newProductRating);
                 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
         }
@@ -41,7 +45,7 @@ public class AvaliacaoService : IAvaliacaoService
     {
         try
         {
-            var avaliacoes = await _avaliacaoRepository.GetAllAvaliacoes();
+            var avaliacoes = await _avaliacaoRepository.GetAllAsync();
 
             if (avaliacoes.Count == 0) return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
 
@@ -60,7 +64,7 @@ public class AvaliacaoService : IAvaliacaoService
     {
         try
         {
-            var avaliacao = await _avaliacaoRepository.GetAvaliacaoById(id);
+            var avaliacao = await _avaliacaoRepository.GetByIdAsync(id);
 
                 
             if (avaliacao == null) 
@@ -120,13 +124,13 @@ public class AvaliacaoService : IAvaliacaoService
     {
         try
         {
-            var avaliacao =  await _avaliacaoRepository.GetAvaliacaoById(id);
+            var avaliacao =  await _avaliacaoRepository.GetByIdAsync(id);
             
             if (avaliacao == null)
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
             }
-            await _avaliacaoRepository.DeleteAvaliacao(id);
+            await _avaliacaoRepository.DeleteAsync(id);
 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
         }
@@ -140,12 +144,17 @@ public class AvaliacaoService : IAvaliacaoService
     {
         try
         {
-            var avaliacaoQuery = await _avaliacaoRepository.GetAvaliacaoById(id);
+            var avaliacaoQuery = await _avaliacaoRepository.GetByIdAsync(id);
             if (avaliacaoQuery == null)
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
-            await _avaliacaoRepository.UpdateAvaliacao(id, avaliacao);
+            
+            avaliacaoQuery.Nota = avaliacao.Nota;
+            avaliacaoQuery.Comentario = avaliacao.Comentario;
+            avaliacaoQuery.DataAtualizacao = DateTime.UtcNow;
+            
+            await _avaliacaoRepository.UpdateAsync(id, avaliacaoQuery);
 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
         }

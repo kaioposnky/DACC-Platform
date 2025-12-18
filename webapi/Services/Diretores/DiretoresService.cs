@@ -45,6 +45,7 @@ namespace DaccApi.Services.Diretores
                 var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
                 
                 var diretor = Diretor.FromRequest(request, imageUrl);
+                diretor.Id = Guid.NewGuid();
                 await _diretoresRepository.CreateAsync(diretor);
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
@@ -109,7 +110,7 @@ namespace DaccApi.Services.Diretores
                 var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
 
                 var diretor = Diretor.FromRequest(request, imageUrl ?? diretorQuery.ImagemUrl);
-                
+
                 await _diretoresRepository.UpdateAsync(id, diretor);
 
                 var response = new ResponseDiretor(diretor);

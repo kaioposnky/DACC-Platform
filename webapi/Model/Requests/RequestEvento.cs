@@ -20,7 +20,7 @@
         /// <summary>
         /// Obtém ou define a data do evento.
         /// </summary>
-        public DateTime? Data { get; set; }
+        public DateTime Data { get; set; }
         /// <summary>
         /// Obtém ou define o tipo do evento.
         /// </summary>

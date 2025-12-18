@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DaccApi.Model.Responses;
 
@@ -32,7 +31,7 @@ namespace DaccApi.Model
         /// Obtém ou define o preço atual do produto.
         /// </summary>
         [Column("preco")]
-        public double? Preco { get; set; }
+        public double Preco { get; set; }
 
         /// <summary>
         /// Obtém ou define o preço original do produto (para promoções).
@@ -43,14 +42,26 @@ namespace DaccApi.Model
         /// <summary>
         /// Obtém ou define a categoria do produto.
         /// </summary>
-        [NotMapped] // Não existe coluna categoria na tabela produto, apenas subcategoria_id
-        public string Categoria { get; set; }
+        [NotMapped]
+        public Guid Categoria { get; set; }
+
+        /// <summary>
+        /// Obtém ou define o nome da categoria (para exibição).
+        /// </summary>
+        [NotMapped]
+        public string CategoriaNome { get; set; }
 
         /// <summary>
         /// Obtém ou define a subcategoria do produto.
         /// </summary>
         [Column("subcategoria_id")]
-        public string Subcategoria { get; set; }
+        public Guid? Subcategoria { get; set; }
+
+        /// <summary>
+        /// Obtém ou define o nome da subcategoria (para exibição).
+        /// </summary>
+        [NotMapped]
+        public string SubcategoriaNome { get; set; }
 
         /// <summary>
         /// Obtém ou define se o produto está ativo.
@@ -103,9 +114,9 @@ namespace DaccApi.Model
                 Id = productId,
                 Nome = request.Nome,
                 Descricao = request.Descricao,
-                Categoria = request.Categoria,
-                Subcategoria = request.Subcategoria,
-                Preco = request.Preco,
+                Categoria = Guid.Parse(request.Categoria),
+                Subcategoria = !string.IsNullOrEmpty(request.Subcategoria) ? Guid.Parse(request.Subcategoria) : null,
+                Preco = request.Preco ?? 0,
                 PrecoOriginal = request.Preco,
                 Ativo = true,
                 DataCriacao = DateTime.UtcNow
@@ -115,13 +126,13 @@ namespace DaccApi.Model
         /// <summary>
         /// Atualiza as propriedades do produto a partir de uma requisição de atualização.
         /// </summary>
-        public void UpdateFromRequest(RequestCreateProduto request)
+        public void UpdateFromRequest(RequestUpdateProduto request)
         {
-            Nome = request.Nome;
-            Descricao = request.Descricao;
-            Categoria = request.Categoria;
-            Subcategoria = request.Subcategoria;
-            Preco = request.Preco;
+            if (request.Nome != null) Nome = request.Nome;
+            if (request.Descricao != null) Descricao = request.Descricao;
+            if (request.Categoria != null) Categoria = Guid.Parse(request.Categoria);
+            if (request.Subcategoria != null) Subcategoria = !string.IsNullOrEmpty(request.Subcategoria) ? Guid.Parse(request.Subcategoria) : null;
+            if (request.Preco.HasValue) Preco = request.Preco.Value;
             DataAtualizacao = DateTime.UtcNow;
         }
     }

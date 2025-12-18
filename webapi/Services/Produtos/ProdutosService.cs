@@ -344,25 +344,28 @@ namespace DaccApi.Services.Products
 
                 if (requestUpdateProduto.Categoria != null)
                 {
-                    product.Categoria = requestUpdateProduto.Categoria;
+                    if (Guid.TryParse(requestUpdateProduto.Categoria, out var catGuid))
+                        product.Categoria = catGuid;
                     hasChanges = true;
                 }
 
                 if (requestUpdateProduto.Subcategoria != null)
                 {
-                    product.Subcategoria = requestUpdateProduto.Subcategoria;
+                    product.Subcategoria = !string.IsNullOrEmpty(requestUpdateProduto.Subcategoria) && Guid.TryParse(requestUpdateProduto.Subcategoria, out var subGuid) 
+                        ? subGuid 
+                        : null;
                     hasChanges = true;
                 }
 
                 if (requestUpdateProduto.Preco.HasValue)
                 {
-                    product.Preco = requestUpdateProduto.Preco;
+                    product.Preco = requestUpdateProduto.Preco.Value;
                     hasChanges = true;
                 }
 
                 if (requestUpdateProduto.PrecoOriginal.HasValue)
                 {
-                    product.PrecoOriginal = requestUpdateProduto.PrecoOriginal;
+                    product.PrecoOriginal = requestUpdateProduto.PrecoOriginal.Value;
                     hasChanges = true;
                 }
 

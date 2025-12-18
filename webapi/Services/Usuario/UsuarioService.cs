@@ -20,7 +20,7 @@ namespace DaccApi.Services.User
         {
             try
             {
-                var users = await _usuarioRepository.GetAll();
+                var users = await _usuarioRepository.GetAllAsync();
                 if (users.Count == 0)
                 {
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
@@ -40,25 +40,21 @@ namespace DaccApi.Services.User
         {
             try
             {
-                var userData = await _usuarioRepository.GetUserById(id);
+                var userData = await _usuarioRepository.GetByIdAsync(id);
                 if (userData == null)
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
                 }
                 
                 // Para cada atributo, tenta pegar um valor, se for nulo, usa o valor já setado do usuário
-                var user = new Usuario()
-                {
-                    Id = id,
-                    Nome = newUserData.Nome ?? userData.Nome,
-                    Ra = userData.Ra,
-                    Sobrenome = newUserData.Sobrenome ?? userData.Sobrenome,
-                    Curso = newUserData.Curso ?? userData.Curso,
-                    Telefone = newUserData.Telefone ?? userData.Telefone,
-                    InscritoNoticia = newUserData.InscritoNoticia ?? userData.InscritoNoticia,
-                };
+                userData.Nome = newUserData.Nome ?? userData.Nome;
+                userData.Sobrenome = newUserData.Sobrenome ?? userData.Sobrenome;
+                userData.Curso = newUserData.Curso ?? userData.Curso;
+                userData.Telefone = newUserData.Telefone ?? userData.Telefone;
+                userData.InscritoNoticia = newUserData.InscritoNoticia ?? userData.InscritoNoticia;
+                userData.DataAtualizacao = DateTime.UtcNow;
                 
-                await _usuarioRepository.UpdateUser(user);
+                await _usuarioRepository.UpdateAsync(id, userData);
                 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
             }
@@ -73,12 +69,14 @@ namespace DaccApi.Services.User
         {
             try
             {
-                var user = await _usuarioRepository.GetUserById(id);
+                var user = await _usuarioRepository.GetByIdAsync(id);
                 if (user == null)
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, 
                         "Usuário não encontrado!");
                 }
+
+                await _usuarioRepository.DeleteAsync(id);
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK, $"Usuário {user.Nome} {user.Sobrenome} deletado com sucesso!");
             }
@@ -93,7 +91,7 @@ namespace DaccApi.Services.User
         {
             try
             {
-                var usuario = _usuarioRepository.GetUserById(id).Result;
+                var usuario = _usuarioRepository.GetByIdAsync(id).Result;
 
                 if (usuario == null)
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Usuário não encontrado!");

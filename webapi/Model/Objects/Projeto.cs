@@ -32,7 +32,7 @@ namespace DaccApi.Model
         /// Obtém ou define a URL da imagem do projeto.
         /// </summary>
         [Column("imagem_url")]
-        public string ImagemUrl { get; set; }
+        public string? ImagemUrl { get; set; }
         /// <summary>
         /// Obtém ou define o texto alternativo da imagem.
         /// </summary>
@@ -69,5 +69,10 @@ namespace DaccApi.Model
         [Column("texto_conclusao")]
         public string TextoConclusao { get; set; }
 
+        [Column("data_criacao")]
+        public DateTime? DataCriacao { get; set; }
+
+        [Column("data_atualizacao")]
+        public DateTime? DataAtualizacao { get; set; }
     }
 }

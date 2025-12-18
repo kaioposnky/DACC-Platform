@@ -54,7 +54,7 @@ namespace DaccApi.Infrastructure.MercadoPago.Services
             {
                 try
                 {
-                    var user = await _usuarioRepository.GetUserById(order.UserId);
+                    var user = await _usuarioRepository.GetByIdAsync(order.UserId);
 
                     if (user == null)
                     {

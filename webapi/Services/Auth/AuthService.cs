@@ -179,7 +179,7 @@ namespace DaccApi.Services.Auth
                     return ResponseHelper.CreateErrorResponse(ResponseError.AUTH_TOKEN_INVALID);
                 }
                 
-                var user = await _usuarioRepository.GetUserById(userId);
+                var user = await _usuarioRepository.GetByIdAsync(userId);
                 
                 var validRefreshToken = await _tokenService.ValidateRefreshToken(userId, refreshToken);
                 if (!validRefreshToken || user == null)

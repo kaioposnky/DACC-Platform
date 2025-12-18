@@ -1,4 +1,5 @@
-﻿using DaccApi.Helpers.Attributes;
+﻿using DaccApi.Helpers;
+using DaccApi.Helpers.Attributes;
 using DaccApi.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -57,7 +58,8 @@ namespace DaccApi.Controllers.Anuncio
         [HttpPost("")]
         public async Task<IActionResult> CreateAnuncio([FromBody] RequestAnuncio anuncio)
         {
-            var response = await _anuncioService.CreateAnuncio(anuncio);
+            var userId = ClaimsHelper.GetUserId(User);
+            var response = await _anuncioService.CreateAnuncio(anuncio, userId);
             return response;
         }
         
@@ -93,9 +95,5 @@ namespace DaccApi.Controllers.Anuncio
             var response = await _anuncioService.UpdateAnuncio(id, anuncio);
             return response;
         }
-
-
-
     }
 }
-

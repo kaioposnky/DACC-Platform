@@ -48,7 +48,7 @@ namespace DaccApi.Services.Orders
         {
             try
             {
-                var user = await _usuarioRepository.GetUserById(userId);
+                var user = await _usuarioRepository.GetByIdAsync(userId);
 
                 if (user == null)
                 {
@@ -248,7 +248,7 @@ namespace DaccApi.Services.Orders
             using var transaction = _dapper.BeginTransaction();
             try
             {
-                var user = await _usuarioRepository.GetUserById(order.UserId);
+                var user = await _usuarioRepository.GetByIdAsync(order.UserId);
 
                 // Se o usuário for inválido cancelar o pedido e retornar
                 if (user == null)

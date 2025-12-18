@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DaccApi.Model
 {
@@ -15,30 +16,35 @@ namespace DaccApi.Model
         /// <summary>
         /// Obtém ou define o ID do produto pai.
         /// </summary>
-        public Guid ProdutoId { get; set; }
+        [Column("produto_id")]
+        public Guid? ProdutoId { get; set; }
         
         /// <summary>
         /// Obtém ou define o ID da cor.
         /// </summary>
-        public Guid CorId { get; set; }
+        [Column("cor_id")]
+        public Guid? CorId { get; set; }
         
         /// <summary>
         /// Obtém ou define o nome da cor.
         /// </summary>
         [Required]
         [StringLength(50)]
+        [NotMapped]
         public string Cor { get; set; } = string.Empty;
         
         /// <summary>
         /// Obtém ou define o ID do tamanho.
         /// </summary>
-        public Guid TamanhoId { get; set; }
+        [Column("tamanho_id")]
+        public Guid? TamanhoId { get; set; }
         
         /// <summary>
         /// Obtém ou define o nome do tamanho.
         /// </summary>
         [Required]
         [StringLength(20)]
+        [NotMapped]
         public string Tamanho { get; set; } = string.Empty;
         
         /// <summary>

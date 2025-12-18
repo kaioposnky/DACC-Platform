@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DaccApi.Model
 {
@@ -15,14 +16,15 @@ namespace DaccApi.Model
         /// <summary>
         /// Obtém ou define o ID da variação de produto à qual a imagem pertence.
         /// </summary>
-        public Guid ProdutoVariacaoId { get; set; }
+        [Column("produto_variacao_id")]
+        public Guid? ProdutoVariacaoId { get; set; }
         
         /// <summary>
         /// Obtém ou define a URL da imagem.
         /// </summary>
         [Required]
         [Url]
-        public string? ImagemUrl { get; set; } = string.Empty;
+        public string ImagemUrl { get; set; } = string.Empty;
         
         /// <summary>
         /// Obtém ou define o texto alternativo para a imagem.
