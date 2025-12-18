@@ -348,7 +348,7 @@ CREATE TABLE avaliacao
     id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     usuario_id       UUID REFERENCES usuario (id),
     produto_id       UUID REFERENCES produto (id) ON DELETE CASCADE,
-    nota             INT CHECK (nota BETWEEN 1 AND 5),
+    nota             DECIMAL(2,1) CHECK (nota BETWEEN 0.5 AND 5.0),
     comentario       TEXT,
     ativo            BOOLEAN   DEFAULT TRUE,
     data_avaliacao   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
