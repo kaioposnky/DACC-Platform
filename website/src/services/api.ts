@@ -63,18 +63,18 @@ class ApiService {
     return this.request<User[]>('/users');
   }
 
-  async getUser(id: number): Promise<User> {
+  async getUser(id: string): Promise<User> {
     return this.request<User>(`/users/${id}`);
   }
 
-  async updateUser(id: number, user: Partial<User>): Promise<User> {
+  async updateUser(id: string, user: Partial<User>): Promise<User> {
     return this.request<User>(`/users/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(user),
     });
   }
 
-  async deleteUser(id: number): Promise<void> {
+  async deleteUser(id: string): Promise<void> {
     return this.request<void>(`/users/${id}`, {
       method: 'DELETE',
     });
@@ -85,7 +85,7 @@ class ApiService {
     return this.request<Post[]>('/posts');
   }
 
-  async getPost(id: number): Promise<Post> {
+  async getPost(id: string): Promise<Post> {
     return this.request<Post>(`/posts/${id}`);
   }
 
@@ -96,14 +96,14 @@ class ApiService {
     });
   }
 
-  async updatePost(id: number, post: Partial<Post>): Promise<Post> {
+  async updatePost(id: string, post: Partial<Post>): Promise<Post> {
     return this.request<Post>(`/posts/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(post),
     });
   }
 
-  async deletePost(id: number): Promise<void> {
+  async deletePost(id: string): Promise<void> {
     return this.request<void>(`/posts/${id}`, {
       method: 'DELETE',
     });
@@ -114,11 +114,11 @@ class ApiService {
     return this.request<Comment[]>('/comments');
   }
 
-  async getComment(id: number): Promise<Comment> {
+  async getComment(id: string): Promise<Comment> {
     return this.request<Comment>(`/comments/${id}`);
   }
 
-  async getCommentsByPost(postId: number): Promise<Comment[]> {
+  async getCommentsByPost(postId: string): Promise<Comment[]> {
     return this.request<Comment[]>(`/comments?postId=${postId}`);
   }
 
@@ -129,14 +129,14 @@ class ApiService {
     });
   }
 
-  async updateComment(id: number, comment: Partial<Comment>): Promise<Comment> {
+  async updateComment(id: string, comment: Partial<Comment>): Promise<Comment> {
     return this.request<Comment>(`/comments/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(comment),
     });
   }
 
-  async deleteComment(id: number): Promise<void> {
+  async deleteComment(id: string): Promise<void> {
     return this.request<void>(`/comments/${id}`, {
       method: 'DELETE',
     });

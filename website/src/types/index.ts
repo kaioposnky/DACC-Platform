@@ -3,27 +3,36 @@ import { Slide, SlideDetail } from './annoucementsSlide';
 export type { Slide, SlideDetail};
 
 export interface User {
-  id: number;
+  id: string;
   name: string;
+  lastName?: string;
+  ra?: string;
   email: string;
-  avatar: string;
-  createdAt: string;
+  course?: string;
+  phone?: string;
+  avatar?: string;
+  isActive?: boolean;
+  isSubscribedToNews?: boolean;
+  role?: string;
+  isLoggedIn?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Post {
-  id: number;
+  id: string;
   title: string;
   content: string;
-  authorId: number;
+  authorId: string;
   createdAt: string;
   updatedAt: string;
   tags: string[];
 }
 
 export interface Comment {
-  id: number;
-  postId: number;
-  authorId: number;
+  id: string;
+  postId: string;
+  authorId: string;
   content: string;
   createdAt: string;
 }
