@@ -60,7 +60,6 @@
             comentario = @Comentario,
             data_atualizacao = CURRENT_TIMESTAMP
         WHERE id = @id;
-    </query>>
+    </query>
     
 </queries>
-

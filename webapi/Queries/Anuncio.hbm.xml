@@ -7,6 +7,10 @@
             titulo as Titulo,
             conteudo as Conteudo,
             tipo_anuncio as TipoAnuncio,
+            botao_primario_texto as BotaoPrimarioTexto,
+            botao_primario_link as BotaoPrimarioLink,
+            botao_secundario_texto as BotaoSecundarioTexto,
+            botao_secundario_link as BotaoSecundarioLink,
             imagem_url as ImagemUrl,
             imagem_alt as ImagemAlt,
             ativo as Ativo,
@@ -22,6 +26,10 @@
             titulo as Titulo,
             conteudo as Conteudo,
             tipo_anuncio as TipoAnuncio,
+            botao_primario_texto as BotaoPrimarioTexto,
+            botao_primario_link as BotaoPrimarioLink,
+            botao_secundario_texto as BotaoSecundarioTexto,
+            botao_secundario_link as BotaoSecundarioLink,
             imagem_url as ImagemUrl,
             imagem_alt as ImagemAlt,
             ativo as Ativo,
@@ -32,8 +40,8 @@
     </query>
 
     <query name="CreateAnuncio">
-        INSERT INTO anuncio( titulo, conteudo, tipo_anuncio, imagem_url, imagem_alt, ativo, autor_id)       
-        VALUES( @Titulo, @Conteudo, @TipoAnuncio, @ImagemUrl, @ImagemAlt, @Ativo, @AutorId)
+        INSERT INTO anuncio( titulo, conteudo, tipo_anuncio, botao_primario_texto, botao_primario_link, botao_secundario_texto, botao_secundario_link, imagem_url, imagem_alt, ativo, autor_id)
+        VALUES( @Titulo, @Conteudo, @TipoAnuncio, @BotaoPrimarioTexto, @BotaoPrimarioLink, @BotaoSecundarioTexto, @BotaoSecundarioLink, @ImagemUrl, @ImagemAlt, @Ativo, @AutorId)
     </query>
     <query name="DeleteAnuncio">
         DELETE FROM anuncio WHERE id = @id
@@ -43,6 +51,10 @@
         SET titulo = @Titulo,
             conteudo = @Conteudo,
             tipo_anuncio = @TipoAnuncio,
+            botao_primario_texto = @BotaoPrimarioTexto,
+            botao_primario_link = @BotaoPrimarioLink,
+            botao_secundario_texto = @BotaoSecundarioTexto,
+            botao_secundario_link = @BotaoSecundarioLink,
             imagem_url = @ImagemUrl,
             imagem_alt = @ImagemAlt,
             ativo = @Ativo,

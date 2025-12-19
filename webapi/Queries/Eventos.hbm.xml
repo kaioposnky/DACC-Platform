@@ -24,7 +24,7 @@
             )
         VALUES (@Titulo, @Descricao,@Data,@TipoEvento,@AutorId, @TextoAcao, @LinkAcao)
         RETURNING id;
-    </query>>
+    </query>
     <query name="GetEventoById">
         SELECT
             id as Id,

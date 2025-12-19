@@ -3,37 +3,42 @@
 	<query name="GetAllDiretores">
 		SELECT 
 			id as Id,
-			nome,
-			descricao,
+			nome as Nome,
+			titulo as Titulo,
+			cargo as Cargo,
+			especializacao as Especializacao,
 			imagem_url as ImagemUrl,
 			usuario_id as UsuarioId,
-			diretoria_id as DiretoriaId,
-			email,
-			github_link as GithubLink,
-			linkedin_link as LinkedinLink
+			email as Email,
+			github as Github,
+			linkedin as Linkedin
 		FROM diretores
 	</query>
 	<query name="CreateDiretor">
 		INSERT INTO diretores
 			(nome,
-			descricao,
+			titulo,
+			cargo,
+			especializacao,
+			imagem_url,
 			usuario_id,
-			diretoria_id,
 			email,
-			github_link,
-			linkedin_link)
-		VALUES (@Nome, @Descricao,@UsuarioId,@DiretoriaId, @Email, @GithubLink, @LinkedinLink)
-	</query>>
+			github,
+			linkedin)
+		VALUES (@Nome, @Titulo, @Cargo, @Especializacao, @ImagemUrl, @UsuarioId, @Email, @Github, @Linkedin)
+	</query>
 	<query name="GetDiretorById">
 		SELECT
 			id as Id,
-			nome,
-			descricao,
+			nome as Nome,
+			titulo as Titulo,
+			cargo as Cargo,
+			especializacao as Especializacao,
+			imagem_url as ImagemUrl,
 			usuario_id as UsuarioId,
-			diretoria_id as DiretoriaId,
-			email,
-			github_link as GithubLink,
-			linkedin_link as LinkedinLink
+			email as Email,
+			github as Github,
+			linkedin as Linkedin
 		FROM diretores 
 		WHERE id=@id
 	</query>
@@ -43,12 +48,13 @@
 	<query name="UpdateDiretor">
 		UPDATE diretores
 			SET nome = @Nome,
-				descricao = @Descricao,
+				titulo = @Titulo,
+				cargo = @Cargo,
+				especializacao = @Especializacao,
 				imagem_url = @ImagemUrl,
-				diretoria_id = @DiretoriaId,
 				email = @Email,
-				github_link = @GithubLink,
-				linkedin_link = @LinkedinLink
+				github = @Github,
+				linkedin = @Linkedin
 				WHERE id=@id
 	</query>
 </queries>

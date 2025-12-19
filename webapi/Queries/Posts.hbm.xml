@@ -9,7 +9,7 @@
         VALUES (@Titulo, @Conteudo, @Tags)
     </query>
     <query name="GetPostById">
-        SELECT FROM post WHERE id=@id
+        SELECT * FROM post WHERE id=@id
     </query>
     <query name="DeletePosts">
         DELETE FROM post WHERE id=@id
@@ -18,7 +18,7 @@
         UPDATE post
             SET titulo = @Titulo,
                 conteudo = @Conteudo,
-                tags = @Tags,
+                tags = @Tags
             WHERE id = @id
     </query>
     <query name="VotePosts">

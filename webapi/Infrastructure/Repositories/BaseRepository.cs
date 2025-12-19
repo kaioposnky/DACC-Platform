@@ -13,7 +13,7 @@ namespace DaccApi.Data.Orm
         /// <summary>
         /// Instância do repositório Dapper para execução de comandos.
         /// </summary>
-        private readonly IRepositoryDapper _dapper;
+        protected readonly IRepositoryDapper _dapper;
         private readonly string _tableName;
         private readonly PropertyInfo[] _properties;
 
