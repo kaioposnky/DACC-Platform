@@ -34,23 +34,23 @@ export default function LoginPage() {
     }
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'github') => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // Social login logic would be implemented here
-      // For now, just simulate the process
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Redirect after successful social login
-      window.location.href = '/';
-    } catch {
-      setError(`${provider} login failed. Please try again.`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const handleSocialLogin = async (provider: 'google' | 'github') => {
+  //   setIsLoading(true);
+  //   setError(null);
+  //
+  //   try {
+  //     // Social login logic would be implemented here
+  //     // For now, just simulate the process
+  //     await new Promise(resolve => setTimeout(resolve, 1000));
+  //
+  //     // Redirect after successful social login
+  //     window.location.href = '/';
+  //   } catch {
+  //     setError(`${provider} login failed. Please try again.`);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   return (
     <>
@@ -156,31 +156,31 @@ export default function LoginPage() {
             </motion.form>
 
             {/* Social Login */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-            >
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-gray-50 text-gray-500">ou continue com</span>
-                </div>
-              </div>
+            {/*<motion.div*/}
+            {/*  initial={{ opacity: 0, y: 20 }}*/}
+            {/*  animate={{ opacity: 1, y: 0 }}*/}
+            {/*  transition={{ duration: 0.5, delay: 0.4 }}*/}
+            {/*>*/}
+            {/*  <div className="relative">*/}
+            {/*    <div className="absolute inset-0 flex items-center">*/}
+            {/*      <div className="w-full border-t border-gray-300" />*/}
+            {/*    </div>*/}
+            {/*    <div className="relative flex justify-center text-sm">*/}
+            {/*      <span className="px-2 bg-gray-50 text-gray-500">ou continue com</span>*/}
+            {/*    </div>*/}
+            {/*  </div>*/}
 
-              <div className="mt-6 grid grid-cols-2 gap-3">
-                <SocialLoginButton
-                  provider="google"
-                  onClick={() => handleSocialLogin('google')}
-                />
-                <SocialLoginButton
-                  provider="github"
-                  onClick={() => handleSocialLogin('github')}
-                />
-              </div>
-            </motion.div>
+            {/*  <div className="mt-6 grid grid-cols-2 gap-3">*/}
+            {/*    <SocialLoginButton*/}
+            {/*      provider="google"*/}
+            {/*      onClick={() => handleSocialLogin('google')}*/}
+            {/*    />*/}
+            {/*    <SocialLoginButton*/}
+            {/*      provider="github"*/}
+            {/*      onClick={() => handleSocialLogin('github')}*/}
+            {/*    />*/}
+            {/*  </div>*/}
+            {/*</motion.div>*/}
 
             {/* Sign Up Link */}
             <motion.div
