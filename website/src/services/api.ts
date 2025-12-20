@@ -1,4 +1,4 @@
-import { User, Post, Comment, Announcement, Event, Project, News, Faculty, Product } from '@/types';
+import { User, Post, Comment, Announcement, Event, Project, News, Faculty, Product, ApiResponse } from '@/types';
 
 // Forum types
 export interface ForumCategory {
@@ -37,11 +37,20 @@ class ApiService {
       ...options,
     });
 
-    if (!response.ok) {
-      throw new Error(`API request failed: ${response.statusText}`);
+    const data = await response.json();
+
+    // Verifica se a resposta segue o padrão ApiResponse do backend
+    if (data && typeof data === 'object' && 'success' in data) {
+      const apiResponse = data as ApiResponse<T>;
+
+      if (!apiResponse.success) {
+        throw new Error(apiResponse.message || 'Erro desconhecido na API');
+      }
+
+      return apiResponse.data;
     }
 
-    return response.json();
+    return data as T;
   }
 
   async login(credentials: { email: string; senha: string }): Promise<{ accessToken: string; refreshToken: string; expiresIn: number; user: User }> {
@@ -244,7 +253,7 @@ class ApiService {
   }
 
   async getProduct(id: string): Promise<Product> {
-    return this.request<Product>(`/produtos/${id}`);
+    return this.request<Product>(`/products/${id}`);
   }
 
   // Forum Categories

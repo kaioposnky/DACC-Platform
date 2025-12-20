@@ -38,9 +38,12 @@ export interface Comment {
 }
 
 export interface ApiResponse<T> {
-  data: T;
+  statusCode: number;
   success: boolean;
-  message?: string;
+  code: string;
+  message: string;
+  data: T;
+  details?: any;
 } 
 
 export interface Announcement {
