@@ -31,30 +31,30 @@ export const DonationMethods = ({ className = '' }: DonationMethodsProps) => {
             </svg>
           </div>
           <Typography variant="caption" color="gray" align="center">
-            Escaneie o QR Code para doar
+            Escaneie o QR Code para doar via PIX
           </Typography>
         </div>
 
         {/* Payment Methods */}
-        <div className="flex gap-4 justify-center">
+        {/*<div className="flex gap-4 justify-center">*/}
         
-          <Button
-            variant="primary"
-            className="text-sm"
-            onClick={() => handleDonationClick('PayPal')}
-          >
-            Pix
-          </Button>
-          
-          <Button
-            variant="secondary"
-            className="text-sm"
-            onClick={() => handleDonationClick('Credit Card')}
-          >
-            Transferência Bancária
-          </Button>
-          
-        </div>
+        {/*  <Button*/}
+        {/*    variant="primary"*/}
+        {/*    className="text-sm"*/}
+        {/*    onClick={() => handleDonationClick('PayPal')}*/}
+        {/*  >*/}
+        {/*    Pix*/}
+        {/*  </Button>*/}
+        {/*  */}
+        {/*  <Button*/}
+        {/*    variant="secondary"*/}
+        {/*    className="text-sm"*/}
+        {/*    onClick={() => handleDonationClick('Credit Card')}*/}
+        {/*  >*/}
+        {/*    Transferência Bancária*/}
+        {/*  </Button>*/}
+        {/*  */}
+        {/*</div>*/}
       </Card>
     </motion.div>
   );
