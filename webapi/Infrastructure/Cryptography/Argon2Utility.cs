@@ -4,6 +4,7 @@
     using System.Security.Cryptography;
     using System.Text;
     using Konscious.Security.Cryptography;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Implementação do utilitário de criptografia Argon2 para hashing de senhas.
@@ -14,6 +15,7 @@
         private const int HashSize = 32; 
         private const int Iterations = 4; 
         private const int MemorySize = 65536; 
+        private const int DegreeOfParallelism = 4;
 
         /// <summary>
         /// Gera o hash de uma senha usando Argon2id.
@@ -23,17 +25,17 @@
             if (string.IsNullOrEmpty(password))
                 throw new ArgumentNullException(nameof(password), "Password cannot be null or empty.");
 
-            byte[] salt = GenerateSalt();
+            var salt = GenerateSalt();
 
             using var argon2 = new Argon2id(Encoding.UTF8.GetBytes(password))
             {
                 Salt = salt,
                 Iterations = Iterations,
                 MemorySize = MemorySize,
-                DegreeOfParallelism = 4 
+                DegreeOfParallelism = DegreeOfParallelism
             };
 
-            byte[] hash = argon2.GetBytes(HashSize);
+            var hash = argon2.GetBytes(HashSize);
 
             return $"{Convert.ToBase64String(salt)}.{Convert.ToBase64String(hash)}";
         }
@@ -44,26 +46,33 @@
         public bool VerifyPassword(string password, string hashedPassword)
         {
             if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(hashedPassword))
-                throw new ArgumentNullException("Password and hashedPassword cannot be null or empty.");
+                throw new ArgumentException("Password and hashedPassword cannot be null or empty.");
 
-            var parts = hashedPassword.Split('.');
-            if (parts.Length != 2)
-                throw new FormatException("Invalid hash format.");
-
-            byte[] salt = Convert.FromBase64String(parts[0]);
-            byte[] hashStored = Convert.FromBase64String(parts[1]);
-
-            using var argon2 = new Argon2id(Encoding.UTF8.GetBytes(password))
+            try
             {
-                Salt = salt,
-                Iterations = Iterations,
-                MemorySize = MemorySize,
-                DegreeOfParallelism = 4 
-            };
+                var parts = hashedPassword.Split('.');
+                if (parts.Length != 2)
+                    return false;
 
-            byte[] hashComputed = argon2.GetBytes(HashSize);
+                var salt = Convert.FromBase64String(parts[0]);
+                var hashStored = Convert.FromBase64String(parts[1]);
 
-            return CryptographicOperations.FixedTimeEquals(hashStored, hashComputed);
+                using var argon2 = new Argon2id(Encoding.UTF8.GetBytes(password))
+                {
+                    Salt = salt,
+                    Iterations = Iterations,
+                    MemorySize = MemorySize,
+                    DegreeOfParallelism = DegreeOfParallelism
+                };
+
+                var hashComputed = argon2.GetBytes(HashSize);
+
+                return CryptographicOperations.FixedTimeEquals(hashStored, hashComputed);
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -71,11 +80,10 @@
         /// </summary>
         public byte[] GenerateSalt()
         {
-            byte[] salt = new byte[SaltSize];
-            using var rng = new RNGCryptoServiceProvider();
+            var salt = new byte[SaltSize];
+            using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(salt);
             return salt;
         }
     }
-
 }
