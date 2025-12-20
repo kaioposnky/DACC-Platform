@@ -4,8 +4,6 @@ using DaccApi.Model;
 using DaccApi.Services.Products;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading.Tasks;
 
 namespace DaccApi.Controllers.Produtos
 {
@@ -14,7 +12,7 @@ namespace DaccApi.Controllers.Produtos
     /// </summary>
     [Authorize]
     [ApiController]
-    [Route("v1/api/[controller]")]
+    [Route("v1/api/products")]
     public class ProdutosController : ControllerBase
     {
         private readonly IProdutosService _produtosService;
