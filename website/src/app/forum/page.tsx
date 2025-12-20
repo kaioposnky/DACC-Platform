@@ -15,6 +15,9 @@ export default function ForumPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [sortBy, setSortBy] = useState('latest')
 
+  // Redirects to main page, disabling forum page
+  window.location.href = '/';
+
   const handleCategorySelect = (categoryId: string) => {
     setSelectedCategory(categoryId)
     setCurrentPage(1) // Reset to first page when category changes

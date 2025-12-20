@@ -50,7 +50,7 @@ export const Navigation = () => {
               <NavItem href="/">Inicio</NavItem>
               <NavItem href="/sobre">Sobre</NavItem>
               <NavItem href="/noticias">Noticias</NavItem>
-              <NavItem href="/forum">Fórum</NavItem>
+              {/*<NavItem href="/forum">Fórum</NavItem>*/}
               <NavItem href="/loja">Loja</NavItem>
               <NavItem href="/#apoie">Apoie o DACC</NavItem>
             </nav>
