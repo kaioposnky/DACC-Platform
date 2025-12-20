@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using DaccApi.Infrastructure.Authentication;
 
 namespace DaccApi.Controllers
 {
@@ -32,7 +33,7 @@ namespace DaccApi.Controllers
         /// </summary>
         [FileUploadResponses]
         [HttpPost("uploadImage")]
-        [Authorize(Roles = "administrador")]
+        [HasPermission(AppPermissions.FileStorage.UploadImage)]
         [RequestSizeLimit(5 * 1024 * 1024)] // 5 MB
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadImageFile(IFormFile file)

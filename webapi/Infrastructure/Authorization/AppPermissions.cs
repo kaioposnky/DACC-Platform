@@ -127,5 +127,13 @@
             public const string Update = "reviews.update";
             public const string Delete = "reviews.delete";
         }
+
+        /// <summary>
+        /// Permissões relacionadas ao envio de arquivos no BackEnd
+        /// </summary>
+        public static class FileStorage
+        {
+            public const string UploadImage = "filestorage.uploadimage";
+        }
     }
 }
