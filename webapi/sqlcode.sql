@@ -243,6 +243,8 @@ CREATE TABLE produto
     id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome                VARCHAR(150) NOT NULL,
     descricao           TEXT         NOT NULL,
+    descricao_detalhada TEXT,
+    destaque            BOOLEAN      DEFAULT FALSE,
     preco               NUMERIC(10, 2) NOT NULL,
     preco_original      NUMERIC(10, 2),
     subcategoria_id     UUID REFERENCES produto_subcategoria (id),
@@ -251,6 +253,42 @@ CREATE TABLE produto
     data_atualizacao    TIMESTAMP             DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Tabela: Especificações de Produto
+-- Armazena especificações técnicas dos produtos
+DROP TABLE IF EXISTS produto_especificacao CASCADE;
+CREATE TABLE produto_especificacao
+(
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    produto_id  UUID REFERENCES produto (id) ON DELETE CASCADE,
+    nome        VARCHAR(100) NOT NULL,
+    valor       VARCHAR(255) NOT NULL,
+    UNIQUE (produto_id, nome)
+);
+
+-- Tabela: Informações de Envio de Produto
+-- Armazena informações sobre envio e garantia
+DROP TABLE IF EXISTS produto_informacao_envio CASCADE;
+CREATE TABLE produto_informacao_envio
+(
+    id                 UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    produto_id         UUID REFERENCES produto (id) ON DELETE CASCADE UNIQUE,
+    frete_gratis       BOOLEAN DEFAULT FALSE,
+    dias_estimados     VARCHAR(50) NOT NULL,
+    custo_envio        NUMERIC(10, 2),
+    politica_devolucao VARCHAR(255) NOT NULL,
+    garantia           VARCHAR(100)
+);
+
+-- Tabela: Perfeito Para (Ocasiões de uso do produto)
+-- Armazena as ocasiões para as quais o produto é perfeito
+DROP TABLE IF EXISTS produto_perfeito_para CASCADE;
+CREATE TABLE produto_perfeito_para
+(
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    produto_id  UUID REFERENCES produto (id) ON DELETE CASCADE,
+    ocasiao     VARCHAR(100) NOT NULL,
+    UNIQUE (produto_id, ocasiao)
+);
 
 -- Tabela: Variações de Produto
 -- Armazena as variações de cada produto
@@ -459,6 +497,13 @@ VALUES ('planejado'),
        ('em progresso'),
        ('concluido');
 
+-- Categorias de Notícia
+INSERT INTO categorias_noticia (nome)
+VALUES ('geral'),
+       ('tecnologia'),
+       ('carreira'),
+       ('academico');
+
 -- Status de Pedido
 INSERT INTO status_pedido (nome)
 VALUES ('created'),
@@ -479,11 +524,11 @@ VALUES ('roupas'), ('outros');
 
 -- Subcategorias de Produtos
 INSERT INTO produto_subcategoria (nome, categoria_id)
-VALUES ( 'camisetas', 'cf65395f-0045-4209-a98c-d868a32b8ae9'),
-       ( 'moletom', 'cf65395f-0045-4209-a98c-d868a32b8ae9'),
-       ( 'canecas', '07f48467-7a28-4a34-8580-9242bf5b436a'),
-       ( 'adesivos', '07f48467-7a28-4a34-8580-9242bf5b436a'),
-       ( 'acessorios', '07f48467-7a28-4a34-8580-9242bf5b436a');
+VALUES ( 'camisetas', (SELECT id FROM produto_categoria WHERE nome = 'roupas')),
+       ( 'moletom', (SELECT id FROM produto_categoria WHERE nome = 'roupas')),
+       ( 'canecas', (SELECT id FROM produto_categoria WHERE nome = 'outros')),
+       ( 'adesivos', (SELECT id FROM produto_categoria WHERE nome = 'outros')),
+       ( 'acessorios', (SELECT id FROM produto_categoria WHERE nome = 'outros'));
 
 -- Permissões
 INSERT INTO permissoes (nome, descricao)
