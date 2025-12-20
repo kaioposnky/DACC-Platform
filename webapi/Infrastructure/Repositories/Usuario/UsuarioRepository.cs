@@ -1,6 +1,5 @@
 ﻿using System.Data;
 using DaccApi.Data.Orm;
-using DaccApi.Infrastructure.Cryptography;
 using DaccApi.Infrastructure.Dapper;
 using DaccApi.Model;
 using Npgsql;
@@ -10,13 +9,10 @@ namespace DaccApi.Infrastructure.Repositories.User
     public class UsuarioRepository : BaseRepository<Usuario>, IUsuarioRepository
         {
             private readonly IRepositoryDapper _repositoryDapper;
-            private readonly IArgon2Utility _argon2Utility;
 
-            public UsuarioRepository(IRepositoryDapper repositoryDapper,
-                IArgon2Utility argon2Utility) : base(repositoryDapper)
+            public UsuarioRepository(IRepositoryDapper repositoryDapper) : base(repositoryDapper)
             {
                 _repositoryDapper = repositoryDapper;
-                _argon2Utility = argon2Utility;
             }
 
             /// <summary>
@@ -25,7 +21,6 @@ namespace DaccApi.Infrastructure.Repositories.User
             public async Task CreateUser(Usuario usuario)
             {
                 var insertSql = _repositoryDapper.GetQueryNamed("InsertUsuario");
-                var senhaHash = _argon2Utility.HashPassword(usuario.SenhaHash!);
                 var param = new
                 {
                     Nome = usuario.Nome,
@@ -34,7 +29,7 @@ namespace DaccApi.Infrastructure.Repositories.User
                     Curso = usuario.Curso,
                     Email = usuario.Email,
                     Telefone = usuario.Telefone,
-                    Senha = senhaHash,
+                    Senha = usuario.SenhaHash,
                     Cargo = usuario.Cargo,
                 };
 
