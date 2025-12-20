@@ -75,7 +75,7 @@ namespace DaccApi.Services.Products
                 var product = await CreateProductEntityAsync(requestCreateProduto, productId);
 
                 return ResponseHelper.CreateSuccessResponse(
-                    ResponseSuccess.CREATED,
+                    ResponseSuccess.CREATED.WithData(new { productId = product.Id }),
                     "Produto criado com sucesso! Use o endpoint de variações para adicionar opções de compra.");
             }
             catch (Exception ex)
@@ -162,7 +162,7 @@ namespace DaccApi.Services.Products
                 var response = Produto.MapToResponseVariacao(createdVariation ?? variation);
                 
                 return ResponseHelper.CreateSuccessResponse(
-                    ResponseSuccess.CREATED,
+                    ResponseSuccess.CREATED.WithData(response),
                     "Variação criada com sucesso! Use o endpoint de imagens para adicionar fotos.");
             }
             catch (ArgumentException ex)
@@ -257,7 +257,7 @@ namespace DaccApi.Services.Products
                 var response = Produto.MapToResponseVariacao(updatedVariation ?? existingVariation);
                 
                 return ResponseHelper.CreateSuccessResponse(
-                    ResponseSuccess.OK,
+                    ResponseSuccess.OK.WithData(response),
                     "Variação atualizada com sucesso!");
             }
             catch (ArgumentException ex)
@@ -329,56 +329,14 @@ namespace DaccApi.Services.Products
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Produto não encontrado!");
                 }
 
-                var hasChanges = false;
-                if (requestUpdateProduto.Nome != null)
-                {
-                    product.Nome = requestUpdateProduto.Nome;
-                    hasChanges = true;
-                }
-
-                if (requestUpdateProduto.Descricao != null)
-                {
-                    product.Descricao = requestUpdateProduto.Descricao;
-                    hasChanges = true;
-                }
-
-                if (requestUpdateProduto.Categoria != null)
-                {
-                    if (Guid.TryParse(requestUpdateProduto.Categoria, out var catGuid))
-                        product.Categoria = catGuid;
-                    hasChanges = true;
-                }
-
-                if (requestUpdateProduto.Subcategoria != null)
-                {
-                    product.Subcategoria = !string.IsNullOrEmpty(requestUpdateProduto.Subcategoria) && Guid.TryParse(requestUpdateProduto.Subcategoria, out var subGuid) 
-                        ? subGuid 
-                        : null;
-                    hasChanges = true;
-                }
-
-                if (requestUpdateProduto.Preco.HasValue)
-                {
-                    product.Preco = requestUpdateProduto.Preco.Value;
-                    hasChanges = true;
-                }
-
-                if (requestUpdateProduto.PrecoOriginal.HasValue)
-                {
-                    product.PrecoOriginal = requestUpdateProduto.PrecoOriginal.Value;
-                    hasChanges = true;
-                }
-
-                if (!hasChanges)
-                {
-                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "Nenhum campo para atualização foi fornecido.");
-                }
-
-                product.DataAtualizacao = DateTime.UtcNow;
+                product.UpdateFromRequest(requestUpdateProduto);
 
                 await _produtosRepository.UpdateProductAsync(product);
 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK, "Produto atualizado com sucesso!");
+                var updatedProduct = await _produtosRepository.GetProductByIdAsync(productId);
+                var response = new ResponseProduto(updatedProduct);
+
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(response), "Produto atualizado com sucesso!");
             }
             catch (Exception ex)
             {
@@ -418,7 +376,7 @@ namespace DaccApi.Services.Products
                 await _produtosRepository.AddProductImagesAsync(produtoImagem);
                 
                 return ResponseHelper.CreateSuccessResponse(
-                    ResponseSuccess.CREATED,
+                    ResponseSuccess.CREATED.WithData(new { imageId = produtoImagem.Id, imageUrl }),
                     "Imagem adicionada com sucesso!");
             }
             catch (ArgumentException ex)

@@ -1,3 +1,5 @@
+using DaccApi.Model.Responses;
+
 namespace DaccApi.Model
 {
     /// <summary>
@@ -34,5 +36,15 @@ namespace DaccApi.Model
         /// Obtém ou define o novo preço original do produto.
         /// </summary>
         public double? PrecoOriginal { get; set; }
+        
+        public string? DescricaoDetalhada { get; set; }
+        
+        public List<string>? PerfeitoPara { get; set; }
+        
+        public bool? Destaque { get; set; }
+        
+        public List<SpecificationItem>? Especificacoes { get; set; }
+        
+        public ShippingInfo? InformacaoEnvio { get; set; }
     }
 }

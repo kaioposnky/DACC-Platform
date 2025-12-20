@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using DaccApi.Model.Responses;
 
 namespace DaccApi.Model
 {
@@ -43,5 +44,15 @@ namespace DaccApi.Model
         [Required(ErrorMessage = "Preço é obrigatório")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Preço deve ser maior que zero")]
         public double? Preco { get; set; }
+        
+        public string? DescricaoDetalhada { get; set; }
+        
+        public List<string>? PerfeitoPara { get; set; }
+        
+        public bool Destaque { get; set; }
+        
+        public List<SpecificationItem>? Especificacoes { get; set; }
+        
+        public ShippingInfo? InformacaoEnvio { get; set; }
     }
 }

@@ -95,8 +95,7 @@ public class ResponseProduto
     /// <summary>
     /// Obtém ou define a lista de avaliações do produto (frontend specific).
     /// </summary>
-    public List<ResponseAvaliacaoProduto>?
-        ReviewsList { get; set; } // Will be mapped if ResponseAvaliacaoProduto is created
+    public List<ResponseAvaliacaoProduto>? ReviewsList { get; set; }
 
     /// <summary>
     /// Obtém ou define as especificações do produto (frontend specific).
@@ -145,22 +144,28 @@ public class ResponseProduto
         // Propriedades agregadas/derivadas das variações ou frontend specific
         InStock = Variations.Any(v => v.InStock);
         StockCount = Variations.Sum(v => v.Stock);
-        Image = Variations.FirstOrDefault()?.Images?.FirstOrDefault()
-            ?.Url; // Primary image from first variation's first image
+        Image = Variations.FirstOrDefault()?.Images?.FirstOrDefault()?.Url; // Primary image from first variation's first image
         Images = Variations.SelectMany(v => v.Images?.Select(img => img.Url) ?? Enumerable.Empty<string>())
             .Where(url => url != null).ToList();
         Sizes = Variations.Select(v => v.Size).Distinct().ToList();
         Colors = Variations.Select(v => v.Color).Distinct().ToList();
 
         // Propriedades específicas do frontend sem correspondência direta na entidade Produto
-        DetailedDescription = null; // Preencher via lógica adicional
-        PerfectFor = null; // Preencher via lógica adicional
-        Featured = false; // Valor padrão
-        Rating = 0; // Valor padrão
-        Reviews = 0; // Valor padrão
-        ReviewsList = null; // Preencher via lógica adicional
-        Specifications = null; // Preencher via lógica adicional
-        ShippingInfo = null; // Preencher via lógica adicional
+        DetailedDescription = produto.DescricaoDetalhada;
+        PerfectFor = produto.PerfeitoPara;
+        Featured = produto.Destaque;
+        Rating = produto.AvaliacaoMedia;
+        Reviews = produto.NumeroAvaliacoes;
+        ReviewsList = produto.Avaliacoes?.Select(a => new ResponseAvaliacaoProduto(a)).ToList();
+        Specifications = produto.Especificacoes?.Select(s => new SpecificationItem { Name = s.Nome, Value = s.Valor }).ToList();
+        ShippingInfo = produto.InformacaoEnvio != null ? new ShippingInfo
+        {
+            FreeShipping = produto.InformacaoEnvio.FreteGratis,
+            EstimatedDays = produto.InformacaoEnvio.DiasEstimados,
+            ShippingCost = produto.InformacaoEnvio.CustoEnvio,
+            ReturnPolicy = produto.InformacaoEnvio.PoliticaDevolucao,
+            Warranty = produto.InformacaoEnvio.Garantia
+        } : null;
     }
 
     /// <summary>

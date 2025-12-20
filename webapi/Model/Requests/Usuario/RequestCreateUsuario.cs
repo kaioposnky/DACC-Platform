@@ -26,6 +26,7 @@ namespace DaccApi.Model
         /// <summary>
         /// Obtém ou define o e-mail do usuário.
         /// </summary>
+        [Required(ErrorMessage = "Email é obrigatório")]
         [EmailAddress(ErrorMessage = "Email inválido")]
         public string? Email { get; set; }
         /// <summary>
@@ -46,15 +47,11 @@ namespace DaccApi.Model
         /// <summary>
         /// Obtém ou define a senha do usuário.
         /// </summary>
+        [Required(ErrorMessage = "A senha é obrigatória")]
         public string? Senha { get; set; }
         /// <summary>
         /// Obtém ou define se o usuário deseja se inscrever na newsletter.
         /// </summary>
         public bool? InscritoNoticia { get; set; } = false;
-        /// <summary>
-        /// Obtém ou define o cargo do usuário.
-        /// </summary>
-        [CargoValido]
-        public string? Cargo {  get; set; }
     }
 }

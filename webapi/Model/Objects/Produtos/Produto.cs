@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
 using DaccApi.Model.Responses;
 
 namespace DaccApi.Model
@@ -86,7 +87,33 @@ namespace DaccApi.Model
         /// </summary>
         [NotMapped]
         public List<ProdutoVariacao> Variacoes { get; set; } = new();
+
+        // Propriedades adicionais para o frontend
         
+        [Column("descricao_detalhada")]
+        public string? DescricaoDetalhada { get; set; }
+        
+        [NotMapped]
+        public List<string>? PerfeitoPara { get; set; }
+        
+        [Column("destaque")]
+        public bool Destaque { get; set; }
+        
+        [NotMapped]
+        public double AvaliacaoMedia { get; set; }
+        
+        [NotMapped]
+        public int NumeroAvaliacoes { get; set; }
+        
+        [NotMapped]
+        public List<AvaliacaoProduto>? Avaliacoes { get; set; }
+        
+        [NotMapped]
+        public List<ProdutoEspecificacao>? Especificacoes { get; set; }
+        
+        [NotMapped]
+        public ProdutoInformacaoEnvio? InformacaoEnvio { get; set; }
+
         /// <summary>
         /// Mapeia uma variação de produto para seu objeto de resposta.
         /// </summary>
@@ -119,7 +146,21 @@ namespace DaccApi.Model
                 Preco = request.Preco ?? 0,
                 PrecoOriginal = request.Preco,
                 Ativo = true,
-                DataCriacao = DateTime.UtcNow
+                DataCriacao = DateTime.UtcNow,
+                DescricaoDetalhada = request.DescricaoDetalhada,
+                PerfeitoPara = request.PerfeitoPara,
+                Destaque = request.Destaque,
+                Especificacoes = request.Especificacoes?.Select(e => new ProdutoEspecificacao { Id = Guid.NewGuid(), ProdutoId = productId, Nome = e.Name, Valor = e.Value }).ToList(),
+                InformacaoEnvio = request.InformacaoEnvio != null ? new ProdutoInformacaoEnvio
+                {
+                    Id = Guid.NewGuid(),
+                    ProdutoId = productId,
+                    FreteGratis = request.InformacaoEnvio.FreeShipping,
+                    DiasEstimados = request.InformacaoEnvio.EstimatedDays,
+                    CustoEnvio = request.InformacaoEnvio.ShippingCost,
+                    PoliticaDevolucao = request.InformacaoEnvio.ReturnPolicy,
+                    Garantia = request.InformacaoEnvio.Warranty
+                } : null
             };
         }
 
@@ -133,7 +174,64 @@ namespace DaccApi.Model
             if (request.Categoria != null) Categoria = Guid.Parse(request.Categoria);
             if (request.Subcategoria != null) Subcategoria = !string.IsNullOrEmpty(request.Subcategoria) ? Guid.Parse(request.Subcategoria) : null;
             if (request.Preco.HasValue) Preco = request.Preco.Value;
+            if (request.PrecoOriginal.HasValue) PrecoOriginal = request.PrecoOriginal.Value;
+            if (request.DescricaoDetalhada != null) DescricaoDetalhada = request.DescricaoDetalhada;
+            if (request.PerfeitoPara != null) PerfeitoPara = request.PerfeitoPara;
+            if (request.Destaque.HasValue) Destaque = request.Destaque.Value;
+            if (request.Especificacoes != null) Especificacoes = request.Especificacoes.Select(e => new ProdutoEspecificacao { Id = Guid.NewGuid(), ProdutoId = Id, Nome = e.Name, Valor = e.Value }).ToList();
+            if (request.InformacaoEnvio != null) InformacaoEnvio = new ProdutoInformacaoEnvio
+            {
+                Id = InformacaoEnvio?.Id ?? Guid.NewGuid(),
+                ProdutoId = Id,
+                FreteGratis = request.InformacaoEnvio.FreeShipping,
+                DiasEstimados = request.InformacaoEnvio.EstimatedDays,
+                CustoEnvio = request.InformacaoEnvio.ShippingCost,
+                PoliticaDevolucao = request.InformacaoEnvio.ReturnPolicy,
+                Garantia = request.InformacaoEnvio.Warranty
+            };
+            
             DataAtualizacao = DateTime.UtcNow;
         }
+    }
+
+    [Table("produto_especificacao")]
+    public class ProdutoEspecificacao
+    {
+        [Column("id")]
+        public Guid Id { get; set; }
+        
+        [Column("produto_id")]
+        public Guid ProdutoId { get; set; }
+        
+        [Column("nome")]
+        public string Nome { get; set; }
+        
+        [Column("valor")]
+        public string Valor { get; set; }
+    }
+
+    [Table("produto_informacao_envio")]
+    public class ProdutoInformacaoEnvio
+    {
+        [Column("id")]
+        public Guid Id { get; set; }
+        
+        [Column("produto_id")]
+        public Guid ProdutoId { get; set; }
+        
+        [Column("frete_gratis")]
+        public bool FreteGratis { get; set; }
+        
+        [Column("dias_estimados")]
+        public string DiasEstimados { get; set; }
+        
+        [Column("custo_envio")]
+        public double? CustoEnvio { get; set; }
+        
+        [Column("politica_devolucao")]
+        public string PoliticaDevolucao { get; set; }
+        
+        [Column("garantia")]
+        public string? Garantia { get; set; }
     }
 }

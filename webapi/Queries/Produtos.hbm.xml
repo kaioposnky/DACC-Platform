@@ -8,11 +8,14 @@
             p.descricao AS Descricao,
             p.preco AS Preco,
             p.preco_original AS PrecoOriginal,
-            COALESCE(pc.nome, '') AS Categoria,
-            COALESCE(ps.nome, '') AS Subcategoria,
+            COALESCE(pc.nome, '') AS CategoriaNome,
+            COALESCE(ps.nome, '') AS SubcategoriaNome,
+            p.subcategoria_id AS Subcategoria,
             p.ativo AS Ativo,
             p.data_criacao AS DataCriacao,
-            p.data_atualizacao AS DataAtualizacao
+            p.data_atualizacao AS DataAtualizacao,
+            p.descricao_detalhada AS DescricaoDetalhada,
+            p.destaque AS Destaque
         FROM produto p
         LEFT JOIN produto_subcategoria ps ON p.subcategoria_id = ps.id
         LEFT JOIN produto_categoria pc ON ps.categoria_id = pc.id
@@ -28,11 +31,14 @@
             p.descricao AS Descricao,
             p.preco AS Preco,
             p.preco_original AS PrecoOriginal,
-            COALESCE(pc.nome, '') AS Categoria,
-            COALESCE(ps.nome, '') AS Subcategoria,
+            COALESCE(pc.nome, '') AS CategoriaNome,
+            COALESCE(ps.nome, '') AS SubcategoriaNome,
+            p.subcategoria_id AS Subcategoria,
             p.ativo AS Ativo,
             p.data_criacao AS DataCriacao,
             p.data_atualizacao AS DataAtualizacao,
+            p.descricao_detalhada AS DescricaoDetalhada,
+            p.destaque AS Destaque,
 
             v.id AS Id,
             v.produto_id AS ProdutoId,
@@ -78,11 +84,14 @@
             p.descricao AS Descricao,
             p.preco AS Preco,
             p.preco_original AS PrecoOriginal,
-            COALESCE(pc.nome, '') AS Categoria,
-            COALESCE(ps.nome, '') AS Subcategoria,
+            COALESCE(pc.nome, '') AS CategoriaNome,
+            COALESCE(ps.nome, '') AS SubcategoriaNome,
+            p.subcategoria_id AS Subcategoria,
             p.ativo AS Ativo,
             p.data_criacao AS DataCriacao,
-            p.data_atualizacao AS DataAtualizacao
+            p.data_atualizacao AS DataAtualizacao,
+            p.descricao_detalhada AS DescricaoDetalhada,
+            p.destaque AS Destaque
         FROM produto p
         LEFT JOIN produto_subcategoria ps ON p.subcategoria_id = ps.id
         LEFT JOIN produto_categoria pc ON ps.categoria_id = pc.id
@@ -91,8 +100,8 @@
 
     <!-- Query para adicionar um produto -->
     <query name="AddProduct">
-        INSERT INTO produto (id, nome, descricao, preco, preco_original, subcategoria_id, ativo)
-        VALUES (@Id, @Nome, @Descricao, @Preco, @PrecoOriginal, @SubcategoriaId, @Ativo)
+        INSERT INTO produto (id, nome, descricao, preco, preco_original, subcategoria_id, ativo, descricao_detalhada, destaque)
+        VALUES (@Id, @Nome, @Descricao, @Preco, @PrecoOriginal, @SubcategoriaId, @Ativo, @DescricaoDetalhada, @Destaque)
         RETURNING id;
     </query>
     
@@ -143,11 +152,14 @@
                 p.descricao AS "Descricao",
                 p.preco AS "Preco",
                 p.preco_original AS "PrecoOriginal",
-                pc.nome AS "Categoria",
-                ps.nome AS "Subcategoria",
+                COALESCE(pc.nome, '') AS "CategoriaNome",
+                COALESCE(ps.nome, '') AS "SubcategoriaNome",
+                p.subcategoria_id AS "Subcategoria",
                 p.ativo AS "Ativo",
                 p.data_criacao AS "DataCriacao",
-                p.data_atualizacao AS "DataAtualizacao"
+                p.data_atualizacao AS "DataAtualizacao",
+                p.descricao_detalhada AS "DescricaoDetalhada",
+                p.destaque AS "Destaque"
             FROM
                 produto AS p
             LEFT JOIN
@@ -298,7 +310,9 @@
             descricao = @Descricao,
             preco = @Preco,
             preco_original = @PrecoOriginal,
-            data_atualizacao = @DataAtualizacao
+            data_atualizacao = @DataAtualizacao,
+            descricao_detalhada = @DescricaoDetalhada,
+            destaque = @Destaque
         WHERE id = @Id;
     </query>
 
@@ -394,16 +408,19 @@
             p.descricao AS Descricao,
             p.preco AS Preco,
             p.preco_original AS PrecoOriginal,
-            p.ativo AS Ativo,
-            COALESCE(pc.nome, '') AS Categoria,
-            COALESCE(ps.nome, '') AS Subcategoria,
+            COALESCE(pc.nome, '') AS CategoriaNome,
+            COALESCE(ps.nome, '') AS SubcategoriaNome,
+            p.subcategoria_id AS Subcategoria,
             p.ativo AS Ativo,
             p.data_criacao AS DataCriacao,
-            p.data_atualizacao AS DataAtualizacao
+            p.data_atualizacao AS DataAtualizacao,
+            p.descricao_detalhada AS DescricaoDetalhada,
+            p.destaque AS Destaque
         FROM produto p
-        LEFT JOIN produto_variacao pv ON pv.produto_id = @Id 
+        INNER JOIN produto_variacao pv ON pv.produto_id = p.id
         LEFT JOIN produto_subcategoria ps ON p.subcategoria_id = ps.id
-        LEFT JOIN produto_categoria pc ON ps.categoria_id = pc.id;
+        LEFT JOIN produto_categoria pc ON ps.categoria_id = pc.id
+        WHERE pv.id = @ProductVariationId;
     </query>
 
     <!-- Query para verificar estoque de múltiplos produtos -->
@@ -414,5 +431,69 @@
     <!-- Query para remover estoque de múltiplos produtos (sem verificação) -->
     <query name="RemoveMultipleProductsStockDirect">
         SELECT * FROM remove_multiple_products_stock_direct(@VariationIds, @Quantities);
+    </query>
+
+    <!-- Query para adicionar uma especificação de produto -->
+    <query name="AddProductSpecification">
+        INSERT INTO produto_especificacao (id, produto_id, nome, valor)
+        VALUES (@Id, @ProdutoId, @Nome, @Valor);
+    </query>
+
+    <!-- Query para deletar todas as especificações de um produto -->
+    <query name="DeleteProductSpecifications">
+        DELETE FROM produto_especificacao WHERE produto_id = @ProdutoId;
+    </query>
+
+    <!-- Query para obter especificações de um produto -->
+    <query name="GetProductSpecifications">
+        SELECT id AS Id, produto_id AS ProdutoId, nome AS Nome, valor AS Valor
+        FROM produto_especificacao
+        WHERE produto_id = @ProdutoId;
+    </query>
+
+    <!-- Query para adicionar informações de envio de produto -->
+    <query name="AddProductShippingInfo">
+        INSERT INTO produto_informacao_envio (id, produto_id, frete_gratis, dias_estimados, custo_envio, politica_devolucao, garantia)
+        VALUES (@Id, @ProdutoId, @FreteGratis, @DiasEstimados, @CustoEnvio, @PoliticaDevolucao, @Garantia);
+    </query>
+
+    <!-- Query para atualizar informações de envio de produto -->
+    <query name="UpdateProductShippingInfo">
+        INSERT INTO produto_informacao_envio (id, produto_id, frete_gratis, dias_estimados, custo_envio, politica_devolucao, garantia)
+        VALUES (@Id, @ProdutoId, @FreteGratis, @DiasEstimados, @CustoEnvio, @PoliticaDevolucao, @Garantia)
+        ON CONFLICT (produto_id) DO UPDATE SET
+            frete_gratis = EXCLUDED.frete_gratis,
+            dias_estimados = EXCLUDED.dias_estimados,
+            custo_envio = EXCLUDED.custo_envio,
+            politica_devolucao = EXCLUDED.politica_devolucao,
+            garantia = EXCLUDED.garantia;
+    </query>
+
+    <!-- Query para obter informações de envio de um produto -->
+    <query name="GetProductShippingInfo">
+        SELECT id AS Id, produto_id AS ProdutoId, frete_gratis AS FreteGratis, dias_estimados AS DiasEstimados, custo_envio AS CustoEnvio, politica_devolucao AS PoliticaDevolucao, garantia AS Garantia
+        FROM produto_informacao_envio
+        WHERE produto_id = @ProdutoId;
+    </query>
+
+    <!-- Query para deletar informações de envio de um produto -->
+    <query name="DeleteProductShippingInfo">
+        DELETE FROM produto_informacao_envio WHERE produto_id = @ProdutoId;
+    </query>
+
+    <!-- Query para adicionar ocasião de uso (Perfeito Para) -->
+    <query name="AddProductPerfectFor">
+        INSERT INTO produto_perfeito_para (id, produto_id, ocasiao)
+        VALUES (@Id, @ProdutoId, @Ocasiao);
+    </query>
+
+    <!-- Query para deletar ocasiões de uso de um produto -->
+    <query name="DeleteProductPerfectFor">
+        DELETE FROM produto_perfeito_para WHERE produto_id = @ProdutoId;
+    </query>
+
+    <!-- Query para obter ocasiões de uso de um produto -->
+    <query name="GetProductPerfectFor">
+        SELECT ocasiao FROM produto_perfeito_para WHERE produto_id = @ProdutoId;
     </query>
 </queries>

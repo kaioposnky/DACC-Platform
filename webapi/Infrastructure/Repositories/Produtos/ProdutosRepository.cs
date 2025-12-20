@@ -35,6 +35,9 @@ namespace DaccApi.Infrastructure.Repositories.Products
             if (product == null) return null;
 
             product.Variacoes = await GetVariationsByProductIdAsync(id);
+            product.Especificacoes = await GetProductSpecificationsAsync(id);
+            product.InformacaoEnvio = await GetProductShippingInfoAsync(id);
+            product.PerfeitoPara = await GetProductPerfectForAsync(id);
 
             return product;
         }
@@ -79,8 +82,18 @@ namespace DaccApi.Infrastructure.Repositories.Products
                 },
                 splitOn: "Id,Id,Id"
             );
+            
+            var result = products.Distinct().ToList();
+            
+            // Carregar dados relacionados para cada produto
+            foreach (var product in result)
+            {
+                product.Especificacoes = await GetProductSpecificationsAsync(product.Id);
+                product.InformacaoEnvio = await GetProductShippingInfoAsync(product.Id);
+                product.PerfeitoPara = await GetProductPerfectForAsync(product.Id);
+            }
 
-            return products.Distinct().ToList();
+            return result;
         }
 
         /// <summary>
@@ -108,7 +121,17 @@ namespace DaccApi.Infrastructure.Repositories.Products
                 };
 
                 var products = await _repositoryDapper.QueryAsync<Produto>(sql, queryParams);
-                return products.ToList();
+                var productList = products.ToList();
+                
+                // Carregar dados relacionados
+                foreach (var product in productList)
+                {
+                    product.Especificacoes = await GetProductSpecificationsAsync(product.Id);
+                    product.InformacaoEnvio = await GetProductShippingInfoAsync(product.Id);
+                    product.PerfeitoPara = await GetProductPerfectForAsync(product.Id);
+                }
+                
+                return productList;
             }
             catch (PostgresException ex)
             {
@@ -147,6 +170,21 @@ namespace DaccApi.Infrastructure.Repositories.Products
                 if (!success)
                 {
                     throw new Exception("Não foi possível criar o produto.");
+                }
+                
+                if (product.Especificacoes != null && product.Especificacoes.Any())
+                {
+                    await AddProductSpecificationsAsync(product.Especificacoes);
+                }
+
+                if (product.InformacaoEnvio != null)
+                {
+                    await AddProductShippingInfoAsync(product.InformacaoEnvio);
+                }
+
+                if (product.PerfeitoPara != null && product.PerfeitoPara.Any())
+                {
+                    await AddProductPerfectForAsync(product.Id, product.PerfeitoPara);
                 }
             }
             catch (Exception ex)
@@ -490,6 +528,26 @@ namespace DaccApi.Infrastructure.Repositories.Products
                 {
                     throw new Exception("Produto não encontrado ou não pôde ser atualizado.");
                 }
+                
+                // Atualizar especificações
+                await DeleteProductSpecificationsAsync(product.Id);
+                if (product.Especificacoes != null && product.Especificacoes.Any())
+                {
+                    await AddProductSpecificationsAsync(product.Especificacoes);
+                }
+
+                // Atualizar informações de envio
+                if (product.InformacaoEnvio != null)
+                {
+                    await UpdateProductShippingInfoAsync(product.InformacaoEnvio);
+                }
+
+                // Atualizar ocasiões (Perfeito Para)
+                await DeleteProductPerfectForAsync(product.Id);
+                if (product.PerfeitoPara != null && product.PerfeitoPara.Any())
+                {
+                    await AddProductPerfectForAsync(product.Id, product.PerfeitoPara);
+                }
             }
             catch (Exception ex)
             {
@@ -685,7 +743,16 @@ namespace DaccApi.Infrastructure.Repositories.Products
                 var sql = _repositoryDapper.GetQueryNamed("GetProductByProductVariationId");
                 var param = new { ProductVariationId = productVariationId };
                 var result = await _repositoryDapper.QueryAsync<Produto>(sql, param);
-                return result.FirstOrDefault();
+                var product = result.FirstOrDefault();
+                
+                if (product != null)
+                {
+                    product.Especificacoes = await GetProductSpecificationsAsync(product.Id);
+                    product.InformacaoEnvio = await GetProductShippingInfoAsync(product.Id);
+                    product.PerfeitoPara = await GetProductPerfectForAsync(product.Id);
+                }
+                
+                return product;
             }
             catch (Exception ex)
             {
@@ -693,6 +760,75 @@ namespace DaccApi.Infrastructure.Repositories.Products
                     $"Erro ao obter produto pelo id de sua variação no banco de dados. Erro original: {ex.Message}",
                     ex);
             }
+        }
+
+        private async Task AddProductSpecificationsAsync(List<ProdutoEspecificacao> specifications)
+        {
+            var sql = _repositoryDapper.GetQueryNamed("AddProductSpecification");
+            foreach (var spec in specifications)
+            {
+                await _repositoryDapper.ExecuteAsync(sql, spec);
+            }
+        }
+
+        private async Task DeleteProductSpecificationsAsync(Guid productId)
+        {
+            var sql = _repositoryDapper.GetQueryNamed("DeleteProductSpecifications");
+            var param = new { ProdutoId = productId };
+            await _repositoryDapper.ExecuteAsync(sql, param);
+        }
+
+        private async Task<List<ProdutoEspecificacao>> GetProductSpecificationsAsync(Guid productId)
+        {
+            var sql = _repositoryDapper.GetQueryNamed("GetProductSpecifications");
+            var param = new { ProdutoId = productId };
+            var result = await _repositoryDapper.QueryAsync<ProdutoEspecificacao>(sql, param);
+            return result.ToList();
+        }
+
+        private async Task AddProductShippingInfoAsync(ProdutoInformacaoEnvio shippingInfo)
+        {
+            var sql = _repositoryDapper.GetQueryNamed("AddProductShippingInfo");
+            await _repositoryDapper.ExecuteAsync(sql, shippingInfo);
+        }
+
+        private async Task UpdateProductShippingInfoAsync(ProdutoInformacaoEnvio shippingInfo)
+        {
+            var sql = _repositoryDapper.GetQueryNamed("UpdateProductShippingInfo");
+            await _repositoryDapper.ExecuteAsync(sql, shippingInfo);
+        }
+
+        private async Task<ProdutoInformacaoEnvio?> GetProductShippingInfoAsync(Guid productId)
+        {
+            var sql = _repositoryDapper.GetQueryNamed("GetProductShippingInfo");
+            var param = new { ProdutoId = productId };
+            var result = await _repositoryDapper.QueryAsync<ProdutoInformacaoEnvio>(sql, param);
+            return result.FirstOrDefault();
+        }
+
+        private async Task AddProductPerfectForAsync(Guid productId, List<string> occasions)
+        {
+            var sql = _repositoryDapper.GetQueryNamed("AddProductPerfectFor");
+            foreach (var occasion in occasions)
+            {
+                var param = new { Id = Guid.NewGuid(), ProdutoId = productId, Ocasiao = occasion };
+                await _repositoryDapper.ExecuteAsync(sql, param);
+            }
+        }
+
+        private async Task DeleteProductPerfectForAsync(Guid productId)
+        {
+            var sql = _repositoryDapper.GetQueryNamed("DeleteProductPerfectFor");
+            var param = new { ProdutoId = productId };
+            await _repositoryDapper.ExecuteAsync(sql, param);
+        }
+
+        private async Task<List<string>> GetProductPerfectForAsync(Guid productId)
+        {
+            var sql = _repositoryDapper.GetQueryNamed("GetProductPerfectFor");
+            var param = new { ProdutoId = productId };
+            var result = await _repositoryDapper.QueryAsync<string>(sql, param);
+            return result.ToList();
         }
     }
 }
