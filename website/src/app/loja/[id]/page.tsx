@@ -19,7 +19,7 @@ import {
 } from '@heroicons/react/24/solid';
 import {
     StarIcon as StarOutlineIcon,
-    HeartIcon as HeartOutlineIcon
+    HeartIcon as HeartOutlineIcon, MinusIcon, PlusIcon
 } from '@heroicons/react/24/outline';
 import { useCart } from '@/context/CartContext';
 import Link from 'next/link';
@@ -263,7 +263,7 @@ export default function ProductDetailPage() {
                                             <button
                                                 key={size}
                                                 onClick={() => setSelectedSize(size)}
-                                                className={`px-4 py-2 border rounded-lg font-medium transition-colors duration-200 ${selectedSize === size
+                                                className={`text-gray-600 px-4 py-2 border rounded-lg font-medium transition-colors duration-200 ${selectedSize === size
                                                         ? 'border-blue-500 bg-blue-50 text-blue-600'
                                                         : 'border-gray-300 hover:border-gray-400'
                                                     }`}
@@ -304,16 +304,16 @@ export default function ProductDetailPage() {
                                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
                                         className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                                     >
-                                        <XMarkIcon className="w-4 h-4" />
+                                        <MinusIcon className="w-4 h-4 text-gray-600" />
                                     </button>
-                                    <span className="text-lg font-medium min-w-[50px] text-center">
+                                    <span className="text-lg font-medium min-w-[50px] text-center text-gray-600">
                                         {quantity}
                                     </span>
                                     <button
                                         onClick={() => setQuantity(Math.min(product.stockCount, quantity + 1))}
                                         className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                                     >
-                                        <CheckIcon className="w-4 h-4" />
+                                        <PlusIcon className="w-4 h-4 text-gray-600" />
                                     </button>
                                 </div>
                             </div>
