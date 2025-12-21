@@ -70,6 +70,15 @@ builder
             ),
             ClockSkew = TimeSpan.Zero,
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                context.NoResult();
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddSwaggerGen(c =>
