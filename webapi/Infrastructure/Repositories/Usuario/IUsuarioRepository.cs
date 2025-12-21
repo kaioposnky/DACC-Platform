@@ -10,7 +10,7 @@ namespace DaccApi.Infrastructure.Repositories.User
         Task<bool> DeleteAsync(Guid id);
 
         // Métodos específicos mantidos
-        public Task CreateUser(Usuario request);
+        public Task<Guid> CreateUser(Usuario request);
         public Task<Usuario?> GetUserByEmail(string email);
         public Task<TokensUsuario?> GetUserTokens(Guid id);
         public Task UpdateUserTokens(Guid id, TokensUsuario tokensUsuario);

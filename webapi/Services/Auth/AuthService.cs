@@ -141,7 +141,9 @@ namespace DaccApi.Services.Auth
                     DataAtualizacao = DateTime.Now
                 };
 
-                await _usuarioRepository.CreateUser(usuario);
+                var userId = await _usuarioRepository.CreateUser(usuario);
+
+                usuario.Id = userId;
 
                 // envia email de boas vindas
                 await _mailService.SendWelcomeEmailAsync(usuario);

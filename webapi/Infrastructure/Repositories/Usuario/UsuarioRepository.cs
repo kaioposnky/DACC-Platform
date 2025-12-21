@@ -18,7 +18,7 @@ namespace DaccApi.Infrastructure.Repositories.User
             /// <summary>
             /// Cria um novo usuário.
             /// </summary>
-            public async Task CreateUser(Usuario usuario)
+            public async Task<Guid> CreateUser(Usuario usuario)
             {
                 var insertSql = _repositoryDapper.GetQueryNamed("InsertUsuario");
                 var param = new
@@ -38,7 +38,7 @@ namespace DaccApi.Infrastructure.Repositories.User
                     var userIdResult = await _repositoryDapper.QueryAsync<Guid>(insertSql, param);
                     var userId = userIdResult.SingleOrDefault();
 
-
+                    return userId;
                 }
                 catch (PostgresException ex)
                 {
@@ -52,6 +52,9 @@ namespace DaccApi.Infrastructure.Repositories.User
                             _ => new Exception()
                         };
                     }
+
+                    throw new Exception(
+                        "Ocorreu um erro ao tentar cadastrar o usuário, favor relatar ao suporte pelo: contato.daccfei@gmail.com", ex);
                 }
                 catch (Exception ex)
                 {
