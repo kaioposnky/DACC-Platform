@@ -1,4 +1,6 @@
 import { User, Post, Comment, Announcement, Event, Project, News, Faculty, Product, ApiResponse } from '@/types';
+import {storageService} from "@/services/storage";
+import {RegisterData} from "@/context/AuthContext";
 
 // Forum types
 export interface ForumCategory {
@@ -29,11 +31,14 @@ const API_BASE_URL = 'http://localhost:3001/v1/api';
 
 class ApiService {
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
+    const accessToken = storageService.getAccessToken();
+    const headers : Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...options?.headers as Record<string, string>,
+    }
+    if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
+      headers: headers,
       ...options,
     });
 
