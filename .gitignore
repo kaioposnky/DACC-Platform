@@ -47,3 +47,5 @@ next-env.d.ts
 website/package-lock.json
 .fleet
 GEMINI.md
+webapi/backend.md
+webapi/wwwroot
