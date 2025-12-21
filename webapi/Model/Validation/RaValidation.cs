@@ -16,7 +16,7 @@ namespace DaccApi.Model.Validation
             var ra = value as string;
             if (value == null || string.IsNullOrEmpty(ra))
             {
-                return new ValidationResult("Ra é obrigatório.");
+                return ValidationResult.Success;
             }
 
             if (ra.Length == 9 && RaRegex().IsMatch(ra))

@@ -40,7 +40,7 @@ namespace DaccApi.Model
         /// Obtém ou define o RA (Registro do Aluno) do usuário.
         /// </summary>
         [Column("ra")]
-        public string Ra { get; set; }
+        public string? Ra { get; set; }
 
         /// <summary>
         /// Obtém ou define o curso do usuário.
@@ -52,7 +52,7 @@ namespace DaccApi.Model
         /// Obtém ou define o telefone do usuário.
         /// </summary>
         [Column("telefone")]
-        public string Telefone { get; set; }
+        public string? Telefone { get; set; }
 
         /// <summary>
         /// Obtém ou define o hash da senha do usuário.
@@ -99,7 +99,7 @@ namespace DaccApi.Model
         /// <summary>
         /// Cria um objeto Usuário a partir de uma requisição de criação.
         /// </summary>
-        public Usuario FromRequest(RequestCreateUsuario requestCreate)
+        public Usuario FromRequest(RequestRegistro requestCreate)
         {
             return new Usuario()
             {

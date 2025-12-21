@@ -7,7 +7,7 @@ namespace DaccApi.Model
     /// <summary>
     /// Representa a requisição para criar um novo usuário.
     /// </summary>
-    public class RequestCreateUsuario
+    public class RequestRegistro
     {
         /// <summary>
         /// Obtém ou define o nome do usuário.
@@ -41,7 +41,6 @@ namespace DaccApi.Model
         /// <summary>
         /// Obtém ou define o telefone do usuário.
         /// </summary>
-        [Required(ErrorMessage = "Telefone é obrigatório")]
         [PhoneValidation(ErrorMessage = "Telefone inválido")]
         public string? Telefone { get; set; }
         /// <summary>

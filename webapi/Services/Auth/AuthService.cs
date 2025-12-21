@@ -96,24 +96,23 @@ namespace DaccApi.Services.Auth
         }
             
         // TODO: Transferir email para o controller e refatorar a lógica do register para retornar o usuário ou uma exception.
-        public async Task<IActionResult> RegisterUser(RequestCreateUsuario requestCreate)
+        public async Task<IActionResult> RegisterUser(RequestRegistro requestCreate)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(requestCreate.Nome) ||
                     string.IsNullOrWhiteSpace(requestCreate.Sobrenome) ||
-                    string.IsNullOrWhiteSpace(requestCreate.Telefone) ||
                     string.IsNullOrWhiteSpace(requestCreate.Curso))
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
 
-                if (!IsValidRa(requestCreate.Ra))
+                if (!string.IsNullOrWhiteSpace(requestCreate.Ra) && !IsValidRa(requestCreate.Ra))
                 {
-                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, 
+                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST,
                         "RA inválido! Seu RA deve conter 9 dígitos numéricos");
                 }
-                
+
                 if (!IsValidEmail(requestCreate.Email))
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "Formato de email inválido!");

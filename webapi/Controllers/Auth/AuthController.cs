@@ -42,7 +42,7 @@ namespace DaccApi.Controllers.Auth
         /// </summary>
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterUser([FromBody] RequestCreateUsuario requestCreate)
+        public async Task<IActionResult> RegisterUser([FromBody] RequestRegistro requestCreate)
         {
             var response = await _authService.RegisterUser(requestCreate);
             return response;

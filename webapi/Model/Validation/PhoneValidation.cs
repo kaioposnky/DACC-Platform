@@ -13,6 +13,8 @@ namespace DaccApi.Model.Validation
         /// </summary>
         protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
         {
+            if (value == null) return ValidationResult.Success;
+
             var phone = value as string;
 
             // Validação de telefone, é válido se o número tem 10 ou 11 dígitos ou mais e começa com um número.
