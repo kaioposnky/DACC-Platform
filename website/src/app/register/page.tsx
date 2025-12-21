@@ -10,12 +10,16 @@ import { Footer } from '@/components/organisms/Footer';
 import RegisterBenefits from '@/components/organisms/RegisterBenefits';
 import { EyeIcon, EyeSlashIcon, UserIcon, AcademicCapIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import { apiService} from '@/services/api';
+import {toast} from "sonner";
+import {useAuth} from "@/context/AuthContext";
 
 interface FormData {
   firstName: string;
   lastName: string;
   email: string;
-  studentId: string;
+  studentId?: string;
+  phoneNumber?: string;
   course: string;
   password: string;
   confirmPassword: string;
@@ -41,6 +45,7 @@ export default function Register() {
     lastName: '',
     email: '',
     studentId: '',
+    phoneNumber: '',
     course: '',
     password: '',
     confirmPassword: '',
@@ -77,27 +82,42 @@ export default function Register() {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
-    if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
-    if (!formData.email.trim()) newErrors.email = 'Email is required';
-    if (!formData.course) newErrors.course = 'Course selection is required';
-    if (!formData.password) newErrors.password = 'Password is required';
+    if (!formData.firstName.trim()) newErrors.firstName = 'O nome é obrigatório';
+    if (!formData.lastName.trim()) newErrors.lastName = 'O sobrenome é obrigatório';
+    if (!formData.email.trim()) newErrors.email = 'O email é obrigatório';
+    if (!formData.course) newErrors.course = 'A seleção do curso é obrigatória';
+    if (!formData.password) newErrors.password = 'A senha é obrigatória';
     if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = 'As senhas não coincidem';
     }
-    if (!formData.acceptTerms) newErrors.acceptTerms = 'You must accept the terms and conditions';
+    if (!formData.acceptTerms) newErrors.acceptTerms = 'Você deve aceitar os termos e condições';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  const { register: registerUser } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      // Handle form submission
-      console.log('Form submitted:', formData);
+      try {
+        await registerUser({
+          nome: formData.firstName,
+          sobrenome: formData.lastName,
+          email: formData.email,
+          senha: formData.password,
+          ra: formData.studentId ?? '',
+          telefone: formData.phoneNumber ?? '',
+          curso: formData.course,
+          inscritoNoticia: formData.subscribeNewsletter
+        });
+        toast.success("Cadastro realizado com sucesso!")
+      } catch (err: any) {
+        toast.error(`Ocorreu um erro ao realizar o cadastro! ${err.message}`);
+        throw err;
+      }
     }
-  };
+  }
 
   // const handleSocialLogin = (provider: 'google' | 'github') => {
   //   console.log(`Login with ${provider}`);
@@ -196,6 +216,26 @@ export default function Register() {
                     </div>
                   </div>
 
+                  {/* Phone Number */}
+                  <div>
+                    <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                      Telefone <span className="text-gray-500">(Opcional)</span>
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <AcademicCapIcon className="w-5 h-5 text-gray-400" />
+                      </div>
+                      <input
+                          id="phoneNumber"
+                          type="text"
+                          placeholder="Digite seu Telefone"
+                          value={formData.phoneNumber}
+                          onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
+                          className="text-primary block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                      />
+                    </div>
+                  </div>
+
                   {/* Course */}
                   <div>
                     <label htmlFor="course" className="block text-sm font-medium text-gray-700 mb-2">
@@ -209,7 +249,7 @@ export default function Register() {
                         id="course"
                         value={formData.course}
                         onChange={(e) => setFormData({...formData, course: e.target.value})}
-                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 appearance-none bg-white placeholder-gray-400"
+                        className="text-primary block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 appearance-none bg-white placeholder-gray-400"
                       >
                         <option value="" disabled>Selecione seu curso</option>
                         <option value="computer-science" className="text-primary">Ciência da Computação</option>

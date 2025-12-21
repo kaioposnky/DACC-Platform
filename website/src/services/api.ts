@@ -60,7 +60,7 @@ class ApiService {
     });
   }
 
-  async register(userData: { nome: string; email: string; senha: string; ra: string; curso: string; }): Promise<User> {
+  async register(userData: RegisterData): Promise<User> {
     return this.request<User>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),

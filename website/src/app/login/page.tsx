@@ -2,13 +2,16 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 import { FormInput, SocialLoginButton } from '@/components/molecules';
 import { CommunityBenefits, Footer } from '@/components/organisms';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Navigation } from '@/components/organisms/Navigation';
+import { useAuth } from '@/context/AuthContext';
 
 export default function LoginPage() {
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -21,14 +24,11 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      // Login logic would be implemented here
-      // For now, just simulate a login process
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Redirect to dashboard or home page after successful login
-      window.location.href = '/';
-    } catch {
-      setError('Login failed. Please check your credentials and try again.');
+      await login(email, password);
+    } catch (err: any) {
+      const errorMessage = err.message || 'Falha no login. Verifique suas credenciais.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
