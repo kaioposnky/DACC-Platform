@@ -101,4 +101,13 @@
 		INSERT INTO usuario_tokens(usuario_id, access_token, refresh_token)
 		VALUES (@UserId, '', '');
 	</query>
+
+	<query name="GetUserStats">
+		SELECT
+			(SELECT COUNT(*) FROM pedido WHERE usuario_id = @Id) as Orders,
+			(SELECT COUNT(*) FROM avaliacao WHERE usuario_id = @Id) as Reviews,
+			TO_CHAR(data_criacao, 'DD/MM/YYYY') as RegistryDate
+		FROM usuario
+		WHERE id = @Id;
+	</query>
 </queries>
