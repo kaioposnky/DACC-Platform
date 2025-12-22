@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Typography } from '@/components/atoms';
 import { CameraIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
+import {UserStats} from "@/types";
 
 export interface ProfileUser {
   id: string;
@@ -11,11 +12,7 @@ export interface ProfileUser {
   email: string;
   role: string;
   avatar: string;
-  stats: {
-    orders: number;
-    reviews: number;
-    yearsActive: number;
-  };
+  stats: UserStats
 }
 
 interface ProfileBannerProps {
@@ -32,19 +29,19 @@ export const ProfileBanner = ({
   
   const statItems = [
     {
-      value: user.stats.orders,
+      value: user.stats.orders ?? 0,
       label: 'Pedidos',
       id: 'orders'
     },
     {
-      value: user.stats.reviews,
+      value: user.stats.reviews ?? 0,
       label: 'Avaliações',
       id: 'reviews'
     },
     {
-      value: user.stats.yearsActive,
-      label: user.stats.yearsActive === 1 ? 'Ano' : 'Anos',
-      id: 'years'
+      value: user.stats.registryDate ?? "22/12/2025",
+      label: 'Membro desde',
+      id: 'registryDate'
     }
   ];
 
@@ -106,7 +103,7 @@ export const ProfileBanner = ({
               variant="h5" 
               className="text-yellow-400 font-medium mb-3"
             >
-              {user.role}
+              {user.role[0].toUpperCase()}{user.role.slice(1)}
             </Typography>
 
             {/* Email */}
@@ -133,18 +130,18 @@ export const ProfileBanner = ({
                   transition={{ duration: 0.3, delay: 0.5 + index * 0.1 }}
                   className="text-center"
                 >
-                  <Typography 
-                    variant="h2" 
-                    className="text-yellow-400 font-bold text-3xl md:text-4xl"
-                  >
-                    {stat.value}
-                  </Typography>
-                  <Typography 
+                  <Typography
                     variant="body" 
                     color="white"
                     className="opacity-90 font-medium"
                   >
                     {stat.label}
+                  </Typography>
+                  <Typography
+                      variant="h2"
+                      className="text-yellow-400 font-bold text-3xl md:text-4xl"
+                  >
+                    {stat.value}
                   </Typography>
                 </motion.div>
               ))}

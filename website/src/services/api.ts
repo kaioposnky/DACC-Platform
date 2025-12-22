@@ -1,4 +1,16 @@
-import { User, Post, Comment, Announcement, Event, Project, News, Faculty, Product, ApiResponse } from '@/types';
+import {
+  User,
+  Post,
+  Comment,
+  Announcement,
+  Event,
+  Project,
+  News,
+  Faculty,
+  Product,
+  ApiResponse,
+  UserStats
+} from '@/types';
 import {storageService} from "@/services/storage";
 import {RegisterData} from "@/context/AuthContext";
 
@@ -79,6 +91,10 @@ class ApiService {
 
   async getUser(id: string): Promise<User> {
     return this.request<User>(`/users/${id}`);
+  }
+
+  async getUserStats(id: string): Promise<UserStats> {
+    return this.request<UserStats>(`/users/${id}/stats`);
   }
 
   async updateUser(id: string, user: Partial<User>): Promise<User> {

@@ -1,26 +1,44 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import { Footer, Navigation } from "@/components";
 import { ProfileBanner, ProfileUser } from "@/components/organisms/ProfileBanner";
 import { ProfileSettingsSidebar, SettingsSection } from "@/components/organisms/ProfileSettingsSidebar";
 import { ProfileSettingsForm, UserFormData } from "@/components/organisms/ProfileSettingsForm";
+import {apiService} from "@/services/api";
+import {UserStats} from "@/types";
 
 export default function ProfilePage() {
+  const { user, isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
+  const [activeSection, setActiveSection] = useState<SettingsSection>('account');
+  const [userStats, setUserStats] = useState<UserStats>({
+    orders: 1,
+    reviews: 1,
+    registryDate: "22/12/2025",
+  });
 
-    const [activeSection, setActiveSection] = useState<SettingsSection>('account');
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push('/login');
+    }
+  }, [isLoading, isAuthenticated, router]);
   
-  // Mock initial user data - in a real app, this would come from authentication/API
-  const initialUserData: Partial<UserFormData> = {
-    firstName: 'João',
-    lastName: 'Silva',
-    email: 'joao.silva@student.university.edu',
-    phone: '+55 (11) 99999-9999',
-    studentId: 'CS2022001',
-    course: 'Ciência da Computação',
-    academicYear: '2º Ano',
-    expectedGraduation: '2026-05'
-  };
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (user?.id) {
+        try {
+          const stats = await apiService.getUserStats(user.id);
+          setUserStats(stats);
+        } catch (error) {
+          console.error('Erro ao buscar estatísticas do usuário:', error);
+        }
+      }
+    };
+    if (user) fetchStats();
+  }, [user]);
 
   const handleSectionChange = (section: SettingsSection) => {
     setActiveSection(section);
@@ -36,12 +54,47 @@ export default function ProfilePage() {
     console.log('Resetting form to initial values');
   };
 
+  const handleChangeAvatar = () => {
+    console.log('Alterar avatar clicado');
+  };
+
+  // User loading, default template if user data loading
+  if (isLoading || !user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Navigation />
+        <div className="text-center">
+          <p className="text-lg font-semibold">Carregando perfil...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+  
+  const profileUser: ProfileUser = {
+    id: user.id,
+    name: `${user.name} ${user.lastName || ''}`.trim(),
+    email: user.email,
+    role: user.role,
+    avatar: user.avatar || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+    stats: userStats
+  };
+
+  const formUserData: Partial<UserFormData> = {
+    firstName: user.name,
+    lastName: user.lastName,
+    email: user.email,
+    phone: user.phone,
+    studentId: user.ra,
+    course: user.course,
+  };
+
   const renderContent = () => {
     switch (activeSection) {
       case 'account':
         return (
           <ProfileSettingsForm
-            initialData={initialUserData}
+            initialData={formUserData}
             onSave={handleSaveForm}
             onReset={handleResetForm}
           />
@@ -71,35 +124,17 @@ export default function ProfilePage() {
         return null;
     }
   };
-  // Mock user data - in a real app, this would come from authentication/API
-  const [user] = useState<ProfileUser>({
-    id: "1",
-    name: "João Silva",
-    email: "joao.silva@student.university.edu",
-    role: "Estudante de Ciência da Computação",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
-    stats: {
-      orders: 15,
-      reviews: 23,
-      yearsActive: 2
-    }
-  });
-
-
-  const handleChangeAvatar = () => {
-    console.log('Alterar avatar clicado');
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
       <ProfileBanner 
-        user={user}
+        user={profileUser}
         onChangeAvatar={handleChangeAvatar}
       />
 
-<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar */}
           <div className="lg:col-span-1">

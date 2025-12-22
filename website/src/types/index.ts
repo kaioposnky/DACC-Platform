@@ -10,10 +10,10 @@ export interface User {
   email: string;
   course?: string;
   phone?: string;
-  avatar?: string;
+  avatar: string;
   isActive?: boolean;
   isSubscribedToNews?: boolean;
-  role?: string;
+  role: string;
   isLoggedIn?: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -198,4 +198,10 @@ export interface UserProfile {
   avatar: string;
   role?: 'student' | 'faculty' | 'admin';
   isLoggedIn: boolean;
+}
+
+export interface UserStats {
+  orders: number;
+  reviews: number;
+  registryDate: string;
 }

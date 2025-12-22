@@ -12,8 +12,8 @@ export interface UserFormData {
   phone: string;
   studentId: string;
   course: string;
-  academicYear: string;
-  expectedGraduation: string;
+  // academicYear: string;
+  // expectedGraduation: string;
 }
 
 interface ProfileSettingsFormProps {
@@ -37,19 +37,19 @@ export const ProfileSettingsForm = ({
     phone: initialData.phone || '',
     studentId: initialData.studentId || '',
     course: initialData.course || '',
-    academicYear: initialData.academicYear || '',
-    expectedGraduation: initialData.expectedGraduation || ''
+    // academicYear: initialData.academicYear || '',
+    // expectedGraduation: initialData.expectedGraduation || ''
   });
 
   const [errors, setErrors] = useState<Partial<UserFormData>>({});
   const [isDirty, setIsDirty] = useState(false);
 
   const courses = [
-    'Ciência da Computação',
-    'Engenharia de Software',
-    'Sistemas de Informação',
-    'Engenharia da Computação',
-    'Análise e Desenvolvimento de Sistemas'
+    { value: 'computer-science', label: 'Ciência da Computação' },
+    { value: 'software-engineering', label: 'Engenharia de Software' },
+    { value: 'information-systems', label: 'Sistemas de Informação' },
+    { value: 'computer-engineering', label: 'Engenharia da Computação' },
+    { value: 'systems-analysis-and-development', label: 'Análise e Desenvolvimento de Sistemas' }
   ];
 
   const academicYears = [
@@ -71,24 +71,44 @@ export const ProfileSettingsForm = ({
   };
 
   const formatPhone = (value: string) => {
-    // Remove all non-digits
     const digits = value.replace(/\D/g, '');
-    
-    // Apply Brazilian phone format: +55 (00) 00000-0000
-    if (digits.length <= 2) {
-      return `+${digits}`;
-    } else if (digits.length <= 4) {
-      return `+${digits.slice(0, 2)} (${digits.slice(2)})`;
-    } else if (digits.length <= 9) {
-      return `+${digits.slice(0, 2)} (${digits.slice(2, 4)}) ${digits.slice(4)}`;
+
+    if (digits.length === 0){
+      return "";
+    } else if (digits.length <= 2) {
+      return `(${digits.slice(0, 2)}`;
+    } else if (digits.length <= 7) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
     } else {
-      return `+${digits.slice(0, 2)} (${digits.slice(2, 4)}) ${digits.slice(4, 9)}-${digits.slice(9, 13)}`;
+      return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+    }
+  };
+
+  const formatStudentID = (value: string) => {
+    const digits = value.replace(/\D/g, '');
+
+    // 12.345.678-9
+    if (digits.length === 0){
+      return "";
+    } else if (digits.length <= 2) {
+      return `${digits.slice(0, 2)}`;
+    } else if (digits.length <= 5) {
+      return `${digits.slice(0, 2)}.${digits.slice(2)}`;
+    } else if (digits.length <= 8){
+      return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}`;
+    } else{
+      return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}-${digits.slice(8)}`;
     }
   };
 
   const handlePhoneChange = (value: string) => {
     const formatted = formatPhone(value);
     handleInputChange('phone', formatted);
+  };
+
+  const handleStudentIDChange = (value: string) => {
+    const formatted = formatStudentID(value);
+    handleInputChange('studentId', formatted);
   };
 
   const validateForm = (): boolean => {
@@ -98,11 +118,9 @@ export const ProfileSettingsForm = ({
     if (!formData.lastName.trim()) newErrors.lastName = 'Sobrenome é obrigatório';
     if (!formData.email.trim()) newErrors.email = 'Email é obrigatório';
     if (!formData.email.includes('@')) newErrors.email = 'Email inválido';
-    if (!formData.phone.trim()) newErrors.phone = 'Telefone é obrigatório';
-    if (!formData.studentId.trim()) newErrors.studentId = 'ID do estudante é obrigatório';
     if (!formData.course) newErrors.course = 'Curso é obrigatório';
-    if (!formData.academicYear) newErrors.academicYear = 'Ano acadêmico é obrigatório';
-    if (!formData.expectedGraduation.trim()) newErrors.expectedGraduation = 'Data de formatura é obrigatória';
+    // if (!formData.academicYear) newErrors.academicYear = 'Ano acadêmico é obrigatório';
+    // if (!formData.expectedGraduation.trim()) newErrors.expectedGraduation = 'Data de formatura é obrigatória';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -123,8 +141,8 @@ export const ProfileSettingsForm = ({
       phone: initialData.phone || '',
       studentId: initialData.studentId || '',
       course: initialData.course || '',
-      academicYear: initialData.academicYear || '',
-      expectedGraduation: initialData.expectedGraduation || ''
+      // academicYear: initialData.academicYear || '',
+      // expectedGraduation: initialData.expectedGraduation || ''
     });
     setErrors({});
     setIsDirty(false);
@@ -184,7 +202,7 @@ export const ProfileSettingsForm = ({
             value={formData.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
             error={errors.email}
-            placeholder="joao.silva@student.university.edu"
+            placeholder="joao.silva@fei.edu.br"
             required
           />
 
@@ -195,7 +213,7 @@ export const ProfileSettingsForm = ({
             value={formData.phone}
             onChange={(e) => handlePhoneChange(e.target.value)}
             error={errors.phone}
-            placeholder="+55 (11) 99999-9999"
+            placeholder="(11) 12345-6789"
             maxLength={20}
             required
           />
@@ -212,12 +230,12 @@ export const ProfileSettingsForm = ({
           {/* Student ID and Course */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Input
-              label="ID do Estudante"
+              label="RA"
               type="text"
               value={formData.studentId}
-              onChange={(e) => handleInputChange('studentId', e.target.value)}
+              onChange={(e) => handleStudentIDChange(e.target.value)}
               error={errors.studentId}
-              placeholder="CS2022001"
+              placeholder="12.345.678-9"
               required
             />
             
@@ -228,13 +246,13 @@ export const ProfileSettingsForm = ({
               <select
                 value={formData.course}
                 onChange={(e) => handleInputChange('course', e.target.value)}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                className="text-primary block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                 required
               >
                 <option value="">Selecionar Curso</option>
                 {courses.map((course) => (
-                  <option key={course} value={course}>
-                    {course}
+                  <option key={course.value} value={course.value}>
+                    {course.label}
                   </option>
                 ))}
               </select>
@@ -245,38 +263,38 @@ export const ProfileSettingsForm = ({
           </div>
 
           {/* Academic Year and Expected Graduation */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="w-full">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Ano Acadêmico *
-              </label>
-              <select
-                value={formData.academicYear}
-                onChange={(e) => handleInputChange('academicYear', e.target.value)}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                required
-              >
-                <option value="">Selecionar Ano</option>
-                {academicYears.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-              {errors.academicYear && (
-                <p className="mt-1 text-sm text-red-600">{errors.academicYear}</p>
-              )}
-            </div>
+          {/*<div className="grid grid-cols-1 md:grid-cols-2 gap-6">*/}
+          {/*  <div className="w-full">*/}
+          {/*    <label className="block text-sm font-medium text-gray-700 mb-1">*/}
+          {/*      Ano Acadêmico **/}
+          {/*    </label>*/}
+          {/*    <select*/}
+          {/*      value={formData.academicYear}*/}
+          {/*      onChange={(e) => handleInputChange('academicYear', e.target.value)}*/}
+          {/*      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"*/}
+          {/*      required*/}
+          {/*    >*/}
+          {/*      <option value="">Selecionar Ano</option>*/}
+          {/*      {academicYears.map((year) => (*/}
+          {/*        <option key={year} value={year}>*/}
+          {/*          {year}*/}
+          {/*        </option>*/}
+          {/*      ))}*/}
+          {/*    </select>*/}
+          {/*    {errors.academicYear && (*/}
+          {/*      <p className="mt-1 text-sm text-red-600">{errors.academicYear}</p>*/}
+          {/*    )}*/}
+          {/*  </div>*/}
 
-            <Input
-              label="Previsão de Formatura"
-              type="month"
-              value={formData.expectedGraduation}
-              onChange={(e) => handleInputChange('expectedGraduation', e.target.value)}
-              error={errors.expectedGraduation}
-              required
-            />
-          </div>
+          {/*  <Input*/}
+          {/*    label="Previsão de Formatura"*/}
+          {/*    type="month"*/}
+          {/*    value={formData.expectedGraduation}*/}
+          {/*    onChange={(e) => handleInputChange('expectedGraduation', e.target.value)}*/}
+          {/*    error={errors.expectedGraduation}*/}
+          {/*    required*/}
+          {/*  />*/}
+          {/*</div>*/}
         </div>
       </div>
 
