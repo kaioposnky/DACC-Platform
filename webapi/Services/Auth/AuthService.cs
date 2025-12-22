@@ -77,11 +77,14 @@ namespace DaccApi.Services.Auth
                 await _usuarioRepository.UpdateUserTokens(usuario.Id,
                     new TokensUsuario(){AccessToken = accessToken, RefreshToken = refreshToken});
 
+                var expiresIn = new DateTimeOffset(DateTime.UtcNow.AddMinutes(15)).ToUnixTimeSeconds();
+
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(
                     new ResponseLogin
                     {
                         AcessToken = accessToken,
                         RefreshToken = refreshToken,
+                        ExpiresIn = expiresIn,
                         User = usuario.ToResponse()
                     }));
             }
