@@ -1,8 +1,8 @@
-﻿ using DaccApi.Helpers;
+﻿using DaccApi.Helpers;
+using DaccApi.Helpers.Attributes;
 using DaccApi.Infrastructure.Authentication;
 using DaccApi.Model;
 using DaccApi.Services.Auth;
-using DaccApi.Helpers.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -53,7 +53,7 @@ namespace DaccApi.Controllers.Auth
         /// </summary>
         [AllowAnonymous]
         [HttpPost("refresh")]
-        public async Task<IActionResult> RefreshToken([FromForm] string refreshToken)
+        public async Task<IActionResult> RefreshToken([FromBody] string refreshToken)
         {
             var response = await _authService.RefreshUserToken(refreshToken);
             return response;

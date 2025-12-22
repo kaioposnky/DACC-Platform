@@ -74,10 +74,11 @@ namespace DaccApi.Services.Auth
                 var accessToken = _tokenService.GenerateAccessToken(usuario, permissions);
                 var refreshToken = _tokenService.GenerateRefreshToken(usuario);
 
-                await _usuarioRepository.UpdateUserTokens(usuario.Id,
-                    new TokensUsuario(){AccessToken = accessToken, RefreshToken = refreshToken});
-
+                // TODO: Colocar o ExpiresIn como argumento para atualizar/criar o token do usuário
                 var expiresIn = new DateTimeOffset(DateTime.UtcNow.AddMinutes(15)).ToUnixTimeSeconds();
+
+                await _usuarioRepository.UpdateUserTokens(usuario.Id,
+                    new TokensUsuario(){AccessToken = accessToken, RefreshToken = refreshToken, ExpiresIn = expiresIn});
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(
                     new ResponseLogin
@@ -191,8 +192,16 @@ namespace DaccApi.Services.Auth
                 
                 var newAccessToken = _tokenService.GenerateAccessToken(user, userPermissions);
                 var newRefreshToken = _tokenService.GenerateRefreshToken(user);
-                
-                var userTokens = new TokensUsuario(){ AccessToken = newAccessToken, RefreshToken = newRefreshToken };
+
+                // TODO: Colocar o ExpiresIn como argumento para atualizar/criar o token do usuário
+                var expiresIn = new DateTimeOffset(DateTime.UtcNow.AddMinutes(15)).ToUnixTimeSeconds();
+
+                var userTokens = new TokensUsuario
+                {
+                    AccessToken = newAccessToken,
+                    RefreshToken = newRefreshToken,
+                    ExpiresIn = expiresIn
+                };
 
                 await _usuarioRepository.UpdateUserTokens(user.Id, userTokens);
                 
@@ -208,9 +217,7 @@ namespace DaccApi.Services.Auth
         {
             try
             {
-                var userTokens = await _usuarioRepository.GetUserTokens(userId);
-                
-                var tokensUsuario = new TokensUsuario(){ AccessToken = "", RefreshToken = "" };
+                var tokensUsuario = new TokensUsuario(){ AccessToken = "", RefreshToken = "", ExpiresIn = 0};
                 
                 await _usuarioRepository.UpdateUserTokens(userId, tokensUsuario);
 
