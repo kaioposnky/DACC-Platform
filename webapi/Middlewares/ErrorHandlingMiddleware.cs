@@ -1,21 +1,21 @@
 using System.Net;
-using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using DaccApi.Helpers;
 using DaccApi.Responses;
-using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Middlewares
 {
     public class ErrorHandlingMiddleware
     {
         private readonly RequestDelegate _next;
+        private static readonly EventId _eventId = new(0, "Unhandled Exception Thrown");
 
         public ErrorHandlingMiddleware(RequestDelegate next)
         {
             _next = next;
         }
         
-        public async Task InvokeAsync(HttpContext httpContext)
+        public async Task InvokeAsync(HttpContext httpContext, ILogger<ErrorHandlingMiddleware> logger)
         {
             try
             {
@@ -23,7 +23,7 @@ namespace DaccApi.Middlewares
             }
             catch (Exception ex)
             {
-                await HandleExceptionAsync(httpContext, ex);
+                await HandleExceptionAsync(httpContext, ex, logger);
             }
             
             // Checa se a resposta já foi criada, se não foi criada intervir e criar uma resposta
@@ -33,7 +33,7 @@ namespace DaccApi.Middlewares
             }
         }
 
-        private static async Task HandleExceptionAsync(HttpContext httpContext, Exception ex)
+        private async Task HandleExceptionAsync(HttpContext httpContext, Exception ex, ILogger logger)
         {
             if (httpContext.Response.HasStarted)
             {
@@ -41,10 +41,11 @@ namespace DaccApi.Middlewares
             }
             var responseError = ResponseError.INTERNAL_SERVER_ERROR;
             var message = ex.Message;
+            logger.LogError(_eventId, ex, "Erro não tratado lançado pela API! {Error}", ex.Message);
             await ResponseHelper.WriteResponseErrorAsync(httpContext, HttpStatusCode.InternalServerError, responseError, message);
         }
 
-        private static async Task HandleErrorAsync(HttpContext httpContext)
+        private async Task HandleErrorAsync(HttpContext httpContext)
         {
             var statusCode = (HttpStatusCode)httpContext.Response.StatusCode;
             var responseError = statusCode switch
