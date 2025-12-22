@@ -85,9 +85,15 @@ namespace DaccApi.Controllers.Usuario
         [HttpGet("{id:guid}/stats")]
         public async Task<IActionResult> GetUserStats([FromRoute] Guid id)
         {
-            var requestUserId = ClaimsHelper.GetUserId(User);
             var usuario = await _usuarioRepository.GetByIdAsync(id);
-            if (usuario != null && (requestUserId != usuario.Id))
+
+            if (usuario == null)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "Usuário não encontrado.");
+            }
+
+            var requestUserId = ClaimsHelper.GetUserId(User);
+            if (requestUserId != usuario.Id)
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.INVALID_CREDENTIALS);
             }
