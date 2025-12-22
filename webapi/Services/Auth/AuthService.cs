@@ -58,36 +58,32 @@ namespace DaccApi.Services.Auth
                     {
                         validationDetails.Add(new { field = "senha", message = "Senha é obrigatória" });
                     }
-                    
+
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST.WithDetails(validationDetails.ToArray()));
                 }
-                
+
                 var usuario = await _usuarioRepository.GetUserByEmail(request.Email);
 
                 if (usuario is not { Ativo: true } || !ValidateCredentials(request.Email, request.Senha, usuario.SenhaHash!))
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.INVALID_CREDENTIALS);
                 }
-                
+
                 var permissions = await _permissionRepository.GetPermissionsForRoleAsync(usuario.Cargo);
-                
+
                 var accessToken = _tokenService.GenerateAccessToken(usuario, permissions);
                 var refreshToken = _tokenService.GenerateRefreshToken(usuario);
-                
-                await _usuarioRepository.UpdateUserTokens(usuario.Id, 
+
+                await _usuarioRepository.UpdateUserTokens(usuario.Id,
                     new TokensUsuario(){AccessToken = accessToken, RefreshToken = refreshToken});
-                
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, 
-                    new {
-                        id = usuario.Id,
-                        name = usuario.Nome,
-                        email = usuario.Email,
-                        role = usuario.Cargo,
-                        avatar = usuario.ImagemUrl,
-                        access_token = accessToken,
-                        refreshToken = refreshToken,
-                    }
-                ));
+
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(
+                    new ResponseLogin
+                    {
+                        AcessToken = accessToken,
+                        RefreshToken = refreshToken,
+                        User = usuario.ToResponse()
+                    }));
             }
             catch (Exception ex)
             {
