@@ -1,14 +1,14 @@
 import {
-  User,
-  Post,
-  Comment,
   Announcement,
-  Event,
-  Project,
-  News,
-  Faculty,
-  Product,
   ApiResponse,
+  Comment,
+  Event,
+  Faculty,
+  News,
+  Post,
+  Product,
+  Project,
+  User,
   UserStats
 } from '@/types';
 import {storageService} from "@/services/storage";
@@ -43,6 +43,25 @@ const API_BASE_URL = 'http://localhost:3001/v1/api';
 
 class ApiService {
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
+
+    // If the token expired we use refresh token to get a new token
+    const timeNowUnix = Math.floor(Date.now() / 1000);
+    const tokenExpirationUnix = storageService.getTokenExpiration();
+
+    // 30 seconds margin to the expiring token
+    if (tokenExpirationUnix && timeNowUnix > (tokenExpirationUnix - 30)) {
+      try {
+        const refreshToken = storageService.getRefreshToken();
+        if (refreshToken) {
+          const tokens = await this.refreshToken(refreshToken);
+          storageService.setTokens(tokens.accessToken, tokens.accessToken, tokens.expiresIn);
+        }
+      } catch (e) {
+        console.error("Could not refresh user token! Redirecting user to login.");
+        window.location.href = '/login'
+      }
+    }
+
     const accessToken = storageService.getAccessToken();
     const headers : Record<string, string> = {
       'Content-Type': 'application/json',
@@ -68,6 +87,13 @@ class ApiService {
     }
 
     return data as T;
+  }
+
+  async refreshToken(refreshToken: string): Promise<{ accessToken: string; refreshToken: string; expiresIn: number; }> {
+    return this.request<{ accessToken: string, refreshToken: string, expiresIn: number; }>('/auth/refresh', {
+      method: 'POST',
+      body: refreshToken,
+    });
   }
 
   async login(credentials: { email: string; senha: string }): Promise<{ accessToken: string; refreshToken: string; expiresIn: number; user: User }> {

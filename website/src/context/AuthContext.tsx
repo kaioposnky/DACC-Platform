@@ -1,11 +1,10 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User } from '@/types';
-import { apiService } from '@/services/api';
-import { storageService } from '@/services/storage';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
+import {createContext, ReactNode, useContext, useEffect, useState} from 'react';
+import {User} from '@/types';
+import {apiService} from '@/services/api';
+import {storageService} from '@/services/storage';
+import {useRouter} from 'next/navigation';
 
 interface AuthContextType {
   user: User | null;
@@ -48,8 +47,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, senha: string) => {
     try {
       const response = await apiService.login({ email, senha });
-      
-      storageService.setTokens(response.accessToken, response.refreshToken);
+
+      storageService.setTokens(response.accessToken, response.refreshToken, response.expiresIn);
       storageService.setUser(response.user);
       
       setUser(response.user);
