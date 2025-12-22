@@ -82,7 +82,7 @@ namespace DaccApi.Services.Auth
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(
                     new ResponseLogin
                     {
-                        AcessToken = accessToken,
+                        AccessToken = accessToken,
                         RefreshToken = refreshToken,
                         ExpiresIn = expiresIn,
                         User = usuario.ToResponse()
