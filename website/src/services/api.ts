@@ -13,6 +13,7 @@ import {
 } from '@/types';
 import {storageService} from "@/services/storage";
 import {RegisterData} from "@/context/AuthContext";
+import {toast} from "sonner";
 
 // Forum types
 export interface ForumCategory {
@@ -57,7 +58,9 @@ class ApiService {
           storageService.setTokens(tokens.accessToken, tokens.accessToken, tokens.expiresIn);
         }
       } catch (e) {
-        console.error("Could not refresh user token! Redirecting user to login.");
+        storageService.clear();
+        console.info("Could not refresh user token! Redirecting user to login.");
+        toast.message("Seu acesso expirou! Faça login novamente para continuar navegando.")
         window.location.href = '/login'
       }
     }
