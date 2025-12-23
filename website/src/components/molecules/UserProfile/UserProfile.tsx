@@ -8,9 +8,9 @@ import {
   UserIcon, 
   ClipboardDocumentListIcon, 
   StarIcon, 
-  ArrowRightOnRectangleIcon,
-  ChevronDownIcon 
+  ChevronDownIcon
 } from '@heroicons/react/24/outline';
+import {ArrowRightEndOnRectangleIcon} from "@heroicons/react/16/solid";
 
 interface UserProfileProps {
   user: UserProfileType;
@@ -58,22 +58,22 @@ export default function UserProfile({
   const menuItems = [
     {
       icon: UserIcon,
-      label: 'Profile',
+      label: 'Perfil',
       onClick: onProfileClick,
     },
     {
       icon: ClipboardDocumentListIcon,
-      label: 'Order History',
+      label: 'Histórico de Pedidos',
       onClick: onOrderHistoryClick,
     },
     {
       icon: StarIcon,
-      label: 'My Reviews',
+      label: 'Minhas Avaliações',
       onClick: onReviewsClick,
     },
     {
-      icon: ArrowRightOnRectangleIcon,
-      label: 'Logout',
+      icon: ArrowRightEndOnRectangleIcon,
+      label: 'Deslogar',
       onClick: onLogoutClick,
       className: 'text-red-600 hover:text-red-700',
     },
