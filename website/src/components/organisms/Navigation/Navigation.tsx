@@ -4,34 +4,44 @@ import { NavItem } from "@/components/atoms/NavItem";
 import { UserProfile, CartButton, ShoppingCart } from "@/components/molecules";
 import { UserProfile as UserProfileType } from "@/types";
 import Link from "next/link";
-import { useState } from "react";
+import {useEffect, useState} from "react";
+import {useAuth} from "@/context/AuthContext";
+import {useRouter} from "next/navigation";
 
 export const Navigation = () => {
-  const [isUserLoggedIn] = useState(false);
-  // Mock user data - in a real app, this would come from authentication context
-  const mockUser: UserProfileType = {
-    id: "1",
-    name: "John Doe",
-    email: "john@example.com",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
-    role: "student",
-    isLoggedIn: true,
-  };
+  const { logout } = useAuth();
+  const router = useRouter();
 
+  const { user, isLoading, isAuthenticated } = useAuth();
+  const [userProfile, setUserProfile] = useState<UserProfileType|null>(null);
+
+  useEffect(() => {
+    if(!isLoading && isAuthenticated && user){
+      setUserProfile({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        role: user.role,
+        isLoggedIn: isAuthenticated
+      });
+    }
+  }, [isLoading, user, isAuthenticated]);
   const handleProfileClick = () => {
-    console.log("Profile clicked");
+    router.push('/profile');
   };
 
   const handleOrderHistoryClick = () => {
-    console.log("Order history clicked");
+    router.push('/profile/pedidos');
   };
 
   const handleReviewsClick = () => {
-    console.log("Reviews clicked");
+    router.push('/profile/avaliacoes');
   };
 
   const handleLogoutClick = () => {
-    console.log("Logout clicked");
+    logout();
+    router.push('/');
   };
 
   return (
@@ -57,9 +67,9 @@ export const Navigation = () => {
 
             {/* User Actions */}
             <div className="flex items-center gap-4">
-              {isUserLoggedIn ? (
+              {(isAuthenticated && userProfile ) ? (
               <UserProfile
-                user={mockUser}
+                user={userProfile}
                 onProfileClick={handleProfileClick}
                 onOrderHistoryClick={handleOrderHistoryClick}
                 onReviewsClick={handleReviewsClick}

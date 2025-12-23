@@ -196,7 +196,7 @@ export interface UserProfile {
   name: string;
   email: string;
   avatar: string;
-  role?: 'student' | 'faculty' | 'admin';
+  role?: string;
   isLoggedIn: boolean;
 }
 
