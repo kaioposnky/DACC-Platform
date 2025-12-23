@@ -11,8 +11,11 @@ import {
   TrashIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import {useRouter} from "next/navigation";
 
 export default function ShoppingCart() {
+  const router = useRouter();
+
   const { cart, removeFromCart, updateQuantity, closeCart } = useCart();
 
   const formatPrice = (price: number) => {
@@ -25,7 +28,7 @@ export default function ShoppingCart() {
   const handleCheckout = () => {
     // Navigate to checkout page if cart has items
     if (cart.items.length > 0) {
-      window.location.href = '/checkout';
+      router.push('/checkout');
     }
     closeCart();
   };
