@@ -91,7 +91,7 @@ export const StatCard = ({
       >
         <Typography 
           variant="body" 
-          className="!text-sm md:text-base lg:text-lg font-medium text-gray-300 tracking-wider uppercase"
+          className="text-secondary text-sm! md:text-base lg:text-lg font-medium tracking-wider uppercase"
           align="center"
         >
           {label}
