@@ -15,7 +15,7 @@ export const Footer = ({ className = '' }: FooterProps) => {
     { label: 'Projetos', href: '/sobre#projects' },
     { label: 'Eventos', href: '/inicio#eventos' },
     { label: 'Notícias', href: '/noticias' },
-    { label: 'Fórum', href: '/forum' }
+    // { label: 'Fórum', href: '/forum' }
   ];
 
   const resources = [
