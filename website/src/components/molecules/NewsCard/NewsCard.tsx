@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Card, Typography } from '@/components/atoms';
 import { News } from '@/types';
+import {formatDate} from "@/utils";
 
 interface NewsCardProps {
   news: News;
@@ -11,6 +12,9 @@ interface NewsCardProps {
 }
 
 export const NewsCard = ({ news, className = '' }: NewsCardProps) => {
+
+  const formattedDate = formatDate(news.date);
+
   const getIcon = (iconName: string) => {
     switch (iconName) {
       case 'trophy':
@@ -71,7 +75,7 @@ export const NewsCard = ({ news, className = '' }: NewsCardProps) => {
           {/* Date and Category */}
           <div className="flex items-center justify-between mb-4">
             <Typography variant="caption" color="gray">
-              {news.date}
+              {formattedDate}
             </Typography>
             <span className={`px-3 py-1 rounded-full text-sm font-medium ${getCategoryColor(news.category)}`}>
               {news.category}
