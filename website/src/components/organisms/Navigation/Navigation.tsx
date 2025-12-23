@@ -4,39 +4,23 @@ import { NavItem } from "@/components/atoms/NavItem";
 import { UserProfile, CartButton, ShoppingCart } from "@/components/molecules";
 import { UserProfile as UserProfileType } from "@/types";
 import Link from "next/link";
-import {useEffect, useState} from "react";
-import {useAuth} from "@/context/AuthContext";
-import {useRouter} from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export const Navigation = () => {
-  const { logout } = useAuth();
+  const { user, logout, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
-  const { user, isLoading, isAuthenticated } = useAuth();
-  const [userProfile, setUserProfile] = useState<UserProfileType|null>(null);
-
-  useEffect(() => {
-    if(!isLoading && isAuthenticated && user){
-      setUserProfile({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        avatar: user.avatar,
-        role: user.role,
-        isLoggedIn: isAuthenticated
-      });
-    }
-  }, [isLoading, user, isAuthenticated]);
   const handleProfileClick = () => {
-    router.push('/profile');
+    router.push('/perfil');
   };
 
   const handleOrderHistoryClick = () => {
-    router.push('/profile/pedidos');
+    router.push('/perfil/pedidos');
   };
 
   const handleReviewsClick = () => {
-    router.push('/profile/avaliacoes');
+    router.push('/perfil/avaliacoes');
   };
 
   const handleLogoutClick = () => {
@@ -60,23 +44,34 @@ export const Navigation = () => {
               <NavItem href="/">Inicio</NavItem>
               <NavItem href="/sobre">Sobre</NavItem>
               <NavItem href="/noticias">Noticias</NavItem>
-              {/*<NavItem href="/forum">Fórum</NavItem>*/}
               <NavItem href="/loja">Loja</NavItem>
               <NavItem href="/#apoie">Apoie o DACC</NavItem>
             </nav>
 
             {/* User Actions */}
             <div className="flex items-center gap-4">
-              {(isAuthenticated && userProfile ) ? (
-              <UserProfile
-                user={userProfile}
-                onProfileClick={handleProfileClick}
-                onOrderHistoryClick={handleOrderHistoryClick}
-                onReviewsClick={handleReviewsClick}
-                onLogoutClick={handleLogoutClick}
-              />
-              ) : (
-                <Link href="/login" className="text-primary text-sm font-semibold hover:bg-gray-100 rounded-md px-4 py-2 transition-colors duration-300">Login</Link>
+              {isAuthenticated && user ? (
+                <UserProfile
+                  user={{
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    avatar: user.avatar || '',
+                    role: (user.role as any) || 'student',
+                    isLoggedIn: true
+                  } as UserProfileType}
+                  onProfileClick={handleProfileClick}
+                  onOrderHistoryClick={handleOrderHistoryClick}
+                  onReviewsClick={handleReviewsClick}
+                  onLogoutClick={handleLogoutClick}
+                />
+              ) : !isLoading && (
+                <Link 
+                  href="/login" 
+                  className="text-primary text-sm font-semibold hover:bg-gray-100 rounded-md px-4 py-2 transition-colors duration-300"
+                >
+                  Login
+                </Link>
               )}
               <CartButton />
             </div>

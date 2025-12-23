@@ -1,15 +1,19 @@
 "use client";
 
 import { motion } from 'framer-motion';
+import Link from 'next/link';
+import React from "react";
 
 interface NavItemProps {
   href: string;
   children: React.ReactNode;
 }
 
+const MotionLink = motion(Link);
+
 export const NavItem = ({ href, children }: NavItemProps) => {
   return (
-    <motion.a 
+    <MotionLink 
       href={href} 
       className="text-primary hover:text-gray-900 px-3 py-1 rounded-md font-medium relative inline-block"
       whileHover="hover"
@@ -24,6 +28,6 @@ export const NavItem = ({ href, children }: NavItemProps) => {
         }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
       />
-    </motion.a>
+    </MotionLink>
   );
 };
