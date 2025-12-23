@@ -4,4 +4,5 @@ export { Card } from './Card';
 export { NavItem } from './NavItem';
 export { Typography } from './Typography';
 export { Icon } from './Icon';
-export { Dot } from './Dot'; 
+export { Dot } from './Dot';
+export { LoadingSpinner } from './LoadingSpinner';

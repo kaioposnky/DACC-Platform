@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Footer, Navigation } from "@/components";
 import { ProfileBanner, ProfileUser } from "@/components/organisms/ProfileBanner";
@@ -11,20 +10,13 @@ import {apiService} from "@/services/api";
 import {UserStats} from "@/types";
 
 export default function ProfilePage() {
-  const { user, isAuthenticated, isLoading } = useAuth();
-  const router = useRouter();
+  const { user, isLoading } = useAuth();
   const [activeSection, setActiveSection] = useState<SettingsSection>('account');
   const [userStats, setUserStats] = useState<UserStats>({
     orders: 1,
     reviews: 1,
     registryDate: "22/12/2025",
   });
-
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push('/login');
-    }
-  }, [isLoading, isAuthenticated, router]);
   
   useEffect(() => {
     const fetchStats = async () => {
