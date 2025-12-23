@@ -31,6 +31,7 @@ public class UsuarioRepository : BaseRepository<Usuario>, IUsuarioRepository
                 Telefone = usuario.Telefone,
                 Senha = usuario.SenhaHash,
                 Cargo = usuario.Cargo,
+                ImagemUrl = usuario.ImagemUrl,
             };
 
             try

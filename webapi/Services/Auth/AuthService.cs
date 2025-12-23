@@ -1,9 +1,7 @@
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Mail;
-using System.Security.Authentication;
 using System.Security.Claims;
-using System.Text;
 using DaccApi.Model;
 using DaccApi.Helpers;
 using DaccApi.Infrastructure.Cryptography;
@@ -13,7 +11,6 @@ using DaccApi.Infrastructure.Repositories.User;
 using DaccApi.Model.Responses;
 using DaccApi.Responses;
 using DaccApi.Services.Token;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.Auth
@@ -25,6 +22,11 @@ namespace DaccApi.Services.Auth
         private readonly ITokenService _tokenService;
         private readonly IPermissionRepository _permissionRepository;
         private readonly IMailService _mailService;
+        private readonly string[] _userStartImages = [
+            "https://i.postimg.cc/vHBtpYFp/invertidoshh.png",
+            "https://i.postimg.cc/X7JkTjSR/anonimoshh.png",
+            "https://i.postimg.cc/zXBF9zYY/linhashh.png"
+        ];
         public AuthService(IUsuarioRepository u, IArgon2Utility a, ITokenService t, IPermissionRepository p, IMailService m)
         {
             _usuarioRepository = u;
@@ -125,6 +127,10 @@ namespace DaccApi.Services.Auth
                         "uma letra maiúscula, uma letra minúscula e um número!");
                 }
 
+                var random = new Random();
+                var randomNumber = random.Next(0, _userStartImages.Length);
+                var randomStartImageUrl = _userStartImages[randomNumber];
+
                 var usuario = new Usuario
                 {
                     Nome = requestCreate.Nome,
@@ -132,6 +138,7 @@ namespace DaccApi.Services.Auth
                     Ra = requestCreate.Ra,
                     Curso = requestCreate.Curso,
                     Email = requestCreate.Email,
+                    ImagemUrl = randomStartImageUrl,
                     Telefone = requestCreate.Telefone,
                     SenhaHash = _argon2Utility.HashPassword(requestCreate.Senha),
                     Ativo = true,
@@ -146,7 +153,7 @@ namespace DaccApi.Services.Auth
                 usuario.Id = userId;
 
                 // envia email de boas vindas
-                await _mailService.SendWelcomeEmailAsync(usuario);
+                // await _mailService.SendWelcomeEmailAsync(usuario);
                 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED.WithData(new { users = usuario.ToResponse() }));
             }

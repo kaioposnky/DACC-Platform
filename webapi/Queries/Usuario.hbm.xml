@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <queries>
 	<query name="InsertUsuario">
-		INSERT INTO usuario (nome, sobrenome, ra, curso, email, telefone, senha_hash, cargo)
-		VALUES (@Nome, @Sobrenome, @Ra, @Curso, @Email, @Telefone, @Senha, @Cargo)
+		INSERT INTO usuario (nome, sobrenome, ra, curso, email, telefone, senha_hash, cargo, imagem_url)
+		VALUES (@Nome, @Sobrenome, @Ra, @Curso, @Email, @Telefone, @Senha, @Cargo, @ImagemUrl)
 		RETURNING id;
 	</query>
 	
