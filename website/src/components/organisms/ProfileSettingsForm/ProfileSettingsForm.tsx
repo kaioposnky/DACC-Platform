@@ -149,6 +149,9 @@ export const ProfileSettingsForm = ({
     onReset?.();
   };
 
+  formData.phone = formatPhone(formData.phone);
+  formData.studentId = formatStudentID(formData.studentId);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
