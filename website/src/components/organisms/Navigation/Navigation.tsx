@@ -50,7 +50,7 @@ export const Navigation = () => {
 
             {/* User Actions */}
             <div className="flex items-center gap-4">
-              {isAuthenticated && user ? (
+              {(!isLoading && isAuthenticated && user !== null) ? (
                 <UserProfile
                   user={{
                     id: user.id,
