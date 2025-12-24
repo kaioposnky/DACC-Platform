@@ -8,6 +8,9 @@ import { ProfileSettingsSidebar, SettingsSection } from "@/components/organisms/
 import { ProfileSettingsForm, UserFormData } from "@/components/organisms/ProfileSettingsForm";
 import {apiService} from "@/services/api";
 import {UserStats} from "@/types";
+import {ImageInputModal} from "@/components/organisms/ImageInput";
+import {toast} from "sonner";
+import {storageService} from "@/services/storage";
 
 export default function ProfilePage() {
   const { user, isLoading } = useAuth();
@@ -17,7 +20,9 @@ export default function ProfilePage() {
     reviews: 1,
     registryDate: "22/12/2025",
   });
-  
+
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+
   useEffect(() => {
     const fetchStats = async () => {
       if (user?.id) {
@@ -46,8 +51,23 @@ export default function ProfilePage() {
     console.log('Resetting form to initial values');
   };
 
-  const handleChangeAvatar = () => {
-    console.log('Alterar avatar clicado');
+  const handleChangeAvatar = (file: File) => {
+
+    async function updateUserAvatar(){
+      if(user === null) return;
+      const formData = new FormData();
+      formData.append('imageFile', file);
+      return await apiService.updateUser(user.id, formData);
+    }
+
+    updateUserAvatar().then((user) => {
+      if(user === undefined) throw Error("Não foi possível atualizar o avatar do usuário porque nenhuma informação foi retornada da API!");
+      toast.info("Avatar atualizado com sucesso!");
+      storageService.setUser(user); // Atualiza as informações do usuário, incluindo o avatar
+    }).catch((e) => {
+      console.log(e.message);
+      toast.error("Erro ao atualizar avatar!");
+    });
   };
 
   // User loading, default template if user data loading
@@ -118,32 +138,40 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      
-      <ProfileBanner 
-        user={profileUser}
-        onChangeAvatar={handleChangeAvatar}
-      />
+      <>
+        <div className="min-h-screen bg-gray-50">
+          <Navigation />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <ProfileSettingsSidebar
-              activeSection={activeSection}
-              onSectionChange={handleSectionChange}
-            />
+          <ProfileBanner
+            user={profileUser}
+            onChangeAvatar={() => setIsAvatarModalOpen(true)}
+          />
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+              {/* Sidebar */}
+              <div className="lg:col-span-1">
+                <ProfileSettingsSidebar
+                  activeSection={activeSection}
+                  onSectionChange={handleSectionChange}
+                />
+              </div>
+
+              {/* Main Content */}
+              <div className="lg:col-span-3">
+                {renderContent()}
+              </div>
+            </div>
           </div>
 
-          {/* Main Content */}
-          <div className="lg:col-span-3">
-            {renderContent()}
-          </div>
+          <Footer />
         </div>
-      </div>
-      
-      <Footer />
-    </div>
+        <ImageInputModal
+            title={"Atualizar Foto de Perfil"}
+            isOpen={isAvatarModalOpen}
+            onClose={() => setIsAvatarModalOpen(false)}
+            onImageUpload={handleChangeAvatar}
+        />
+      </>
   );
 }
