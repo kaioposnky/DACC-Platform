@@ -7,7 +7,7 @@ import { ProfileBanner, ProfileUser } from "@/components/organisms/ProfileBanner
 import { ProfileSettingsSidebar, SettingsSection } from "@/components/organisms/ProfileSettingsSidebar";
 import { ProfileSettingsForm, UserFormData } from "@/components/organisms/ProfileSettingsForm";
 import {apiService} from "@/services/api";
-import {User, UserStats} from "@/types";
+import {UserStats} from "@/types";
 import {ImageInputModal} from "@/components/organisms/ImageInput";
 import {toast} from "sonner";
 import {storageService} from "@/services/storage";
@@ -47,22 +47,23 @@ export default function ProfilePage() {
       const cleanAttributes = (string: string) => string.replace(/\D/g, "");
       const cleanStudentId = cleanAttributes(data.studentId);
       const cleanPhoneNumber= cleanAttributes(data.phone);
-      const updatedUser: Partial<User> = {
-        name: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        phone: cleanPhoneNumber,
-        ra: cleanStudentId,
-        course: data.course
-      }
+      const formData = new FormData();
+      formData.append('name', data.firstName);
+      formData.append('lastName', data.lastName);
+      formData.append('email',  data.email);
+      formData.append('phone', cleanPhoneNumber);
+      formData.append('ra', cleanStudentId);
+      formData.append('course', data.course);
 
-      return await apiService.updateUser(user.id, updatedUser);
+      return await apiService.updateUser(user.id, formData);
     }
 
-    updateUserInfo().then((user) => {
-      if(user === undefined) throw Error("Não foi possível atualizar as informações do usuário porque nenhuma informação foi retornada da API!");
+    updateUserInfo().then((userResponse) => {
+      if(userResponse === undefined) throw Error("Não foi possível atualizar as informações do usuário porque nenhuma informação foi retornada da API!");
       toast.info("Informações atualizadas com sucesso!");
-      storageService.setUser(user); // Atualiza as informações do usuário
+      storageService.setUser(userResponse); // Atualiza as informações do usuário
+      if(user === null) return;
+      user.avatar = userResponse.avatar;
     }).catch((e) => {
       console.log(e.message);
       toast.error("Erro ao atualizar informações!");
@@ -95,16 +96,16 @@ export default function ProfilePage() {
   // User loading, default template if user data loading
   if (isLoading || !user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Navigation />
-        <div className="text-center">
-          <p className="text-lg font-semibold">Carregando perfil...</p>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <Navigation />
+          <div className="text-center">
+            <p className="text-lg font-semibold">Carregando perfil...</p>
+          </div>
+          <Footer />
         </div>
-        <Footer />
-      </div>
     );
   }
-  
+
   const profileUser: ProfileUser = {
     id: user.id,
     name: `${user.name} ${user.lastName || ''}`.trim(),
@@ -127,32 +128,32 @@ export default function ProfilePage() {
     switch (activeSection) {
       case 'account':
         return (
-          <ProfileSettingsForm
-            initialData={formUserData}
-            onSave={handleSaveForm}
-            onReset={handleResetForm}
-          />
+            <ProfileSettingsForm
+                initialData={formUserData}
+                onSave={handleSaveForm}
+                onReset={handleResetForm}
+            />
         );
       case 'security':
         return (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Segurança</h2>
-            <p className="text-gray-600">Configurações de segurança em desenvolvimento...</p>
-          </div>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Segurança</h2>
+              <p className="text-gray-600">Configurações de segurança em desenvolvimento...</p>
+            </div>
         );
       case 'preferences':
         return (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Preferências</h2>
-            <p className="text-gray-600">Configurações de preferências em desenvolvimento...</p>
-          </div>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Preferências</h2>
+              <p className="text-gray-600">Configurações de preferências em desenvolvimento...</p>
+            </div>
         );
       case 'notifications':
         return (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Notificações</h2>
-            <p className="text-gray-600">Configurações de notificações em desenvolvimento...</p>
-          </div>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Notificações</h2>
+              <p className="text-gray-600">Configurações de notificações em desenvolvimento...</p>
+            </div>
         );
       default:
         return null;
@@ -165,8 +166,8 @@ export default function ProfilePage() {
           <Navigation />
 
           <ProfileBanner
-            user={profileUser}
-            onChangeAvatar={() => setIsAvatarModalOpen(true)}
+              user={profileUser}
+              onChangeAvatar={() => setIsAvatarModalOpen(true)}
           />
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -174,8 +175,8 @@ export default function ProfilePage() {
               {/* Sidebar */}
               <div className="lg:col-span-1">
                 <ProfileSettingsSidebar
-                  activeSection={activeSection}
-                  onSectionChange={handleSectionChange}
+                    activeSection={activeSection}
+                    onSectionChange={handleSectionChange}
                 />
               </div>
 
