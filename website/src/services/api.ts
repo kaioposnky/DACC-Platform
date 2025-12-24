@@ -66,14 +66,21 @@ class ApiService {
     }
 
     const accessToken = storageService.getAccessToken();
+
     const headers : Record<string, string> = {
-      'Content-Type': 'application/json',
       ...options?.headers as Record<string, string>,
     }
+
+    // Se o corpo não for FormData, adicionamos Content-Type application/json
+    if (!(options?.body instanceof FormData)) {
+      headers['Content-Type'] = 'application/json';
+    }
+
     if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      headers: headers,
       ...options,
+      headers: headers,
     });
 
     const data = await response.json();
@@ -144,10 +151,12 @@ class ApiService {
     return this.request<UserStats>(`/users/${id}/stats`);
   }
 
-  async updateUser(id: string, user: Partial<User>): Promise<User> {
+  async updateUser(id: string, user: Partial<User> | FormData): Promise<User> {
+    const isFormData = user instanceof FormData;
+
     return this.request<User>(`/users/${id}`, {
       method: 'PATCH',
-      body: JSON.stringify(user),
+      body: isFormData ? user : JSON.stringify(user),
     });
   }
 
