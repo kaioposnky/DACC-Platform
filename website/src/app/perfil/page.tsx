@@ -7,7 +7,7 @@ import { ProfileBanner, ProfileUser } from "@/components/organisms/ProfileBanner
 import { ProfileSettingsSidebar, SettingsSection } from "@/components/organisms/ProfileSettingsSidebar";
 import { ProfileSettingsForm, UserFormData } from "@/components/organisms/ProfileSettingsForm";
 import {apiService} from "@/services/api";
-import {UserStats} from "@/types";
+import {User, UserStats} from "@/types";
 import {ImageInputModal} from "@/components/organisms/ImageInput";
 import {toast} from "sonner";
 import {storageService} from "@/services/storage";
@@ -42,9 +42,31 @@ export default function ProfilePage() {
   };
 
   const handleSaveForm = (data: UserFormData) => {
-    console.log('Saving user data:', data);
-    // Here you would typically send the data to your API
-    alert('Dados salvos com sucesso!');
+    async function updateUserInfo() {
+      if(!user) return;
+      const cleanAttributes = (string: string) => string.replace(/\D/g, "");
+      const cleanStudentId = cleanAttributes(data.studentId);
+      const cleanPhoneNumber= cleanAttributes(data.phone);
+      const updatedUser: Partial<User> = {
+        name: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: cleanPhoneNumber,
+        ra: cleanStudentId,
+        course: data.course
+      }
+
+      return await apiService.updateUser(user.id, updatedUser);
+    }
+
+    updateUserInfo().then((user) => {
+      if(user === undefined) throw Error("Não foi possível atualizar as informações do usuário porque nenhuma informação foi retornada da API!");
+      toast.info("Informações atualizadas com sucesso!");
+      storageService.setUser(user); // Atualiza as informações do usuário
+    }).catch((e) => {
+      console.log(e.message);
+      toast.error("Erro ao atualizar informações!");
+    });
   };
 
   const handleResetForm = () => {
