@@ -3,6 +3,7 @@ using DaccApi.Infrastructure.Repositories.User;
 using DaccApi.Model;
 using DaccApi.Model.Responses;
 using DaccApi.Responses;
+using DaccApi.Services.FileStorage;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.User
@@ -10,10 +11,12 @@ namespace DaccApi.Services.User
     public class UsuarioService : IUsuarioService
     {
         private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IFileStorageService _fileStorageService;
 
-        public UsuarioService(IUsuarioRepository usuarioRepository)
+        public UsuarioService(IUsuarioRepository usuarioRepository, IFileStorageService fileStorageService)
         {
             _usuarioRepository = usuarioRepository;
+            _fileStorageService = fileStorageService;
         }
 
         public async Task<IActionResult> GetAllUsers()
@@ -45,7 +48,14 @@ namespace DaccApi.Services.User
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
                 }
-                
+
+                // Atualiza a imagem do usuário
+                if (newUserData.ImageFile != null)
+                {
+                    var imageUrl = await _fileStorageService.SaveImageFileAsync(newUserData.ImageFile);
+                    userData.ImagemUrl = imageUrl;
+                }
+
                 // Para cada atributo, tenta pegar um valor, se for nulo, usa o valor já setado do usuário
                 userData.Nome = newUserData.Nome ?? userData.Nome;
                 userData.Sobrenome = newUserData.Sobrenome ?? userData.Sobrenome;
@@ -53,7 +63,7 @@ namespace DaccApi.Services.User
                 userData.Telefone = newUserData.Telefone ?? userData.Telefone;
                 userData.InscritoNoticia = newUserData.InscritoNoticia ?? userData.InscritoNoticia;
                 userData.DataAtualizacao = DateTime.UtcNow;
-                
+
                 await _usuarioRepository.UpdateAsync(id, userData);
                 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
