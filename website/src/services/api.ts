@@ -93,10 +93,28 @@ class ApiService {
   }
 
   async refreshToken(refreshToken: string): Promise<{ accessToken: string; refreshToken: string; expiresIn: number; }> {
-    return this.request<{ accessToken: string, refreshToken: string, expiresIn: number; }>('/auth/refresh', {
+    const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
       method: 'POST',
       body: refreshToken,
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
+
+    const data = await response.json();
+
+    // Verifica se a resposta segue o padrão ApiResponse do backend
+    if (data && typeof data === 'object' && 'success' in data) {
+      const apiResponse = data as ApiResponse<{ accessToken: string; refreshToken: string; expiresIn: number; }>;
+
+      if (!apiResponse.success) {
+        throw new Error(apiResponse.message || 'Erro desconhecido na API');
+      }
+
+      return apiResponse.data;
+    }
+
+    return data as { accessToken: string; refreshToken: string; expiresIn: number; };
   }
 
   async login(credentials: { email: string; senha: string }): Promise<{ accessToken: string; refreshToken: string; expiresIn: number; user: User }> {
