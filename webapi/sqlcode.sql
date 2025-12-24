@@ -596,7 +596,14 @@ VALUES
     ('reviews.delete', 'Deletar uma avaliação para um produto'),
 
     -- Permissões de Envio de arquivos no BackEnd
-    ('filestorage.uploadimage', 'Enviar e salvar uma imagem no backend');
+    ('filestorage.uploadimage', 'Enviar e salvar uma imagem no backend'),
+
+    -- Permissões do Carrinho
+    ('cart.view', 'Visualizar o carrinho'),
+    ('cart.items.add', 'Adicionar itens ao carrinho'),
+    ('cart.items.update', 'Atualizar itens no carrinho'),
+    ('cart.items.remove', 'Remover itens do carrinho'),
+    ('cart.clear', 'Limpar o carrinho');
 
 -- Atribuindo Permissões aos Roles (Tipos de Usuário)
 TRUNCATE TABLE role_permissoes;
@@ -610,48 +617,77 @@ $$
         SELECT 'aluno', p.nome
         FROM permissoes p
         WHERE p.nome IN (
-            -- Permissões básicas
-                         'noticias.view', 'projetos.view', 'produtos.view', 'eventos.view', 'forum.posts.view',
-                         'faculty.view', 'reviews.view',
-            -- Permissões específicas de Aluno
-                         'forum.posts.create', 'forum.posts.update', 'forum.posts.delete', 'forum.posts.vote',
-                         'forum.comments.create', 'forum.comments.update', 'forum.comments.delete',
-                         'forum.comments.vote', 'forum.comments.accept',
-                         'eventos.register',
-                         'reviews.create'
-            );
+            -- Usuários
+            'users.view', 'users.update', 'users.refreshtoken', 'users.logout',
+
+            -- Notícias
+            'noticias.view',
+
+            -- Projetos
+            'projetos.view',
+
+            -- Produtos
+            'produtos.view',
+
+            -- Eventos
+            'eventos.view', 'eventos.register',
+
+            -- Fórum
+            'forum.posts.view',
+            'forum.posts.create', 'forum.posts.update', 'forum.posts.delete', 'forum.posts.vote',
+            'forum.comments.create', 'forum.comments.update', 'forum.comments.delete', 'forum.comments.vote', 'forum.comments.accept',
+
+            -- Professores
+            'faculty.view',
+
+            -- Avaliações
+            'reviews.view', 'reviews.create',
+
+            -- Carrinho
+            'cart.view', 'cart.items.add', 'cart.items.update', 'cart.items.remove', 'cart.clear'
+        );
 
         -- Permissões do Diretor
+        -- 1. Herdar todas as permissões do Aluno
+        INSERT INTO role_permissoes (tipo_usuario, permissao)
+        SELECT 'diretor', permissao
+        FROM role_permissoes
+        WHERE tipo_usuario = 'aluno';
+
+        -- 2. Adicionar permissões específicas de Diretor (Moderador)
         INSERT INTO role_permissoes (tipo_usuario, permissao)
         SELECT 'diretor', p.nome
         FROM permissoes p
         WHERE p.nome IN (
-            -- Herda permissões de aluno
-                         'noticias.view',
-                         'projetos.view',
-                         'produtos.view',
-                         'eventos.view',
-                         'forum.posts.view',
-                         'faculty.view',
-                         'reviews.view',
-                         'forum.posts.create',
-                         'forum.posts.update',
-                         'forum.posts.delete',
-                         'forum.posts.vote',
-                         'forum.comments.create',
-                         'forum.comments.update',
-                         'forum.comments.delete',
-                         'forum.comments.vote',
-                         'forum.comments.accept',
-                         'eventos.register',
-                         'reviews.create',
-            -- Permissões específicas de Diretor
-                         'noticias.create', 'noticias.update', 'noticias.delete',
-                         'projetos.create', 'projetos.update', 'projetos.delete', 'projetos.members.add',
-                         'projetos.members.remove',
-                         'eventos.create', 'eventos.update', 'eventos.delete',
-                         'users.view'
-            );
+            -- Usuários
+            'users.viewall',
+
+            -- Notícias
+            'noticias.create', 'noticias.update', 'noticias.delete',
+
+            -- Projetos
+            'projetos.create', 'projetos.update', 'projetos.delete', 'projetos.members.add', 'projetos.members.remove',
+
+            -- Produtos
+            'produtos.create', 'produtos.update', 'produtos.delete',
+
+            -- Eventos
+            'eventos.create', 'eventos.update', 'eventos.delete',
+
+            -- Fórum (Admin)
+            'forum.admin.posts.update', 'forum.admin.posts.delete',
+            'forum.admin.comments.update', 'forum.admin.comments.delete',
+
+            -- Professores
+            'faculty.create', 'faculty.update', 'faculty.delete',
+
+            -- Avaliações
+            'reviews.update', 'reviews.delete',
+
+            -- Arquivos
+            'filestorage.uploadimage'
+        )
+        ON CONFLICT DO NOTHING;
 
         -- Permissões do Administrador (todas)
         FOR permissao_rec IN SELECT nome FROM permissoes
