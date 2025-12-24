@@ -7,6 +7,7 @@ import { NewsArticleBanner, NewsArticleContent } from "@/components/organisms"
 import { apiService } from '@/services/api'
 import { News } from '@/types'
 import Link from 'next/link'
+import {formatDate} from "@/utils";
 
 export default function NewsDetailPage() {
   const params = useParams()
@@ -97,6 +98,8 @@ export default function NewsDetailPage() {
     )
   }
 
+  const formattedDate = formatDate(article.date);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
@@ -106,7 +109,7 @@ export default function NewsDetailPage() {
         description={article.description}
         image={article.image || 'https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'}
         author={article.author || 'Equipe de Redação'}
-        date={article.date}
+        date={formattedDate}
         readTime={article.readTime || 5}
         category={article.category}
         tags={article.tags || []}
