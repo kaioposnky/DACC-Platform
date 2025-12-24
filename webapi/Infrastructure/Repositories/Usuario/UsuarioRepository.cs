@@ -90,6 +90,31 @@ public class UsuarioRepository : BaseRepository<Usuario>, IUsuarioRepository
         }
 
         /// <summary>
+        /// Obtém um usuário específico pelo seu RA.
+        /// </summary>
+        public async Task<Usuario?> GetUserByRa(string ra)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("GetUserByRA");
+
+                var param = new { Ra = ra };
+
+                var queryResult = await _repositoryDapper.QueryAsync<Usuario>(sql, param);
+
+                var usuario = queryResult.FirstOrDefault();
+
+                return usuario;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao obter usuário pelo RA na banco de dados!" + ex.Message);
+            }
+
+        }
+
+
+        /// <summary>
         /// Obtém os tokens de um usuário.
         /// </summary>
         public async Task<TokensUsuario> GetUserTokens(Guid id)

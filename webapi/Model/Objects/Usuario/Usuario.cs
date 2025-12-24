@@ -121,12 +121,12 @@ namespace DaccApi.Model
         {
             return new Usuario()
             {
-                Nome = request.Nome,
-                Sobrenome = request.Sobrenome,
+                Nome = request.Name,
+                Sobrenome = request.LastName,
                 Email = request.Email,
-                Curso = request.Curso,
-                Telefone = request.Telefone,
-                InscritoNoticia = request.InscritoNoticia
+                Curso = request.Course,
+                Telefone = request.Phone,
+                InscritoNoticia = request.IsSubscribedToNews
             };
         }
 

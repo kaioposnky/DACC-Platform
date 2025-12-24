@@ -12,6 +12,7 @@ namespace DaccApi.Infrastructure.Repositories.User
         // Métodos específicos mantidos
         public Task<Guid> CreateUser(Usuario request);
         public Task<Usuario?> GetUserByEmail(string email);
+        public Task<Usuario?> GetUserByRa(string ra);
         public Task<TokensUsuario?> GetUserTokens(Guid id);
         public Task UpdateUserTokens(Guid id, TokensUsuario tokensUsuario);
         Task<EstatisticasUsuario?> GetUserStats(Guid id);

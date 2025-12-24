@@ -42,6 +42,25 @@
 		FROM usuario
 		WHERE id = @Id;
 	</query>
+
+	<query name="GetUserById">
+		SELECT
+		id as Id,
+		nome as Nome,
+		sobrenome as Sobrenome,
+		ra as Ra,
+		curso as Curso,
+		email as Email,
+		telefone as Telefone,
+		imagem_url as ImagemUrl,
+		ativo as Ativo,
+		newsletter_subscriber as NewsLetterSubscriber,
+		cargo as Cargo,
+		data_criacao as DataCriacao,
+		data_atualizacao as DataAtualizacao
+		FROM usuario
+		WHERE ra = @Ra;
+	</query>
 	
 	<query name="GetUserByEmail">
 		SELECT

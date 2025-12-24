@@ -49,6 +49,28 @@ namespace DaccApi.Services.User
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
                 }
 
+                // Checar se existe um usuário com esse Email para evitar UNIQUE KEY CONSTRAINT
+                if (newUserData.Email != null)
+                {
+                    var userWithEmail = await _usuarioRepository.GetUserByEmail(newUserData.Email);
+                    if (userWithEmail != null)
+                    {
+                        return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST,
+                            "Já existe um usuário com esse email!");
+                    }
+                }
+
+                // Checar se existe um usuário com esse RA para evitar UNIQUE KEY CONSTRAINT
+                if (newUserData.Ra != null)
+                {
+                    var userWithRa = await _usuarioRepository.GetUserByRa(newUserData.Ra);
+                    if (userWithRa != null)
+                    {
+                        return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST,
+                            "Já existe um usuário com esse RA!");
+                    }
+                }
+
                 // Atualiza a imagem do usuário
                 if (newUserData.ImageFile != null)
                 {
@@ -57,16 +79,18 @@ namespace DaccApi.Services.User
                 }
 
                 // Para cada atributo, tenta pegar um valor, se for nulo, usa o valor já setado do usuário
-                userData.Nome = newUserData.Nome ?? userData.Nome;
-                userData.Sobrenome = newUserData.Sobrenome ?? userData.Sobrenome;
-                userData.Curso = newUserData.Curso ?? userData.Curso;
-                userData.Telefone = newUserData.Telefone ?? userData.Telefone;
-                userData.InscritoNoticia = newUserData.InscritoNoticia ?? userData.InscritoNoticia;
+                userData.Nome = newUserData.Name ?? userData.Nome;
+                userData.Email = newUserData.Email ?? userData.Email;
+                userData.Sobrenome = newUserData.LastName ?? userData.Sobrenome;
+                userData.Curso = newUserData.Course ?? userData.Curso;
+                userData.Telefone = newUserData.Phone ?? userData.Telefone;
+                userData.Ra = newUserData.Ra ?? userData.Ra;
+                userData.InscritoNoticia = newUserData.IsSubscribedToNews ?? userData.InscritoNoticia;
                 userData.DataAtualizacao = DateTime.UtcNow;
 
                 await _usuarioRepository.UpdateAsync(id, userData);
                 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(userData.ToResponse()));
             }
             catch (Exception ex)
             {
