@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using DaccApi.Infrastructure.Repositories.User;
 using DaccApi.Model;
@@ -97,6 +98,19 @@ namespace DaccApi.Services.Token
             // se o token salvo for "" ele deu logout, então o token é inválido
             return !string.IsNullOrWhiteSpace(oldRefeshToken) || oldRefeshToken.Equals(refreshToken);
         }
-        
+
+        public string GenerateResetToken()
+        {
+            return Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
+        }
+
+        public bool IsResetTokenValid(UsuarioResetToken token)
+        {
+            if (token == null) return false;
+            if (token.Usado) return false;
+            if (token.DataExpiracao < DateTime.UtcNow) return false;
+
+            return true;
+        }
     }
 }

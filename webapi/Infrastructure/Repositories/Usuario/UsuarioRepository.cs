@@ -181,5 +181,72 @@ public class UsuarioRepository : BaseRepository<Usuario>, IUsuarioRepository
                 throw new Exception("Erro ao obter estatísticas do usuário!" + ex.Message);
             }
         }
+
+        public async Task SaveResetTokenAsync(UsuarioResetToken token)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("SaveResetToken");
+                var param = new
+                {
+                    UsuarioId = token.UsuarioId,
+                    Token = token.Token,
+                    DataExpiracao = token.DataExpiracao
+                };
+
+                await _repositoryDapper.ExecuteAsync(sql, param);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao salvar token de reset de senha!" + ex.Message);
+            }
+        }
+
+        public async Task<UsuarioResetToken?> GetResetTokenAsync(string token)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("GetResetToken");
+                var param = new { Token = token };
+
+                var queryResult = await _repositoryDapper.QueryAsync<UsuarioResetToken>(sql, param);
+
+                return queryResult.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao obter token de reset de senha!" + ex.Message);
+            }
+        }
+
+        public async Task InvalidateResetTokenAsync(Guid tokenId)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("InvalidateResetToken");
+                var param = new { Id = tokenId };
+
+                await _repositoryDapper.ExecuteAsync(sql, param);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao invalidar token de reset de senha!" + ex.Message);
+            }
+        }
+
+        public async Task UpdatePasswordAsync(Guid userId, string newPasswordHash)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("UpdateUserPassword");
+                var param = new { Id = userId, SenhaHash = newPasswordHash };
+
+                await _repositoryDapper.ExecuteAsync(sql, param);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao atualizar senha do usuário!" + ex.Message);
+            }
+        }
     }
 }
