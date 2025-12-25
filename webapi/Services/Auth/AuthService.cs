@@ -98,72 +98,55 @@ namespace DaccApi.Services.Auth
         }
             
         // TODO: Transferir email para o controller e refatorar a lógica do register para retornar o usuário ou uma exception.
-        public async Task<IActionResult> RegisterUser(RequestRegistro requestCreate)
+        public async Task<Usuario> RegisterUser(RequestRegistro requestCreate)
         {
-            try
+            if (string.IsNullOrWhiteSpace(requestCreate.Nome) ||
+                string.IsNullOrWhiteSpace(requestCreate.Sobrenome) ||
+                string.IsNullOrWhiteSpace(requestCreate.Curso))
             {
-                if (string.IsNullOrWhiteSpace(requestCreate.Nome) ||
-                    string.IsNullOrWhiteSpace(requestCreate.Sobrenome) ||
-                    string.IsNullOrWhiteSpace(requestCreate.Curso))
-                {
-                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
-                }
-
-                if (!string.IsNullOrWhiteSpace(requestCreate.Ra) && !IsValidRa(requestCreate.Ra))
-                {
-                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST,
-                        "RA inválido! Seu RA deve conter 9 dígitos numéricos");
-                }
-
-                if (!IsValidEmail(requestCreate.Email))
-                {
-                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "Formato de email inválido!");
-                }
-
-                if (!IsValidPassword(requestCreate.Senha))
-                {
-                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, 
-                        "Senha muito fraca! A senha deve ter ao menos 8 caracteres, " +
-                        "uma letra maiúscula, uma letra minúscula e um número!");
-                }
-
-                var random = new Random();
-                var randomNumber = random.Next(0, _userStartImages.Length);
-                var randomStartImageUrl = _userStartImages[randomNumber];
-
-                var usuario = new Usuario
-                {
-                    Nome = requestCreate.Nome,
-                    Sobrenome = requestCreate.Sobrenome,
-                    Ra = requestCreate.Ra,
-                    Curso = requestCreate.Curso,
-                    Email = requestCreate.Email,
-                    ImagemUrl = randomStartImageUrl,
-                    Telefone = requestCreate.Telefone,
-                    SenhaHash = _argon2Utility.HashPassword(requestCreate.Senha),
-                    Ativo = true,
-                    InscritoNoticia = requestCreate.InscritoNoticia ?? false,
-                    Cargo = CargoUsuario.Aluno,
-                    DataCriacao = DateTime.Now,
-                    DataAtualizacao = DateTime.Now
-                };
-
-                var userId = await _usuarioRepository.CreateUser(usuario);
-                usuario.Id = userId;
-
-                await _mailService.SendWelcomeEmailAsync(usuario);
-                
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED.WithData(new { users = usuario.ToResponse() }));
+                throw new ArgumentException("Campos obrigatórios não preenchidos.");
             }
-            catch (InvalidConstraintException ex)
+
+            if (!string.IsNullOrWhiteSpace(requestCreate.Ra) && !IsValidRa(requestCreate.Ra))
             {
-                return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, ex.Message);
+                throw new ArgumentException("RA inválido! Seu RA deve conter 9 dígitos numéricos");
             }
-            catch (Exception ex)
+
+            if (!IsValidEmail(requestCreate.Email))
             {
-                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,
-                    "Ocorreu um erro ao tentar cadastrar o usuário, favor relatar ao suporte pelo: contato.daccfei@gmail.com " + ex.Message);
+                throw new ArgumentException("Formato de email inválido!");
             }
+
+            if (!IsValidPassword(requestCreate.Senha))
+            {
+                throw new ArgumentException("Senha muito fraca! A senha deve ter ao menos 8 caracteres, uma letra maiúscula, uma letra minúscula e um número!");
+            }
+
+            var random = new Random();
+            var randomNumber = random.Next(0, _userStartImages.Length);
+            var randomStartImageUrl = _userStartImages[randomNumber];
+
+            var usuario = new Usuario
+            {
+                Nome = requestCreate.Nome,
+                Sobrenome = requestCreate.Sobrenome,
+                Ra = requestCreate.Ra,
+                Curso = requestCreate.Curso,
+                Email = requestCreate.Email,
+                ImagemUrl = randomStartImageUrl,
+                Telefone = requestCreate.Telefone,
+                SenhaHash = _argon2Utility.HashPassword(requestCreate.Senha),
+                Ativo = true,
+                InscritoNoticia = requestCreate.InscritoNoticia ?? false,
+                Cargo = CargoUsuario.Aluno,
+                DataCriacao = DateTime.Now,
+                DataAtualizacao = DateTime.Now
+            };
+
+            var userId = await _usuarioRepository.CreateUser(usuario);
+            usuario.Id = userId;
+
+            return usuario;
         }
 
         public async Task<IActionResult> RefreshUserToken(string refreshToken)
@@ -176,11 +159,7 @@ namespace DaccApi.Services.Auth
                     userId = Guid.Parse(new JwtSecurityToken(refreshToken).Claims
                         .First(x => x.Type == ClaimTypes.NameIdentifier).Value);
                 }
-                catch (ArgumentException)
-                {
-                    return ResponseHelper.CreateErrorResponse(ResponseError.AUTH_TOKEN_INVALID);
-                }
-                catch (FormatException)
+                catch (Exception)
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.AUTH_TOKEN_INVALID);
                 }
@@ -240,7 +219,6 @@ namespace DaccApi.Services.Auth
                 var user = await _usuarioRepository.GetUserByEmail(request.Email);
                 if (user == null)
                 {
-                    // Por segurança, não informamos se o email existe ou não
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK, "Se o e-mail existir, um link de recuperação será enviado.");
                 }
 

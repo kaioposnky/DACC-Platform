@@ -1,7 +1,9 @@
 ﻿using DaccApi.Helpers;
 using DaccApi.Helpers.Attributes;
 using DaccApi.Infrastructure.Authentication;
+using DaccApi.Infrastructure.Mail;
 using DaccApi.Model;
+using DaccApi.Responses;
 using DaccApi.Services.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,13 +19,15 @@ namespace DaccApi.Controllers.Auth
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly IMailService _mailService;
 
         /// <summary>
         /// Inicia uma nova instância da classe <see cref="AuthController"/>.
         /// </summary>
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IMailService mailService)
         {
             _authService = authService;
+            _mailService = mailService;
         }
         
         /// <summary>
@@ -44,8 +48,35 @@ namespace DaccApi.Controllers.Auth
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] RequestRegistro requestCreate)
         {
-            var response = await _authService.RegisterUser(requestCreate);
-            return response;
+            try
+            {
+                var usuario = await _authService.RegisterUser(requestCreate);
+
+                // Envia e-mail de boas-vindas de forma assíncrona (Fire and Forget)
+                // Usamos Task.Run para não bloquear a resposta da API enquanto o SMTP processa
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await _mailService.SendWelcomeEmailAsync(usuario);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Erro ao enviar e-mail de boas-vindas: {ex.Message}");
+                    }
+                });
+
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED.WithData(new { users = usuario.ToResponse() }));
+            }
+            catch (ArgumentException ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,
+                    "Ocorreu um erro ao tentar cadastrar o usuário. " + ex.Message);
+            }
         }
         
         /// <summary>
