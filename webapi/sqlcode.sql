@@ -64,6 +64,21 @@ CREATE TABLE usuario
     data_atualizacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Tabela: Tokens de Reset de Senha
+-- Armazena tokens temporários para recuperação de senha
+DROP TABLE IF EXISTS usuario_reset_tokens CASCADE;
+CREATE TABLE usuario_reset_tokens
+(
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    usuario_id      UUID REFERENCES usuario (id) ON DELETE CASCADE,
+    token           VARCHAR(255) NOT NULL UNIQUE,
+    data_expiracao  TIMESTAMP NOT NULL,
+    usado           BOOLEAN DEFAULT FALSE,
+    data_usada      TIMESTAMP,
+    data_criacao    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
 -- Tabela: Posts
 -- Armazena posts do fórum
 DROP TABLE IF EXISTS post CASCADE;

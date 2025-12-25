@@ -25,5 +25,10 @@ namespace DaccApi.Infrastructure.Mail
         /// </summary>
         Task SendWelcomeEmailAsync(Usuario user);
 
+        /// <summary>
+        /// Envia um e-mail de reset de senha para o usuário.
+        /// </summary>
+        Task SendResetPasswordEmailAsync(Usuario user, string token);
+
     }
 }

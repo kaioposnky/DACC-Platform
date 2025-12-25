@@ -14,29 +14,25 @@ namespace DaccApi.Infrastructure.Mail
     public class MailService : IMailService
     {
         private readonly SmtpSettings _smtpSettings;
+        private readonly string _applicationUrl;
 
         /// <summary>
         /// Inicia uma nova instância da classe <see cref="MailService"/>.
         /// </summary>
-        public MailService(IOptions<SmtpSettings> smtpSettings)
+        public MailService(IOptions<SmtpSettings> smtpSettings, IConfiguration configuration)
         {
             _smtpSettings = smtpSettings.Value;
+            _applicationUrl = configuration["ApplicationURL"]!;
         }
 
         /// <summary>
         /// Envia um email para o usuário informado.
         /// </summary>
-        /// <param name="name">Nome do usuário.</param>
-        /// <param name="email">Endereço de e-mail do usuário.</param>
-        /// <param name="subject">Assunto do email.</param>
-        /// <param name="body">Corpo do email.</param>
         public async Task SendCustomEmailAsync(string name, string email, string subject, string body)
         {
             try
             {
                 var message = GenerateMessage(name, email, subject);
-
-                message.Subject = subject;
 
                 message.Body = new TextPart()
                 {
@@ -45,7 +41,7 @@ namespace DaccApi.Infrastructure.Mail
 
                 await SendEmailToSMTP(message);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new SendEmailException("Falha ao enviar email para " + nameof(email));
             }
@@ -66,7 +62,7 @@ namespace DaccApi.Infrastructure.Mail
             }
             catch (Exception ex)
             {
-                throw new SendEmailException("Erro ao enviar email!" + ex.Message);
+                throw new SendEmailException("Erro ao enviar email de confirmação de pedido! " + ex.Message);
             }
         }
 
@@ -86,7 +82,7 @@ namespace DaccApi.Infrastructure.Mail
             }
             catch (Exception ex)
             {
-                throw new SendEmailException("Erro ao enviar email!" + ex.Message);
+                throw new SendEmailException("Erro ao enviar email de pedido criado! " + ex.Message);
             }
         }
 
@@ -100,14 +96,33 @@ namespace DaccApi.Infrastructure.Mail
                 var message = GenerateMessage(user.Nome, user.Email,
                     "Bem-vindo ao Coruja Overflow!");
 
-                // Conteúdo do e-mail de boas-vindas
                 message.Body = WelcomeEmailTemplate.GenerateBodyHtml(user);
                 
                 await SendEmailToSMTP(message);
             }
             catch (Exception e)
             {
-                throw new SendEmailException("Erro ao enviar email!" + e.Message);
+                throw new SendEmailException("Erro ao enviar email de boas-vindas! " + e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Envia um e-mail para recuperação de senha.
+        /// </summary>
+        public async Task SendResetPasswordEmailAsync(Usuario user, string token)
+        {
+            try
+            {
+                var resetLink = $"{_applicationUrl}/reset-password?token={token}";
+                var message = GenerateMessage(user.Nome, user.Email, "Recuperação de Senha - Coruja Overflow");
+
+                message.Body = ResetPasswordEmailTemplate.GenerateBodyHtml(user, resetLink);
+
+                await SendEmailToSMTP(message);
+            }
+            catch (Exception ex)
+            {
+                throw new SendEmailException("Erro ao enviar email de recuperação de senha! " + ex.Message);
             }
         }
 
@@ -116,9 +131,7 @@ namespace DaccApi.Infrastructure.Mail
             // Usar using para poder liberar recursos automaticamente
             using var client = new SmtpClient();
             await client.ConnectAsync(_smtpSettings.Server, _smtpSettings.Port, false);
-                
             await client.AuthenticateAsync(_smtpSettings.Username, _smtpSettings.Password);
-
             await client.SendAsync(message);
             await client.DisconnectAsync(true);
         }
@@ -135,7 +148,11 @@ namespace DaccApi.Infrastructure.Mail
             var message = new MimeMessage();
             
             message.From.Add(new MailboxAddress(_smtpSettings.SenderName, _smtpSettings.Username));
-            message.To.Add(new MailboxAddress(userName, email));
+            var recipientName = string.IsNullOrWhiteSpace(userName) ? email : userName;
+            message.To.Add(new MailboxAddress(recipientName, email));
+            
+            // O Subject deve ser atribuído aqui para evitar repetição nos métodos
+            message.Subject = subject;
 
             return message;
         }

@@ -43,7 +43,7 @@
 		WHERE id = @Id;
 	</query>
 
-	<query name="GetUserById">
+	<query name="GetUserByRA">
 		SELECT
 		id as Id,
 		nome as Nome,
@@ -95,6 +95,14 @@
 		WHERE id = @Id;
 	</query>
 
+	<query name="UpdateUserPassword">
+		UPDATE usuario
+		SET
+			senha_hash = @SenhaHash,
+			data_atualizacao = CURRENT_TIMESTAMP
+		WHERE id = @Id;
+	</query>
+
 	<query name="DeleteUser">
 		DELETE FROM usuario
 		WHERE id = @Id;
@@ -127,6 +135,30 @@
 			(SELECT COUNT(*) FROM avaliacao WHERE usuario_id = @Id) as Reviews,
 			TO_CHAR(data_criacao, 'DD/MM/YYYY') as RegistryDate
 		FROM usuario
+		WHERE id = @Id;
+	</query>
+
+	<query name="SaveResetToken">
+		INSERT INTO usuario_reset_tokens (usuario_id, token, data_expiracao)
+		VALUES (@UsuarioId, @Token, @DataExpiracao);
+	</query>
+
+	<query name="GetResetToken">
+		SELECT
+			id as Id,
+			usuario_id as UsuarioId,
+			token as Token,
+			data_expiracao as DataExpiracao,
+			usado as Usado,
+			data_usada as DataUsada,
+			data_criacao as DataCriacao
+		FROM usuario_reset_tokens
+		WHERE token = @Token;
+	</query>
+
+	<query name="InvalidateResetToken">
+		UPDATE usuario_reset_tokens
+		SET usado = true, data_usada = CURRENT_TIMESTAMP
 		WHERE id = @Id;
 	</query>
 </queries>
