@@ -79,7 +79,7 @@ namespace DaccApi.Controllers.Avaliacao
         /// Obtém todas as avaliações de um usuário específico.
         /// </summary>
         [AuthenticatedGetResponses]
-        [HttpGet("users/{usuarioId:int}")]
+        [HttpGet("users/{usuarioId:guid}")]
         [HasPermission(AppPermissions.Reviews.View)]
         public async Task<IActionResult> GetAvaliacoesByUserId([FromRoute] Guid usuarioId)
         {

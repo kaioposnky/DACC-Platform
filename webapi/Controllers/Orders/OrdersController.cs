@@ -22,7 +22,7 @@ namespace DaccApi.Controllers.Orders
     /// </summary>
     [Authorize]
     [ApiController]
-    [Route("v1/api/[controller]")]
+    [Route("v1/api/orders")]
     public class OrdersController : ControllerBase
     {
         private readonly IOrdersService _ordersService;

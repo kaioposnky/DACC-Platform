@@ -13,7 +13,7 @@ namespace DaccApi.Controllers.Auth
     /// </summary>
     [Authorize]
     [ApiController]
-    [Route("v1/api/[controller]")]
+    [Route("v1/api/auth")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;

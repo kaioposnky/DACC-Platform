@@ -13,7 +13,7 @@ namespace DaccApi.Controllers.Eventos
     /// </summary>
     [Authorize]
     [ApiController]
-    [Route("v1/api/[controller]")]
+    [Route("v1/api/events")]
     public class EventosController : ControllerBase
     {
         private readonly IEventosService _eventosService;

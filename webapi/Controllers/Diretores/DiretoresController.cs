@@ -12,7 +12,7 @@ namespace DaccApi.Controllers.Diretores
     /// </summary>
     [Authorize]
     [ApiController]
-    [Route("v1/api/[controller]")]
+    [Route("v1/api/faculty")]
 
     public class DiretoresController : ControllerBase
     {
