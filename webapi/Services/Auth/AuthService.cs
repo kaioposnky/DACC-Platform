@@ -149,11 +149,9 @@ namespace DaccApi.Services.Auth
                 };
 
                 var userId = await _usuarioRepository.CreateUser(usuario);
-
                 usuario.Id = userId;
 
-                // envia email de boas vindas
-                // await _mailService.SendWelcomeEmailAsync(usuario);
+                await _mailService.SendWelcomeEmailAsync(usuario);
                 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED.WithData(new { users = usuario.ToResponse() }));
             }
@@ -200,7 +198,6 @@ namespace DaccApi.Services.Auth
                 var newAccessToken = _tokenService.GenerateAccessToken(user, userPermissions);
                 var newRefreshToken = _tokenService.GenerateRefreshToken(user);
 
-                // TODO: Colocar o ExpiresIn como argumento para atualizar/criar o token do usuário
                 var expiresIn = new DateTimeOffset(DateTime.UtcNow.AddMinutes(15)).ToUnixTimeSeconds();
 
                 var userTokens = new TokensUsuario

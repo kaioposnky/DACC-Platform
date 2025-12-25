@@ -53,6 +53,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+
 builder
     .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
