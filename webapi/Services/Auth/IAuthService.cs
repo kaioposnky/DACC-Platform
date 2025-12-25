@@ -9,5 +9,11 @@ namespace DaccApi.Services.Auth
         Task<IActionResult> RegisterUser(RequestRegistro requestCreate);
         Task<IActionResult> RefreshUserToken(string refreshToken);
         Task<IActionResult> Logout(Guid userId);
+        
+        // Métodos de Recuperação e Troca de Senha
+        Task<IActionResult> ForgotPassword(RequestForgotPassword request);
+        Task<IActionResult> ValidateResetToken(string token);
+        Task<IActionResult> ResetPassword(RequestResetPassword request);
+        Task<IActionResult> ChangePassword(Guid userId, RequestChangePassword request);
     }
 }

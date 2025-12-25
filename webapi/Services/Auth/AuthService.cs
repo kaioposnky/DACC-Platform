@@ -235,7 +235,110 @@ namespace DaccApi.Services.Auth
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
             }
         }
-        
+
+        public async Task<IActionResult> ForgotPassword(RequestForgotPassword request)
+        {
+            try
+            {
+                var user = await _usuarioRepository.GetUserByEmail(request.Email);
+                if (user == null)
+                {
+                    // Por segurança, não informamos se o email existe ou não
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK, "Se o e-mail existir, um link de recuperação será enviado.");
+                }
+
+                var token = _tokenService.GenerateResetToken();
+                var resetToken = new UsuarioResetToken
+                {
+                    UsuarioId = user.Id,
+                    Token = token,
+                    DataExpiracao = DateTime.UtcNow.AddMinutes(30)
+                };
+
+                await _usuarioRepository.SaveResetTokenAsync(resetToken);
+                await _mailService.SendResetPasswordEmailAsync(user, token);
+
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK, "E-mail de recuperação enviado com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> ValidateResetToken(string token)
+        {
+            try
+            {
+                var resetToken = await _usuarioRepository.GetResetTokenAsync(token);
+                if (!_tokenService.IsResetTokenValid(resetToken!))
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "Token inválido ou expirado.");
+                }
+
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK, "Token válido.");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> ResetPassword(RequestResetPassword request)
+        {
+            try
+            {
+                var resetToken = await _usuarioRepository.GetResetTokenAsync(request.Token);
+                if (!_tokenService.IsResetTokenValid(resetToken!))
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "Token inválido ou expirado.");
+                }
+
+                if (!IsValidPassword(request.NewPassword))
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "Senha não atende aos requisitos de segurança.");
+                }
+
+                var newPasswordHash = _argon2Utility.HashPassword(request.NewPassword);
+                await _usuarioRepository.UpdatePasswordAsync(resetToken!.UsuarioId, newPasswordHash);
+                await _usuarioRepository.InvalidateResetTokenAsync(resetToken.Id);
+
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK, "Senha redefinida com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> ChangePassword(Guid userId, RequestChangePassword request)
+        {
+            try
+            {
+                var user = await _usuarioRepository.GetByIdAsync(userId);
+                if (user == null) return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
+
+                if (!_argon2Utility.VerifyPassword(request.CurrentPassword, user.SenhaHash))
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.INVALID_CREDENTIALS, "Senha atual incorreta.");
+                }
+
+                if (!IsValidPassword(request.NewPassword))
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "Nova senha não atende aos requisitos de segurança.");
+                }
+
+                var newPasswordHash = _argon2Utility.HashPassword(request.NewPassword);
+                await _usuarioRepository.UpdatePasswordAsync(userId, newPasswordHash);
+
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK, "Senha alterada com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
+
         private static bool IsValidRa(string? ra)
         {
             if (ra == null || string.IsNullOrWhiteSpace(ra))

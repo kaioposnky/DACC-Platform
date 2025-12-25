@@ -71,6 +71,50 @@ namespace DaccApi.Controllers.Auth
             var response = await _authService.Logout(userId);
             return response;
         }
-        
+
+        /// <summary>
+        /// Solicita a recuperação de senha enviando um e-mail com um token.
+        /// </summary>
+        [AllowAnonymous]
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] RequestForgotPassword request)
+        {
+            var response = await _authService.ForgotPassword(request);
+            return response;
+        }
+
+        /// <summary>
+        /// Valida se um token de reset de senha ainda é válido.
+        /// </summary>
+        [AllowAnonymous]
+        [HttpGet("validate-reset-token")]
+        public async Task<IActionResult> ValidateResetToken([FromQuery] string token)
+        {
+            var response = await _authService.ValidateResetToken(token);
+            return response;
+        }
+
+        /// <summary>
+        /// Redefine a senha do usuário usando um token válido.
+        /// </summary>
+        [AllowAnonymous]
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] RequestResetPassword request)
+        {
+            var response = await _authService.ResetPassword(request);
+            return response;
+        }
+
+        /// <summary>
+        /// Altera a senha do usuário autenticado.
+        /// </summary>
+        [AuthenticatedPatchResponses]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] RequestChangePassword request)
+        {
+            var userId = ClaimsHelper.GetUserId(User);
+            var response = await _authService.ChangePassword(userId, request);
+            return response;
+        }
     }
 }
