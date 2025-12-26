@@ -76,14 +76,9 @@ public class ResponseNoticia
         Category = noticia.Categoria;
         Date = noticia.DataPublicacao;
         UpdatedAt = noticia.DataAtualizacao;
-
-        // Propriedades específicas do frontend sem correspondência direta
-        Author = string.Empty; // Preencher via serviço ou lógica adicional
-        ReadTime = null; // Valor padrão
-        Tags = noticia.Tags?.ToArray() ?? [];
-        Icon = string.Empty; // Valor padrão
-        Gradient = string.Empty; // Valor padrão
-        ReadMoreLink = string.Empty; // Valor padrão
+        Author = noticia.Autor.Nome + noticia.Autor.Sobrenome;
+        ReadTime = noticia.TempoLeitura;
+        Tags = noticia.Tags.Select(tag => tag.Nome).ToArray();
     }
 
     /// <summary>

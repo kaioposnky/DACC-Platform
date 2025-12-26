@@ -6,6 +6,7 @@ using DaccApi.Model.Responses;
 using DaccApi.Responses;
 using DaccApi.Services.FileStorage;
 using Microsoft.AspNetCore.Mvc;
+using Npgsql;
 
 namespace DaccApi.Services.Noticias
 {
@@ -21,22 +22,11 @@ public class NoticiasServices : INoticiasServices
         _fileStorageService = fileStorageService;   
     }
 
-    public async Task<IActionResult> GetAllNoticias()
+    public async Task<List<Noticia>> GetAllNoticias(RequestQueryNoticia request)
     {
-        try
-        {
-            var noticias =  await _noticiasRepository.GetAllAsync();
+        var noticias = await _noticiasRepository.SearchNoticias(request);
 
-            if (noticias.Count == 0) 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
-            var response = noticias.Select(noticia => new ResponseNoticia(noticia));
-            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
-                new { noticias = response}));
-        }
-        catch (Exception ex)
-        {
-            return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
-        }
+        return noticias;
     }
 
     public async Task<IActionResult> CreateNoticia(Guid autorId, RequestNoticia request)

@@ -2,39 +2,64 @@
 <queries>
     <query name="GetAllNoticias">
         SELECT 
-            id as Id,
-            titulo as Titulo,
-            descricao as Descricao,
-            conteudo as Conteudo,
-            imagem_url as ImagemUrl,
-            imagem_alt as ImagemAlt,
-            autor_id as AutorId,
-            categoria as Categoria,
-            data_atualizacao as DataAtualizacao,
-            data_publicacao as DataPublicacao
-        FROM noticia
+            n.id as Id,
+            n.titulo as Titulo,
+            n.descricao as Descricao,
+            n.conteudo as Conteudo,
+            n.imagem_url as ImagemUrl,
+            n.imagem_alt as ImagemAlt,
+            n.autor_id as AutorId,
+            n.categoria as Categoria,
+            n.data_atualizacao as DataAtualizacao,
+            n.data_publicacao as DataPublicacao,
+            n.tempo_leitura as TempoLeitura,
+            json_build_object('Id', u.id, 'Nome', u.nome, 'Sobrenome', u.sobrenome) as AutorJson,
+            (
+                SELECT json_agg(json_build_object('Id', nt.id, 'Nome', nt.nome))
+                FROM noticia_tag nt
+                JOIN noticia_tags_relacao ntr ON nt.id = ntr.tag_id
+                WHERE ntr.noticia_id = n.id
+            ) as TagsJson
+        FROM noticia n
+        LEFT JOIN usuario u ON n.autor_id = u.id
+        ORDER BY n.data_publicacao DESC;
     </query>
+
     <query name="CreateNoticia">
-        INSERT INTO noticia(titulo, descricao, conteudo, imagem_url, imagem_alt, autor_id, categoria)
-        VALUES (@Titulo, @Descricao, @Conteudo, @ImagemUrl, @ImagemAlt, @AutorId, @Categoria)
+        INSERT INTO noticia(titulo, descricao, conteudo, imagem_url, imagem_alt, autor_id, categoria, tempo_leitura)
+        VALUES (@Titulo, @Descricao, @Conteudo, @ImagemUrl, @ImagemAlt, @AutorId, @Categoria, @TempoLeitura)
+        RETURNING id;
     </query>
+
     <query name="DeleteNoticia">
         DELETE FROM noticia WHERE id=@id
     </query>
+
     <query name="GetNoticiaById">
         SELECT
-            id as Id,
-            titulo as Titulo,
-            descricao as Descricao,
-            conteudo as Conteudo,
-            imagem_url as ImagemUrl,
-            imagem_alt as ImagemAlt,
-            autor_id as AutorId,
-            categoria as Categoria,
-            data_atualizacao as DataAtualizacao,
-            data_publicacao as DataPublicacao
-        FROM noticia WHERE id=@id
+            n.id as Id,
+            n.titulo as Titulo,
+            n.descricao as Descricao,
+            n.conteudo as Conteudo,
+            n.imagem_url as ImagemUrl,
+            n.imagem_alt as ImagemAlt,
+            n.autor_id as AutorId,
+            n.categoria as Categoria,
+            n.data_atualizacao as DataAtualizacao,
+            n.data_publicacao as DataPublicacao,
+            n.tempo_leitura as TempoLeitura,
+            json_build_object('Id', u.id, 'Nome', u.nome, 'Sobrenome', u.sobrenome) as AutorJson,
+            (
+                SELECT json_agg(json_build_object('Id', nt.id, 'Nome', nt.nome))
+                FROM noticia_tag nt
+                JOIN noticia_tags_relacao ntr ON nt.id = ntr.tag_id
+                WHERE ntr.noticia_id = n.id
+            ) as TagsJson
+        FROM noticia n
+        LEFT JOIN usuario u ON n.autor_id = u.id
+        WHERE n.id = @id;
     </query>
+
     <query name="UpdateNoticia">
         UPDATE noticia
             SET titulo = @Titulo,
@@ -43,7 +68,43 @@
                 conteudo = @Conteudo,
                 descricao = @Descricao,
                 categoria = @Categoria,
+                tempo_leitura = @TempoLeitura,
                 data_atualizacao = CURRENT_TIMESTAMP
             WHERE id=@id
-    </query>    
+    </query>
+
+    <query name="SearchNoticias">
+        <![CDATA[
+            SELECT
+                n.id as Id,
+                n.titulo as Titulo,
+                n.descricao as Descricao,
+                n.conteudo as Conteudo,
+                n.imagem_url as ImagemUrl,
+                n.imagem_alt as ImagemAlt,
+                n.autor_id as AutorId,
+                n.categoria as Categoria,
+                n.data_atualizacao as DataAtualizacao,
+                n.data_publicacao as DataPublicacao,
+                n.tempo_leitura as TempoLeitura,
+                json_build_object('Id', u.id, 'Nome', u.nome, 'Sobrenome', u.sobrenome) as AutorJson,
+                (
+                    SELECT json_agg(json_build_object('Id', nt.id, 'Nome', nt.nome))
+                    FROM noticia_tag nt
+                    JOIN noticia_tags_relacao ntr ON nt.id = ntr.tag_id
+                    WHERE ntr.noticia_id = n.id
+                ) as TagsJson
+            FROM
+                noticia n
+            LEFT JOIN usuario u ON n.autor_id = u.id
+            WHERE
+                (@SearchQuery IS NULL OR n.titulo ILIKE @SearchQuery OR n.descricao ILIKE @SearchQuery OR n.conteudo ILIKE @SearchQuery)
+                AND (@Category IS NULL OR n.categoria = @Category)
+                AND (@PublishDate IS NULL OR n.data_publicacao >= @PublishDate)
+            ORDER BY
+                n.data_publicacao DESC
+            OFFSET (@Page - 1) * @Limit
+            LIMIT @Limit;
+        ]]>
+    </query>
 </queries>

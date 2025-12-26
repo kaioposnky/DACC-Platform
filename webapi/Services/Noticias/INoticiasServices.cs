@@ -6,7 +6,7 @@ namespace DaccApi.Services.Noticias;
 
 public interface INoticiasServices
 {
-    public Task<IActionResult> GetAllNoticias();
+    Task<List<Noticia>> GetAllNoticias(RequestQueryNoticia request);
     Task<IActionResult> CreateNoticia(Guid autorId, RequestNoticia request);
     Task <IActionResult> UpdateNoticiaImage(Guid noticiaId, ImageRequest request);
     public Task<IActionResult> DeleteNoticia(Guid id);

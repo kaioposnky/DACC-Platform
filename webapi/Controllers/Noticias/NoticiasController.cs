@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using DaccApi.Infrastructure.Authentication;
 using DaccApi.Model.Requests;
 using System.Threading.Tasks;
+using DaccApi.Model.Responses;
+using DaccApi.Responses;
 
 namespace DaccApi.Controllers.Noticias
 {
@@ -34,10 +36,26 @@ namespace DaccApi.Controllers.Noticias
         [PublicGetResponses]
         [AllowAnonymous]
         [HttpGet("")]
-        public async Task<IActionResult> GetAllNoticias()
+        public async Task<IActionResult> GetAllNoticias([FromQuery] RequestQueryNoticia requestQuery)
         {
-            var response = await _noticiasServices.GetAllNoticias();
-            return response;
+            try
+            {
+                var noticias = await _noticiasServices.GetAllNoticias(requestQuery);
+
+                if (noticias.Count == 0)
+                {
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new {}));
+                }
+
+                var response = noticias.Select((noticia) =>  new ResponseNoticia(noticia));
+
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(response));
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,
+                    "Ocorreu um erro ao obter as notícias.");
+            }
         }
         
         /// <summary>
