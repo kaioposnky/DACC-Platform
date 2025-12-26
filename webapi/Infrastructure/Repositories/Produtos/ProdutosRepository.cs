@@ -105,19 +105,17 @@ namespace DaccApi.Infrastructure.Repositories.Products
             {
                 var sql = _repositoryDapper.GetQueryNamed("SearchProducts");
 
-                var categoriaId = await GetCategoryIdByNameAsync(query.Categoria);
-                var subcategoriaId = await GetSubcategoryIdByNameAsync(query.Subcategoria);
+                var categoriaId = await GetCategoryIdByNameAsync(query.Category);
 
                 var queryParams = new
                 {
-                    Page = query.Pagina,
-                    Limit = query.Limite,
-                    SearchPattern = string.IsNullOrWhiteSpace(query.Pesquisa) ? null : $"%{query.Pesquisa}%",
+                    Page = query.Page,
+                    Limit = query.Limit,
+                    SearchPattern = string.IsNullOrWhiteSpace(query.SearchQuery) ? null : $"%{query.SearchQuery}%",
                     CategoriaID = categoriaId,
-                    SubcategoriaID = subcategoriaId,
-                    MinPrice = query.PrecoMinimo,
-                    MaxPrice = query.PrecoMaximo,
-                    SortBy = query.OrdenarPor
+                    MinPrice = query.MinPrice,
+                    MaxPrice = query.MaxPrice,
+                    SortBy = query.OrderBy
                 };
 
                 var products = await _repositoryDapper.QueryAsync<Produto>(sql, queryParams);
