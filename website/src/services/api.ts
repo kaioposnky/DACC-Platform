@@ -40,6 +40,16 @@ export interface ForumThread {
   tags: string[];
 }
 
+export interface ResetPasswordData {
+  token: string;
+  newPassword: string;
+}
+
+export interface ChangePasswordData {
+  currentPassword: string;
+  newPassword: string;
+}
+
 const API_BASE_URL = 'http://localhost:3001/v1/api';
 
 class ApiService {
@@ -135,6 +145,32 @@ class ApiService {
     return this.request<User>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
+    });
+  }
+
+  // Auth - Password Management
+  async forgotPassword(email: string): Promise<void> {
+    return this.request<void>('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  }
+
+  async validateResetToken(token: string): Promise<void> {
+    return this.request<void>(`/auth/validate-reset-token?token=${token}`);
+  }
+
+  async resetPassword(data: ResetPasswordData): Promise<void> {
+    return this.request<void>('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async changePassword(data: ChangePasswordData): Promise<void> {
+    return this.request<void>('/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify(data),
     });
   }
 
@@ -235,11 +271,11 @@ class ApiService {
 
   // Events
   async getEvents(): Promise<Event[]> {
-    return this.request<Event[]>('/eventos');
+    return this.request<Event[]>('/events');
   }
 
   async getEvent(id: string): Promise<Event> {
-    return this.request<Event>(`/eventos/${id}`);
+    return this.request<Event>(`/events/${id}`);
   }
 
   // Projects
@@ -262,11 +298,11 @@ class ApiService {
 
   // Faculty
   async getFaculty(): Promise<Faculty[]> {
-    return this.request<Faculty[]>('/diretores');
+    return this.request<Faculty[]>('/faculty');
   }
 
   async getFacultyMember(id: string): Promise<Faculty> {
-    return this.request<Faculty>(`/diretores/${id}`);
+    return this.request<Faculty>(`/faculty/${id}`);
   }
 
   // Products
