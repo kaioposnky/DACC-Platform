@@ -421,8 +421,28 @@ CREATE TABLE noticia
     imagem_alt       VARCHAR(255),
     autor_id         UUID REFERENCES usuario (id),
     categoria        VARCHAR(50) REFERENCES categorias_noticia (nome),
+    tempo_leitura    INTEGER DEFAULT 1 NOT NULL,
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_publicacao  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela: Tags de Notícia
+-- Armazena as tags disponíveis para notícias
+DROP TABLE IF EXISTS noticia_tag CASCADE;
+CREATE TABLE noticia_tag
+(
+    id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- Tabela: Relacionamento Notícia e Tags
+-- Relaciona notícias com suas respectivas tags
+DROP TABLE IF EXISTS noticia_tags_relacao CASCADE;
+CREATE TABLE noticia_tags_relacao
+(
+    noticia_id UUID REFERENCES noticia (id) ON DELETE CASCADE,
+    tag_id     UUID REFERENCES noticia_tag (id) ON DELETE CASCADE,
+    PRIMARY KEY (noticia_id, tag_id)
 );
 
 -- Tabela: Projetos
