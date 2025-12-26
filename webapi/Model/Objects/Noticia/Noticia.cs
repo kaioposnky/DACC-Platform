@@ -1,5 +1,5 @@
-﻿﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using DaccApi.Model.Objects.Noticia;
 
 namespace DaccApi.Model
 {
@@ -70,9 +70,21 @@ namespace DaccApi.Model
         public DateTime? DataPublicacao { get; set; }
 
         /// <summary>
+        /// Obtém ou define a data de publicação.
+        /// </summary>
+        [Column("tempo_leitura")]
+        public int? TempoLeitura { get; set; }
+
+        /// <summary>
         /// Obtém ou define as tags associadas à notícia.
         /// </summary>
-        [NotMapped] // Tabela noticia no SQL não tem coluna tags
-        public List<string> Tags { get; set; } = [];
+        [NotMapped]
+        public List<NoticiaTag> Tags { get; set; } = [];
+
+        /// <summary>
+        /// Autor da notícia.
+        /// </summary>
+        [NotMapped]
+        public NoticiaAutor? Autor { get; set; }
     }
 }
