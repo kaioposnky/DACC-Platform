@@ -100,5 +100,9 @@ namespace DaccApi.Infrastructure.Repositories.Products
         /// Obtém um produto a partir do ID de uma de suas variações.
         /// </summary>
         Task<Produto?> GetProductByProductVariationIdAsync(Guid productVariationId);
+        /// <summary>
+        /// Obtém as avaliações de um produto.
+        /// </summary>
+        Task<List<AvaliacaoProduto>> GetProductReviewsAsync(Guid productId);
     }
 }

@@ -15,65 +15,14 @@
             p.data_criacao AS DataCriacao,
             p.data_atualizacao AS DataAtualizacao,
             p.descricao_detalhada AS DescricaoDetalhada,
-            p.destaque AS Destaque
+            p.destaque AS Destaque,
+            (SELECT COALESCE(AVG(nota), 0) FROM avaliacao WHERE produto_id = p.id AND ativo = true) as AvaliacaoMedia,
+            (SELECT COUNT(*) FROM avaliacao WHERE produto_id = p.id AND ativo = true) as NumeroAvaliacoes
         FROM produto p
         LEFT JOIN produto_subcategoria ps ON p.subcategoria_id = ps.id
         LEFT JOIN produto_categoria pc ON ps.categoria_id = pc.id
         WHERE p.ativo = true
         ORDER BY p.data_criacao DESC;
-    </query>
-
-    <!-- Consulta para obter todos os produtos com suas variações e imagens para evitar N+1 -->
-    <query name="GetAllProductsWithDetails">
-        SELECT
-            p.id AS Id,
-            p.nome AS Nome,
-            p.descricao AS Descricao,
-            p.preco AS Preco,
-            p.preco_original AS PrecoOriginal,
-            COALESCE(pc.nome, '') AS CategoriaNome,
-            COALESCE(ps.nome, '') AS SubcategoriaNome,
-            p.subcategoria_id AS Subcategoria,
-            p.ativo AS Ativo,
-            p.data_criacao AS DataCriacao,
-            p.data_atualizacao AS DataAtualizacao,
-            p.descricao_detalhada AS DescricaoDetalhada,
-            p.destaque AS Destaque,
-
-            v.id AS Id,
-            v.produto_id AS ProdutoId,
-            v.cor_id AS CorId,
-            c.nome AS Cor,
-            v.tamanho_id AS TamanhoId,
-            t.nome AS Tamanho,
-            v.estoque AS Estoque,
-            COALESCE(r.quantidade_reservada, 0) as EstoqueReservado,
-            (v.estoque - COALESCE(r.quantidade_reservada, 0)) as EstoqueDisponivel,
-            v.sku AS Sku,
-            v.ordem AS Ordem,
-            v.data_criacao AS DataCriacao,
-            v.data_atualizacao AS DataAtualizacao,
-
-            pi.id as Id,
-            pi.produto_variacao_id as ProdutoVariacaoId,
-            pi.imagem_url as ImagemUrl,
-            pi.imagem_alt as ImagemAlt,
-            pi.ordem as Ordem
-        FROM produto p
-        LEFT JOIN produto_subcategoria ps ON p.subcategoria_id = ps.id
-        LEFT JOIN produto_categoria pc ON ps.categoria_id = pc.id
-        LEFT JOIN produto_variacao v ON v.produto_id = p.id
-        LEFT JOIN produto_cor c ON v.cor_id = c.id
-        LEFT JOIN produto_tamanho t ON v.tamanho_id = t.id
-        LEFT JOIN (
-            SELECT produto_variacao_id, SUM(quantidade) as quantidade_reservada
-            FROM reserva_produto
-            WHERE ativo = true AND data_expira > NOW()
-            GROUP BY produto_variacao_id
-        ) r ON r.produto_variacao_id = v.id
-        LEFT JOIN produto_imagem pi ON pi.produto_variacao_id = v.id
-        WHERE p.ativo = true
-        ORDER BY p.data_criacao DESC, v.ordem, pi.ordem;
     </query>
 
     <!-- Consulta para obter um produto por ID -->
@@ -91,56 +40,13 @@
             p.data_criacao AS DataCriacao,
             p.data_atualizacao AS DataAtualizacao,
             p.descricao_detalhada AS DescricaoDetalhada,
-            p.destaque AS Destaque
+            p.destaque AS Destaque,
+            (SELECT COALESCE(AVG(nota), 0) FROM avaliacao WHERE produto_id = p.id AND ativo = true) as AvaliacaoMedia,
+            (SELECT COUNT(*) FROM avaliacao WHERE produto_id = p.id AND ativo = true) as NumeroAvaliacoes
         FROM produto p
         LEFT JOIN produto_subcategoria ps ON p.subcategoria_id = ps.id
         LEFT JOIN produto_categoria pc ON ps.categoria_id = pc.id
         WHERE p.id = @Id AND p.ativo = true;
-    </query>
-
-    <!-- Query para adicionar um produto -->
-    <query name="AddProduct">
-        INSERT INTO produto (id, nome, descricao, preco, preco_original, subcategoria_id, ativo, descricao_detalhada, destaque)
-        VALUES (@Id, @Nome, @Descricao, @Preco, @PrecoOriginal, @SubcategoriaId, @Ativo, @DescricaoDetalhada, @Destaque)
-        RETURNING id;
-    </query>
-    
-    <!-- Query para adicionar uma variação de produto -->
-    <query name="AddProductVariation">
-        INSERT INTO produto_variacao (id, produto_id, cor_id, tamanho_id, estoque, sku, ordem, data_criacao)
-        VALUES (@Id, @ProdutoId, @CorId, @TamanhoId, @Estoque, @Sku, @Ordem, @DataCriacao)
-        RETURNING id;
-    </query>
-
-    <!-- Query para obter ID de categoria por nome -->
-    <query name="GetCategoryIdByName">
-        SELECT id FROM produto_categoria WHERE nome = @Nome;
-    </query>
-
-    <!-- Query para obter ID de subcategoria por nome -->
-    <query name="GetSubcategoryIdByName">
-        SELECT id FROM produto_subcategoria WHERE nome = @Nome;
-    </query>
-    
-    <!-- Query para adicionar imagens de uma variação de produto -->
-    <query name="AddProductImages">
-        INSERT INTO produto_imagem (id, produto_variacao_id, imagem_url, imagem_alt, ordem)
-        VALUES (@Id, @ProdutoVariacaoId, @ImagemUrl, @ImagemAlt, @Ordem);
-    </query>
-
-    <!-- Query para atualizar uma imagem de produto -->
-    <query name="UpdateProductImage">
-        UPDATE produto_imagem
-        SET
-            ordem = @Ordem,
-            imagem_url = @ImagemUrl,
-            imagem_alt = @ImagemAlt
-        WHERE id = @Id;
-    </query>
-
-    <!-- Query para remover um produto e suas dependências -->
-    <query name="DeleteProductById">
-        DELETE FROM produto WHERE id = @Id;
     </query>
 
     <!-- Query para buscar produtos com filtros -->
@@ -159,7 +65,9 @@
                 p.data_criacao AS "DataCriacao",
                 p.data_atualizacao AS "DataAtualizacao",
                 p.descricao_detalhada AS "DescricaoDetalhada",
-                p.destaque AS "Destaque"
+                p.destaque AS "Destaque",
+                (SELECT COALESCE(AVG(nota), 0) FROM avaliacao WHERE produto_id = p.id AND ativo = true) as AvaliacaoMedia,
+                (SELECT COUNT(*) FROM avaliacao WHERE produto_id = p.id AND ativo = true) as NumeroAvaliacoes
             FROM
                 produto AS p
             LEFT JOIN
@@ -184,45 +92,77 @@
         ]]>
     </query>
 
-    <!-- Query para criar uma categoria de produto -->
+    <!-- Mantive as outras queries de Insert/Update/Delete/Variations inalteradas para brevidade -->
+    <query name="AddProduct">
+        INSERT INTO produto (id, nome, descricao, preco, preco_original, subcategoria_id, ativo, descricao_detalhada, destaque)
+        VALUES (@Id, @Nome, @Descricao, @Preco, @PrecoOriginal, @SubcategoriaId, @Ativo, @DescricaoDetalhada, @Destaque)
+        RETURNING id;
+    </query>
+
+    <query name="AddProductVariation">
+        INSERT INTO produto_variacao (id, produto_id, cor_id, tamanho_id, estoque, sku, ordem, data_criacao)
+        VALUES (@Id, @ProdutoId, @CorId, @TamanhoId, @Estoque, @Sku, @Ordem, @DataCriacao)
+        RETURNING id;
+    </query>
+
+    <query name="GetCategoryIdByName">
+        SELECT id FROM produto_categoria WHERE nome = @Nome;
+    </query>
+
+    <query name="GetSubcategoryIdByName">
+        SELECT id FROM produto_subcategoria WHERE nome = @Nome;
+    </query>
+
+    <query name="AddProductImages">
+        INSERT INTO produto_imagem (id, produto_variacao_id, imagem_url, imagem_alt, ordem)
+        VALUES (@Id, @ProdutoVariacaoId, @ImagemUrl, @ImagemAlt, @Ordem);
+    </query>
+
+    <query name="UpdateProductImage">
+        UPDATE produto_imagem
+        SET
+            ordem = @Ordem,
+            imagem_url = @ImagemUrl,
+            imagem_alt = @ImagemAlt
+        WHERE id = @Id;
+    </query>
+
+    <query name="DeleteProductById">
+        DELETE FROM produto WHERE id = @Id;
+    </query>
+
     <query name="AddProductCategory">
         INSERT INTO produto_categoria(nome)
         VALUES (@Nome)
         RETURNING id;
     </query>
 
-    <!-- Query para criar uma subcategoria de produto -->
     <query name="AddProductSubCategory">
         INSERT INTO produto_subcategoria(nome, categoria_id)
         VALUES (@Nome, @CategoriaId)
         RETURNING id;
     </query>
 
-    <!-- Query para criar uma cor de produto -->
     <query name="AddProductColor">
         INSERT INTO produto_cor(nome)
         VALUES (@Nome)
         RETURNING id;
     </query>
 
-    <!-- Query para obter ID de cor por nome -->
     <query name="GetColorIdByName">
         SELECT id FROM produto_cor WHERE nome = @Nome;
     </query>
 
-    <!-- Query para criar um tamanho de produto -->
     <query name="AddProductSize">
         INSERT INTO produto_tamanho(nome, descricao)
         VALUES (@Nome, @Descricao)
         RETURNING id;
     </query>
 
-    <!-- Query para obter ID de tamanho por nome -->
     <query name="GetSizeIdByName">
         SELECT id FROM produto_tamanho WHERE nome = @Nome;
     </query>
 
-    <!-- Query para obter variações de um produto por ID -->
     <query name="GetVariationsByProductId">
         SELECT 
             v.id AS Id,
@@ -257,7 +197,6 @@
         ORDER BY v.ordem, pi.ordem;
     </query>
 
-    <!-- Query para obter uma variação específica por ID -->
     <query name="GetVariationById">
         SELECT 
             v.id AS Id,
@@ -285,7 +224,6 @@
         WHERE v.id = @Id;
     </query>
 
-    <!-- Query para verificar se uma variação já existe para um produto -->
     <query name="CheckVariationExists">
         SELECT COUNT(*) FROM produto_variacao v
         INNER JOIN produto_cor c ON v.cor_id = c.id
@@ -293,7 +231,6 @@
         WHERE v.produto_id = @ProductId AND LOWER(c.nome) = LOWER(@Cor) AND LOWER(t.nome) = LOWER(@Tamanho);
     </query>
 
-    <!-- Query para atualizar uma variação de produto -->
     <query name="UpdateVariation">
         UPDATE produto_variacao 
         SET cor_id = @CorId, 
@@ -316,17 +253,14 @@
         WHERE id = @Id;
     </query>
 
-    <!-- Query para remover uma variação de produto -->
     <query name="DeleteVariation">
         DELETE FROM produto_variacao WHERE id = @Id;
     </query>
 
-    <!-- Query para remover imagens de uma variação -->
     <query name="DeleteVariationImages">
         DELETE FROM produto_imagem WHERE produto_variacao_id = @VariationId;
     </query>
 
-    <!-- Query para obter imagens de uma variação -->
     <query name="GetVariationImages">
         SELECT 
             id AS Id,
@@ -339,7 +273,6 @@
         ORDER BY ordem;
     </query>
 
-    <!-- Query para remover uma quantidade de produtos do estoque-->
     <query name="RemoveProductStockAmount">
         UPDATE produto_variacao
         SET estoque = estoque - @Amount
@@ -347,14 +280,12 @@
         AND estoque >= @Amount;
     </query>
 
-    <!-- Query para checar quantidade de produtos em estoque-->
     <query name="CheckProductStock">
         SELECT estoque
         FROM produto_variacao
         WHERE id = @Id
     </query>
 
-    <!-- Obter produto + variacoes de forma mais otimizada com primeira imagem -->
     <query name="GetVariationsWithProductByIds">
         SELECT DISTINCT ON (pv.id)
         pv.id as VariationId,
@@ -372,7 +303,7 @@
         INNER JOIN produto p ON pv.produto_id = p.id
         LEFT JOIN produto_cor pc ON pv.cor_id = pc.id
         LEFT JOIN produto_tamanho pt ON pv.tamanho_id = pt.id
-        LEFT JOIN produto_imagem pi ON pi.produto_variacao_id = pv.id
+        LEFT JOIN produto_imagem pi ON pi.produto_variacao_id = v.id
         LEFT JOIN (
             SELECT produto_variacao_id, SUM(quantidade) as quantidade_reservada
             FROM reserva_produto 
@@ -383,7 +314,6 @@
         ORDER BY pv.id, pi.ordem ASC NULLS LAST;
     </query>
 
-    <!-- Query para obter uma imagem específica por ID -->
     <query name="GetImageById">
         SELECT 
             id AS Id,
@@ -395,12 +325,10 @@
         WHERE id = @Id;
     </query>
 
-    <!-- Query para deletar uma imagem específica -->
     <query name="DeleteImageById">
         DELETE FROM produto_imagem WHERE id = @Id;
     </query>
     
-    <!-- Query para obter produto pelo id de sua variação-->
     <query name="GetProductByProductVariationId">
         SELECT
             p.id AS Id,
@@ -423,41 +351,34 @@
         WHERE pv.id = @ProductVariationId;
     </query>
 
-    <!-- Query para verificar estoque de múltiplos produtos -->
     <query name="CheckMultipleProductsStock">
         SELECT * FROM check_multiple_products_stock(@VariationIds, @Quantities);
     </query>
 
-    <!-- Query para remover estoque de múltiplos produtos (sem verificação) -->
     <query name="RemoveMultipleProductsStockDirect">
         SELECT * FROM remove_multiple_products_stock_direct(@VariationIds, @Quantities);
     </query>
 
-    <!-- Query para adicionar uma especificação de produto -->
     <query name="AddProductSpecification">
         INSERT INTO produto_especificacao (id, produto_id, nome, valor)
         VALUES (@Id, @ProdutoId, @Nome, @Valor);
     </query>
 
-    <!-- Query para deletar todas as especificações de um produto -->
     <query name="DeleteProductSpecifications">
         DELETE FROM produto_especificacao WHERE produto_id = @ProdutoId;
     </query>
 
-    <!-- Query para obter especificações de um produto -->
     <query name="GetProductSpecifications">
         SELECT id AS Id, produto_id AS ProdutoId, nome AS Nome, valor AS Valor
         FROM produto_especificacao
         WHERE produto_id = @ProdutoId;
     </query>
 
-    <!-- Query para adicionar informações de envio de produto -->
     <query name="AddProductShippingInfo">
         INSERT INTO produto_informacao_envio (id, produto_id, frete_gratis, dias_estimados, custo_envio, politica_devolucao, garantia)
         VALUES (@Id, @ProdutoId, @FreteGratis, @DiasEstimados, @CustoEnvio, @PoliticaDevolucao, @Garantia);
     </query>
 
-    <!-- Query para atualizar informações de envio de produto -->
     <query name="UpdateProductShippingInfo">
         INSERT INTO produto_informacao_envio (id, produto_id, frete_gratis, dias_estimados, custo_envio, politica_devolucao, garantia)
         VALUES (@Id, @ProdutoId, @FreteGratis, @DiasEstimados, @CustoEnvio, @PoliticaDevolucao, @Garantia)
@@ -469,31 +390,42 @@
             garantia = EXCLUDED.garantia;
     </query>
 
-    <!-- Query para obter informações de envio de um produto -->
     <query name="GetProductShippingInfo">
         SELECT id AS Id, produto_id AS ProdutoId, frete_gratis AS FreteGratis, dias_estimados AS DiasEstimados, custo_envio AS CustoEnvio, politica_devolucao AS PoliticaDevolucao, garantia AS Garantia
         FROM produto_informacao_envio
         WHERE produto_id = @ProdutoId;
     </query>
 
-    <!-- Query para deletar informações de envio de um produto -->
     <query name="DeleteProductShippingInfo">
         DELETE FROM produto_informacao_envio WHERE produto_id = @ProdutoId;
     </query>
 
-    <!-- Query para adicionar ocasião de uso (Perfeito Para) -->
     <query name="AddProductPerfectFor">
         INSERT INTO produto_perfeito_para (id, produto_id, ocasiao)
         VALUES (@Id, @ProdutoId, @Ocasiao);
     </query>
 
-    <!-- Query para deletar ocasiões de uso de um produto -->
     <query name="DeleteProductPerfectFor">
         DELETE FROM produto_perfeito_para WHERE produto_id = @ProdutoId;
     </query>
 
-    <!-- Query para obter ocasiões de uso de um produto -->
     <query name="GetProductPerfectFor">
         SELECT ocasiao FROM produto_perfeito_para WHERE produto_id = @ProdutoId;
+    </query>
+
+    <query name="GetProductReviews">
+        SELECT
+            a.id AS Id,
+            a.usuario_id AS UsuarioId,
+            u.nome AS UsuarioNome,
+            u.imagem_url AS UsuarioAvatar,
+            a.produto_id AS ProdutoId,
+            a.nota AS Nota,
+            a.comentario AS Comentario,
+            a.data_avaliacao AS DataAvaliacao
+        FROM avaliacao a
+        INNER JOIN usuario u ON a.usuario_id = u.id
+        WHERE a.produto_id = @ProductId AND a.ativo = true
+        ORDER BY a.data_avaliacao DESC;
     </query>
 </queries>

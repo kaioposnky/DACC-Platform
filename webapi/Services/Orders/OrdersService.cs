@@ -46,126 +46,107 @@ namespace DaccApi.Services.Orders
 
         public async Task<CreateOrderResponse> CreateOrderWithPayment(Guid userId, CreateOrderRequest request)
         {
+            var user = await _usuarioRepository.GetByIdAsync(userId);
+
+            if (user == null)
+            {
+                throw new ArgumentException("Usuário não encontrado!");
+            }
+            
+            var variationIds = request.ItensPedido.Select(item => item.ProdutoVariacaoId).ToList();
+
+            var productVariationsInfo = await _produtosRepository.GetVariationsWithProductByIdsAsync(variationIds);
+
+            if (productVariationsInfo.Count != request.ItensPedido.Count)
+            {
+                throw new ArgumentException("Um ou mais produtos não foram encontrados ou estão indisponíveis!");
+            }
+
+            var orderItemsData = request.ItensPedido
+                .Join(productVariationsInfo,
+                    item => item.ProdutoVariacaoId,
+                    produto => produto.VariationId,
+                    (item, produto) => new
+                    {
+                        Item = item,
+                        Produto = produto,
+                        SubTotal = produto.Preco * item.Quantidade
+                    })
+                .ToList();
+
+            var totalAmount = orderItemsData.Sum(x => x.SubTotal);
+            
+            var orderItems = orderItemsData.Select(data => new OrderItem
+            {
+                Id = Guid.NewGuid(),
+                PrecoUnitario = data.Produto.Preco,
+                ProdutoId = data.Produto.ProductId,
+                ProdutoVariacaoId = data.Produto.VariationId,
+                Quantidade = data.Item.Quantidade
+            }).ToList();
+            
+            var order = new Order
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                TotalAmount = totalAmount,
+                OrderItems = orderItems,
+                Status = MercadoPagoConstants.PaymentStatus.Pending,
+                OrderDate = DateTime.UtcNow
+            };
+
+            var orderExpireDate = DateTime.Now.AddMinutes(_orderMinutesToExpire);
+            
+            var reservas = orderItemsData.Select(data => new ProdutoReserva()
+                {
+                    OrderId = order.Id, 
+                    ProductVariationId = data.Produto.VariationId, 
+                    ExpiresAt = orderExpireDate, 
+                    Quantity = data.Item.Quantidade,
+                    IsActive = true
+                })
+                .ToList();
+
+            PaymentResponse preference;
+            using var transaction = _dapper.BeginTransaction();
             try
             {
-                var user = await _usuarioRepository.GetByIdAsync(userId);
+                var totalReservado = await _reservaRepository.CreateReservasLoteAtomica(reservas, transaction);
+                var totalSolicitado = reservas.Sum(r => r.Quantity);
 
-                if (user == null)
+                if (totalReservado < totalSolicitado)
                 {
-                    throw new ArgumentException("Usuário não encontrado!");
-                }
-                
-                var variationIds = request.ItensPedido.Select(item => item.ProdutoVariacaoId).ToList();
-
-                var productVariationsInfo = await _produtosRepository.GetVariationsWithProductByIdsAsync(variationIds);
-
-                if (productVariationsInfo.Count != request.ItensPedido.Count)
-                {
-                    throw new ArgumentException("Um ou mais produtos não foram encontrados ou estão indisponíveis!");
+                    throw new ProductOutOfStockException(
+                        "Um ou mais produtos não possuem estoque suficiente no momento!");
                 }
 
-                // Junta Itens do pedido com Produtos
-                var orderItemsData = request.ItensPedido
-                    .Join(productVariationsInfo,
-                        item => item.ProdutoVariacaoId,
-                        produto => produto.VariationId,
-                        (item, produto) => new
-                        {
-                            Item = item,
-                            Produto = produto,
-                            SubTotal = produto.Preco * item.Quantidade
-                        })
-                    .ToList();
-
-                // Soma todos o preço de todos os produtos junto com a quantidade para calcular o preço total
-                var totalAmount = orderItemsData.Sum(x => x.SubTotal);
+                await _ordersRepository.CreateOrder(order, transaction);
+                await _ordersRepository.CreateOrderItems(order.Id, orderItems, transaction);
                 
-                var orderItems = orderItemsData.Select(data => new OrderItem
-                {
-                    Id = Guid.NewGuid(),
-                    PrecoUnitario = data.Produto.Preco,
-                    ProdutoId = data.Produto.ProductId,
-                    ProdutoVariacaoId = data.Produto.VariationId,
-                    Quantidade = data.Item.Quantidade
-                }).ToList();
+                preference = await _mercadoPagoService.CreatePreferenceAsync(
+                    order, productVariationsInfo, orderExpireDate);
+                order.PreferenceId = preference.PreferenceId;
+            
+                await _ordersRepository.UpdateOrderPreferenceId(order.Id, order.PreferenceId, transaction);
                 
-                var order = new Order
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = userId,
-                    TotalAmount = totalAmount,
-                    OrderItems = orderItems,
-                    Status = MercadoPagoConstants.PaymentStatus.Pending,
-                    OrderDate = DateTime.UtcNow
-                };
-
-                var orderExpireDate = DateTime.Now.AddMinutes(_orderMinutesToExpire);
-                
-                // Cria reservas de forma atômica (evita race condition)
-                var reservas = orderItemsData.Select(data => new ProdutoReserva()
-                    {
-                        OrderId = order.Id, 
-                        ProductVariationId = data.Produto.VariationId, 
-                        ExpiresAt = orderExpireDate, 
-                        Quantity = data.Item.Quantidade,
-                        IsActive = true
-                    })
-                    .ToList();
-
-                PaymentResponse preference;
-                // Inicia uma transação no banco, se der algo de errado ele cancela tudo
-                using var transaction = _dapper.BeginTransaction();
-                try
-                {
-                    // Função Thread-Safe para prevenir Race Conditions
-                    var totalReservado = await _reservaRepository.CreateReservasLoteAtomica(reservas, transaction);
-                    var totalSolicitado = reservas.Sum(r => r.Quantity);
-
-                    if (totalReservado < totalSolicitado)
-                    {
-                        throw new ProductOutOfStockException(
-                            "Um ou mais produtos não possuem estoque suficiente no momento!");
-                    }
-
-                    // Cria o pedido no banco
-                    await _ordersRepository.CreateOrder(order, transaction);
-
-                    // Cria os itens do pedido no banco
-                    await _ordersRepository.CreateOrderItems(order.Id, orderItems, transaction);
-                    
-                    preference = await _mercadoPagoService.CreatePreferenceAsync(
-                        order, productVariationsInfo, orderExpireDate);
-                    order.PreferenceId = preference.PreferenceId;
-                
-                    // atualizar order no banco
-                    await _ordersRepository.UpdateOrderPreferenceId(order.Id, order.PreferenceId, transaction);
-
-                    await _mailService.SendOrderCreatedEmailAsync(user, order);
-                    
-                    // Se a operação deu certo dá commit em tudo
-                    transaction.Commit();
-                }
-                catch (Exception ex)
-                {
-                    // Cancela todas as operações
-                    transaction.Rollback();
-                    throw;
-                }
-
-                return new CreateOrderResponse(order);
+                transaction.Commit();
             }
-            catch (ArgumentException)
+            catch (Exception)
             {
+                transaction.Rollback();
                 throw;
             }
-            catch (ProductOutOfStockException)
+
+            try
             {
-                throw;
+                await _mailService.SendOrderCreatedEmailAsync(user, order);
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao criar pedido! " + ex.Message, ex);
+                Console.WriteLine($"Falha ao enviar e-mail de criação de pedido: {ex.Message}");
             }
+
+            return new CreateOrderResponse(order);
         }
 
         public async Task<OrderResponse> GetOrderById(Guid id)
@@ -212,23 +193,18 @@ namespace DaccApi.Services.Orders
             {
                 var paymentStatus = await _mercadoPagoService.GetPaymentStatusAsync(paymentId); 
                 
-                // O externalreference salvo no pagamento é o orderId
                 var orderId = paymentStatus.ExternalReference;
-
                 var order = await _ordersRepository.GetOrderById(orderId);
                 
                 if (order == null) return;
                 
                 switch (order.Status)
                 {
-                    // Quebra o switch e segue para a transação
                     case MercadoPagoConstants.PaymentStatus.Pending:
                         await ProcessPendingOrder(order, paymentStatus);
                         break;
-                    // Se o pedido foi completado ignorar
                     case MercadoPagoConstants.PaymentStatus.Approved:
                         return;
-                    // Se o pedido foi rejeitado ou cancelado, cancelar a reserva
                     case MercadoPagoConstants.PaymentStatus.Rejected:
                     case MercadoPagoConstants.PaymentStatus.Cancelled:
                         await CancelOrder(orderId);
@@ -237,7 +213,7 @@ namespace DaccApi.Services.Orders
                         return;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Webhook retorna 200 de qualquer forma
             }
@@ -250,14 +226,12 @@ namespace DaccApi.Services.Orders
             {
                 var user = await _usuarioRepository.GetByIdAsync(order.UserId);
 
-                // Se o usuário for inválido cancelar o pedido e retornar
                 if (user == null)
                 {
                     await CancelOrder(order.Id);
                     return;
                 }
                 
-                // Atualiza os dados do pedido com as informações do pagamento recebidas
                 await _ordersRepository.UpdateOrderPaymentInfo(
                     order.Id,
                     paymentStatus.PaymentId,
@@ -271,17 +245,14 @@ namespace DaccApi.Services.Orders
                 var variationIds = orderItems.Select(item => item.ProdutoVariacaoId).ToList();
                 var quantities = orderItems.Select(item => item.Quantidade).ToList();
                 
-                // Atualiza a reserva
                 await _reservaRepository.ConfirmarReserva(order.Id, transaction);
-                
-                // Só remove os produtos depois de todas as etapas do pagamento são concluídas
                 await _produtosRepository.RemoveMultipleProductsStockDirectAsync(variationIds, quantities, transaction);
                     
                 transaction.Commit();
                 
                 await _mailService.SendOrderConfirmationEmailAsync(user, order);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 transaction.Rollback();
                 throw;
@@ -290,7 +261,6 @@ namespace DaccApi.Services.Orders
         
         private async Task CancelOrder(Guid orderId)
         {
-            // Change transaction to old
             using var transaction = _dapper.BeginTransaction();
             try
             {
@@ -300,7 +270,7 @@ namespace DaccApi.Services.Orders
                             
                 transaction.Commit();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 transaction.Rollback();
                 throw;

@@ -110,7 +110,7 @@ public class ResponseProduto
     /// <summary>
     /// Obtém ou define a lista de variações do produto.
     /// </summary>
-    public List<ResponseProdutoVariacao> Variations { get; set; } = new();
+    public List<ResponseProdutoVariacao> Variations { get; set; } = [];
 
     /// <summary>
     /// Obtém ou define a data de criação do produto.
@@ -138,8 +138,7 @@ public class ResponseProduto
         UpdatedAt = produto.DataAtualizacao;
 
         // Mapeia variações
-        Variations = produto.Variacoes?.Select(v => new ResponseProdutoVariacao(v)).ToList() ??
-                     new List<ResponseProdutoVariacao>();
+        Variations = produto.Variacoes?.Select(v => new ResponseProdutoVariacao(v)).ToList() ?? [];
 
         // Propriedades agregadas/derivadas das variações ou frontend specific
         InStock = Variations.Any(v => v.InStock);

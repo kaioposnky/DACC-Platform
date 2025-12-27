@@ -24,7 +24,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
         }
 
         /// <summary>
-        /// Obtém um produto específico pelo seu ID, incluindo suas variações.
+        /// Obtém um produto específico pelo seu ID, incluindo suas variações e avaliações.
         /// </summary>
         public async Task<Produto?> GetProductByIdAsync(Guid id)
         {
@@ -38,6 +38,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
             product.Especificacoes = await GetProductSpecificationsAsync(id);
             product.InformacaoEnvio = await GetProductShippingInfoAsync(id);
             product.PerfeitoPara = await GetProductPerfectForAsync(id);
+            product.Avaliacoes = await GetProductReviewsAsync(id);
 
             return product;
         }
@@ -47,53 +48,18 @@ namespace DaccApi.Infrastructure.Repositories.Products
         /// </summary>
         public async Task<List<Produto>> GetAllProductsAsync()
         {
-            var sql = _repositoryDapper.GetQueryNamed("GetAllProductsWithDetails");
-            using var connection = _repositoryDapper.GetConnection();
-            var productDictionary = new Dictionary<Guid, Produto>();
-
-            var products = await connection.QueryAsync<Produto, ProdutoVariacao, ProdutoImagem, Produto>(
-                sql,
-                (produto, variacao, imagem) =>
-                {
-                    if (!productDictionary.TryGetValue(produto.Id, out var productEntry))
-                    {
-                        productEntry = produto;
-                        productEntry.Variacoes = new List<ProdutoVariacao>();
-                        productDictionary.Add(productEntry.Id, productEntry);
-                    }
-
-                    if (variacao != null)
-                    {
-                        var variacaoEntry = productEntry.Variacoes.FirstOrDefault(v => v.Id == variacao.Id);
-                        if (variacaoEntry == null)
-                        {
-                            variacaoEntry = variacao;
-                            variacaoEntry.Imagens = new List<ProdutoImagem>();
-                            productEntry.Variacoes.Add(variacaoEntry);
-                        }
-
-                        if (imagem != null && variacaoEntry.Imagens.All(i => i.Id != imagem.Id))
-                        {
-                            variacaoEntry.Imagens.Add(imagem);
-                        }
-                    }
-
-                    return productEntry;
-                },
-                splitOn: "Id,Id,Id"
-            );
+            var sql = _repositoryDapper.GetQueryNamed("GetAllProducts");
+            var products = (await _repositoryDapper.QueryAsync<Produto>(sql)).ToList();
             
-            var result = products.Distinct().ToList();
-            
-            // Carregar dados relacionados para cada produto
-            foreach (var product in result)
+            foreach (var product in products)
             {
+                product.Variacoes = await GetVariationsByProductIdAsync(product.Id);
                 product.Especificacoes = await GetProductSpecificationsAsync(product.Id);
                 product.InformacaoEnvio = await GetProductShippingInfoAsync(product.Id);
                 product.PerfeitoPara = await GetProductPerfectForAsync(product.Id);
             }
 
-            return result;
+            return products;
         }
 
         /// <summary>
@@ -118,22 +84,17 @@ namespace DaccApi.Infrastructure.Repositories.Products
                     SortBy = query.OrderBy
                 };
 
-                var products = await _repositoryDapper.QueryAsync<Produto>(sql, queryParams);
-                var productList = products.ToList();
+                var products = (await _repositoryDapper.QueryAsync<Produto>(sql, queryParams)).ToList();
                 
-                // Carregar dados relacionados
-                foreach (var product in productList)
+                foreach (var product in products)
                 {
+                    product.Variacoes = await GetVariationsByProductIdAsync(product.Id);
                     product.Especificacoes = await GetProductSpecificationsAsync(product.Id);
                     product.InformacaoEnvio = await GetProductShippingInfoAsync(product.Id);
                     product.PerfeitoPara = await GetProductPerfectForAsync(product.Id);
                 }
                 
-                return productList;
-            }
-            catch (PostgresException ex)
-            {
-                throw new Exception("Erro ao buscar produtos no banco de dados." + ex.Message);
+                return products;
             }
             catch (Exception ex)
             {
@@ -141,8 +102,17 @@ namespace DaccApi.Infrastructure.Repositories.Products
             }
         }
 
+        public async Task<List<AvaliacaoProduto>> GetProductReviewsAsync(Guid productId)
+        {
+            var sql = _repositoryDapper.GetQueryNamed("GetProductReviews");
+            var param = new { ProductId = productId };
+            var reviews = await _repositoryDapper.QueryAsync<AvaliacaoProduto>(sql, param);
+            return reviews.ToList();
+        }
+
         private async Task<Guid?> GetSubcategoryIdByNameAsync(string subcategoryName)
         {
+            if (string.IsNullOrEmpty(subcategoryName)) return null;
             var sql = _repositoryDapper.GetQueryNamed("GetSubcategoryIdByName");
             var param = new { Nome = subcategoryName };
             var subcategoryId = await _repositoryDapper.QueryAsync<Guid?>(sql, param);
@@ -151,6 +121,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
 
         private async Task<Guid?> GetCategoryIdByNameAsync(string categoryName)
         {
+            if (string.IsNullOrEmpty(categoryName)) return null;
             var sql = _repositoryDapper.GetQueryNamed("GetCategoryIdByName");
             var param = new { Nome = categoryName };
             var categoryId = await _repositoryDapper.QueryAsync<Guid?>(sql, param);
@@ -223,10 +194,6 @@ namespace DaccApi.Infrastructure.Repositories.Products
                     variation.DataCriacao
                 };
                 await _repositoryDapper.ExecuteAsync(sql, param);
-            }
-            catch (PostgresException ex)
-            {
-                throw new Exception("Erro ao criar variação do produto no banco de dados!" + ex.Message);
             }
             catch (Exception ex)
             {
