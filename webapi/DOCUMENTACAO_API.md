@@ -7,7 +7,7 @@ A DaccApi é uma API REST completa construída em .NET 7.0 para gerenciar uma pl
 ## Base URL
 
 ```
-https://api.dacc.com/v1
+http://localhost:3001/v1/api
 ```
 
 ## Autenticação
@@ -76,7 +76,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/v1/api/auth/login \
+    curl -X POST http://localhost:3001/v1/api/auth/login \
     -H "Content-Type: application/json" \
     -d '{
       "email": "usuario@exemplo.com",
@@ -135,7 +135,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/v1/api/auth/register \
+    curl -X POST http://localhost:3001/v1/api/auth/register \
     -H "Content-Type: application/json" \
     -d '{
       "nome": "João",
@@ -191,7 +191,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/v1/api/auth/refresh \
+    curl -X POST http://localhost:3001/v1/api/auth/refresh \
     -H "Content-Type: application/x-www-form-urlencoded" \
     -d 'refreshToken=refresh_token_string'
     ```
@@ -233,6 +233,22 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Funcionalidade não implementada"
         }
         ```
+
+### **POST /api/auth/forgot-password**
+*   **Descrição:** Solicita recuperação de senha por e-mail.
+*   **Body:** `{ "email": "string" }`
+
+### **GET /api/auth/validate-reset-token**
+*   **Descrição:** Valida se um token de reset ainda é válido.
+*   **Query:** `token={token}`
+
+### **POST /api/auth/reset-password**
+*   **Descrição:** Redefine a senha usando o token recebido.
+*   **Body:** `{ "token": "string", "newPassword": "string" }`
+
+### **POST /api/auth/change-password** (Autenticado)
+*   **Descrição:** Altera a senha do usuário logado.
+*   **Body:** `{ "currentPassword": "string", "newPassword": "string" }`
 ## Usuários
 
 ### **GET /api/users**
@@ -242,7 +258,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/users \
+    curl -X GET http://localhost:3001/v1/api/users \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -288,7 +304,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/users/12345678-1234-1234-1234-123456789012 \
+    curl -X GET http://localhost:3001/v1/api/users/12345678-1234-1234-1234-123456789012 \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -346,7 +362,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X PATCH https://api.dacc.com/v1/api/users/12345678-1234-1234-1234-123456789012 \
+    curl -X PATCH http://localhost:3001/v1/api/users/12345678-1234-1234-1234-123456789012 \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -F "nome=João Santos" \
     -F "telefone=(11) 88888-8888"
@@ -395,7 +411,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X DELETE https://api.dacc.com/v1/api/users/12345678-1234-1234-1234-123456789012 \
+    curl -X DELETE http://localhost:3001/v1/api/users/12345678-1234-1234-1234-123456789012 \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -417,16 +433,27 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
       
-## Produtos
+### **GET /api/users/{id}/stats**
+*   **Descrição:** Obtém estatísticas de perfil do usuário.
+*   **Response Data:**
+    ```json
+    {
+      "orders": 10,
+      "reviews": 5,
+      "averageRating": 4.5,
+      "registryDate": "08/08/2025"
+    }
+    ```
+## Products
 
-### **GET /api/produtos**
+### **GET /api/products**
 
 * **Descrição:** Lista todos os produtos disponíveis
 * **Autorização:** Público
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/produtos
+    curl -X GET http://localhost:3001/v1/api/products
     ```
 
 * **Respostas:**
@@ -450,7 +477,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **GET /api/produtos/{id}**
+### **GET /api/products/{id}**
 
 * **Descrição:** Obtém informações detalhadas de um produto específico
 * **Autorização:** Público
@@ -464,7 +491,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/produtos/12345678-1234-1234-1234-123456789012
+    curl -X GET http://localhost:3001/v1/api/products/12345678-1234-1234-1234-123456789012
     ```
 
 * **Respostas:**
@@ -502,7 +529,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **POST /api/produtos**
+### **POST /api/products**
 
 * **Descrição:** Cria um novo produto
 * **Autorização:** Requer permissão `produtos.create`
@@ -520,7 +547,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/v1/api/produtos \
+    curl -X POST http://localhost:3001/v1/api/products \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -H "Content-Type: application/json" \
     -d '{
@@ -561,9 +588,9 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **GET /api/produtos/search**
+### **GET /api/products/search**
 
-* **Descrição:** Busca produtos com filtros e paginação
+* **Descrição:** Busca avançada com filtros.
 * **Autorização:** Público
 
 * **Parâmetros da Requisição:**
@@ -571,18 +598,17 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
         | Nome           | Tipo     | Padrão    | Descrição                                     |
         |----------------|----------|-----------|-----------------------------------------------|
-        | `pagina`       | `number` | `1`       | Número da página (maior que 0)                |
-        | `limite`       | `number` | `16`      | Itens por página (1-100)                      |
-        | `pesquisa`     | `string` | -         | Termo de busca (máximo 200 caracteres)        |
-        | `categoria`    | `string` | -         | Filtro por categoria                          |
-        | `subcategoria` | `string` | -         | Filtro por subcategoria                       |
-        | `precoMinimo`  | `number` | -         | Preço mínimo (maior ou igual a 0)             |
-        | `precoMaximo`  | `number` | -         | Preço máximo (maior ou igual a 0)             |
-        | `ordenarPor`   | `string` | `newest`  | Ordenação (price-low/price-high/newest/name)  |
+        | `Page`         | `number` | `1`       | Número da página (maior que 0)                |
+        | `Limit`        | `number` | `16`      | Itens por página (1-100)                      |
+        | `SearchQuery`  | `string` | -         | Termo de busca (máximo 200 caracteres)        |
+        | `Category`     | `string` | -         | Filtro por categoria                          |
+        | `MinPrice`     | `number` | -         | Preço mínimo (maior ou igual a 0)             |
+        | `MaxPrice`     | `number` | -         | Preço máximo (maior ou igual a 0)             |
+        | `OrderBy`      | `string` | `newest`  | Ordenação (price-low/price-high/newest/name)  |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET "https://api.dacc.com/v1/api/produtos/search?pesquisa=camiseta&categoria=roupas&pagina=1&limite=10"
+    curl -X GET "http://localhost:3001/v1/api/products/search?SearchQuery=camiseta&Category=roupas&Page=1&Limit=10"
     ```
 
 * **Respostas:**
@@ -607,7 +633,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **PATCH /api/produtos/{id}**
+### **PATCH /api/products/{id}**
 
 * **Descrição:** Atualiza informações de um produto
 * **Autorização:** Requer permissão `produtos.update`
@@ -632,7 +658,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X PATCH https://api.dacc.com/v1/api/produtos/12345678-1234-1234-1234-123456789012 \
+    curl -X PATCH http://localhost:3001/v1/api/products/12345678-1234-1234-1234-123456789012 \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -F "preco=24.90"
     ```
@@ -651,7 +677,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **DELETE /api/produtos/{id}**
+### **DELETE /api/products/{id}**
 
 * **Descrição:** Remove um produto do sistema
 * **Autorização:** Requer permissão `produtos.delete`
@@ -665,7 +691,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X DELETE https://api.dacc.com/v1/api/produtos/12345678-1234-1234-1234-123456789012 \
+    curl -X DELETE http://localhost:3001/v1/api/products/12345678-1234-1234-1234-123456789012 \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -679,7 +705,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **POST /api/produtos/{id}/variations**
+### **POST /api/products/{id}/variations**
 
 * **Descrição:** Cria uma nova variação para um produto
 * **Autorização:** Requer permissão `produtos.create`
@@ -702,7 +728,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/v1/api/produtos/12345678-1234-1234-1234-123456789012/variations \
+    curl -X POST http://localhost:3001/v1/api/products/12345678-1234-1234-1234-123456789012/variations \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -F "cor=azul" \
     -F "tamanho=M" \
@@ -725,7 +751,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **GET /api/produtos/{id}/variations**
+### **GET /api/products/{id}/variations**
 
 * **Descrição:** Lista todas as variações de um produto
 * **Autorização:** Público
@@ -739,7 +765,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/produtos/12345678-1234-1234-1234-123456789012/variations
+    curl -X GET http://localhost:3001/v1/api/products/12345678-1234-1234-1234-123456789012/variations
     ```
 
 * **Respostas:**
@@ -761,7 +787,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **PATCH /api/produtos/{id}/variations/{variationId}**
+### **PATCH /api/products/{id}/variations/{variationId}**
 
 * **Descrição:** Atualiza uma variação específica de produto
 * **Autorização:** Requer permissão `produtos.update`
@@ -785,7 +811,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X PATCH https://api.dacc.com/v1/api/produtos/12345678-1234-1234-1234-123456789012/variations/87654321-4321-4321-4321-210987654321 \
+    curl -X PATCH http://localhost:3001/v1/api/products/12345678-1234-1234-1234-123456789012/variations/87654321-4321-4321-4321-210987654321 \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -F "estoque=25"
     ```
@@ -804,7 +830,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **DELETE /api/produtos/{id}/variations/{variationId}**
+### **DELETE /api/products/{id}/variations/{variationId}**
 
 * **Descrição:** Remove uma variação específica de produto
 * **Autorização:** Requer permissão `produtos.delete`
@@ -819,7 +845,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X DELETE https://api.dacc.com/v1/api/produtos/12345678-1234-1234-1234-123456789012/variations/87654321-4321-4321-4321-210987654321 \
+    curl -X DELETE http://localhost:3001/v1/api/products/12345678-1234-1234-1234-123456789012/variations/87654321-4321-4321-4321-210987654321 \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -833,7 +859,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **POST /api/produtos/{productId}/variations/{variationId}/images**
+### **POST /api/products/{productId}/variations/{variationId}/images**
 
 * **Descrição:** Adiciona uma imagem a uma variação de produto
 * **Autorização:** Requer permissão `produtos.create`
@@ -856,7 +882,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/v1/api/produtos/12345678-1234-1234-1234-123456789012/variations/87654321-4321-4321-4321-210987654321/images \
+    curl -X POST http://localhost:3001/v1/api/products/12345678-1234-1234-1234-123456789012/variations/87654321-4321-4321-4321-210987654321/images \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -F "imagem=@camiseta_azul.jpg" \
     -F "imagemAlt=Camiseta DACC azul tamanho M"
@@ -886,7 +912,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **GET /api/produtos/images/{imageId}**
+### **GET /api/products/images/{imageId}**
 
 * **Descrição:** Obtém informações de uma imagem específica
 * **Autorização:** Público
@@ -900,7 +926,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/produtos/images/11111111-1111-1111-1111-111111111111
+    curl -X GET http://localhost:3001/v1/api/products/images/11111111-1111-1111-1111-111111111111
     ```
 
 * **Respostas:**
@@ -919,7 +945,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **PATCH /api/produtos/images/{imageId}**
+### **PATCH /api/products/images/{imageId}**
 
 * **Descrição:** Atualiza informações de uma imagem
 * **Autorização:** Requer permissão `produtos.update`
@@ -941,7 +967,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X PATCH https://api.dacc.com/v1/api/produtos/images/11111111-1111-1111-1111-111111111111 \
+    curl -X PATCH http://localhost:3001/v1/api/products/images/11111111-1111-1111-1111-111111111111 \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -F "imagemAlt=Nova descrição da imagem"
     ```
@@ -960,7 +986,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **DELETE /api/produtos/images/{imageId}**
+### **DELETE /api/products/images/{imageId}**
 
 * **Descrição:** Remove uma imagem de produto
 * **Autorização:** Requer permissão `produtos.delete`
@@ -974,7 +1000,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X DELETE https://api.dacc.com/v1/api/produtos/images/11111111-1111-1111-1111-111111111111 \
+    curl -X DELETE http://localhost:3001/v1/api/products/images/11111111-1111-1111-1111-111111111111 \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -988,42 +1014,23 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-## Pedidos
+## Orders
 
 ### **POST /api/orders**
 
-* **Descrição:** Cria um novo pedido com processamento de pagamento
+* **Descrição:** Criação de pedido alinhada com o carrinho.
 * **Autorização:** Requer autenticação JWT
 
 * **Parâmetros da Requisição:**
     * **Body (`application/json`)**
-
-        | Campo         | Tipo    | Obrigatório | Descrição                |
-        |---------------|---------|-------------|--------------------------|
-        | `itensPedido` | `array` | Sim         | Lista de itens do pedido |
-
-    * **Estrutura de `itensPedido`:**
-
-        | Campo               | Tipo     | Obrigatório | Descrição                    |
-        |---------------------|----------|-------------|------------------------------|
-        | `produtoId`         | `uuid`   | Sim         | ID do produto                |
-        | `produtoVariacaoId` | `uuid`   | Sim         | ID da variação do produto    |
-        | `quantidade`        | `number` | Sim         | Quantidade do item           |
-
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X POST https://api.dacc.com/v1/api/orders \
-    -H "Authorization: Bearer <seu_jwt_token>" \
-    -H "Content-Type: application/json" \
-    -d '{
-      "itensPedido": [
-        {
-          "produtoId": "12345678-1234-1234-1234-123456789012",
-          "produtoVariacaoId": "87654321-4321-4321-4321-210987654321",
-          "quantidade": 2
-        }
-      ]
-    }'
+    ```json
+    {
+      "items": [
+        { "id": "uuid_da_variacao", "productId": "uuid_do_produto", "quantity": 1 }
+      ],
+      "couponCode": "PROMO10",
+      "deliveryMethod": "CampusDelivery"
+    }
     ```
 
 * **Respostas:**
@@ -1064,7 +1071,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/orders/99999999-9999-9999-9999-999999999999 \
+    curl -X GET http://localhost:3001/v1/api/orders/99999999-9999-9999-9999-999999999999 \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -1117,7 +1124,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/orders/user/12345678-1234-1234-1234-123456789012 \
+    curl -X GET http://localhost:3001/v1/api/orders/user/12345678-1234-1234-1234-123456789012 \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -1159,7 +1166,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X PUT https://api.dacc.com/v1/api/orders/99999999-9999-9999-9999-999999999999/status \
+    curl -X PUT http://localhost:3001/v1/api/orders/99999999-9999-9999-9999-999999999999/status \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -H "Content-Type: application/json" \
     -d '"delivered"'
@@ -1178,6 +1185,14 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           }
         }
         ```
+
+### **GET /api/orders/search** (Autenticado)
+*   **Descrição:** Busca histórico de pedidos com filtros.
+*   **Query Params:** `Status`, `StartDate`, `EndDate`, `SearchQuery`, `Page`, `Limit`.
+
+### **GET /api/orders/coupons/{code}**
+*   **Descrição:** Valida um cupom de desconto.
+*   **Response Data:** `{ "id": "uuid", "codigo": "string", "tipoDesconto": "Percentage", "valor": 10.0 }`
 
 ### **POST /api/orders/webhook**
 
@@ -1202,7 +1217,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/v1/api/orders/webhook \
+    curl -X POST http://localhost:3001/v1/api/orders/webhook \
     -H "x-signature: ts=1234567890,v1=signature_hash" \
     -H "x-request-id: request-id-123" \
     -d 'type=payment&data[id]=123456789'
@@ -1242,7 +1257,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET "https://api.dacc.com/v1/api/payments/success?external_reference=order_123456"
+    curl -X GET "http://localhost:3001/v1/api/payments/success?external_reference=order_123456"
     ```
 
 * **Respostas:**
@@ -1270,7 +1285,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET "https://api.dacc.com/v1/api/payments/failure?external_reference=order_123456"
+    curl -X GET "http://localhost:3001/v1/api/payments/failure?external_reference=order_123456"
     ```
 
 * **Respostas:**
@@ -1298,7 +1313,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET "https://api.dacc.com/v1/api/payments/pending?external_reference=order_123456"
+    curl -X GET "http://localhost:3001/v1/api/payments/pending?external_reference=order_123456"
     ```
 
 * **Respostas:**
@@ -1312,7 +1327,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-## Avaliações
+## Ratings
 
 ### **GET /api/ratings**
 
@@ -1321,7 +1336,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/ratings \
+    curl -X GET http://localhost:3001/v1/api/ratings \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -1337,7 +1352,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
               "id": "11111111-1111-1111-1111-111111111111",
               "nota": 5,
               "comentario": "Produto excelente!",
-              "produtoId": "12345678-1234-1234-1234-123456789012",
+              "productId": "12345678-1234-1234-1234-123456789012",
               "usuarioId": "87654321-4321-4321-4321-210987654321",
               "dataCriacao": "2025-08-08T10:00:00Z"
             }
@@ -1359,7 +1374,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/ratings/11111111-1111-1111-1111-111111111111 \
+    curl -X GET http://localhost:3001/v1/api/ratings/11111111-1111-1111-1111-111111111111 \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -1374,7 +1389,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
             "id": "11111111-1111-1111-1111-111111111111",
             "nota": 5,
             "comentario": "Produto excelente!",
-            "produtoId": "12345678-1234-1234-1234-123456789012",
+            "productId": "12345678-1234-1234-1234-123456789012",
             "usuarioId": "87654321-4321-4321-4321-210987654321",
             "dataCriacao": "2025-08-08T10:00:00Z"
           }
@@ -1393,17 +1408,17 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         |--------------|----------|-------------|-------------------------------|
         | `nota`       | `number` | Sim         | Nota de 1 a 5 estrelas        |
         | `comentario` | `string` | Não         | Comentário sobre o produto    |
-        | `produtoId`  | `uuid`   | Sim         | ID do produto sendo avaliado  |
+        | `productId`  | `uuid`   | Sim         | ID do produto sendo avaliado  |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/v1/api/ratings \
+    curl -X POST http://localhost:3001/v1/api/ratings \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -H "Content-Type: application/json" \
     -d '{
       "nota": 5,
       "comentario": "Produto excelente, recomendo!",
-      "produtoId": "12345678-1234-1234-1234-123456789012"
+      "productId": "12345678-1234-1234-1234-123456789012"
     }'
     ```
 
@@ -1418,7 +1433,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
             "id": "11111111-1111-1111-1111-111111111111",
             "nota": 5,
             "comentario": "Produto excelente, recomendo!",
-            "produtoId": "12345678-1234-1234-1234-123456789012"
+            "productId": "12345678-1234-1234-1234-123456789012"
           }
         }
         ```
@@ -1437,7 +1452,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **GET /api/ratings/products/{produtoId}**
+### **GET /api/ratings/products/{productId}**
 
 * **Descrição:** Lista todas as avaliações de um produto específico
 * **Autorização:** Público
@@ -1447,11 +1462,11 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
         | Nome        | Tipo   | Descrição           |
         |-------------|--------|---------------------|
-        | `produtoId` | `uuid` | ID único do produto |
+        | `productId` | `uuid` | ID único do produto |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/ratings/products/12345678-1234-1234-1234-123456789012
+    curl -X GET http://localhost:3001/v1/api/ratings/products/12345678-1234-1234-1234-123456789012
     ```
 
 * **Respostas:**
@@ -1487,7 +1502,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/ratings/users/87654321-4321-4321-4321-210987654321 \
+    curl -X GET http://localhost:3001/v1/api/ratings/users/87654321-4321-4321-4321-210987654321 \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -1531,7 +1546,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X PATCH https://api.dacc.com/v1/api/ratings/11111111-1111-1111-1111-111111111111 \
+    curl -X PATCH http://localhost:3001/v1/api/ratings/11111111-1111-1111-1111-111111111111 \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -H "Content-Type: application/json" \
     -d '{
@@ -1569,7 +1584,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X DELETE https://api.dacc.com/v1/api/ratings/11111111-1111-1111-1111-111111111111 \
+    curl -X DELETE http://localhost:3001/v1/api/ratings/11111111-1111-1111-1111-111111111111 \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -1592,7 +1607,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/news
+    curl -X GET http://localhost:3001/v1/api/news
     ```
 
 * **Respostas:**
@@ -1604,12 +1619,10 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Requisição bem-sucedida",
           "data": [
             {
-              "id": "22222222-2222-2222-2222-222222222222",
-              "titulo": "Nova parceria do DACC",
-              "descricao": "DACC firma parceria com empresa de tecnologia",
-              "categoria": "parceria",
-              "dataPublicacao": "2025-08-08T10:00:00Z",
-              "autorNome": "João Silva"
+              "id": "uuid",
+              "titulo": "string",
+              "autor": { "id": "uuid", "nome": "string", "sobrenome": "string" },
+              "tags": [ { "id": "uuid", "nome": "string" } ]
             }
           ]
         }
@@ -1629,7 +1642,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/news/22222222-2222-2222-2222-222222222222
+    curl -X GET http://localhost:3001/v1/api/news/22222222-2222-2222-2222-222222222222
     ```
 
 * **Respostas:**
@@ -1682,7 +1695,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/v1/api/news \
+    curl -X POST http://localhost:3001/v1/api/news \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -F "titulo=Nova parceria do DACC" \
     -F "descricao=DACC firma parceria com empresa de tecnologia" \
@@ -1746,7 +1759,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X PATCH https://api.dacc.com/v1/api/news/22222222-2222-2222-2222-222222222222 \
+    curl -X PATCH http://localhost:3001/v1/api/news/22222222-2222-2222-2222-222222222222 \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -F "titulo=Parceria DACC - Atualizada"
     ```
@@ -1779,7 +1792,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X DELETE https://api.dacc.com/v1/api/news/22222222-2222-2222-2222-222222222222 \
+    curl -X DELETE http://localhost:3001/v1/api/news/22222222-2222-2222-2222-222222222222 \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -1793,16 +1806,16 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-## Eventos
+## Events
 
-### **GET /api/eventos**
+### **GET /api/events**
 
 * **Descrição:** Lista todos os eventos disponíveis
 * **Autorização:** Público
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/eventos
+    curl -X GET http://localhost:3001/v1/api/events
     ```
 
 * **Respostas:**
@@ -1826,7 +1839,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **GET /api/eventos/{id}**
+### **GET /api/events/{id}**
 
 * **Descrição:** Obtém informações detalhadas de um evento específico
 * **Autorização:** Público
@@ -1840,7 +1853,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/eventos/33333333-3333-3333-3333-333333333333
+    curl -X GET http://localhost:3001/v1/api/events/33333333-3333-3333-3333-333333333333
     ```
 
 * **Respostas:**
@@ -1872,7 +1885,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **POST /api/eventos**
+### **POST /api/events**
 
 * **Descrição:** Cria um novo evento
 * **Autorização:** Requer permissão `eventos.create`
@@ -1891,7 +1904,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/v1/api/eventos \
+    curl -X POST http://localhost:3001/v1/api/events \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -H "Content-Type: application/json" \
     -d '{
@@ -1919,7 +1932,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **PATCH /api/eventos/{id}**
+### **PATCH /api/events/{id}**
 
 * **Descrição:** Atualiza um evento existente
 * **Autorização:** Requer permissão `eventos.update`
@@ -1944,7 +1957,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X PATCH https://api.dacc.com/v1/api/eventos/33333333-3333-3333-3333-333333333333 \
+    curl -X PATCH http://localhost:3001/v1/api/events/33333333-3333-3333-3333-333333333333 \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -H "Content-Type: application/json" \
     -d '{
@@ -1966,7 +1979,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **DELETE /api/eventos/{id}**
+### **DELETE /api/events/{id}**
 
 * **Descrição:** Remove um evento do sistema
 * **Autorização:** Requer permissão `eventos.delete`
@@ -1980,7 +1993,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X DELETE https://api.dacc.com/v1/api/eventos/33333333-3333-3333-3333-333333333333 \
+    curl -X DELETE http://localhost:3001/v1/api/events/33333333-3333-3333-3333-333333333333 \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -1994,7 +2007,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **POST /api/eventos/{id}/register**
+### **POST /api/events/{id}/register**
 
 * **Descrição:** Registra o usuário em um evento (não implementado)
 * **Autorização:** Requer permissão `eventos.register`
@@ -2016,7 +2029,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **DELETE /api/eventos/{id}/register**
+### **DELETE /api/events/{id}/register**
 
 * **Descrição:** Remove o registro do usuário de um evento (não implementado)
 * **Autorização:** Requer permissão `eventos.register`
@@ -2046,7 +2059,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/projects
+    curl -X GET http://localhost:3001/v1/api/projects
     ```
 
 * **Respostas:**
@@ -2083,7 +2096,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/projects/44444444-4444-4444-4444-444444444444
+    curl -X GET http://localhost:3001/v1/api/projects/44444444-4444-4444-4444-444444444444
     ```
 
 * **Respostas:**
@@ -2134,7 +2147,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/v1/api/projects \
+    curl -X POST http://localhost:3001/v1/api/projects \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -F "titulo=Sistema de Gestão Acadêmica" \
     -F "descricao=Sistema para gerenciar atividades acadêmicas" \
@@ -2185,7 +2198,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X PATCH https://api.dacc.com/v1/api/projects/44444444-4444-4444-4444-444444444444 \
+    curl -X PATCH http://localhost:3001/v1/api/projects/44444444-4444-4444-4444-444444444444 \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -F "status=em progresso"
     ```
@@ -2218,7 +2231,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X DELETE https://api.dacc.com/v1/api/projects/44444444-4444-4444-4444-444444444444 \
+    curl -X DELETE http://localhost:3001/v1/api/projects/44444444-4444-4444-4444-444444444444 \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -2232,16 +2245,16 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-## Diretores
+## Faculty
 
-### **GET /api/diretores**
+### **GET /api/faculty**
 
 * **Descrição:** Lista todos os diretores e diretorias
 * **Autorização:** Requer permissão `faculty.view`
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/diretores \
+    curl -X GET http://localhost:3001/v1/api/faculty \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -2274,7 +2287,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **GET /api/diretores/{id}**
+### **GET /api/faculty/{id}**
 
 * **Descrição:** Obtém informações detalhadas de um diretor específico
 * **Autorização:** Requer autenticação JWT
@@ -2288,7 +2301,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/diretores/55555555-5555-5555-5555-555555555555 \
+    curl -X GET http://localhost:3001/v1/api/faculty/55555555-5555-5555-5555-555555555555 \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -2321,7 +2334,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **POST /api/diretores**
+### **POST /api/faculty**
 
 * **Descrição:** Cria um novo diretor
 * **Autorização:** Requer autenticação JWT
@@ -2342,7 +2355,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/v1/api/diretores \
+    curl -X POST http://localhost:3001/v1/api/faculty \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -F "nome=João Silva" \
     -F "descricao=Diretor de Tecnologia" \
@@ -2366,7 +2379,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **PATCH /api/diretores/{id}**
+### **PATCH /api/faculty/{id}**
 
 * **Descrição:** Atualiza informações de um diretor
 * **Autorização:** Requer autenticação JWT
@@ -2393,7 +2406,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X PATCH https://api.dacc.com/v1/api/diretores/55555555-5555-5555-5555-555555555555 \
+    curl -X PATCH http://localhost:3001/v1/api/faculty/55555555-5555-5555-5555-555555555555 \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -F "descricao=Diretor de Tecnologia e Inovação"
     ```
@@ -2412,7 +2425,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-### **DELETE /api/diretores/{id}**
+### **DELETE /api/faculty/{id}**
 
 * **Descrição:** Remove um diretor do sistema
 * **Autorização:** Requer autenticação JWT
@@ -2426,7 +2439,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X DELETE https://api.dacc.com/v1/api/diretores/55555555-5555-5555-5555-555555555555 \
+    curl -X DELETE http://localhost:3001/v1/api/faculty/55555555-5555-5555-5555-555555555555 \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -2448,7 +2461,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/announcements \
+    curl -X GET http://localhost:3001/v1/api/announcements \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -2487,7 +2500,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET https://api.dacc.com/v1/api/announcements/77777777-7777-7777-7777-777777777777 \
+    curl -X GET http://localhost:3001/v1/api/announcements/77777777-7777-7777-7777-777777777777 \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -2540,7 +2553,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/v1/api/announcements \
+    curl -X POST http://localhost:3001/v1/api/announcements \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -F "titulo=Manutenção do Sistema" \
     -F "conteudo=Sistema ficará em manutenção no domingo" \
@@ -2590,7 +2603,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X PATCH https://api.dacc.com/v1/api/announcements/77777777-7777-7777-7777-777777777777 \
+    curl -X PATCH http://localhost:3001/v1/api/announcements/77777777-7777-7777-7777-777777777777 \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -F "ativo=false"
     ```
@@ -2623,7 +2636,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X DELETE https://api.dacc.com/v1/api/announcements/77777777-7777-7777-7777-777777777777 \
+    curl -X DELETE http://localhost:3001/v1/api/announcements/77777777-7777-7777-7777-777777777777 \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -2653,7 +2666,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X POST https://api.dacc.com/v1/api/filestorage/uploadImage \
+    curl -X POST http://localhost:3001/v1/api/filestorage/uploadImage \
     -H "Authorization: Bearer <seu_jwt_token>" \
     -F "file=@imagem.jpg"
     ```
