@@ -143,8 +143,8 @@ namespace DaccApi.Model
                 Descricao = request.Descricao,
                 Categoria = Guid.Parse(request.Categoria),
                 Subcategoria = !string.IsNullOrEmpty(request.Subcategoria) ? Guid.Parse(request.Subcategoria) : null,
-                Preco = request.Preco ?? 0,
-                PrecoOriginal = request.Preco,
+                Preco = Convert.ToDecimal(request.Preco),
+                PrecoOriginal = Convert.ToDecimal(request.Preco),
                 Ativo = true,
                 DataCriacao = DateTime.UtcNow,
                 DescricaoDetalhada = request.DescricaoDetalhada,
@@ -173,8 +173,8 @@ namespace DaccApi.Model
             if (request.Descricao != null) Descricao = request.Descricao;
             if (request.Categoria != null) Categoria = Guid.Parse(request.Categoria);
             if (request.Subcategoria != null) Subcategoria = !string.IsNullOrEmpty(request.Subcategoria) ? Guid.Parse(request.Subcategoria) : null;
-            if (request.Preco.HasValue) Preco = request.Preco.Value;
-            if (request.PrecoOriginal.HasValue) PrecoOriginal = request.PrecoOriginal.Value;
+            if (request.Preco.HasValue) Preco = Convert.ToDecimal(request.Preco.Value);
+            if (request.PrecoOriginal.HasValue) PrecoOriginal = Convert.ToDecimal(request.PrecoOriginal.Value);
             if (request.DescricaoDetalhada != null) DescricaoDetalhada = request.DescricaoDetalhada;
             if (request.PerfeitoPara != null) PerfeitoPara = request.PerfeitoPara;
             if (request.Destaque.HasValue) Destaque = request.Destaque.Value;
