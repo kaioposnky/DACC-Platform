@@ -63,6 +63,12 @@ namespace DaccApi.Model.Objects.Order
         /// </summary>
         [NotMapped]
         public List<OrderItem> OrderItems { get; set; } = [];
+
+        /// <summary>
+        /// Id do cupom do pedido.
+        /// </summary>
+        [NotMapped]
+        public Guid? CupomId { get; set; }
         
         /// <summary>
         /// Converte o objeto Order em um OrderResponse.

@@ -1,32 +1,39 @@
 namespace DaccApi.Model.Requests
 {
     /// <summary>
-    /// Representa a requisição para criar um novo pedido.
+    /// Representa a requisição para criar um novo pedido, alinhada com o carrinho do frontend.
     /// </summary>
     public class CreateOrderRequest
     {
         /// <summary>
-        /// Obtém ou define a lista de itens do pedido.
+        /// Lista de itens do carrinho.
         /// </summary>
-        public List<OrderItemRequest> ItensPedido { get; set; }
+        public List<CartItemRequest> Items { get; set; }
+
+        /// <summary>
+        /// Código do cupom de desconto (opcional).
+        /// </summary>
+        public string? CouponCode { get; set; }
     }
 
     /// <summary>
-    /// Representa um item dentro da requisição de criação de pedido.
+    /// Representa um item do carrinho vindo do frontend.
     /// </summary>
-    public class OrderItemRequest
+    public class CartItemRequest
     {
         /// <summary>
-        /// Obtém ou define o ID do produto.
+        /// ID da variação do produto (no frontend é o 'id').
         /// </summary>
-        public Guid ProdutoId { get; set; }
+        public Guid Id { get; set; }
+
         /// <summary>
-        /// Obtém ou define o ID da variação do produto.
+        /// ID do produto pai.
         /// </summary>
-        public Guid ProdutoVariacaoId { get; set; }
+        public Guid ProductId { get; set; }
+
         /// <summary>
-        /// Obtém ou define a quantidade do item.
+        /// Quantidade do item.
         /// </summary>
-        public int Quantidade { get; set; }
+        public int Quantity { get; set; }
     }
 }

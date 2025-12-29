@@ -35,12 +35,12 @@ public class ResponseProduto
     /// <summary>
     /// Obtém ou define o preço do produto.
     /// </summary>
-    public double? Price { get; set; }
+    public decimal? Price { get; set; }
 
     /// <summary>
     /// Obtém ou define o preço original do produto (para promoções).
     /// </summary>
-    public double? OriginalPrice { get; set; }
+    public decimal? OriginalPrice { get; set; }
 
     /// <summary>
     /// Obtém ou define a categoria do produto.
@@ -85,7 +85,7 @@ public class ResponseProduto
     /// <summary>
     /// Obtém ou define a avaliação média do produto (frontend specific).
     /// </summary>
-    public double Rating { get; set; }
+    public decimal Rating { get; set; }
 
     /// <summary>
     /// Obtém ou define o número de avaliações do produto (frontend specific).
@@ -210,7 +210,7 @@ public class ShippingInfo
     /// <summary>
     /// Obtém ou define o custo de envio.
     /// </summary>
-    public double? ShippingCost { get; set; }
+    public decimal? ShippingCost { get; set; }
 
     /// <summary>
     /// Obtém ou define a política de devolução.

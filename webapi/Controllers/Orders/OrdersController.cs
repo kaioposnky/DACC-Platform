@@ -27,14 +27,16 @@ namespace DaccApi.Controllers.Orders
     {
         private readonly IOrdersService _ordersService;
         private readonly IMercadoPagoService _mercadoPagoService;
+        private readonly ICupomService _cupomService;
 
         /// <summary>
         /// Inicia uma nova instância da classe <see cref="OrdersController"/>.
         /// </summary>
-        public OrdersController(IOrdersService ordersService, IMercadoPagoService mercadoPagoService)
+        public OrdersController(IOrdersService ordersService, IMercadoPagoService mercadoPagoService, ICupomService cupomService)
         {
             _ordersService = ordersService;
             _mercadoPagoService = mercadoPagoService;
+            _cupomService = cupomService;
         }
 
         /// <summary>
@@ -46,7 +48,7 @@ namespace DaccApi.Controllers.Orders
         {
             try
             {
-                if (request.ItensPedido.Count == 0)
+                if (request.Items.Count == 0)
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST
                         , "Nenhum item foi adicionado ao pedido.");
@@ -136,6 +138,16 @@ namespace DaccApi.Controllers.Orders
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Valida um cupom de desconto.
+        /// </summary>
+        [AllowAnonymous]
+        [HttpGet("coupons/{code}")]
+        public async Task<IActionResult> ValidateCupom([FromRoute] string code)
+        {
+            return await _cupomService.ValidateCupom(code);
         }
 
         /// <summary>

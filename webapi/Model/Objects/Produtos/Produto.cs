@@ -32,13 +32,13 @@ namespace DaccApi.Model
         /// Obtém ou define o preço atual do produto.
         /// </summary>
         [Column("preco")]
-        public double Preco { get; set; }
+        public decimal Preco { get; set; }
 
         /// <summary>
         /// Obtém ou define o preço original do produto (para promoções).
         /// </summary>
         [Column("preco_original")]
-        public double? PrecoOriginal { get; set; }
+        public decimal? PrecoOriginal { get; set; }
 
         /// <summary>
         /// Obtém ou define a categoria do produto.
@@ -100,7 +100,7 @@ namespace DaccApi.Model
         public bool Destaque { get; set; }
         
         [NotMapped]
-        public double AvaliacaoMedia { get; set; }
+        public decimal AvaliacaoMedia { get; set; }
         
         [NotMapped]
         public int NumeroAvaliacoes { get; set; }
@@ -226,7 +226,7 @@ namespace DaccApi.Model
         public string DiasEstimados { get; set; }
         
         [Column("custo_envio")]
-        public double? CustoEnvio { get; set; }
+        public decimal? CustoEnvio { get; set; }
         
         [Column("politica_devolucao")]
         public string PoliticaDevolucao { get; set; }

@@ -1,3 +1,4 @@
+using DaccApi.Enum.Posts;
 using DaccApi.Exceptions;
 using DaccApi.Infrastructure.Dapper;
 using DaccApi.Infrastructure.Mail;
@@ -22,6 +23,7 @@ namespace DaccApi.Services.Orders
         private readonly IProdutosRepository _produtosRepository;
         private readonly IReservaRepository _reservaRepository;
         private readonly IUsuarioRepository _usuarioRepository;
+        private readonly ICupomRepository _cupomRepository;
         private readonly IMailService _mailService;
         private readonly IRepositoryDapper _dapper;
         private readonly int _orderMinutesToExpire;
@@ -32,7 +34,10 @@ namespace DaccApi.Services.Orders
             IProdutosRepository produtosRepository,
             IReservaRepository reservaRepository,
             IConfiguration configuration,
-            IRepositoryDapper dapper, IMailService mailService, IUsuarioRepository usuarioRepository)
+            IRepositoryDapper dapper, 
+            IMailService mailService, 
+            IUsuarioRepository usuarioRepository,
+            ICupomRepository cupomRepository)
         {
             _ordersRepository = ordersRepository;
             _mercadoPagoService = mercadoPagoService;
@@ -42,6 +47,7 @@ namespace DaccApi.Services.Orders
             _dapper = dapper;
             _mailService = mailService;
             _usuarioRepository = usuarioRepository;
+            _cupomRepository = cupomRepository;
         }
 
         public async Task<CreateOrderResponse> CreateOrderWithPayment(Guid userId, CreateOrderRequest request)
@@ -53,28 +59,48 @@ namespace DaccApi.Services.Orders
                 throw new ArgumentException("Usuário não encontrado!");
             }
             
-            var variationIds = request.ItensPedido.Select(item => item.ProdutoVariacaoId).ToList();
+            var variationIds = request.Items.Select(item => item.Id).ToList();
 
             var productVariationsInfo = await _produtosRepository.GetVariationsWithProductByIdsAsync(variationIds);
 
-            if (productVariationsInfo.Count != request.ItensPedido.Count)
+            if (productVariationsInfo.Count != request.Items.Count)
             {
                 throw new ArgumentException("Um ou mais produtos não foram encontrados ou estão indisponíveis!");
             }
 
-            var orderItemsData = request.ItensPedido
+            var orderItemsData = request.Items
                 .Join(productVariationsInfo,
-                    item => item.ProdutoVariacaoId,
+                    item => item.Id,
                     produto => produto.VariationId,
                     (item, produto) => new
                     {
                         Item = item,
                         Produto = produto,
-                        SubTotal = produto.Preco * item.Quantidade
+                        SubTotal = produto.Preco * item.Quantity
                     })
                 .ToList();
 
             var totalAmount = orderItemsData.Sum(x => x.SubTotal);
+
+            // Lógica de Cupom
+            Guid? cupomId = null;
+            if (!string.IsNullOrEmpty(request.CouponCode))
+            {
+                var cupom = await _cupomRepository.GetByCodeAsync(request.CouponCode);
+                if (cupom != null && cupom.Ativo && (cupom.DataExpiracao == null || cupom.DataExpiracao > DateTime.UtcNow) && (cupom.LimiteUso == null || cupom.UsoAtual < cupom.LimiteUso))
+                {
+                    cupomId = cupom.Id;
+                    if (cupom.TipoDesconto == TipoDesconto.Percentage)
+                    {
+                        totalAmount -= totalAmount * (cupom.Valor / 100);
+                    }
+                    else
+                    {
+                        totalAmount -= cupom.Valor;
+                    }
+                    if (totalAmount < 0) totalAmount = 0;
+                }
+            }
             
             var orderItems = orderItemsData.Select(data => new OrderItem
             {
@@ -82,7 +108,7 @@ namespace DaccApi.Services.Orders
                 PrecoUnitario = data.Produto.Preco,
                 ProdutoId = data.Produto.ProductId,
                 ProdutoVariacaoId = data.Produto.VariationId,
-                Quantidade = data.Item.Quantidade
+                Quantidade = data.Item.Quantity
             }).ToList();
             
             var order = new Order
@@ -92,7 +118,8 @@ namespace DaccApi.Services.Orders
                 TotalAmount = totalAmount,
                 OrderItems = orderItems,
                 Status = MercadoPagoConstants.PaymentStatus.Pending,
-                OrderDate = DateTime.UtcNow
+                OrderDate = DateTime.UtcNow,
+                CupomId = cupomId
             };
 
             var orderExpireDate = DateTime.Now.AddMinutes(_orderMinutesToExpire);
@@ -102,7 +129,7 @@ namespace DaccApi.Services.Orders
                     OrderId = order.Id, 
                     ProductVariationId = data.Produto.VariationId, 
                     ExpiresAt = orderExpireDate, 
-                    Quantity = data.Item.Quantidade,
+                    Quantity = data.Item.Quantity,
                     IsActive = true
                 })
                 .ToList();
@@ -129,6 +156,11 @@ namespace DaccApi.Services.Orders
             
                 await _ordersRepository.UpdateOrderPreferenceId(order.Id, order.PreferenceId, transaction);
                 
+                if (cupomId.HasValue)
+                {
+                    await _cupomRepository.IncrementUsageAsync(cupomId.Value);
+                }
+
                 transaction.Commit();
             }
             catch (Exception)
