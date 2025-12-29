@@ -1,3 +1,5 @@
+using DaccApi.Enum.Orders;
+
 namespace DaccApi.Model.Requests
 {
     /// <summary>
@@ -14,6 +16,11 @@ namespace DaccApi.Model.Requests
         /// Código do cupom de desconto (opcional).
         /// </summary>
         public string? CouponCode { get; set; }
+
+        /// <summary>
+        /// Método de entrega escolhido.
+        /// </summary>
+        public DeliveryMethod DeliveryMethod { get; set; } = DeliveryMethod.CampusDelivery;
     }
 
     /// <summary>

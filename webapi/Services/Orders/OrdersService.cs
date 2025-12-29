@@ -1,3 +1,4 @@
+using DaccApi.Enum.Orders;
 using DaccApi.Enum.Posts;
 using DaccApi.Exceptions;
 using DaccApi.Infrastructure.Dapper;
@@ -58,6 +59,12 @@ namespace DaccApi.Services.Orders
             if (user == null)
             {
                 throw new ArgumentException("Usuário não encontrado!");
+            }
+
+            // Validação de Logística via Enum
+            if (request.DeliveryMethod != DeliveryMethod.CampusDelivery)
+            {
+                throw new ArgumentException("Método de entrega inválido.");
             }
             
             var variationIds = request.Items.Select(item => item.Id).ToList();
