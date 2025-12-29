@@ -1,11 +1,10 @@
 using System.Data;
 using DaccApi.Infrastructure.Dapper;
 using DaccApi.Model.Objects.Order;
+using DaccApi.Model.Requests.Order;
 using Npgsql;
 
 namespace DaccApi.Infrastructure.Repositories.Orders
-{
-    namespace DaccApi.Infrastructure.Repositories.Orders
 {
     /// <summary>
     /// Implementação do repositório de pedidos.
@@ -38,7 +37,8 @@ namespace DaccApi.Infrastructure.Repositories.Orders
                     Status = "created", 
                     TotalAmount = order.TotalAmount,
                     MercadoPagoPaymentId = (long?)null, // Será definido mais tarde
-                    PaymentMethod = (string?)null // Será definido mais tarde 
+                    PaymentMethod = (string?)null, // Será definido mais tarde
+                    CupomId = order.CupomId
                 };
                 
                 IEnumerable<Guid> orderId;
@@ -191,6 +191,31 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
 
+        public async Task<List<Order>> SearchOrdersAsync(Guid userId, RequestQueryOrders query)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("SearchOrders");
+                var param = new
+                {
+                    UserId = userId,
+                    Status = query.Status,
+                    StartDate = query.StartDate,
+                    EndDate = query.EndDate,
+                    SearchQuery = string.IsNullOrEmpty(query.SearchQuery) ? null : $"%{query.SearchQuery}%",
+                    Page = query.Page,
+                    Limit = query.Limit
+                };
+
+                var result = await _repositoryDapper.QueryAsync<Order>(sql, param);
+                return result.ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao buscar pedidos no banco de dados.", ex);
+            }
+        }
+
         /// <summary>
         /// Atualiza o status de um pedido.
         /// </summary>
@@ -276,5 +301,4 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
     }
-}
 }

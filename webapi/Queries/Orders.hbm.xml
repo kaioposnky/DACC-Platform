@@ -34,4 +34,31 @@
     <query name="DeleteCupom">
         DELETE FROM cupom WHERE id = @Id;
     </query>
+
+    <query name="SearchOrders">
+        <![CDATA[
+            SELECT
+                id as Id,
+                usuario_id as UserId,
+                data_pedido as OrderDate,
+                status_pedido as Status,
+                mercadopago_pagamento_id as PaymentId,
+                preference_id as PreferenceId,
+                metodo_pagamento as PaymentMethod,
+                total_pedido as TotalAmount,
+                cupom_id as CupomId
+            FROM
+                pedido
+            WHERE
+                usuario_id = @UserId
+                AND (@Status IS NULL OR status_pedido = @Status)
+                AND (@StartDate IS NULL OR data_pedido >= @StartDate)
+                AND (@EndDate IS NULL OR data_pedido <= @EndDate)
+                AND (@SearchQuery IS NULL OR id::text ILIKE @SearchQuery)
+            ORDER BY
+                data_pedido DESC
+            OFFSET (@Page - 1) * @Limit
+            LIMIT @Limit;
+        ]]>
+    </query>
 </queries>

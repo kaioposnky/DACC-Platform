@@ -12,6 +12,7 @@ using DaccApi.Infrastructure.Services.MercadoPago;
 using DaccApi.Model;
 using DaccApi.Model.Objects.Order;
 using DaccApi.Model.Requests;
+using DaccApi.Model.Requests.Order;
 using DaccApi.Model.Responses.Order;
 
 namespace DaccApi.Services.Orders
@@ -205,6 +206,20 @@ namespace DaccApi.Services.Orders
                 throw new KeyNotFoundException("Nenhum pedido encontrado para o usuário!");
             }
             
+            foreach (var order in orders)
+            {
+                order.OrderItems = await _ordersRepository.GetOrderItemsByOrderId(order.Id);
+                orderResponses.Add(order.ToOrderResponse());
+            }
+
+            return orderResponses;
+        }
+
+        public async Task<List<OrderResponse>> SearchOrders(Guid userId, RequestQueryOrders query)
+        {
+            var orders = await _ordersRepository.SearchOrdersAsync(userId, query);
+            var orderResponses = new List<OrderResponse>();
+
             foreach (var order in orders)
             {
                 order.OrderItems = await _ordersRepository.GetOrderItemsByOrderId(order.Id);

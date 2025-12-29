@@ -5,15 +5,11 @@ using DaccApi.Infrastructure.MercadoPago.Constants;
 using DaccApi.Infrastructure.MercadoPago.Models;
 using DaccApi.Infrastructure.Services.MercadoPago;
 using DaccApi.Model.Requests;
+using DaccApi.Model.Requests.Order;
 using DaccApi.Services.Orders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Responses;
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace DaccApi.Controllers.Orders
 {
@@ -65,6 +61,25 @@ namespace DaccApi.Controllers.Orders
             catch (ProductOutOfStockException ex)
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.PRODUCT_OUT_OF_STOCK, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Busca pedidos com filtros.
+        /// </summary>
+        [AuthenticatedGetResponses]
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchOrders([FromQuery] RequestQueryOrders requestQuery)
+        {
+            try
+            {
+                var userId = ClaimsHelper.GetUserId(User);
+                var orders = await _ordersService.SearchOrders(userId, requestQuery);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(orders));
             }
             catch (Exception ex)
             {
