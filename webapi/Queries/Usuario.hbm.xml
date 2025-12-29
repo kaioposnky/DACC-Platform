@@ -133,6 +133,7 @@
 		SELECT
 			(SELECT COUNT(*) FROM pedido WHERE usuario_id = @Id) as Orders,
 			(SELECT COUNT(*) FROM avaliacao WHERE usuario_id = @Id) as Reviews,
+			(SELECT COALESCE(AVG(nota), 0) FROM avaliacao WHERE usuario_id = @Id) as AverageRating,
 			TO_CHAR(data_criacao, 'DD/MM/YYYY') as RegistryDate
 		FROM usuario
 		WHERE id = @Id;
