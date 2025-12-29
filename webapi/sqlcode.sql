@@ -365,6 +365,22 @@ CREATE TABLE metodo_pagamento
     nome VARCHAR(50) NOT NULL UNIQUE
 );
 
+-- Tabela: Cupons de Desconto
+-- Armazena os cupons de desconto disponíveis
+DROP TABLE IF EXISTS cupom CASCADE;
+CREATE TABLE cupom
+(
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    codigo          VARCHAR(50) NOT NULL UNIQUE,
+    tipo_desconto   VARCHAR(20) NOT NULL, -- 'porcentagem' ou 'valor_fixo'
+    valor           NUMERIC(10, 2) NOT NULL,
+    data_expiracao  TIMESTAMP,
+    limite_uso      INT,
+    uso_atual       INT DEFAULT 0,
+    ativo           BOOLEAN DEFAULT TRUE,
+    data_criacao    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Tabela: Pedidos
 -- Armazena informações sobre pedidos
 DROP TABLE IF EXISTS pedido CASCADE;
@@ -377,7 +393,8 @@ CREATE TABLE pedido
     mercadopago_pagamento_id BIGINT NULL,
     preference_id            VARCHAR(100) NULL,
     metodo_pagamento         VARCHAR(50) REFERENCES metodo_pagamento (nome) NULL,
-    total_pedido             NUMERIC(10, 2) NOT NULL
+    total_pedido             NUMERIC(10, 2) NOT NULL,
+    cupom_id                 UUID REFERENCES cupom (id)
 );
 
 -- Tabela: Itens do Pedido
@@ -421,7 +438,7 @@ CREATE TABLE noticia
     imagem_alt       VARCHAR(255),
     autor_id         UUID REFERENCES usuario (id),
     categoria        VARCHAR(50) REFERENCES categorias_noticia (nome),
-    tempo_leitura    INTEGER DEFAULT 1 NOT NULL,
+    tags             VARCHAR(255)[],
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_publicacao  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
