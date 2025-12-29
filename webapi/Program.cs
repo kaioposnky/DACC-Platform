@@ -15,7 +15,6 @@ using DaccApi.Infrastructure.Repositories.Diretores;
 using DaccApi.Infrastructure.Repositories.Eventos;
 using DaccApi.Infrastructure.Repositories.Noticias;
 using DaccApi.Infrastructure.Repositories.Orders;
-using DaccApi.Infrastructure.Repositories.Orders.DaccApi.Infrastructure.Repositories.Orders;
 using DaccApi.Infrastructure.Repositories.Permission;
 using DaccApi.Infrastructure.Repositories.Posts;
 using DaccApi.Infrastructure.Repositories.Products;
