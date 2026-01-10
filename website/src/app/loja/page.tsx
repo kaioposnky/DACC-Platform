@@ -22,8 +22,8 @@ export default function Loja() {
       <Navigation />
       
       <PageBanner
-        title="Coruja Overflow Shop"
-        subtitle="Show your CS pride with our exclusive merchandise collection"
+        title="Corujao Shopping"
+        subtitle="Mostre seu amor pelo curso e venha garantir nossos produtos exclusivos!"
         showSearch={false}
         backgroundColor="gradient"
         showDecorations={true}
