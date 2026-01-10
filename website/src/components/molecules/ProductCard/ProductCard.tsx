@@ -105,20 +105,7 @@ export default function ProductCard({
           )}
         </div>
 
-        {/* Favorite Button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleFavorite?.(product);
-          }}
-          className="absolute top-3 right-3 p-2 rounded-full bg-white/80 hover:bg-white transition-colors duration-200"
-        >
-          {isFavorite ? (
-            <HeartIcon className="w-5 h-5 text-red-500" />
-          ) : (
-            <HeartOutlineIcon className="w-5 h-5 text-gray-600" />
-          )}
-        </button>
+
 
         {/* Quick Add Button (shows on hover) */}
         <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
