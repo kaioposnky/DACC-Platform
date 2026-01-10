@@ -28,11 +28,12 @@ export const NewsFilter = ({
 
   const categoryOptions = [
     { value: 'all', label: 'Todas as Categorias' },
-    { value: 'technology', label: 'Tecnologia' },
-    { value: 'education', label: 'Educação' },
-    { value: 'research', label: 'Pesquisa' },
-    { value: 'events', label: 'Eventos' },
-    { value: 'announcements', label: 'Comunicados' }
+    { value: 'Achievement', label: 'Conquistas' },
+    { value: 'Alumni', label: 'Alumni' },
+    { value: 'Infrastructure', label: 'Infraestrutura' },
+    { value: 'Research', label: 'Pesquisa' },
+    { value: 'Events', label: 'Eventos' },
+    { value: 'Announcements', label: 'Comunicados' }
   ];
 
   const dateOptions = [
