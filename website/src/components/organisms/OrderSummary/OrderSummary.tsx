@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Typography, Button } from '@/components/atoms';
 import { Input } from '@/components/atoms/Input';
@@ -19,10 +20,12 @@ interface OrderSummaryProps {
 }
 
 export const OrderSummary = ({ onPlaceOrder, className = '' }: OrderSummaryProps) => {
+  const router = useRouter();
   const { cart } = useCart();
   const [promoCode, setPromoCode] = useState('');
   const [promoDiscount, setPromoDiscount] = useState(0);
   const [isApplyingPromo, setIsApplyingPromo] = useState(false);
+  const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -53,12 +56,23 @@ export const OrderSummary = ({ onPlaceOrder, className = '' }: OrderSummaryProps
 
   const finalTotal = cart.totalAmount - promoDiscount;
 
-  const handlePlaceOrder = () => {
-    if (onPlaceOrder) {
-      onPlaceOrder();
-    } else {
-      // Default behavior - could redirect to payment
-      console.log('Placing order with total:', finalTotal);
+  const handlePlaceOrder = async () => {
+    setIsSubmittingOrder(true);
+    
+    try {
+      if (onPlaceOrder) {
+        await onPlaceOrder();
+      }
+      
+      // Simulate payment processing
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Redirect to confirmation page on success
+      router.push('/checkout/confirmation');
+    } catch (error) {
+      console.error('Erro ao processar pedido:', error);
+      alert('Erro ao processar o pedido. Tente novamente.');
+      setIsSubmittingOrder(false);
     }
   };
 
@@ -102,16 +116,6 @@ export const OrderSummary = ({ onPlaceOrder, className = '' }: OrderSummaryProps
           </Typography>
           <Typography variant="body" className="font-medium text-green-600">
             {cart.shippingCost > 0 ? formatPrice(cart.shippingCost) : 'GRÁTIS'}
-          </Typography>
-        </div>
-
-        {/* Tax */}
-        <div className="flex justify-between items-center">
-          <Typography variant="body" className="text-gray-600">
-            Impostos:
-          </Typography>
-          <Typography variant="body" className="font-medium">
-            {formatPrice(0)} {/* Assuming no tax for now */}
           </Typography>
         </div>
 
@@ -165,13 +169,13 @@ export const OrderSummary = ({ onPlaceOrder, className = '' }: OrderSummaryProps
       {/* Place Order Button */}
       <Button
         onClick={handlePlaceOrder}
-        disabled={cart.items.length === 0}
+        disabled={cart.items.length === 0 || isSubmittingOrder}
         variant="primary"
         size="lg"
         className="w-full mb-6"
       >
         <LockClosedIcon className="w-5 h-5" />
-        Finalizar Pedido
+        {isSubmittingOrder ? 'Processando...' : 'Finalizar Pedido'}
       </Button>
 
       {/* Security Features */}
