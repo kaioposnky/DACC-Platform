@@ -347,17 +347,6 @@ export default function ProductDetailPage() {
                                     <ShoppingCartIcon className="w-5 h-5" />
                                     {product.inStock ? 'Adicionar ao Carrinho' : 'Indisponível'}
                                 </motion.button>
-
-                                <button
-                                    onClick={() => setIsFavorite(!isFavorite)}
-                                    className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-                                >
-                                    {isFavorite ? (
-                                        <HeartIcon className="w-6 h-6 text-red-500" />
-                                    ) : (
-                                        <HeartOutlineIcon className="w-6 h-6 text-gray-600" />
-                                    )}
-                                </button>
                             </div>
                         </div>
                     </div>
