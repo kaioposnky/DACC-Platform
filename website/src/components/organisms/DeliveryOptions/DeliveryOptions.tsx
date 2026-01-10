@@ -26,20 +26,6 @@ export const DeliveryOptions = ({ onDeliveryOptionChange, className = '' }: Deli
       description: 'Entrega no ponto de coleta do campus (3-5 dias úteis)',
       cost: 0,
       displayCost: 'GRÁTIS'
-    },
-    {
-      id: 'standard',
-      name: 'Entrega Padrão',
-      description: 'Entrega em domicílio (5-7 dias úteis)',
-      cost: 5.99,
-      displayCost: 'R$ 5,99'
-    },
-    {
-      id: 'express',
-      name: 'Entrega Expressa',
-      description: 'Entrega rápida em domicílio (2-3 dias úteis)',
-      cost: 12.99,
-      displayCost: 'R$ 12,99'
     }
   ];
 
