@@ -35,15 +35,6 @@ export const NewsFilter = ({
     { value: 'Events', label: 'Eventos' },
     { value: 'Announcements', label: 'Comunicados' }
   ];
-
-  const dateOptions = [
-    { value: 'all', label: 'Todos os Tempos' },
-    { value: 'today', label: 'Hoje' },
-    { value: 'week', label: 'Esta Semana' },
-    { value: 'month', label: 'Este Mês' },
-    { value: 'year', label: 'Este Ano' }
-  ];
-
   const sortOptions = [
     { value: 'latest', label: 'Mais Recentes' },
     { value: 'oldest', label: 'Mais Antigas' },
@@ -136,13 +127,6 @@ export const NewsFilter = ({
               value={filters.category}
               options={categoryOptions}
               onChange={(value) => handleFilterChange('category', value)}
-            />
-            
-            <SelectDropdown
-              label="Data"
-              value={filters.date}
-              options={dateOptions}
-              onChange={(value) => handleFilterChange('date', value)}
             />
             
             <SelectDropdown
