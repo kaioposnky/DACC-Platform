@@ -29,7 +29,7 @@
         { "icon": "location", "text": "WhatsApp" }
       ],
       "primaryButtonText": "Participar",
-      "primaryButtonLink": "#",
+      "primaryButtonLink": "https://chat.whatsapp.com/IHwg1PjlN2yGMgkxChLOIH?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAb21jcAPQp6FzcnRjBmFwcF9pZA81NjcwNjczNDMzNTI0MjcAAadPfeTF3SYQpEE6tKS5geuI6IUEKIXDSfcByn9d-rM2MO2htfFR_q19HDEk4w",
       "imageSrc": "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
       "imageAlt": "Students working on laptops during workshop",
       "createdAt": "2024-01-01T10:00:00Z" 
