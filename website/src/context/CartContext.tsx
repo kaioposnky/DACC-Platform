@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { CartState, CartItem, Product } from '@/types';
+import { toast } from 'sonner';
 
 interface CartContextType {
   cart: CartState;
@@ -194,6 +195,10 @@ export function CartProvider({ children }: CartProviderProps) {
     dispatch({ 
       type: 'ADD_TO_CART', 
       payload: { product, quantity, size, color } 
+    });
+    
+    toast.success(`${product.name} adicionado ao carrinho!`, {
+      description: `Quantidade: ${quantity}`,
     });
   };
 
