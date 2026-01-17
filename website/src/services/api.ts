@@ -269,6 +269,30 @@ class ApiService {
     return this.request<Announcement[]>('/announcements');
   }
 
+  async getAnnouncement(id: string): Promise<Announcement> {
+    return this.request<Announcement>(`/announcements/${id}`);
+  }
+
+  async createAnnouncement(announcement: Omit<Announcement, 'id'>): Promise<Announcement> {
+    return this.request<Announcement>('/announcements', {
+      method: 'POST',
+      body: JSON.stringify(announcement),
+    });
+  }
+
+  async updateAnnouncement(id: string, announcement: Partial<Announcement>): Promise<Announcement> {
+    return this.request<Announcement>(`/announcements/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(announcement),
+    });
+  }
+
+  async deleteAnnouncement(id: string): Promise<void> {
+    return this.request<void>(`/announcements/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
   // Events
   async getEvents(): Promise<Event[]> {
     return this.request<Event[]>('/events');
@@ -276,6 +300,26 @@ class ApiService {
 
   async getEvent(id: string): Promise<Event> {
     return this.request<Event>(`/events/${id}`);
+  }
+
+  async createEvent(event: Omit<Event, 'id'>): Promise<Event> {
+    return this.request<Event>('/events', {
+      method: 'POST',
+      body: JSON.stringify(event),
+    });
+  }
+
+  async updateEvent(id: string, event: Partial<Event>): Promise<Event> {
+    return this.request<Event>(`/events/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(event),
+    });
+  }
+
+  async deleteEvent(id: string): Promise<void> {
+    return this.request<void>(`/events/${id}`, {
+      method: 'DELETE',
+    });
   }
 
   // Projects
@@ -287,6 +331,26 @@ class ApiService {
     return this.request<Project>(`/projects/${id}`);
   }
 
+  async createProject(project: Omit<Project, 'id'>): Promise<Project> {
+    return this.request<Project>('/projects', {
+      method: 'POST',
+      body: JSON.stringify(project),
+    });
+  }
+
+  async updateProject(id: string, project: Partial<Project>): Promise<Project> {
+    return this.request<Project>(`/projects/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(project),
+    });
+  }
+
+  async deleteProject(id: string): Promise<void> {
+    return this.request<void>(`/projects/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
   // News
   async getNews(): Promise<News[]> {
     return this.request<News[]>('/news');
@@ -296,6 +360,26 @@ class ApiService {
     return this.request<News>(`/news/${id}`);
   }
 
+  async createNews(news: Omit<News, 'id'>): Promise<News> {
+    return this.request<News>('/news', {
+      method: 'POST',
+      body: JSON.stringify(news),
+    });
+  }
+
+  async updateNews(id: string, news: Partial<News>): Promise<News> {
+    return this.request<News>(`/news/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(news),
+    });
+  }
+
+  async deleteNews(id: string): Promise<void> {
+    return this.request<void>(`/news/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
   // Faculty
   async getFaculty(): Promise<Faculty[]> {
     return this.request<Faculty[]>('/faculty');
@@ -303,6 +387,26 @@ class ApiService {
 
   async getFacultyMember(id: string): Promise<Faculty> {
     return this.request<Faculty>(`/faculty/${id}`);
+  }
+
+  async createFacultyMember(faculty: Omit<Faculty, 'id'>): Promise<Faculty> {
+    return this.request<Faculty>('/faculty', {
+      method: 'POST',
+      body: JSON.stringify(faculty),
+    });
+  }
+
+  async updateFacultyMember(id: string, faculty: Partial<Faculty>): Promise<Faculty> {
+    return this.request<Faculty>(`/faculty/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(faculty),
+    });
+  }
+
+  async deleteFacultyMember(id: string): Promise<void> {
+    return this.request<void>(`/faculty/${id}`, {
+      method: 'DELETE',
+    });
   }
 
   // Products
@@ -367,6 +471,30 @@ class ApiService {
 
   async getProduct(id: string): Promise<Product> {
     return this.request<Product>(`/products/${id}`);
+  }
+
+  async createProduct(product: Omit<Product, 'id'> | FormData): Promise<Product> {
+    const isFormData = product instanceof FormData;
+
+    return this.request<Product>('/products', {
+      method: 'POST',
+      body: isFormData ? product : JSON.stringify(product),
+    });
+  }
+
+  async updateProduct(id: string, product: Partial<Product> | FormData): Promise<Product> {
+    const isFormData = product instanceof FormData;
+
+    return this.request<Product>(`/products/${id}`, {
+      method: 'PATCH',
+      body: isFormData ? product : JSON.stringify(product),
+    });
+  }
+
+  async deleteProduct(id: string): Promise<void> {
+    return this.request<void>(`/products/${id}`, {
+      method: 'DELETE',
+    });
   }
 
   // Forum Categories
