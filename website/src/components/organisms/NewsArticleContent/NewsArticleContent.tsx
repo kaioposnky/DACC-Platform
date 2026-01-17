@@ -15,9 +15,6 @@ export const NewsArticleContent: React.FC<NewsArticleContentProps> = ({
   content,
   className = ''
 }) => {
-  const [isLiked, setIsLiked] = useState(false)
-  const [isBookmarked, setIsBookmarked] = useState(false)
-
   const handleShare = async () => {
     if (navigator.share) {
       try {
