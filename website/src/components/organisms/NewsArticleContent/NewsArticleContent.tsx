@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { ShareIcon, HeartIcon, BookmarkIcon } from '@heroicons/react/24/outline'
 import { HeartIcon as HeartSolidIcon, BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 export interface NewsArticleContentProps {
   content: string
@@ -30,7 +31,7 @@ export const NewsArticleContent: React.FC<NewsArticleContentProps> = ({
     } else {
       // Fallback: copy to clipboard
       navigator.clipboard.writeText(window.location.href)
-      alert('Link copiado para a área de transferência!')
+      toast.success('Link copiado para a área de transferência!')
     }
   }
 
