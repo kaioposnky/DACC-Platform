@@ -1,4 +1,3 @@
-using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Mail;
 using System.Security.Claims;
@@ -35,17 +34,17 @@ namespace DaccApi.Services.Auth
             _permissionRepository = p;
             _mailService = m;
         }
-        
+
         private bool ValidateCredentials(string email, string password, string hashedPassword)
         {
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
                 return false;
             }
-            
+
             return _argon2Utility.VerifyPassword(password, hashedPassword);
         }
-        
+
         public async Task<IActionResult> LoginUser(RequestLogin request)
         {
             try{
@@ -96,8 +95,7 @@ namespace DaccApi.Services.Auth
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message + ex.StackTrace);
             }
         }
-            
-        // TODO: Transferir email para o controller e refatorar a lógica do register para retornar o usuário ou uma exception.
+
         public async Task<Usuario> RegisterUser(RequestRegistro requestCreate)
         {
             if (string.IsNullOrWhiteSpace(requestCreate.Nome) ||
@@ -112,12 +110,12 @@ namespace DaccApi.Services.Auth
                 throw new ArgumentException("RA inválido! Seu RA deve conter 9 dígitos numéricos");
             }
 
-            if (!IsValidEmail(requestCreate.Email))
+            if (!IsValidEmail(requestCreate.Email) || string.IsNullOrEmpty(requestCreate.Email))
             {
                 throw new ArgumentException("Formato de email inválido!");
             }
 
-            if (!IsValidPassword(requestCreate.Senha))
+            if (!IsValidPassword(requestCreate.Senha) || string.IsNullOrEmpty(requestCreate.Senha))
             {
                 throw new ArgumentException("Senha muito fraca! A senha deve ter ao menos 8 caracteres, uma letra maiúscula, uma letra minúscula e um número!");
             }
@@ -163,17 +161,17 @@ namespace DaccApi.Services.Auth
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.AUTH_TOKEN_INVALID);
                 }
-                
+
                 var user = await _usuarioRepository.GetByIdAsync(userId);
-                
+
                 var validRefreshToken = await _tokenService.ValidateRefreshToken(userId, refreshToken);
                 if (!validRefreshToken || user == null)
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.AUTH_TOKEN_INVALID);
                 }
-                
+
                 var userPermissions = await _permissionRepository.GetPermissionsForRoleAsync(user.Cargo);
-                
+
                 var newAccessToken = _tokenService.GenerateAccessToken(user, userPermissions);
                 var newRefreshToken = _tokenService.GenerateRefreshToken(user);
 
@@ -187,7 +185,7 @@ namespace DaccApi.Services.Auth
                 };
 
                 await _usuarioRepository.UpdateUserTokens(user.Id, userTokens);
-                
+
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { userTokens }));
             }
             catch (Exception ex)
@@ -201,7 +199,7 @@ namespace DaccApi.Services.Auth
             try
             {
                 var tokensUsuario = new TokensUsuario(){ AccessToken = "", RefreshToken = "", ExpiresIn = 0};
-                
+
                 await _usuarioRepository.UpdateUserTokens(userId, tokensUsuario);
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK, "Usuário saiu com sucesso!");
@@ -323,7 +321,7 @@ namespace DaccApi.Services.Auth
 
             return ra.Any(char.IsDigit) && ra.Length == 9;
         }
-        
+
         private static bool IsValidPassword(string? password)
         {
             if (string.IsNullOrWhiteSpace(password))
@@ -353,7 +351,7 @@ namespace DaccApi.Services.Auth
 
             return true;
         }
-        
+
         private static bool IsValidEmail(string? email)
         {
             if (email == null || string.IsNullOrWhiteSpace(email))
