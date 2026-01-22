@@ -245,6 +245,7 @@ if (!Directory.Exists(webRootPath))
 }
 
 var uploadFilesSubfolder = builder.Configuration["UploadFilesSubfolder"]!;
+uploadFilesSubfolder = uploadFilesSubfolder.ToLowerInvariant().Trim('/', '\\');
 var uploadsPath = Path.Combine(app.Environment.WebRootPath, uploadFilesSubfolder);
 
 if (!Directory.Exists(uploadsPath))
