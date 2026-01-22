@@ -38,7 +38,7 @@ namespace DaccApi.Controllers.Anuncio
             var response = await _anuncioService.GetAllAnuncio();
             return response;
         }
-        
+
         /// <summary>
         /// Obtém um anúncio específico pelo seu ID.
         /// </summary>
@@ -50,7 +50,7 @@ namespace DaccApi.Controllers.Anuncio
             var response = await _anuncioService.GetAnuncioById(id);
             return response;
         }
-        
+
         /// <summary>
         /// Cria um novo anúncio.
         /// </summary>
@@ -62,18 +62,18 @@ namespace DaccApi.Controllers.Anuncio
             var response = await _anuncioService.CreateAnuncio(anuncio, userId);
             return response;
         }
-        
+
         /// <summary>
         /// Adiciona uma imagem a um anúncio existente.
         /// </summary>
         [HttpPost("{id:guid}")]
-
+        [AuthenticatedDeleteResponses]
         public async Task<IActionResult> AddAnuncioImage([FromRoute] Guid id, [FromForm] ImageRequest request)
         {
             var response = await _anuncioService.AddAnuncioImage(id, request);
             return response;
         }
-        
+
         /// <summary>
         /// Deleta um anúncio existente.
         /// </summary>
@@ -84,7 +84,7 @@ namespace DaccApi.Controllers.Anuncio
             var response = await _anuncioService.DeleteAnuncio(id);
             return response;
         }
-        
+
         /// <summary>
         /// Atualiza um anúncio existente.
         /// </summary>
