@@ -174,6 +174,41 @@ public class IntegrationTestBase : IAsyncLifetime
     {
         public string? AccessToken { get; set; }
     }
+
+    /// <summary>
+    /// Busca o GUID de uma categoria pelo nome
+    /// </summary>
+    protected async Task<string> GetCategoriaIdAsync(string nome)
+    {
+        var connectionString = _dbcontainer.GetConnectionString();
+        await using var connection = new NpgsqlConnection(connectionString);
+        await connection.OpenAsync();
+        
+        var sql = "SELECT id FROM produto_categoria WHERE nome = @nome";
+        await using var command = new NpgsqlCommand(sql, connection);
+        command.Parameters.AddWithValue("nome", nome);
+        
+        var result = await command.ExecuteScalarAsync();
+        return result?.ToString() ?? throw new Exception($"Categoria '{nome}' não encontrada");
+    }
+
+    /// <summary>
+    /// Busca o GUID de uma subcategoria pelo nome
+    /// </summary>
+    protected async Task<string> GetSubcategoriaIdAsync(string nome)
+    {
+        var connectionString = _dbcontainer.GetConnectionString();
+        await using var connection = new NpgsqlConnection(connectionString);
+        await connection.OpenAsync();
+        
+        var sql = "SELECT id FROM produto_subcategoria WHERE nome = @nome";
+        await using var command = new NpgsqlCommand(sql, connection);
+        command.Parameters.AddWithValue("nome", nome);
+        
+        var result = await command.ExecuteScalarAsync();
+        return result?.ToString() ?? throw new Exception($"Subcategoria '{nome}' não encontrada");
+    }
+
     public async Task DisposeAsync()
     {
         await _dbcontainer.StopAsync();
