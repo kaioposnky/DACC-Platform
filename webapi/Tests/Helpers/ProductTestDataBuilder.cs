@@ -44,7 +44,7 @@ public static class ProductTestDataBuilder
             InformacaoEnvio = new ShippingInfo
             {
                 FreeShipping = true,
-                EstimatedDays = "5-7 dias úteis",
+                EstimatedDays = 0,
                 ShippingCost = 0,
                 ReturnPolicy = "30 dias para devolução",
                 Warranty = "Garantia de 90 dias contra defeitos de fabricação"
