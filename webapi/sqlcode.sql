@@ -194,6 +194,12 @@ CREATE TABLE diretoria
     descricao TEXT
 );
 
+INSERT INTO diretoria (nome, descricao) VALUES 
+    ('E-Sports', 'Diretoria de E-Sports'),
+    ('RH', 'Diretoria de RH'),
+    ('Projetos', 'Diretoria de Projetos'),
+    ('Marketing', 'Diretoria de Marketing');
+
 -- Tabela: Diretores
 -- Armazena informações sobre os diretores (Faculty no frontend)
 DROP TABLE IF EXISTS diretores CASCADE;
@@ -571,16 +577,17 @@ VALUES ('venda física'),
        ('pix');
 
 -- Categorias de Produtos
-INSERT INTO produto_categoria (nome)
-VALUES ('roupas'), ('outros');
+INSERT INTO produto_categoria (id, nome)
+VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'roupas'), 
+       ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', 'outros');
 
 -- Subcategorias de Produtos
-INSERT INTO produto_subcategoria (nome, categoria_id)
-VALUES ( 'camisetas', (SELECT id FROM produto_categoria WHERE nome = 'roupas')),
-       ( 'moletom', (SELECT id FROM produto_categoria WHERE nome = 'roupas')),
-       ( 'canecas', (SELECT id FROM produto_categoria WHERE nome = 'outros')),
-       ( 'adesivos', (SELECT id FROM produto_categoria WHERE nome = 'outros')),
-       ( 'acessorios', (SELECT id FROM produto_categoria WHERE nome = 'outros'));
+INSERT INTO produto_subcategoria (id, nome, categoria_id)
+VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', 'camisetas', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a23', 'moletom', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a24', 'canecas', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12'),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a25', 'adesivos', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12'),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a26', 'acessorios', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12');
 
 -- Permissões
 INSERT INTO permissoes (nome, descricao)
