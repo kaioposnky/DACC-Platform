@@ -223,7 +223,7 @@ namespace DaccApi.Model
         public bool FreteGratis { get; set; }
         
         [Column("dias_estimados")]
-        public string DiasEstimados { get; set; }
+        public int DiasEstimados { get; set; }
         
         [Column("custo_envio")]
         public decimal? CustoEnvio { get; set; }

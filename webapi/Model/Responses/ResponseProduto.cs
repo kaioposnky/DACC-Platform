@@ -205,7 +205,7 @@ public class ShippingInfo
     /// Obtém ou define os dias estimados para entrega.
     /// </summary>
 
-    public string EstimatedDays { get; set; } = string.Empty;
+    public int EstimatedDays { get; set; } = 0;
 
     /// <summary>
     /// Obtém ou define o custo de envio.
