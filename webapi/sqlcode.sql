@@ -138,7 +138,7 @@ DROP TABLE IF EXISTS anuncio CASCADE;
 CREATE TABLE anuncio
 (
     id                     UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    titulo                 VARCHAR(50) NOT NULL,
+    titulo                 VARCHAR(200) NOT NULL,
     conteudo               TEXT        NOT NULL,
     tipo_anuncio           VARCHAR(50) REFERENCES tipos_anuncio (nome) NOT NULL,
     botao_primario_texto   VARCHAR(20) NOT NULL,
@@ -172,7 +172,7 @@ DROP TABLE IF EXISTS evento CASCADE;
 CREATE TABLE evento
 (
     id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    titulo           VARCHAR(50) NOT NULL,
+    titulo           VARCHAR(200) NOT NULL,
     descricao        TEXT        NOT NULL,
     data             TIMESTAMP   NOT NULL,
     tipo_evento      VARCHAR(50) REFERENCES tipos_evento (nome),
@@ -294,7 +294,7 @@ CREATE TABLE produto_informacao_envio
     id                 UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     produto_id         UUID REFERENCES produto (id) ON DELETE CASCADE UNIQUE,
     frete_gratis       BOOLEAN DEFAULT FALSE,
-    dias_estimados     VARCHAR(50) NOT NULL,
+    dias_estimados     INTEGER NOT NULL DEFAULT 0,
     custo_envio        NUMERIC(10, 2),
     politica_devolucao VARCHAR(255) NOT NULL,
     garantia           VARCHAR(100)
@@ -445,6 +445,7 @@ CREATE TABLE noticia
     autor_id         UUID REFERENCES usuario (id),
     categoria        VARCHAR(50) REFERENCES categorias_noticia (nome),
     tags             VARCHAR(255)[],
+    tempo_leitura    INT,
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_publicacao  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
