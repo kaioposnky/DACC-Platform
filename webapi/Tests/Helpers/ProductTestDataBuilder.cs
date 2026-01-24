@@ -10,8 +10,8 @@ public static class ProductTestDataBuilder
 {
     // IDs fixos baseados no seed do sqlcode.sql
     // Categoria "roupas" e subcategoria "camisetas"
-    private const string DefaultCategoriaId = "roupas";  // Será nome, não GUID
-    private const string DefaultSubcategoriaId = "camisetas"; // Será nome, não GUID
+    private const string DefaultCategoriaId = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"; // roupas
+    private const string DefaultSubcategoriaId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22"; // camisetas
 
     /// <summary>
     /// Cria um objeto RequestCreateProduto válido com dados padrão
@@ -63,8 +63,8 @@ public static class ProductTestDataBuilder
         {
             Nome = "Produto Teste",
             Descricao = "Descrição mínima do produto de teste",
-            Categoria = categoria ?? "outros",
-            Subcategoria = subcategoria ?? "adesivos",
+            Categoria = categoria ?? "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12", // outros
+            Subcategoria = subcategoria ?? "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a25", // adesivos
             Preco = 9.90
         };
     }
