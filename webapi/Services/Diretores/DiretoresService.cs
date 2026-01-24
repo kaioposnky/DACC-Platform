@@ -112,9 +112,12 @@ namespace DaccApi.Services.Diretores
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
 
-                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
+                var diretor = Diretor.FromRequest(request);
 
-                var diretor = Diretor.FromRequest(request, imageUrl ?? diretorQuery.ImagemUrl);
+                if (request.ImageFile != null)
+                {
+                    diretor.ImagemUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
+                }
 
                 await _diretoresRepository.UpdateAsync(id, diretor);
 
