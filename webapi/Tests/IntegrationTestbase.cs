@@ -104,7 +104,7 @@ public class IntegrationTestBase : IAsyncLifetime
         _client.DefaultRequestHeaders.Authorization = null;
     }
 
-    private async Task CreateTestUserIfNotExistsAsync(string email, string password, string cargo)
+    protected async Task CreateTestUserIfNotExistsAsync(string email, string password, string cargo)
     {
         var registerRequest = new
         {
