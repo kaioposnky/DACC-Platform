@@ -43,8 +43,9 @@ public class NoticiasServices : INoticiasServices
             var noticia = new Noticia()
             {
                 Id = Guid.NewGuid(),
-                Categoria = request.Categoria,
+                Categoria = request.Categoria.ToLower(),
                 Descricao = request.Descricao,
+                Conteudo = request.Conteudo,
                 Titulo = request.Titulo,
                 AutorId = autorId,
                 DataPublicacao = DateTime.UtcNow,
