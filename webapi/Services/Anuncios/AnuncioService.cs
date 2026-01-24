@@ -48,7 +48,7 @@ namespace DaccApi.Services.Anuncios
             {
                 var anuncio = await _anuncioRepository.GetByIdAsync(id);
                 if (anuncio == null)
-                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Anúncio não encontrado!");
                 var anuncioResponse = new ResponseAnuncio(anuncio);
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
                     new { anuncio = anuncioResponse }));
