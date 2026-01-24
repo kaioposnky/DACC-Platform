@@ -130,7 +130,7 @@ namespace DaccApi.Services.User
                 if (usuario == null)
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Usuário não encontrado!");
                 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK,"Usuário obtido com sucesso!");
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { user = usuario.ToResponse() }), "Usuário obtido com sucesso!");
             }
             catch (Exception ex)
             {

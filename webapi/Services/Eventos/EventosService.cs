@@ -64,7 +64,7 @@ namespace DaccApi.Services.Eventos
 
                     await _eventosRepository.CreateAsync(evento);
                     
-                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED.WithData(new ResponseEvento(evento)));
                 }
                 catch (Exception ex)
                 {

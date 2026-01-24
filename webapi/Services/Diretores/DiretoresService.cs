@@ -48,7 +48,7 @@ namespace DaccApi.Services.Diretores
                 diretor.Id = Guid.NewGuid();
                 await _diretoresRepository.CreateAsync(diretor);
 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED.WithData(new ResponseDiretor(diretor)));
             }
             catch (Exception ex)
             {

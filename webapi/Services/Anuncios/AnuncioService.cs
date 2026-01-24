@@ -64,8 +64,9 @@ namespace DaccApi.Services.Anuncios
             try
             {
                 if (
-                    String.IsNullOrEmpty(anuncio.Titulo) ||
-                    String.IsNullOrEmpty(anuncio.Conteudo)
+                    string.IsNullOrEmpty(anuncio.Titulo) ||
+                    string.IsNullOrEmpty(anuncio.Conteudo) ||
+                    string.IsNullOrEmpty(anuncio.TipoAnuncio)
                 )
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
@@ -90,7 +91,7 @@ namespace DaccApi.Services.Anuncios
                 };
                 await _anuncioRepository.CreateAsync(entity);
 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED.WithData(new ResponseAnuncio(entity)));
             }
             catch (Exception ex)
             {

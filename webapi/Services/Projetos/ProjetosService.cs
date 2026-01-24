@@ -86,7 +86,7 @@ namespace DaccApi.Services.Projetos
                 
                 await _projetosRepository.CreateAsync(projeto);
 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED.WithData(new ResponseProjeto(projeto)));
             }
             catch (Exception ex)
             {

@@ -33,7 +33,7 @@ public class AvaliacaoService : IAvaliacaoService
 
             await _avaliacaoRepository.CreateAsync(newProductRating);
                 
-            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED.WithData(new ResponseAvaliacaoProduto(newProductRating)));
         }
         catch (Exception ex)
         {
