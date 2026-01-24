@@ -36,7 +36,7 @@ namespace DaccApi.Model
         /// Arquivo de imagem de perfil.
         /// </summary>
         [ImageValidation]
-        public IFormFile ImageFile { get; set; }
+        public IFormFile? ImageFile { get; set; }
 
         /// <summary>
         /// Email de contato.

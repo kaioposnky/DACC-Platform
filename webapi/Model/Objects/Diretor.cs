@@ -42,7 +42,7 @@ namespace DaccApi.Model.Objects
         /// Obtém ou define a URL da imagem do diretor.
         /// </summary>
         [Column("imagem_url")]
-        public string ImagemUrl { get; set; }
+        public string? ImagemUrl { get; set; }
 
         /// <summary>
         /// Obtém ou define o e-mail de contato do diretor.
@@ -77,7 +77,7 @@ namespace DaccApi.Model.Objects
         /// <summary>
         /// Cria uma instância de Diretor a partir de um RequestDiretor.
         /// </summary>
-        public static Diretor FromRequest(RequestDiretor request, string imageUrl)
+        public static Diretor FromRequest(RequestDiretor request)
         {
             return new Diretor
             {
@@ -85,7 +85,6 @@ namespace DaccApi.Model.Objects
                 Titulo = request.Titulo,
                 Cargo = request.Cargo,
                 Especializacao = request.Especializacao,
-                ImagemUrl = imageUrl,
                 Email = request.Email,
                 Linkedin = request.Linkedin,
                 Github = request.Github,
