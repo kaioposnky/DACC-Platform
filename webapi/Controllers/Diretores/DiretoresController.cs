@@ -32,7 +32,6 @@ namespace DaccApi.Controllers.Diretores
         [AllowAnonymous]
         [PublicGetResponses]
         [HttpGet("")]
-        [HasPermission(AppPermissions.Faculty.View)]
         public async Task<IActionResult> GetAllDiretores()
         {
             var response = await _diretoresService.GetAllDiretores();
