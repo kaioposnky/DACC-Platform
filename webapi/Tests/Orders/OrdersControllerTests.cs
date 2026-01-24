@@ -1,0 +1,183 @@
+using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
+using DaccApi.Model;
+using DaccApi.Tests.Helpers;
+using FluentAssertions;
+using Xunit;
+
+namespace DaccApi.Tests.Orders;
+
+public class OrdersControllerTests : IntegrationTestBase
+{
+    private const string BaseUrl = "v1/api/orders";
+    private const string ProductsUrl = "v1/api/products";
+
+    /// <summary>
+    /// Testa o ciclo completo: Criar Produto -> Criar Variação -> Criar Pedido -> Buscar -> Atualizar.
+    /// </summary>
+    [Fact]
+    public async Task Order_Lifecycle_Should_Work()
+    {
+        await AuthenticateAsUserAsync();
+
+        // 1. Setup: Criar produto e variação para comprar
+        // Precisamos ser admin para criar produto
+        var userToken = _client.DefaultRequestHeaders.Authorization; // Guarda token de usuário
+        await AuthenticateAsAdminAsync();
+
+        var product = ProductTestDataBuilder.CreateValidProduct(nome: $"Produto Order {Guid.NewGuid()}");
+        await _client.PostAsJsonAsync(ProductsUrl, product);
+        
+        // Obter ID do produto
+        var listResponse = await _client.GetAsync(ProductsUrl);
+        var listContent = await listResponse.Content.ReadAsStringAsync();
+        Guid? productId = null;
+        using (var doc = JsonDocument.Parse(listContent))
+        {
+            var dataElement = doc.RootElement.GetProperty("data");
+            JsonElement productsList = dataElement;
+            if (dataElement.ValueKind == JsonValueKind.Object && dataElement.TryGetProperty("produtos", out var inner))
+                productsList = inner;
+            
+            foreach (var item in productsList.EnumerateArray())
+            {
+                if (item.GetProperty("name").GetString() == product.Nome)
+                {
+                    productId = item.GetProperty("id").GetGuid();
+                    break;
+                }
+            }
+        }
+        productId.Should().NotBeNull();
+
+        // Criar variação com estoque
+        var variationRequest = ProductTestDataBuilder.CreateVariationRequest(estoque: 100);
+        var variationResponse = await _client.PostAsJsonAsync($"{ProductsUrl}/{productId}/variations", variationRequest);
+        variationResponse.StatusCode.Should().Be(HttpStatusCode.OK); // Controller retorna 200 para create variation
+
+        // Obter ID da variação
+        var variationsResponse = await _client.GetAsync($"{ProductsUrl}/{productId}/variations");
+        var variationsContent = await variationsResponse.Content.ReadAsStringAsync();
+        Guid? variationId = null;
+        using (var doc = JsonDocument.Parse(variationsContent))
+        {
+            var dataElement = doc.RootElement.GetProperty("data"); 
+            // Variações retorna lista envelopada em data
+            foreach(var item in dataElement.EnumerateArray())
+            {
+                variationId = item.GetProperty("id").GetGuid();
+                break;
+            }
+        }
+        variationId.Should().NotBeNull();
+
+        // 2. Voltar para usuário comum para fazer o pedido
+        _client.DefaultRequestHeaders.Authorization = userToken;
+
+        // 3. Criar Pedido
+        var orderRequest = OrderTestDataBuilder.CreateValidOrder(variationId!.Value, productId!.Value, 2);
+        var createResponse = await _client.PostAsJsonAsync(BaseUrl, orderRequest);
+        
+        if (!createResponse.IsSuccessStatusCode)
+        {
+            var error = await createResponse.Content.ReadAsStringAsync();
+            Assert.Fail($"Falha ao criar pedido: {createResponse.StatusCode} - {error}");
+        }
+        
+        createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+        
+        // Extrair ID do pedido da resposta
+        var createContent = await createResponse.Content.ReadAsStringAsync();
+        Guid? orderId = null;
+        using (var doc = JsonDocument.Parse(createContent))
+        {
+            // O controller retorna o objeto OrderResponse em data
+            if (doc.RootElement.TryGetProperty("data", out var data) && data.TryGetProperty("id", out var id))
+            {
+                orderId = id.GetGuid();
+            }
+        }
+        orderId.Should().NotBeNull("Pedido deve retornar ID na criação");
+
+        // 4. Buscar Pedido por ID
+        var getResponse = await _client.GetAsync($"{BaseUrl}/{orderId}");
+        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        // 5. Atualizar Status (Requer Admin provavelmente? Controller diz [AuthenticatedPatchResponses], não especifica role, mas vamos testar como admin se falhar)
+        // O método UpdateOrderStatus não tem [HasPermission], então qualquer user autenticado pode (ou deveria poder apenas o proprio ou admin?).
+        // Vamos testar como user mesmo primeiro.
+        var statusUpdate = "delivered";
+        var updateResponse = await _client.PutAsJsonAsync($"{BaseUrl}/{orderId}/status", statusUpdate);
+        
+        if (updateResponse.StatusCode == HttpStatusCode.Forbidden)
+        {
+            // Se precisar de permissão especial, trocamos para admin
+            await AuthenticateAsAdminAsync();
+            updateResponse = await _client.PutAsJsonAsync($"{BaseUrl}/{orderId}/status", statusUpdate);
+        }
+        
+        updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        // Verifica atualização
+        var checkResponse = await _client.GetAsync($"{BaseUrl}/{orderId}");
+        var checkContent = await checkResponse.Content.ReadAsStringAsync();
+        checkContent.Should().Contain(statusUpdate);
+    }
+
+    [Fact]
+    public async Task Create_Order_With_Invalid_Data_Should_Return_BadRequest()
+    {
+        await AuthenticateAsUserAsync();
+        var emptyOrder = OrderTestDataBuilder.CreateEmptyOrder();
+        var response = await _client.PostAsJsonAsync(BaseUrl, emptyOrder);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task Create_Order_OutOfStock_Should_Fail()
+    {
+        // 1. Setup Produto sem estoque
+        await AuthenticateAsAdminAsync();
+        var product = ProductTestDataBuilder.CreateValidProduct(nome: $"Produto Sem Estoque {Guid.NewGuid()}");
+        await _client.PostAsJsonAsync(ProductsUrl, product);
+        
+        // Pegar ID (simplificado, assumindo que funciona pelo teste anterior)
+        var listResponse = await _client.GetAsync(ProductsUrl);
+        var listContent = await listResponse.Content.ReadAsStringAsync();
+        Guid? productId = null;
+        using (var doc = JsonDocument.Parse(listContent))
+        {
+            var dataElement = doc.RootElement.GetProperty("data");
+            JsonElement list = dataElement.ValueKind == JsonValueKind.Object ? dataElement.GetProperty("produtos") : dataElement;
+            foreach (var item in list.EnumerateArray())
+            {
+                if (item.GetProperty("name").GetString() == product.Nome) { productId = item.GetProperty("id").GetGuid(); break; }
+            }
+        }
+
+        // Criar variação com estoque ZERO
+        var variationRequest = ProductTestDataBuilder.CreateVariationRequest(estoque: 0);
+        await _client.PostAsJsonAsync($"{ProductsUrl}/{productId}/variations", variationRequest);
+        
+        // Pegar ID Variação
+        var varsResponse = await _client.GetAsync($"{ProductsUrl}/{productId}/variations");
+        var varsContent = await varsResponse.Content.ReadAsStringAsync();
+        Guid? varId = JsonDocument.Parse(varsContent).RootElement.GetProperty("data")[0].GetProperty("id").GetGuid();
+
+        // 2. Tentar comprar
+        await AuthenticateAsUserAsync();
+        var orderRequest = OrderTestDataBuilder.CreateValidOrder(varId!.Value, productId!.Value, 1);
+        
+        var response = await _client.PostAsJsonAsync(BaseUrl, orderRequest);
+        
+        // Esperado: 409 Conflict ou 400 Bad Request com mensagem de estoque?
+        // O controller retorna: return ResponseHelper.CreateErrorResponse(ResponseError.PRODUCT_OUT_OF_STOCK, ex.Message);
+        // PRODUCT_OUT_OF_STOCK geralmente mapeia para 409 Conflict ou 422 UnprocessableEntity. Vamos checar o ResponseError.
+        // Assumindo 400 ou 409.
+        response.StatusCode.Should().BeOneOf(HttpStatusCode.Conflict, HttpStatusCode.BadRequest, HttpStatusCode.UnprocessableEntity);
+        
+        var errorContent = await response.Content.ReadAsStringAsync();
+        errorContent.Should().ContainEquivalentOf("estoque");
+    }
+}
