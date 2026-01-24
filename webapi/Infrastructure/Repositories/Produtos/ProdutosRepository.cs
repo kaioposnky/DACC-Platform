@@ -79,6 +79,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
                     Limit = query.Limit,
                     SearchPattern = string.IsNullOrWhiteSpace(query.SearchQuery) ? null : $"%{query.SearchQuery}%",
                     CategoriaID = categoriaId,
+                    SubcategoriaID = (Guid?)null,
                     MinPrice = query.MinPrice,
                     MaxPrice = query.MaxPrice,
                     SortBy = query.OrderBy
