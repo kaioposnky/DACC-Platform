@@ -49,6 +49,15 @@ public class IntegrationTestBase : IAsyncLifetime
                         ["UploadFilesSubfolder"] = "uploads" // Configuração necessária
                     }!);
                 });
+                
+                builder.ConfigureServices(services =>
+                {
+                    // Remover registro existente (se houver) e adicionar Mock
+                    var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DaccApi.Infrastructure.Services.MercadoPago.IMercadoPagoService));
+                    if (descriptor != null) services.Remove(descriptor);
+                    
+                    services.AddScoped<DaccApi.Infrastructure.Services.MercadoPago.IMercadoPagoService, DaccApi.Tests.Mocks.MockMercadoPagoService>();
+                });
             });
 
         _client = _factory.CreateClient();
