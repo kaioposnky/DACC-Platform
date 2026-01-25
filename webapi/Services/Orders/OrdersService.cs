@@ -130,7 +130,7 @@ namespace DaccApi.Services.Orders
                 CupomId = cupomId
             };
 
-            var orderExpireDate = DateTime.Now.AddMinutes(_orderMinutesToExpire);
+            var orderExpireDate = DateTime.UtcNow.AddMinutes(_orderMinutesToExpire);
             
             var reservas = orderItemsData.Select(data => new ProdutoReserva()
                 {

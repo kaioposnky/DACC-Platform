@@ -61,4 +61,103 @@
             LIMIT @Limit;
         ]]>
     </query>
+
+    <query name="UpdateOrderStatus">
+        UPDATE pedido
+        SET status_pedido = @Status
+        WHERE id = @Id;
+    </query>
+
+    <query name="CreateOrder">
+        INSERT INTO pedido (
+        id, usuario_id, data_pedido, status_pedido,
+        total_pedido, mercadopago_pagamento_id,
+        preference_id, metodo_pagamento, cupom_id
+        )
+        VALUES (
+        @Id, @UserId, @OrderDate, @Status,
+        @TotalAmount, @MercadoPagoPaymentId,
+        @PaymentMethod, NULL, @CupomId
+        )
+        RETURNING id;
+    </query>
+
+    <query name="CreateOrderItem">
+        INSERT INTO item_pedido (
+        pedido_id, produto_id, produto_variacao_id,
+        quantidade, preco_unitario
+        )
+        VALUES (
+        @OrderId, @ProductId, @ProductVariationId,
+        @Quantity, @UnitPrice
+        );
+    </query>
+
+    <query name="CreateOrderItems">
+        INSERT INTO item_pedido (
+        pedido_id, produto_id, produto_variacao_id,
+        quantidade, preco_unitario
+        )
+        VALUES (
+        @OrderId, @ProductId, @ProductVariationId,
+        @Quantity, @UnitPrice
+        );
+    </query>
+
+    <query name="UpdateOrderPreferenceId">
+        UPDATE pedido
+        SET preference_id = @PreferenceId
+        WHERE id = @Id;
+    </query>
+
+    <query name="UpdateOrderPaymentInfo">
+        UPDATE pedido
+        SET mercadopago_pagamento_id = @MercadoPagoPaymentId,
+        metodo_pagamento = @PaymentMethod,
+        status_pedido = @Status
+        WHERE id = @Id;
+    </query>
+
+    <query name="GetOrderById">
+        SELECT
+        id as Id,
+        usuario_id as UserId,
+        data_pedido as OrderDate,
+        status_pedido as Status,
+        mercadopago_pagamento_id as PaymentId,
+        preference_id as PreferenceId,
+        metodo_pagamento as PaymentMethod,
+        total_pedido as TotalAmount,
+        cupom_id as CupomId
+        FROM pedido
+        WHERE id = @Id;
+    </query>
+
+    <query name="GetOrderItemsByOrderId">
+        SELECT
+        id as Id,
+        pedido_id as PedidoId,
+        produto_id as ProdutoId,
+        produto_variacao_id as ProdutoVariacaoId,
+        quantidade as Quantidade,
+        preco_unitario as PrecoUnitario
+        FROM item_pedido
+        WHERE pedido_id = @OrderId;
+    </query>
+
+    <query name="GetOrdersByUserId">
+        SELECT
+        id as Id,
+        usuario_id as UserId,
+        data_pedido as OrderDate,
+        status_pedido as Status,
+        mercadopago_pagamento_id as PaymentId,
+        preference_id as PreferenceId,
+        metodo_pagamento as PaymentMethod,
+        total_pedido as TotalAmount,
+        cupom_id as CupomId
+        FROM pedido
+        WHERE usuario_id = @UserId
+        ORDER BY data_pedido DESC;
+    </query>
 </queries>
