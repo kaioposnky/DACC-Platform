@@ -218,5 +218,51 @@ namespace DaccApi.Controllers.Produtos
             var response = await _produtosService.DeleteImageAsync(imageId);
             return response;
         }
+
+        /// <summary>
+        /// Atualiza um produto existente via JSON.
+        /// </summary>
+        [AuthenticatedPatchResponses]
+        [HttpPatch("{id:guid}/json")]
+        [HasPermission(AppPermissions.Produtos.Update)]
+        public async Task<IActionResult> UpdateProductJson(
+            [FromRoute] Guid id,
+            [FromBody] RequestUpdateProduto requestUpdateProduto
+        )
+        {
+            var response = await _produtosService.UpdateProductAsync(id, requestUpdateProduto);
+            return response;
+        }
+
+        /// <summary>
+        /// Cria uma nova variação para um produto via JSON.
+        /// </summary>
+        [AuthenticatedPostResponses]
+        [HttpPost("{id:guid}/variations/json")]
+        [HasPermission(AppPermissions.Produtos.Create)]
+        public async Task<IActionResult> CreateVariationJson(
+            [FromRoute] Guid id,
+            [FromBody] RequestProdutoVariacaoCreate request
+        )
+        {
+            var response = await _produtosService.CreateVariationAsync(id, request);
+            return response;
+        }
+
+        /// <summary>
+        /// Atualiza uma variação de produto existente via JSON.
+        /// </summary>
+        [AuthenticatedPatchResponses]
+        [HttpPatch("{id:guid}/variations/{variationId:guid}/json")]
+        [HasPermission(AppPermissions.Produtos.Update)]
+        public async Task<IActionResult> UpdateVariationJson(
+            [FromRoute] Guid id,
+            [FromRoute] Guid variationId,
+            [FromBody] RequestUpdateProdutoVariacao request
+        )
+        {
+            var response = await _produtosService.UpdateVariationAsync(id, variationId, request);
+            return response;
+        }
     }
 }

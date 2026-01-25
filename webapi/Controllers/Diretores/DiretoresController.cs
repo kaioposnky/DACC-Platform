@@ -82,5 +82,27 @@ namespace DaccApi.Controllers.Diretores
             var response = await _diretoresService.UpdateDiretor(id, request);
             return response;
         }
+
+        /// <summary>
+        /// Cria um novo diretor via JSON (sem upload de imagem).
+        /// </summary>
+        [AuthenticatedPostResponses]
+        [HttpPost("json")]
+        public async Task<IActionResult> CreateDiretorJson([FromBody] RequestDiretorJson request)
+        {
+            var response = await _diretoresService.CreateDiretorJson(request);
+            return response;
+        }
+        
+        /// <summary>
+        /// Atualiza um diretor existente via JSON (sem upload de imagem).
+        /// </summary>
+        [AuthenticatedPatchResponses]
+        [HttpPatch("{id:guid}/json")]
+        public async Task<IActionResult> UpdateDiretorJson([FromRoute] Guid id, [FromBody] RequestDiretorJson request)
+        {
+            var response = await _diretoresService.UpdateDiretorJson(id, request);
+            return response;
+        }
     }
 }

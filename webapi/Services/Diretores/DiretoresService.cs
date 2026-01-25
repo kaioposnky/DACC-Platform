@@ -129,5 +129,67 @@ namespace DaccApi.Services.Diretores
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
             }
         }
+
+        public async Task<IActionResult> CreateDiretorJson(RequestDiretorJson request)
+        {
+            try
+            {
+                var diretor = new Diretor
+                {
+                    Id = Guid.NewGuid(),
+                    Nome = request.Nome,
+                    Titulo = request.Titulo,
+                    Cargo = request.Cargo,
+                    Especializacao = request.Especializacao,
+                    ImagemUrl = request.ImagemUrl, // URL já fornecida ou null
+                    Email = request.Email,
+                    Linkedin = request.Linkedin,
+                    Github = request.Github,
+                    UsuarioId = request.UsuarioId
+                };
+
+                await _diretoresRepository.CreateAsync(diretor);
+
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED.WithData(new ResponseDiretor(diretor)));
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> UpdateDiretorJson(Guid id, RequestDiretorJson request)
+        {
+            try
+            {
+                var diretorQuery = await _diretoresRepository.GetByIdAsync(id);
+                if (diretorQuery == null)
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
+                }
+
+                var diretor = new Diretor
+                {
+                    Nome = request.Nome,
+                    Titulo = request.Titulo,
+                    Cargo = request.Cargo,
+                    Especializacao = request.Especializacao,
+                    ImagemUrl = request.ImagemUrl ?? diretorQuery.ImagemUrl, // Mantém a URL existente se não fornecida
+                    Email = request.Email,
+                    Linkedin = request.Linkedin,
+                    Github = request.Github,
+                    UsuarioId = request.UsuarioId
+                };
+
+                await _diretoresRepository.UpdateAsync(id, diretor);
+
+                var response = new ResponseDiretor(diretor);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { diretor = response }));
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
     }
 }

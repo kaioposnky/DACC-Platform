@@ -117,5 +117,17 @@ namespace DaccApi.Controllers.Noticias
             var response = await _noticiasServices.UpdateNoticia(id, request);
             return response;
         }
+        
+        /// <summary>
+        /// Atualiza uma notícia existente via JSON.
+        /// </summary>
+        [AuthenticatedPatchResponses]
+        [HttpPatch("{id:guid}/json")]
+        [HasPermission(AppPermissions.Noticias.Update)]
+        public async Task<IActionResult> UpdateNoticiaJson([FromRoute] Guid id, [FromBody] RequestNoticia request)
+        {
+            var response = await _noticiasServices.UpdateNoticia(id, request);
+            return response;
+        }
     }
 }
