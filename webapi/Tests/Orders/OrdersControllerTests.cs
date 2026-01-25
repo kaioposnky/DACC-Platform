@@ -139,8 +139,10 @@ public class OrdersControllerTests : IntegrationTestBase
     {
         // 1. Setup Produto sem estoque
         await AuthenticateAsAdminAsync();
-        var product = ProductTestDataBuilder.CreateValidProduct(nome: $"Produto Sem Estoque {Guid.NewGuid()}");
-        await _client.PostAsJsonAsync(ProductsUrl, product);
+        var product = ProductTestDataBuilder.CreateValidProduct(nome: $"ProdSE_{Guid.NewGuid().ToString().Substring(0, 8)}");
+        var createResponse = await _client.PostAsJsonAsync(ProductsUrl, product);
+        var content = await createResponse.Content.ReadAsStringAsync();
+        createResponse.StatusCode.Should().Be(HttpStatusCode.Created, $"Creation failed: {content}");
         
         // Pegar ID (simplificado, assumindo que funciona pelo teste anterior)
         var listResponse = await _client.GetAsync(ProductsUrl);
@@ -149,16 +151,38 @@ public class OrdersControllerTests : IntegrationTestBase
         using (var doc = JsonDocument.Parse(listContent))
         {
             var dataElement = doc.RootElement.GetProperty("data");
-            JsonElement list = dataElement.ValueKind == JsonValueKind.Object ? dataElement.GetProperty("produtos") : dataElement;
+            JsonElement list;
+            if (dataElement.ValueKind == JsonValueKind.Array)
+            {
+                list = dataElement;
+            }
+            else if (dataElement.TryGetProperty("products", out var products))
+            {
+                list = products;
+            }
+            else
+            {
+                list = dataElement.ValueKind == JsonValueKind.Object ? dataElement.GetProperty("produtos") : dataElement;
+            }
+
             foreach (var item in list.EnumerateArray())
             {
-                if (item.GetProperty("name").GetString() == product.Nome) { productId = item.GetProperty("id").GetGuid(); break; }
+                // Verifica 'name' (padrão) ou 'Nome' (caso venha do backend assim)
+                var name = item.TryGetProperty("name", out var n) ? n.GetString() : item.GetProperty("Nome").GetString();
+                
+                if (name == product.Nome) { productId = item.GetProperty("id").GetGuid(); break; }
             }
         }
 
-        // Criar variação com estoque ZERO
+        // Criar variação com estoque ZERO (usando FormData, pois controller usa [FromForm])
         var variationRequest = ProductTestDataBuilder.CreateVariationRequest(estoque: 0);
-        await _client.PostAsJsonAsync($"{ProductsUrl}/{productId}/variations", variationRequest);
+        var formContent = new MultipartFormDataContent();
+        formContent.Add(new StringContent(variationRequest.Cor ?? ""), "Cor");
+        formContent.Add(new StringContent(variationRequest.Tamanho ?? ""), "Tamanho");
+        formContent.Add(new StringContent(variationRequest.Estoque.ToString()), "Estoque");
+        formContent.Add(new StringContent(variationRequest.OrdemVariacao.ToString()), "OrdemVariacao");
+        var varResponse = await _client.PostAsync($"{ProductsUrl}/{productId}/variations", formContent);
+        varResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         
         // Pegar ID Variação
         var varsResponse = await _client.GetAsync($"{ProductsUrl}/{productId}/variations");
@@ -180,4 +204,64 @@ public class OrdersControllerTests : IntegrationTestBase
         var errorContent = await response.Content.ReadAsStringAsync();
         errorContent.Should().ContainEquivalentOf("estoque");
     }
-}
+
+
+        [Fact]
+        public async Task Update_Order_Status_Should_Persist()
+        {
+            // 1. Setup - Criar Produto
+            await AuthenticateAsAdminAsync();
+            var product = ProductTestDataBuilder.CreateValidProduct();
+            var createProductResponse = await _client.PostAsJsonAsync(ProductsUrl, product);
+            createProductResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+            
+            // Obter ID do produto criado
+            var listResponse = await _client.GetAsync(ProductsUrl);
+            var listContent = await listResponse.Content.ReadAsStringAsync();
+            var products = JsonDocument.Parse(listContent).RootElement.GetProperty("data").EnumerateArray();
+            Guid? productId = null;
+            foreach (var item in products)
+            {
+                var name = item.TryGetProperty("name", out var n) ? n.GetString() : item.GetProperty("Nome").GetString();
+                if (name == product.Nome) { productId = item.GetProperty("id").GetGuid(); break; }
+            }
+
+            // Criar Variação
+            var variationRequest = ProductTestDataBuilder.CreateVariationRequest(estoque: 10);
+            var formContent = new MultipartFormDataContent();
+            formContent.Add(new StringContent(variationRequest.Cor ?? ""), "Cor");
+            formContent.Add(new StringContent(variationRequest.Tamanho ?? ""), "Tamanho");
+            formContent.Add(new StringContent(variationRequest.Estoque.ToString()), "Estoque");
+            formContent.Add(new StringContent(variationRequest.OrdemVariacao.ToString()), "OrdemVariação");
+            await _client.PostAsync($"{ProductsUrl}/{productId}/variations", formContent);
+            
+            // Obter ID da Variação
+            var varsResponse = await _client.GetAsync($"{ProductsUrl}/{productId}/variations");
+            var varsContent = await varsResponse.Content.ReadAsStringAsync();
+            var varId = JsonDocument.Parse(varsContent).RootElement.GetProperty("data")[0].GetProperty("id").GetGuid();
+
+            // 2. Criar Pedido (User)
+            await AuthenticateAsUserAsync();
+            var orderRequest = OrderTestDataBuilder.CreateValidOrder(varId, productId!.Value, 1);
+            var createOrderResponse = await _client.PostAsJsonAsync(BaseUrl, orderRequest);
+            createOrderResponse.StatusCode.Should().Be(HttpStatusCode.Created); // 201 Created
+            
+            var createOrderContent = await createOrderResponse.Content.ReadAsStringAsync();
+            var orderId = JsonDocument.Parse(createOrderContent).RootElement.GetProperty("data").GetProperty("order").GetProperty("id").GetGuid();
+
+            // 3. Atualizar Status (Admin)
+            await AuthenticateAsAdminAsync();
+            var newStatus = "shipped";
+            var updateResponse = await _client.PutAsJsonAsync($"{BaseUrl}/{orderId}/status", newStatus);
+            updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            // 4. Verificar Persistência
+            var getOrderResponse = await _client.GetAsync($"{BaseUrl}/{orderId}");
+            getOrderResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            
+            var getOrderContent = await getOrderResponse.Content.ReadAsStringAsync();
+            var status = JsonDocument.Parse(getOrderContent).RootElement.GetProperty("data").GetProperty("orders").GetProperty("status").GetString();
+            
+            status.Should().Be(newStatus);
+        }
+    }
