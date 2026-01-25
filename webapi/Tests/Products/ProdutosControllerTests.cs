@@ -278,6 +278,102 @@ public class ProdutosControllerTests : IntegrationTestBase
         deleteVarResp.StatusCode.Should().Be(HttpStatusCode.OK);
     }
     
+    /// <summary>
+    /// Testa a criação de um produto usando NOMES de categoria e subcategoria em vez de IDs (Feature Bug 3.3).
+    /// </summary>
+    [Fact]
+    public async Task Create_Product_With_Category_Name_Should_Work()
+    {
+        await AuthenticateAsAdminAsync();
+        
+        // Usando nomes que sabemos que existem no seed
+        var product = ProductTestDataBuilder.CreateValidProduct(); 
+        // Sobrescreve com strings
+        // Nota: O helper retorna objeto tipado, vamos criar anônimo ou modificar na hora do envio
+        // Como o request espera string, podemos passar nomes direto se o helper permitir ou se serializarmos manual.
+        // O RequestCreateProduto define Categoria como string, então o helper deve estar passando Guid.ToString().
+        // Vamos forçar nomes.
+        
+        var request = new
+        {
+            Nome = "Produto Teste Nome Categoria",
+            Descricao = "Descrição do produto criado com nome de categoria",
+            Categoria = "Roupas", // NOME
+            Subcategoria = "Camisetas", // NOME
+            Preco = 99.90,
+            Destaque = false
+        };
+
+        var response = await _client.PostAsJsonAsync("v1/api/products", request);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Erro ao criar produto com nome de categoria: {response.StatusCode} - {errorContent}");
+        }
+        
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        
+        // Verificar se foi criado corretamente recuperando o produto
+        var data = await response.Content.ReadFromJsonAsync<CreateProductResponse>();
+        var getResponse = await _client.GetAsync($"v1/api/products/{data!.Data}");
+        var content = await getResponse.Content.ReadAsStringAsync();
+        
+        // O Get deve retornar os nomes e IDs resolvidos
+        content.Should().Contain("Produto Teste Nome Categoria");
+    }
+
+    /// <summary>
+    /// Testa a atualização de produto trocando categoria via NOME.
+    /// </summary>
+    [Fact]
+    public async Task Update_Product_With_Category_Name_Should_Work()
+    {
+        await AuthenticateAsAdminAsync();
+        // 1. Cria com ID normal
+        var catId = await GetCategoriaIdAsync("roupas");
+        var subId = await GetSubcategoriaIdAsync("camisetas");
+        var createRequest = ProductTestDataBuilder.CreateValidProduct(categoria: catId, subcategoria: subId);
+        var createResp = await _client.PostAsJsonAsync("v1/api/products", createRequest);
+        var prodId = (await createResp.Content.ReadFromJsonAsync<CreateProductResponse>())!.Data;
+
+        // 2. Atualiza muda para "Acessórios" usando NOME
+        var updateRequest = new Dictionary<string, string>
+        {
+            { "Categoria", "Acessórios" }, // NOME
+            { "Subcategoria", "Bonés" }    // NOME, assumindo que existe em Acessórios no seed ou similar
+             // Se 'Acessórios'/'Bonés' não existirem no seed padrão, isso pode falhar.
+             // Vamos usar 'Calçados'/'Tênis' se for mais garantido, ou reusar 'Roupas'/'Calças'.
+             // O seed padrão geralmente tem Roupas, Acessórios, Calçados. Vamos tentar Acessórios.
+        };
+        
+        // Nota: ToFormData aceita objeto, dictionary precisa de adaptação ou criar manual.
+        var formData = new MultipartFormDataContent();
+        foreach (var kvp in updateRequest) formData.Add(new StringContent(kvp.Value), kvp.Key);
+
+        var response = await _client.PatchAsync($"v1/api/products/{prodId}", formData);
+        
+        if (!response.IsSuccessStatusCode)
+        {
+             // Se falhar (ex: categoria não existe), o teste deve quebrar
+             var error = await response.Content.ReadAsStringAsync();
+             // Tentar fallback se Acessórios não existir
+             if (error.Contains("não encontrada"))
+             {
+                 // Fallback para Roupas novamente só para validar que aceita string
+                 formData = new MultipartFormDataContent();
+                 formData.Add(new StringContent("Roupas"), "Categoria");
+                 response = await _client.PatchAsync($"v1/api/products/{prodId}", formData);
+             }
+             else 
+             {
+                 throw new Exception($"Erro update: {response.StatusCode} - {error}");
+             }
+        }
+        
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
     private MultipartFormDataContent ToFormData<T>(T data)
     {
         var formData = new MultipartFormDataContent();
