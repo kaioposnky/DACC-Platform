@@ -134,15 +134,15 @@ namespace DaccApi.Model
         /// <summary>
         /// Cria um objeto Produto a partir de uma requisição de criação.
         /// </summary>
-        public static Produto FromRequest(RequestCreateProduto request, Guid productId)
+        public static Produto FromRequest(RequestCreateProduto request, Guid productId, Guid categoryId, Guid? subcategoryId)
         {
             return new Produto
             {
                 Id = productId,
                 Nome = request.Nome,
                 Descricao = request.Descricao,
-                Categoria = Guid.Parse(request.Categoria),
-                Subcategoria = !string.IsNullOrEmpty(request.Subcategoria) ? Guid.Parse(request.Subcategoria) : null,
+                Categoria = categoryId,
+                Subcategoria = subcategoryId,
                 Preco = Convert.ToDecimal(request.Preco),
                 PrecoOriginal = Convert.ToDecimal(request.Preco),
                 Ativo = true,
@@ -167,12 +167,12 @@ namespace DaccApi.Model
         /// <summary>
         /// Atualiza as propriedades do produto a partir de uma requisição de atualização.
         /// </summary>
-        public void UpdateFromRequest(RequestUpdateProduto request)
+        public void UpdateFromRequest(RequestUpdateProduto request, Guid? categoryId = null, Guid? subcategoryId = null)
         {
             if (request.Nome != null) Nome = request.Nome;
             if (request.Descricao != null) Descricao = request.Descricao;
-            if (request.Categoria != null) Categoria = Guid.Parse(request.Categoria);
-            if (request.Subcategoria != null) Subcategoria = !string.IsNullOrEmpty(request.Subcategoria) ? Guid.Parse(request.Subcategoria) : null;
+            if (categoryId.HasValue) Categoria = categoryId.Value;
+            if (request.Subcategoria != null) Subcategoria = subcategoryId;
             if (request.Preco.HasValue) Preco = Convert.ToDecimal(request.Preco.Value);
             if (request.PrecoOriginal.HasValue) PrecoOriginal = Convert.ToDecimal(request.PrecoOriginal.Value);
             if (request.DescricaoDetalhada != null) DescricaoDetalhada = request.DescricaoDetalhada;

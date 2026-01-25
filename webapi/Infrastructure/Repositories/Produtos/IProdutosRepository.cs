@@ -103,6 +103,17 @@ namespace DaccApi.Infrastructure.Repositories.Products
         /// <summary>
         /// Obtém as avaliações de um produto.
         /// </summary>
+        /// <summary>
+        /// Obtém o ID de uma categoria a partir de seu nome.
+        /// </summary>
+        Task<Guid?> GetCategoryIdByNameAsync(string categoryName);
+        /// <summary>
+        /// Obtém o ID de uma subcategoria a partir de seu nome.
+        /// </summary>
+        Task<Guid?> GetSubcategoryIdByNameAsync(string subcategoryName);
+        /// <summary>
+        /// Obtém as avaliações de um produto.
+        /// </summary>
         Task<List<AvaliacaoProduto>> GetProductReviewsAsync(Guid productId);
     }
 }

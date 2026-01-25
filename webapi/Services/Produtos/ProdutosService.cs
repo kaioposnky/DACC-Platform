@@ -72,11 +72,18 @@ namespace DaccApi.Services.Products
             try
             {
                 var productId = Guid.NewGuid();
-                var product = await CreateProductEntityAsync(requestCreateProduto, productId);
+                var categoryId = await ResolveCategoryIdAsync(requestCreateProduto.Categoria);
+                var subcategoryId = await ResolveSubcategoryIdAsync(requestCreateProduto.Subcategoria);
+
+                var product = await CreateProductEntityAsync(requestCreateProduto, productId, categoryId, subcategoryId);
 
                 return ResponseHelper.CreateSuccessResponse(
                     ResponseSuccess.CREATED.WithData(new { productId = product.Id }),
                     "Produto criado com sucesso! Use o endpoint de variações para adicionar opções de compra.");
+            }
+            catch (ArgumentException ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.VALIDATION_ERROR, ex.Message);
             }
             catch (Exception ex)
             {
@@ -85,9 +92,9 @@ namespace DaccApi.Services.Products
             }
         }
 
-        private async Task<Produto> CreateProductEntityAsync(RequestCreateProduto request, Guid productId)
+        private async Task<Produto> CreateProductEntityAsync(RequestCreateProduto request, Guid productId, Guid categoryId, Guid? subcategoryId)
         {
-            var product = Produto.FromRequest(request, productId);
+            var product = Produto.FromRequest(request, productId, categoryId, subcategoryId);
             await _produtosRepository.CreateProductAsync(product);
             return product;
         }
@@ -329,7 +336,19 @@ namespace DaccApi.Services.Products
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Produto não encontrado!");
                 }
 
-                product.UpdateFromRequest(requestUpdateProduto);
+                Guid? categoryId = null;
+                if (!string.IsNullOrEmpty(requestUpdateProduto.Categoria))
+                {
+                    categoryId = await ResolveCategoryIdAsync(requestUpdateProduto.Categoria);
+                }
+                
+                Guid? subcategoryId = null;
+                if (requestUpdateProduto.Subcategoria != null) // != null pois pode ser string vazia para limpar
+                {
+                    subcategoryId = await ResolveSubcategoryIdAsync(requestUpdateProduto.Subcategoria);
+                }
+
+                product.UpdateFromRequest(requestUpdateProduto, categoryId, subcategoryId);
 
                 await _produtosRepository.UpdateProductAsync(product);
 
@@ -338,12 +357,17 @@ namespace DaccApi.Services.Products
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(response), "Produto atualizado com sucesso!");
             }
+            catch (ArgumentException ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.VALIDATION_ERROR, ex.Message);
+            }
             catch (Exception ex)
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, $"Erro ao atualizar produto: {ex.Message}");
             }
         }
         
+        // Métodos para imagem (sem alteração)
         public async Task<IActionResult> CreateVariationImageAsync(Guid productId, Guid variationId,
             RequestCreateProdutoImagem request)
         {
@@ -472,6 +496,45 @@ namespace DaccApi.Services.Products
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,
                     $"Erro ao remover imagem: {ex.Message}");
             }
+        }
+
+        // Métodos Auxiliares para Resolução de ID vs Nome
+        
+        private async Task<Guid> ResolveCategoryIdAsync(string input)
+        {
+            if (Guid.TryParse(input, out var guid))
+            {
+                // TODO: Validar se categoria existe (opcional, pode deixar o FK do banco pegar)
+                return guid;
+            }
+
+            // Tenta buscar por nome
+            var categoryId = await _produtosRepository.GetCategoryIdByNameAsync(input);
+            if (categoryId == null)
+            {
+                throw new ArgumentException($"Categoria '{input}' não encontrada.");
+            }
+
+            return categoryId.Value;
+        }
+
+        private async Task<Guid?> ResolveSubcategoryIdAsync(string input)
+        {
+            if (string.IsNullOrEmpty(input)) return null;
+
+            if (Guid.TryParse(input, out var guid))
+            {
+                return guid;
+            }
+
+            // Tenta buscar por nome
+            var subcategoryId = await _produtosRepository.GetSubcategoryIdByNameAsync(input);
+            if (subcategoryId == null)
+            {
+                throw new ArgumentException($"Subcategoria '{input}' não encontrada.");
+            }
+
+            return subcategoryId;
         }
     }
 }

@@ -111,7 +111,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
             return reviews.ToList();
         }
 
-        private async Task<Guid?> GetSubcategoryIdByNameAsync(string subcategoryName)
+        public async Task<Guid?> GetSubcategoryIdByNameAsync(string subcategoryName)
         {
             if (string.IsNullOrEmpty(subcategoryName)) return null;
             var sql = _repositoryDapper.GetQueryNamed("GetSubcategoryIdByName");
@@ -120,7 +120,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
             return subcategoryId.FirstOrDefault();
         }
 
-        private async Task<Guid?> GetCategoryIdByNameAsync(string categoryName)
+        public async Task<Guid?> GetCategoryIdByNameAsync(string categoryName)
         {
             if (string.IsNullOrEmpty(categoryName)) return null;
             var sql = _repositoryDapper.GetQueryNamed("GetCategoryIdByName");
@@ -573,8 +573,46 @@ namespace DaccApi.Infrastructure.Repositories.Products
         {
             try
             {
-                var sql = _repositoryDapper.GetQueryNamed("GetVariationsWithProductByIds");
-                var parameters = new { VariationIds = variationIds };
+                if (variationIds == null || variationIds.Count == 0)
+                    return new List<ProdutoVariacaoInfo>();
+
+                // Dapper não suporta arrays nativamente para PostgreSQL ANY().
+                // Construímos uma IN clause dinâmica com parâmetros individuais.
+                var parameterNames = variationIds.Select((id, index) => $"@id{index}").ToList();
+                var inClause = string.Join(", ", parameterNames);
+                
+                var sql = $@"SELECT DISTINCT ON (pv.id)
+                    pv.id as VariationId,
+                    pv.produto_id as ProductId,
+                    p.nome as ProductName,
+                    p.preco as Preco,
+                    pc.nome as ColorName,
+                    pt.nome as SizeName,
+                    pv.estoque as Stock,
+                    COALESCE(r.quantidade_reservada, 0) as ReservedStock,
+                    (pv.estoque - COALESCE(r.quantidade_reservada, 0)) as AvailableStock,
+                    pi.imagem_url as ImageUrl,
+                    pi.imagem_alt as ImageAlt
+                    FROM produto_variacao pv
+                    INNER JOIN produto p ON pv.produto_id = p.id
+                    LEFT JOIN produto_cor pc ON pv.cor_id = pc.id
+                    LEFT JOIN produto_tamanho pt ON pv.tamanho_id = pt.id
+                    LEFT JOIN produto_imagem pi ON pi.produto_variacao_id = pv.id
+                    LEFT JOIN (
+                        SELECT produto_variacao_id, SUM(quantidade) as quantidade_reservada
+                        FROM reserva_produto 
+                        WHERE ativo = true AND data_expira > NOW()
+                        GROUP BY produto_variacao_id
+                    ) r ON r.produto_variacao_id = pv.id
+                    WHERE pv.id IN ({inClause}) AND p.ativo = true
+                    ORDER BY pv.id, pi.ordem ASC NULLS LAST";
+
+                // Construir parâmetros dinâmicos
+                var parameters = new DynamicParameters();
+                for (int i = 0; i < variationIds.Count; i++)
+                {
+                    parameters.Add($"id{i}", variationIds[i]);
+                }
 
                 var variations = await _repositoryDapper.QueryAsync<ProdutoVariacaoInfo>(sql, parameters);
                 return variations.ToList();
