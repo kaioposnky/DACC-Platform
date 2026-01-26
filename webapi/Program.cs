@@ -128,7 +128,7 @@ builder
                 .ModelState.SelectMany(m =>
                     m.Value.Errors.Select(e => new ResponseError.ValidationErrorDetail
                     {
-                        Field = char.ToLowerInvariant(m.Key[0]) + m.Key[1..],
+                        Field = string.IsNullOrEmpty(m.Key) ? "unknown" : char.ToLowerInvariant(m.Key[0]) + m.Key[1..],
                         Message = e.ErrorMessage,
                     })
                 )
