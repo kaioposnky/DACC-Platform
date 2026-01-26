@@ -24,7 +24,7 @@ namespace DaccApi.Infrastructure.Repositories.Orders
         /// <summary>
         /// Obtém um pedido específico pelo seu ID.
         /// </summary>
-        Task<Order?> GetOrderById(Guid id);
+        Task<Order?> GetOrderById(Guid id, IDbTransaction? transaction = null);
         /// <summary>
         /// Obtém todos os itens de um pedido específico.
         /// </summary>

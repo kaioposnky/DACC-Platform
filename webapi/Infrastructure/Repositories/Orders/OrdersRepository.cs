@@ -41,17 +41,17 @@ namespace DaccApi.Infrastructure.Repositories.Orders
                     CupomId = order.CupomId
                 };
                 
-                IEnumerable<Guid> orderId;
+                
                 if (transaction != null)
                 {
-                    orderId = await _repositoryDapper.QueryAsync<Guid>(sql, parameters, transaction);
+                    await _repositoryDapper.ExecuteAsync(sql, parameters, transaction);
                 }
                 else
                 {
-                    orderId = await _repositoryDapper.QueryAsync<Guid>(sql, parameters);
+                    await _repositoryDapper.ExecuteAsync(sql, parameters);
                 }
                 
-                return orderId.FirstOrDefault();
+                return order.Id;
             }
             catch (Exception ex)
             {
@@ -130,14 +130,25 @@ namespace DaccApi.Infrastructure.Repositories.Orders
         /// <summary>
         /// Obtém um pedido específico pelo seu ID.
         /// </summary>
-        public async Task<Order?> GetOrderById(Guid id)
+        public async Task<Order?> GetOrderById(Guid id, IDbTransaction? transaction = null)
         {
             try
             {
                 var sql = _repositoryDapper.GetQueryNamed("GetOrderById");
                 var parameters = new { Id = id };
-                var order = (await _repositoryDapper.QueryAsync<Order>(sql, parameters)).FirstOrDefault();
-                return order;
+                IEnumerable<Order> order;
+                
+                if (transaction != null)
+                {
+                    order = await _repositoryDapper.QueryAsync<Order>(sql, parameters, transaction);
+                }
+                else
+                {
+                    order = await _repositoryDapper.QueryAsync<Order>(sql, parameters);
+                }
+                
+                var result = order.FirstOrDefault();
+                return result;
             }
             catch (Exception ex)
             {
