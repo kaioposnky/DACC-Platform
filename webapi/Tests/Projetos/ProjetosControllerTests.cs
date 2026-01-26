@@ -22,7 +22,9 @@ public class ProjetosControllerTests : IntegrationTestBase
         // Antes de criar, precisamos garantir que a diretoria exista no banco (se houver FK ativa)
         // Como o sqlcode.sql parece não ter inserts para diretoria, este teste pode falhar com 500.
         // Se falhar, documentaremos no Relatório de Bugs.
-        var projeto = ProjetoTestDataBuilder.CreateValidProjeto(titulo: "Projeto Teste Criação", diretoria: "Inovação");
+        // Garante que a diretoria "Inovação" exista para não quebrar a FK
+        await EnsureDiretoriaExistsAsync("Marketing");
+        var projeto = ProjetoTestDataBuilder.CreateValidProjeto(titulo: "Projeto Teste Criação", diretoria: "Marketing");
 
         var response = await _client.PostAsJsonAsync(BaseUrl, projeto);
 

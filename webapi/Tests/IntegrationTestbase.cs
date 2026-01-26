@@ -218,6 +218,30 @@ public class IntegrationTestBase : IAsyncLifetime
         return result?.ToString() ?? throw new Exception($"Subcategoria '{nome}' não encontrada");
     }
 
+    /// <summary>
+    /// Garante que uma diretoria com o nome especificado exista no banco de dados.
+    /// </summary>
+    protected async Task EnsureDiretoriaExistsAsync(string nome)
+    {
+        var connectionString = _dbcontainer.GetConnectionString();
+        await using var connection = new NpgsqlConnection(connectionString);
+        await connection.OpenAsync();
+
+        // Verifica se já existe
+        var checkSql = "SELECT COUNT(*) FROM diretoria WHERE nome = @nome";
+        await using var checkCommand = new NpgsqlCommand(checkSql, connection);
+        checkCommand.Parameters.AddWithValue("nome", nome);
+        var count = (long)(await checkCommand.ExecuteScalarAsync() ?? 0);
+
+        if (count == 0)
+        {
+            var insertSql = "INSERT INTO diretoria (nome) VALUES (@nome)";
+            await using var insertCommand = new NpgsqlCommand(insertSql, connection);
+            insertCommand.Parameters.AddWithValue("nome", nome);
+            await insertCommand.ExecuteNonQueryAsync();
+        }
+    }
+
     public async Task DisposeAsync()
     {
         await _dbcontainer.StopAsync();
