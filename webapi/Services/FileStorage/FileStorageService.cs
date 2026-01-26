@@ -19,6 +19,11 @@ namespace DaccApi.Services.FileStorage
 
         public async Task<string> SaveImageFileAsync(IFormFile file)
         {
+            if (file == null || file.Length == 0)
+            {
+                throw new ArgumentException("Arquivo inválido ou vazio.");
+            }
+
             if (file.Length > MaxFileSize)
             {
                 throw new ArgumentException("Arquivo excede o tamanho máximo de 5MB.");
@@ -45,22 +50,32 @@ namespace DaccApi.Services.FileStorage
             var uniqueFileName = $"{Guid.NewGuid()}{extension}";
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-            await using (var stream = file.OpenReadStream())
+            try
             {
-                try
-                {
-                    var image = await Image.LoadAsync(stream);
-                    await image.SaveAsWebpAsync(filePath);
-                }
-                catch (Exception ex)
-                {
-                    throw new ArgumentException("Formato de imagem inválido!",ex.Message);
-                }
+                await using var stream = file.OpenReadStream();
+                using var image = await Image.LoadAsync(stream);
+                await image.SaveAsWebpAsync(filePath);
+            }
+            catch (UnknownImageFormatException)
+            {
+                 throw new ArgumentException("Formato de imagem inválido ou não suportado.");
+            }
+            catch (Exception ex)
+            {
+                // Logar o erro real aqui seria ideal
+                Console.WriteLine($"Erro ao processar imagem: {ex}");
+                throw new ArgumentException("Falha ao processar o arquivo de imagem.", ex);
             }
 
-            var request = _httpContextAccessor.HttpContext!.Request;
-            var url = $"{request.Scheme}://{request.Host}/{subfolder}/{uniqueFileName}";
+            // Construção segura da URL
+            var request = _httpContextAccessor.HttpContext?.Request;
+            if (request == null)
+            {
+                // Fallback para contextos sem HTTP (ex: testes, background jobs)
+                return $"/{subfolder}/{uniqueFileName}";
+            }
 
+            var url = $"{request.Scheme}://{request.Host}/{subfolder}/{uniqueFileName}";
             return url;
         }
     }
