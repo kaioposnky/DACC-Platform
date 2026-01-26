@@ -146,6 +146,11 @@ namespace DaccApi.Services.Orders
             using var transaction = _dapper.BeginTransaction();
             try
             {
+                // Criar o pedido PRIMEIRO para satisfazer a FK em reserva_produto
+                await _ordersRepository.CreateOrder(order, transaction);
+                await _ordersRepository.CreateOrderItems(order.Id, orderItems, transaction);
+
+                // Depois criar as reservas (que referenciam o pedido)
                 var totalReservado = await _reservaRepository.CreateReservasLoteAtomica(reservas, transaction);
                 var totalSolicitado = reservas.Sum(r => r.Quantity);
 
@@ -154,9 +159,6 @@ namespace DaccApi.Services.Orders
                     throw new ProductOutOfStockException(
                         "Um ou mais produtos não possuem estoque suficiente no momento!");
                 }
-
-                await _ordersRepository.CreateOrder(order, transaction);
-                await _ordersRepository.CreateOrderItems(order.Id, orderItems, transaction);
                 
                 preference = await _mercadoPagoService.CreatePreferenceAsync(
                     order, productVariationsInfo, orderExpireDate);

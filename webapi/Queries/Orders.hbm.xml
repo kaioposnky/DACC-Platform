@@ -78,8 +78,7 @@
         @Id, @UserId, @OrderDate, @Status,
         @TotalAmount, @MercadoPagoPaymentId,
         @PaymentMethod, NULL, @CupomId
-        )
-        RETURNING id;
+        );
     </query>
 
     <query name="CreateOrderItem">
