@@ -133,14 +133,19 @@ public class IntegrationTestBase : IAsyncLifetime
         Console.WriteLine($"[DEBUG] Register response status: {response.StatusCode}");
         Console.WriteLine($"[DEBUG] Register response: {responseContent}");
         
-        // Se deu erro diferente de BadRequest (que pode ser email já existe), lança exceção detalhada
-        if (!response.IsSuccessStatusCode && response.StatusCode != System.Net.HttpStatusCode.BadRequest)
+        bool created = response.IsSuccessStatusCode;
+        // O backend pode retornar 500 ou 400 para duplicação. Verificamos a mensagem.
+        bool alreadyExists = response.StatusCode == System.Net.HttpStatusCode.BadRequest 
+                             || (response.StatusCode == System.Net.HttpStatusCode.InternalServerError && responseContent.Contains("Já existe um usuário"));
+
+        // Se deu erro e NÃO é porque já existe, lança exceção
+        if (!created && !alreadyExists)
         {
             throw new Exception($"Erro ao criar usuário ({response.StatusCode}): {responseContent}");
         }
         
-        // Se for admin, atualiza o cargo no banco
-        if (cargo == "administrador" && response.IsSuccessStatusCode)
+        // Se for admin, atualiza o cargo no banco (garante permissão mesmo se usuário já existia)
+        if (cargo == "administrador")
         {
             await SetUserRoleDirectlyAsync(email, cargo);
         }
