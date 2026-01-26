@@ -51,10 +51,15 @@ public class OrdersControllerTests : IntegrationTestBase
         }
         productId.Should().NotBeNull();
 
-        // Criar variação com estoque
+        // Criar variação com estoque (usando FormData pois controller usa [FromForm])
         var variationRequest = ProductTestDataBuilder.CreateVariationRequest(estoque: 100);
-        var variationResponse = await _client.PostAsJsonAsync($"{ProductsUrl}/{productId}/variations", variationRequest);
-        variationResponse.StatusCode.Should().Be(HttpStatusCode.OK); // Controller retorna 200 para create variation
+        var formContent = new MultipartFormDataContent();
+        formContent.Add(new StringContent(variationRequest.Cor ?? ""), "Cor");
+        formContent.Add(new StringContent(variationRequest.Tamanho ?? ""), "Tamanho");
+        formContent.Add(new StringContent(variationRequest.Estoque.ToString()), "Estoque");
+        formContent.Add(new StringContent(variationRequest.OrdemVariacao.ToString()), "OrdemVariacao");
+        var variationResponse = await _client.PostAsync($"{ProductsUrl}/{productId}/variations", formContent);
+        variationResponse.StatusCode.Should().Be(HttpStatusCode.Created); // Controller retorna 201 para criar variação
 
         // Obter ID da variação
         var variationsResponse = await _client.GetAsync($"{ProductsUrl}/{productId}/variations");
@@ -232,7 +237,7 @@ public class OrdersControllerTests : IntegrationTestBase
             formContent.Add(new StringContent(variationRequest.Cor ?? ""), "Cor");
             formContent.Add(new StringContent(variationRequest.Tamanho ?? ""), "Tamanho");
             formContent.Add(new StringContent(variationRequest.Estoque.ToString()), "Estoque");
-            formContent.Add(new StringContent(variationRequest.OrdemVariacao.ToString()), "OrdemVariação");
+            formContent.Add(new StringContent(variationRequest.OrdemVariacao.ToString()), "OrdemVariacao");
             await _client.PostAsync($"{ProductsUrl}/{productId}/variations", formContent);
             
             // Obter ID da Variação
@@ -247,11 +252,11 @@ public class OrdersControllerTests : IntegrationTestBase
             createOrderResponse.StatusCode.Should().Be(HttpStatusCode.Created); // 201 Created
             
             var createOrderContent = await createOrderResponse.Content.ReadAsStringAsync();
-            var orderId = JsonDocument.Parse(createOrderContent).RootElement.GetProperty("data").GetProperty("order").GetProperty("id").GetGuid();
+            var orderId = JsonDocument.Parse(createOrderContent).RootElement.GetProperty("data").GetProperty("id").GetGuid();
 
             // 3. Atualizar Status (Admin)
             await AuthenticateAsAdminAsync();
-            var newStatus = "shipped";
+            var newStatus = "approved";
             var updateResponse = await _client.PutAsJsonAsync($"{BaseUrl}/{orderId}/status", newStatus);
             updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -260,7 +265,7 @@ public class OrdersControllerTests : IntegrationTestBase
             getOrderResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             
             var getOrderContent = await getOrderResponse.Content.ReadAsStringAsync();
-            var status = JsonDocument.Parse(getOrderContent).RootElement.GetProperty("data").GetProperty("orders").GetProperty("status").GetString();
+            var status = JsonDocument.Parse(getOrderContent).RootElement.GetProperty("data").GetProperty("status").GetString();
             
             status.Should().Be(newStatus);
         }
