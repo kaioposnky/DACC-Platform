@@ -340,18 +340,7 @@ CREATE TABLE produto_imagem
     ordem               INT          NOT NULL DEFAULT 0
 );
 
--- Tabela: Reservas de produto
--- Cria uma reserva de quantidade de produto para ser alterado no pedido
-DROP TABLE IF EXISTS reserva_produto CASCADE;
-CREATE TABLE reserva_produto (
-                                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                                 produto_variacao_id UUID REFERENCES produto_variacao(id),
-                                 pedido_id UUID REFERENCES produto(id),
-                                 quantidade INT NOT NULL,
-                                 ativo BOOLEAN DEFAULT true,
-                                 data_expira TIMESTAMP NOT NULL,
-                                 data_criacao TIMESTAMP DEFAULT NOW()
-);
+
 
 -- Tabela: Status de Pedido
 -- Define os diferentes estados possíveis para um pedido
@@ -401,6 +390,19 @@ CREATE TABLE pedido
     metodo_pagamento         VARCHAR(50) REFERENCES metodo_pagamento (nome) NULL,
     total_pedido             NUMERIC(10, 2) NOT NULL,
     cupom_id                 UUID REFERENCES cupom (id)
+);
+
+-- Tabela: Reservas de produto
+-- Cria uma reserva de quantidade de produto para ser alterado no pedido
+DROP TABLE IF EXISTS reserva_produto CASCADE;
+CREATE TABLE reserva_produto (
+                                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                                 produto_variacao_id UUID REFERENCES produto_variacao(id),
+                                 pedido_id UUID REFERENCES pedido(id),
+                                 quantidade INT NOT NULL,
+                                 ativo BOOLEAN DEFAULT true,
+                                 data_expira TIMESTAMP NOT NULL,
+                                 data_criacao TIMESTAMP DEFAULT NOW()
 );
 
 -- Tabela: Itens do Pedido
