@@ -9,16 +9,29 @@ using DaccApi.Services.FileStorage;
 
 namespace DaccApi.Services.Projetos
 {
+    /// <summary>
+    /// Serviço responsável pelo gerenciamento de projetos.
+    /// </summary>
     public class ProjetosService : IProjetosService
     {
         private readonly IProjetosRepository _projetosRepository;
         private readonly IFileStorageService _fileStorageService;
 
+        /// <summary>
+        /// Construtor do serviço de projetos.
+        /// </summary>
+        /// <param name="projetosRepository">Repositório de projetos.</param>
+        /// <param name="fileStorageService">Serviço de armazenamento de arquivos.</param>
         public ProjetosService(IProjetosRepository projetosRepository, IFileStorageService fileStorageService)
         {
             _projetosRepository = projetosRepository;
             _fileStorageService = fileStorageService;
         }
+
+        /// <summary>
+        /// Obtém todos os projetos cadastrados.
+        /// </summary>
+        /// <returns>Lista de projetos ou NoContent se não houver.</returns>
         public async Task<IActionResult> GetAllProjetos()
         {
             try
@@ -38,6 +51,11 @@ namespace DaccApi.Services.Projetos
             
         }
 
+        /// <summary>
+        /// Obtém um projeto pelo ID.
+        /// </summary>
+        /// <param name="id">ID do projeto.</param>
+        /// <returns>Projeto encontrado ou NoContent.</returns>
         public async Task<IActionResult> GetProjetoById(Guid id)
         {
             try
@@ -56,6 +74,11 @@ namespace DaccApi.Services.Projetos
         }
 
 
+        /// <summary>
+        /// Cria um novo projeto.
+        /// </summary>
+        /// <param name="request">Dados do projeto.</param>
+        /// <returns>Resposta de criação.</returns>
         public async Task<IActionResult> CreateProjeto(RequestProjeto request)
         {
             try
@@ -94,7 +117,12 @@ namespace DaccApi.Services.Projetos
             }
         }
         
-        
+        /// <summary>
+        /// Adiciona uma imagem a um projeto.
+        /// </summary>
+        /// <param name="id">ID do projeto.</param>
+        /// <param name="request">Arquivo de imagem.</param>
+        /// <returns>Status da operação.</returns>
         public async Task<IActionResult> AddProjetoImage(Guid id, ImageRequest request)
         {
             try
@@ -122,6 +150,11 @@ namespace DaccApi.Services.Projetos
         }
         
 
+        /// <summary>
+        /// Remove um projeto pelo ID.
+        /// </summary>
+        /// <param name="id">ID do projeto.</param>
+        /// <returns>Status da operação.</returns>
         public async Task<IActionResult> DeleteProjeto(Guid id)
         {
             try
@@ -142,6 +175,12 @@ namespace DaccApi.Services.Projetos
             }
         }
 
+        /// <summary>
+        /// Atualiza um projeto existente.
+        /// </summary>
+        /// <param name="id">ID do projeto.</param>
+        /// <param name="request">Novos dados do projeto.</param>
+        /// <returns>Status da operação.</returns>
         public async Task<IActionResult> UpdateProjeto(Guid id, RequestProjeto request)
         {
             try
