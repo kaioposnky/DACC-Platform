@@ -71,16 +71,16 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
         | Campo   | Tipo     | Obrigatório | Descrição         |
         |---------|----------|-------------|-------------------|
-        | `email` | `string` | Sim         | E-mail do usuário |
-        | `senha` | `string` | Sim         | Senha do usuário  |
+        | `email` | `string` | Sim         | User email        |
+        | `password` | `string` | Sim         | User password  |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
     curl -X POST http://localhost:3001/v1/api/auth/login \
     -H "Content-Type: application/json" \
     -d '{
-      "email": "usuario@exemplo.com",
-      "senha": "minhasenha123"
+      "email": "user@example.com",
+      "password": "mypassword123"
     }'
     ```
 
@@ -97,8 +97,9 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
             "expiresIn": 3600,
             "user": {
               "id": "12345678-1234-1234-1234-123456789012",
-              "nome": "João Silva",
-              "email": "usuario@exemplo.com"
+              "name": "João Silva",
+              "email": "usuario@exemplo.com",
+              "role": "aluno"
             }
           }
         }
@@ -122,29 +123,29 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
         | Campo             | Tipo      | Obrigatório | Descrição                    |
         |-------------------|-----------|-------------|------------------------------|
-        | `nome`            | `string`  | Não         | Nome do usuário              |
-        | `sobrenome`       | `string`  | Não         | Sobrenome do usuário         |
-        | `email`           | `string`  | Não         | E-mail do usuário            |
-        | `ra`              | `string`  | Não         | Registro Acadêmico           |
-        | `curso`           | `string`  | Não         | Curso do usuário             |
-        | `telefone`        | `string`  | Não         | Telefone do usuário          |
-        | `senha`           | `string`  | Não         | Senha do usuário             |
-        | `imagemUrl`       | `string`  | Não         | URL da imagem de perfil      |
-        | `inscritoNoticia` | `boolean` | Não         | Inscrição em newsletter      |
-        | `cargo`           | `string`  | Não         | Cargo (aluno/diretor/admin)  |
+        | `name`            | `string`  | No          | User first name              |
+        | `lastName`        | `string`  | No          | User last name               |
+        | `email`           | `string`  | No          | User email                   |
+        | `ra`              | `string`  | No          | Academic Register (RA)       |
+        | `course`          | `string`  | No          | User course                  |
+        | `phone`           | `string`  | No          | User phone                   |
+        | `password`        | `string`  | No          | User password                |
+        | `avatar`          | `string`  | No          | Profile image URL            |
+        | `isSubscribedToNews` | `boolean` | No      | Newsletter subscription      |
+        | `role`            | `string`  | No          | Role (aluno/diretor/admin)   |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
     curl -X POST http://localhost:3001/v1/api/auth/register \
     -H "Content-Type: application/json" \
     -d '{
-      "nome": "João",
-      "sobrenome": "Silva",
-      "email": "joao.silva@exemplo.com",
+      "name": "John",
+      "lastName": "Doe",
+      "email": "john.doe@example.com",
       "ra": "123456789",
-      "curso": "Ciência da Computação",
-      "senha": "minhasenha123",
-      "cargo": "aluno"
+      "course": "Computer Science",
+      "password": "mypassword123",
+      "role": "student"
     }'
     ```
 
@@ -157,8 +158,9 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Usuário registrado com sucesso",
           "data": {
             "id": "12345678-1234-1234-1234-123456789012",
-            "nome": "João Silva",
-            "email": "joao.silva@exemplo.com"
+            "name": "João Silva",
+            "email": "joao.silva@exemplo.com",
+            "role": "aluno"
           }
         }
         ```
@@ -183,7 +185,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 * **Autorização:** Público
 
 * **Parâmetros da Requisição:**
-    * **Body (`application/x-www-form-urlencoded`)**
+    * **Body (`application/json`)**
 
         | Campo          | Tipo     | Obrigatório | Descrição     |
         |----------------|----------|-------------|---------------|
@@ -192,8 +194,8 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 * **Exemplo de Requisição (cURL):**
     ```shell
     curl -X POST http://localhost:3001/v1/api/auth/refresh \
-    -H "Content-Type: application/x-www-form-urlencoded" \
-    -d 'refreshToken=refresh_token_string'
+    -H "Content-Type: application/json" \
+    -d '"refresh_token_string"'
     ```
 
 * **Respostas:**
@@ -221,16 +223,16 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 ### **POST /api/auth/logout**
 
-* **Descrição:** Realiza logout do usuário (não implementado)
+* **Descrição:** Realiza logout do usuário autenticado
 * **Autorização:** Requer permissão `users.logout`
 
 * **Respostas:**
-    * **`501 Not Implemented` - Não Implementado**
+    * **`200 OK` - Sucesso**
         ```json
         {
-          "success": false,
-          "code": "NOT_IMPLEMENTED",
-          "message": "Funcionalidade não implementada"
+          "success": true,
+          "code": "OK",
+          "message": "Logout realizado com sucesso"
         }
         ```
 
@@ -272,11 +274,11 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "data": [
             {
               "id": "12345678-1234-1234-1234-123456789012",
-              "nome": "João Silva",
+              "name": "João Silva",
               "email": "joao.silva@exemplo.com",
               "ra": "123456789",
-              "curso": "Ciência da Computação",
-              "cargo": "aluno"
+              "course": "Ciência da Computação",
+              "role": "aluno"
             }
           ]
         }
@@ -317,13 +319,13 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Requisição bem-sucedida",
           "data": {
             "id": "12345678-1234-1234-1234-123456789012",
-            "nome": "João Silva",
+            "name": "João Silva",
             "email": "joao.silva@exemplo.com",
             "ra": "123456789",
-            "curso": "Ciência da Computação",
-            "cargo": "aluno",
-            "telefone": "(11) 99999-9999",
-            "inscritoNoticia": true
+            "course": "Ciência da Computação",
+            "role": "aluno",
+            "phone": "(11) 99999-9999",
+            "isSubscribedToNews": true
           }
         }
         ```
@@ -352,20 +354,20 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
         | Campo             | Tipo        | Obrigatório | Descrição                |
         |-------------------|-------------|-------------|--------------------------|
-        | `nome`            | `string`    | Não         | Nome do usuário          |
-        | `sobrenome`       | `string`    | Não         | Sobrenome do usuário     |
-        | `email`           | `string`    | Não         | E-mail do usuário        |
-        | `curso`           | `string`    | Não         | Curso do usuário         |
-        | `telefone`        | `string`    | Não         | Telefone do usuário      |
-        | `imageFile`       | `file`      | Não         | Arquivo de imagem        |
-        | `inscritoNoticia` | `boolean`   | Não         | Inscrição em newsletter  |
+        | `name`            | `string`    | No          | User name                |
+        | `lastName`        | `string`    | No          | User last name           |
+        | `email`           | `string`    | No          | User email               |
+        | `course`          | `string`    | No          | User course              |
+        | `phone`           | `string`    | No          | User phone               |
+        | `imageFile`       | `file`      | No          | Image file               |
+        | `isSubscribedToNews` | `boolean`   | No          | Newsletter subscription  |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
     curl -X PATCH http://localhost:3001/v1/api/users/12345678-1234-1234-1234-123456789012 \
     -H "Authorization: Bearer <seu_jwt_token>" \
-    -F "nome=João Santos" \
-    -F "telefone=(11) 88888-8888"
+    -F "name=John Santos" \
+    -F "phone=(11) 88888-8888"
     ```
 
 * **Respostas:**
@@ -377,8 +379,8 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Usuário atualizado com sucesso",
           "data": {
             "id": "12345678-1234-1234-1234-123456789012",
-            "nome": "João Santos",
-            "telefone": "(11) 88888-8888"
+            "name": "João Santos",
+            "phone": "(11) 88888-8888"
           }
         }
         ```
@@ -466,12 +468,12 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "data": [
             {
               "id": "12345678-1234-1234-1234-123456789012",
-              "nome": "Camiseta DACC",
-              "descricao": "Camiseta oficial do DACC",
-              "categoria": "roupas",
-              "subcategoria": "camisetas",
-              "preco": 29.90,
-              "precoOriginal": 39.90
+              "name": "Camiseta DACC",
+              "description": "Camiseta oficial do DACC",
+              "category": "roupas",
+              "price": 29.90,
+              "originalPrice": 39.90,
+              "inStock": true
             }
           ]
         }
@@ -503,18 +505,18 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Requisição bem-sucedida",
           "data": {
             "id": "12345678-1234-1234-1234-123456789012",
-            "nome": "Camiseta DACC",
-            "descricao": "Camiseta oficial do DACC com logo bordado",
-            "categoria": "roupas",
-            "subcategoria": "camisetas",
-            "preco": 29.90,
-            "precoOriginal": 39.90,
-            "variacoes": [
+            "name": "Camiseta DACC",
+            "description": "Camiseta oficial do DACC com logo bordado",
+            "category": "roupas",
+            "price": 29.90,
+            "originalPrice": 39.90,
+            "variations": [
               {
                 "id": "87654321-4321-4321-4321-210987654321",
-                "cor": "azul",
-                "tamanho": "M",
-                "estoque": 10
+                "color": "azul",
+                "size": "M",
+                "stock": 10,
+                "inStock": true
               }
             ]
           }
@@ -539,11 +541,11 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
         | Campo          | Tipo     | Obrigatório | Descrição                            |
         |----------------|----------|-------------|--------------------------------------|
-        | `nome`         | `string` | Sim         | Nome do produto (3-50 caracteres)    |
-        | `descricao`    | `string` | Sim         | Descrição (10-1000 caracteres)       |
-        | `categoria`    | `string` | Sim         | Categoria do produto                 |
-        | `subcategoria` | `string` | Sim         | Subcategoria do produto              |
-        | `preco`        | `number` | Sim         | Preço do produto (maior que zero)    |
+        | `name`         | `string` | Yes         | Product name (3-50 chars)            |
+        | `description`  | `string` | Yes         | Description (10-1000 chars)          |
+        | `category`     | `string` | Yes         | Product category                     |
+        | `subcategory`  | `string` | Yes         | Product subcategory                  |
+        | `price`        | `number` | Yes         | Product price (greater than zero)    |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
@@ -551,11 +553,11 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
     -H "Authorization: Bearer <seu_jwt_token>" \
     -H "Content-Type: application/json" \
     -d '{
-      "nome": "Camiseta DACC",
-      "descricao": "Camiseta oficial do DACC com logo bordado",
-      "categoria": "roupas",
-      "subcategoria": "camisetas",
-      "preco": 29.90
+      "name": "DACC T-Shirt",
+      "description": "Official DACC T-Shirt with embroidered logo",
+      "category": "clothing",
+      "subcategory": "t-shirts",
+      "price": 29.90
     }'
     ```
 
@@ -568,8 +570,8 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Produto criado com sucesso",
           "data": {
             "id": "12345678-1234-1234-1234-123456789012",
-            "nome": "Camiseta DACC",
-            "preco": 29.90
+            "name": "DACC T-Shirt",
+            "price": 29.90
           }
         }
         ```
@@ -581,8 +583,8 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Erro de validação dos dados",
           "details": [
             {
-              "field": "nome",
-              "message": "Nome é obrigatório"
+              "field": "name",
+              "message": "Name is required"
             }
           ]
         }
@@ -622,8 +624,8 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
             "produtos": [
               {
                 "id": "12345678-1234-1234-1234-123456789012",
-                "nome": "Camiseta DACC",
-                "preco": 29.90
+                "name": "Camiseta DACC",
+                "price": 29.90
               }
             ],
             "totalItens": 1,
@@ -649,18 +651,18 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
         | Campo           | Tipo     | Obrigatório | Descrição               |
         |-----------------|----------|-------------|-------------------------|
-        | `nome`          | `string` | Não         | Nome do produto         |
-        | `descricao`     | `string` | Não         | Descrição do produto    |
-        | `categoria`     | `string` | Não         | Categoria do produto    |
-        | `subcategoria`  | `string` | Não         | Subcategoria do produto |
-        | `preco`         | `number` | Não         | Preço atual             |
-        | `precoOriginal` | `number` | Não         | Preço original          |
+        | `name`          | `string` | No          | Product name            |
+        | `description`   | `string` | No          | Product description     |
+        | `category`      | `string` | No          | Product category        |
+        | `subcategory`   | `string` | No          | Product subcategory     |
+        | `price`         | `number` | No          | Current price           |
+        | `originalPrice` | `number` | No          | Original price          |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
     curl -X PATCH http://localhost:3001/v1/api/products/12345678-1234-1234-1234-123456789012 \
     -H "Authorization: Bearer <seu_jwt_token>" \
-    -F "preco=24.90"
+    -F "price=24.90"
     ```
 
 * **Respostas:**
@@ -672,10 +674,22 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Produto atualizado com sucesso",
           "data": {
             "id": "12345678-1234-1234-1234-123456789012",
-            "preco": 24.90
+            "price": 24.90
           }
         }
         ```
+
+### **PATCH /api/products/{id}/json**
+
+* **Descrição:** Atualiza um produto via JSON
+* **Autorização:** Requer permissão `produtos.update`
+
+* **Parâmetros da Requisição:**
+    * **Body (`application/json`)**
+        * `name`, `description`, `category`, `subcategory`, `price`, `originalPrice`
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
 
 ### **DELETE /api/products/{id}**
 
@@ -721,18 +735,18 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
         | Campo           | Tipo     | Obrigatório | Descrição                                                     |
         |-----------------|----------|-------------|---------------------------------------------------------------|
-        | `cor`           | `string` | Sim         | Nome da cor da variação                                       |
-        | `tamanho`       | `string` | Sim         | Tamanho (PP/P/M/G/GG/XG/Pequeno/Médio/Grande)                 |
-        | `estoque`       | `number` | Não         | Quantidade em estoque (0-99999, padrão: 0)                    |
-        | `ordemVariacao` | `number` | Não         | Ordem de exibição da variação (0-999, padrão: 0)              |
+        | `color`         | `string` | Yes         | Variation color                               |
+        | `size`          | `string` | Yes         | Size (XS/S/M/L/XL/XXL/Small/Medium/Large)     |
+        | `stock`         | `number` | No          | Stock quantity (0-99999, default: 0)          |
+        | `order`         | `number` | No          | Variation display order (0-999, default: 0)   |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
     curl -X POST http://localhost:3001/v1/api/products/12345678-1234-1234-1234-123456789012/variations \
     -H "Authorization: Bearer <seu_jwt_token>" \
-    -F "cor=azul" \
-    -F "tamanho=M" \
-    -F "estoque=50"
+    -F "color=blue" \
+    -F "size=M" \
+    -F "stock=50"
     ```
 
 * **Respostas:**
@@ -744,12 +758,24 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Variação criada com sucesso",
           "data": {
             "id": "87654321-4321-4321-4321-210987654321",
-            "cor": "azul",
-            "tamanho": "M",
-            "estoque": 50
+            "color": "blue",
+            "size": "M",
+            "stock": 50
           }
         }
         ```
+
+### **POST /api/products/{id}/variations/json**
+
+* **Descrição:** Cria variação via JSON
+* **Autorização:** Requer permissão `produtos.create`
+
+* **Parâmetros da Requisição:**
+    * **Body (`application/json`)**
+        * `color`, `size`, `stock`, `order`
+
+* **Respostas:**
+    * **`201 Created` - Sucesso**
 
 ### **GET /api/products/{id}/variations**
 
@@ -804,16 +830,16 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
         | Campo           | Tipo     | Obrigatório | Descrição                                          |
         |-----------------|----------|-------------|----------------------------------------------------|
-        | `cor`           | `string` | Não         | Nome da cor da variação                            |
-        | `tamanho`       | `string` | Não         | Tamanho (PP/P/M/G/GG/XG/Pequeno/Médio/Grande)      |
-        | `estoque`       | `number` | Não         | Quantidade em estoque (0-99999)                    |
-        | `ordemVariacao` | `number` | Não         | Ordem de exibição da variação (0-999)              |
+        | `color`         | `string` | No          | Variation color                               |
+        | `size`          | `string` | No          | Size (XS/S/M/L/XL/XXL/Small/Medium/Large)     |
+        | `stock`         | `number` | No          | Stock quantity (0-99999)                      |
+        | `order`         | `number` | No          | Variation display order (0-999)               |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
     curl -X PATCH http://localhost:3001/v1/api/products/12345678-1234-1234-1234-123456789012/variations/87654321-4321-4321-4321-210987654321 \
     -H "Authorization: Bearer <seu_jwt_token>" \
-    -F "estoque=25"
+    -F "stock=25"
     ```
 
 * **Respostas:**
@@ -825,10 +851,22 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Variação atualizada com sucesso",
           "data": {
             "id": "87654321-4321-4321-4321-210987654321",
-            "estoque": 25
+            "stock": 25
           }
         }
         ```
+
+### **PATCH /api/products/{id}/variations/{variationId}/json**
+
+* **Descrição:** Atualiza uma variação via JSON
+* **Autorização:** Requer permissão `produtos.update`
+
+* **Parâmetros da Requisição:**
+    * **Body (`application/json`)**
+        * `color`, `size`, `stock`, `order`
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
 
 ### **DELETE /api/products/{id}/variations/{variationId}**
 
@@ -876,16 +914,16 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
         | Campo       | Tipo     | Obrigatório | Descrição                                     |
         |-------------|----------|-------------|-----------------------------------------------|
-        | `imagem`    | `file`   | Sim         | Arquivo de imagem (máximo 5MB)                |
-        | `imagemAlt` | `string` | Não         | Texto alternativo (máximo 255 caracteres)     |
-        | `ordem`     | `number` | Não         | Ordem de exibição (padrão: 0)                 |
+        | `image`     | `file`   | Yes         | Image file (max 5MB)                          |
+        | `imageAlt`  | `string` | No          | Alternative text (max 255 chars)              |
+        | `order`     | `number` | No          | Display order (default: 0)                    |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
     curl -X POST http://localhost:3001/v1/api/products/12345678-1234-1234-1234-123456789012/variations/87654321-4321-4321-4321-210987654321/images \
     -H "Authorization: Bearer <seu_jwt_token>" \
-    -F "imagem=@camiseta_azul.jpg" \
-    -F "imagemAlt=Camiseta DACC azul tamanho M"
+    -F "image=@tshirt_blue.jpg" \
+    -F "imageAlt=Blue DACC T-Shirt Size M"
     ```
 
 * **Respostas:**
@@ -897,9 +935,9 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Imagem adicionada com sucesso",
           "data": {
             "id": "11111111-1111-1111-1111-111111111111",
-            "url": "/uploads/camiseta_azul_123456.jpg",
-            "imagemAlt": "Camiseta DACC azul tamanho M",
-            "ordem": 0
+            "url": "/uploads/tshirt_blue_123456.jpg",
+            "imageAlt": "Blue DACC T-Shirt Size M",
+            "order": 0
           }
         }
         ```
@@ -961,15 +999,15 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
         | Campo       | Tipo     | Obrigatório | Descrição                                   |
         |-------------|----------|-------------|---------------------------------------------|
-        | `imagem`    | `file`   | Não         | Novo arquivo de imagem (máximo 5MB)         |
-        | `imagemAlt` | `string` | Não         | Texto alternativo (máximo 255 caracteres)   |
-        | `ordem`     | `number` | Não         | Ordem de exibição                           |
+        | `image`     | `file`   | No          | New image file (max 5MB)                      |
+        | `imageAlt`  | `string` | No          | Alternative text (max 255 chars)              |
+        | `order`     | `number` | No          | Display order                                 |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
     curl -X PATCH http://localhost:3001/v1/api/products/images/11111111-1111-1111-1111-111111111111 \
     -H "Authorization: Bearer <seu_jwt_token>" \
-    -F "imagemAlt=Nova descrição da imagem"
+    -F "imageAlt=New image description"
     ```
 
 * **Respostas:**
@@ -981,7 +1019,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Imagem atualizada com sucesso",
           "data": {
             "id": "11111111-1111-1111-1111-111111111111",
-            "imagemAlt": "Nova descrição da imagem"
+            "imageAlt": "New image description"
           }
         }
         ```
@@ -1026,7 +1064,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
     ```json
     {
       "items": [
-        { "id": "uuid_da_variacao", "productId": "uuid_do_produto", "quantity": 1 }
+        { "id": "variation_uuid", "productId": "product_uuid", "quantity": 1 }
       ],
       "couponCode": "PROMO10",
       "deliveryMethod": "CampusDelivery"
@@ -1041,7 +1079,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "code": "CREATED",
           "message": "Pedido criado com sucesso",
           "data": {
-            "orderId": "99999999-9999-9999-9999-999999999999",
+            "id": "99999999-9999-9999-9999-999999999999",
             "status": "created",
             "total": 59.80,
             "paymentUrl": "https://mercadopago.com/checkout/v1/redirect?pref_id=123456789"
@@ -1083,21 +1121,19 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "code": "OK",
           "message": "Requisição bem-sucedida",
           "data": {
-            "orders": {
-              "id": "99999999-9999-9999-9999-999999999999",
-              "status": "approved",
-              "total": 59.80,
-              "dataCriacao": "2025-08-08T10:00:00Z",
-              "itens": [
-                {
-                  "produtoNome": "Camiseta DACC",
-                  "cor": "azul",
-                  "tamanho": "M",
-                  "quantidade": 2,
-                  "precoUnitario": 29.90
-                }
-              ]
-            }
+            "id": "99999999-9999-9999-9999-999999999999",
+            "status": "approved",
+            "totalAmount": 59.80,
+            "orderDate": "2025-08-08T10:00:00Z",
+            "orderItems": [
+              {
+                "productName": "DACC T-Shirt",
+                "color": "blue",
+                "size": "M",
+                "quantity": 2,
+                "unitPrice": 29.90
+              }
+            ]
           }
         }
         ```
@@ -1139,8 +1175,8 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
             {
               "id": "99999999-9999-9999-9999-999999999999",
               "status": "approved",
-              "total": 59.80,
-              "dataCriacao": "2025-08-08T10:00:00Z"
+              "totalAmount": 59.80,
+              "orderDate": "2025-08-08T10:00:00Z"
             }
           ]
         }
@@ -1192,7 +1228,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 ### **GET /api/orders/coupons/{code}**
 *   **Descrição:** Valida um cupom de desconto.
-*   **Response Data:** `{ "id": "uuid", "codigo": "string", "tipoDesconto": "Percentage", "valor": 10.0 }`
+*   **Response Data:** `{ "id": "uuid", "code": "string", "discountType": "Percentage", "value": 10.0 }`
 
 ### **POST /api/orders/webhook**
 
@@ -1406,9 +1442,9 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
         | Campo        | Tipo     | Obrigatório | Descrição                     |
         |--------------|----------|-------------|-------------------------------|
-        | `nota`       | `number` | Sim         | Nota de 1 a 5 estrelas        |
-        | `comentario` | `string` | Não         | Comentário sobre o produto    |
-        | `productId`  | `uuid`   | Sim         | ID do produto sendo avaliado  |
+        | `rating`     | `number` | Yes         | Rating from 1 to 5 stars      |
+        | `comment`    | `string` | No          | Comment about the product     |
+        | `productId`  | `uuid`   | Yes         | ID of the product being reviewed |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
@@ -1416,8 +1452,8 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
     -H "Authorization: Bearer <seu_jwt_token>" \
     -H "Content-Type: application/json" \
     -d '{
-      "nota": 5,
-      "comentario": "Produto excelente, recomendo!",
+      "rating": 5,
+      "comment": "Excellent product, highly recommended!",
       "productId": "12345678-1234-1234-1234-123456789012"
     }'
     ```
@@ -1431,8 +1467,8 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Avaliação criada com sucesso",
           "data": {
             "id": "11111111-1111-1111-1111-111111111111",
-            "nota": 5,
-            "comentario": "Produto excelente, recomendo!",
+            "rating": 5,
+            "comment": "Excellent product, highly recommended!",
             "productId": "12345678-1234-1234-1234-123456789012"
           }
         }
@@ -1479,10 +1515,10 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "data": [
             {
               "id": "11111111-1111-1111-1111-111111111111",
-              "nota": 5,
-              "comentario": "Produto excelente!",
-              "nomeUsuario": "João Silva",
-              "dataCriacao": "2025-08-08T10:00:00Z"
+              "rating": 5,
+              "comment": "Excellent product!",
+              "userName": "John Silva",
+              "createdAt": "2025-08-08T10:00:00Z"
             }
           ]
         }
@@ -1498,7 +1534,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
         | Nome        | Tipo   | Descrição           |
         |-------------|--------|---------------------|
-        | `usuarioId` | `uuid` | ID único do usuário |
+        | `userId`    | `uuid` | ID único do usuário |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
@@ -1516,10 +1552,10 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "data": [
             {
               "id": "11111111-1111-1111-1111-111111111111",
-              "nota": 5,
-              "comentario": "Produto excelente!",
-              "produtoNome": "Camiseta DACC",
-              "dataCriacao": "2025-08-08T10:00:00Z"
+              "rating": 5,
+              "comment": "Excellent product!",
+              "productName": "DACC T-Shirt",
+              "createdAt": "2025-08-08T10:00:00Z"
             }
           ]
         }
@@ -1619,10 +1655,13 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Requisição bem-sucedida",
           "data": [
             {
-              "id": "uuid",
-              "titulo": "string",
-              "autor": { "id": "uuid", "nome": "string", "sobrenome": "string" },
-              "tags": [ { "id": "uuid", "nome": "string" } ]
+              "id": "22222222-2222-2222-2222-222222222222",
+              "title": "Parceria DACC",
+              "description": "Nova parceria firmada",
+              "author": "Diretoria DACC",
+              "image": "/uploads/noticia_1.jpg",
+              "date": "2025-08-08T10:00:00Z",
+              "category": "parceria"
             }
           ]
         }
@@ -1654,15 +1693,15 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Requisição bem-sucedida",
           "data": {
             "id": "22222222-2222-2222-2222-222222222222",
-            "titulo": "Nova parceria do DACC",
-            "descricao": "DACC firma parceria com empresa de tecnologia",
-            "conteudo": "Conteúdo completo da notícia...",
-            "categoria": "parceria",
-            "imagemUrl": "/uploads/noticia_123.jpg",
-            "dataPublicacao": "2025-08-08T10:00:00Z",
-            "dataAtualizacao": "2025-08-08T11:00:00Z",
-            "autorId": "87654321-4321-4321-4321-210987654321",
-            "autorNome": "João Silva"
+            "title": "New DACC Partnership",
+            "description": "DACC signs partnership with tech company",
+            "content": "Full news content...",
+            "category": "partnership",
+            "imageUrl": "/uploads/news_123.jpg",
+            "publishDate": "2025-08-08T10:00:00Z",
+            "updatedAt": "2025-08-08T11:00:00Z",
+            "authorId": "87654321-4321-4321-4321-210987654321",
+            "authorName": "John Silva"
           }
         }
         ```
@@ -1681,27 +1720,31 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 * **Autorização:** Requer permissão `noticias.create`
 
 * **Parâmetros da Requisição:**
-    * **Body (`multipart/form-data`)**
+    * **Body (`application/json`)**
 
         | Campo             | Tipo       | Obrigatório | Descrição                        |
         |-------------------|------------|-------------|----------------------------------|
-        | `titulo`          | `string`   | Sim         | Título da notícia                |
-        | `descricao`       | `string`   | Sim         | Descrição resumida               |
-        | `conteudo`        | `string`   | Não         | Conteúdo completo da notícia     |
-        | `categoria`       | `string`   | Não         | Categoria da notícia             |
-        | `imageFile`       | `file`     | Não         | Arquivo de imagem (máximo 5MB)   |
-        | `dataPublicacao`  | `datetime` | Não         | Data de publicação               |
-        | `dataAtualizacao` | `datetime` | Não         | Data de atualização              |
+        | `title`           | `string`   | Yes         | News title                       |
+        | `description`     | `string`   | Yes         | Short description                |
+        | `content`         | `string`   | No          | Full content                     |
+        | `category`        | `string`   | No          | News category                    |
+        | `publishDate`     | `datetime` | No          | Publication date                 |
+        | `updatedAt`       | `datetime` | No          | Update date                      |
+
+> [!NOTE]
+> O upload da imagem de capa deve ser feito separadamente através do endpoint `PATCH /api/news/{id}/image`.
 
 * **Exemplo de Requisição (cURL):**
     ```shell
     curl -X POST http://localhost:3001/v1/api/news \
     -H "Authorization: Bearer <seu_jwt_token>" \
-    -F "titulo=Nova parceria do DACC" \
-    -F "descricao=DACC firma parceria com empresa de tecnologia" \
-    -F "conteudo=Conteúdo completo da notícia..." \
-    -F "categoria=parceria" \
-    -F "imageFile=@noticia.jpg"
+    -H "Content-Type: application/json" \
+    -d '{
+      "titulo": "Nova parceria do DACC",
+      "descricao": "DACC firma parceria com empresa de tecnologia",
+      "conteudo": "Conteúdo completo da notícia...",
+      "categoria": "parceria"
+    }'
     ```
 
 * **Respostas:**
@@ -1778,6 +1821,28 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
+### **PATCH /api/news/{id}/json**
+
+* **Descrição:** Atualiza uma notícia existente via JSON
+* **Autorização:** Requer permissão `noticias.update`
+
+* **Parâmetros da Requisição:**
+    * **Path**
+        * `id`: UUID da notícia
+    * **Body (`application/json`)**
+        * Same fields as PATCH (titulo, descricao, conteudo, categoria, dataPublicacao, dataAtualizacao)
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X PATCH http://localhost:3001/v1/api/news/{id}/json \
+    -H "Authorization: Bearer <token>" \
+    -H "Content-Type: application/json" \
+    -d '{ "titulo": "Novo Título" }'
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+
 ### **DELETE /api/news/{id}**
 
 * **Descrição:** Remove uma notícia do sistema
@@ -1828,12 +1893,12 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "data": [
             {
               "id": "33333333-3333-3333-3333-333333333333",
-              "titulo": "Workshop de React",
-              "descricao": "Workshop sobre desenvolvimento com React",
-              "data": "2025-08-15T14:00:00Z",
-              "tipoEvento": "workshop",
-              "textoAcao": "Inscrever-se",
-              "linkAcao": "https://forms.google.com/workshop-react"
+              "title": "React Workshop",
+              "description": "Workshop on React development",
+              "date": "2025-08-15T14:00:00Z",
+              "eventType": "workshop",
+              "actionText": "Register",
+              "actionLink": "https://forms.google.com/workshop-react"
             }
           ]
         }
@@ -1865,14 +1930,14 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Requisição bem-sucedida",
           "data": {
             "id": "33333333-3333-3333-3333-333333333333",
-            "titulo": "Workshop de React",
-            "descricao": "Workshop completo sobre desenvolvimento com React, incluindo hooks e context API",
-            "data": "2025-08-15T14:00:00Z",
-            "tipoEvento": "workshop",
-            "textoAcao": "Inscrever-se",
-            "linkAcao": "https://forms.google.com/workshop-react",
-            "organizadorId": "87654321-4321-4321-4321-210987654321",
-            "organizadorNome": "João Silva"
+            "title": "React Workshop",
+            "description": "Complete workshop on React development, including hooks and context API",
+            "date": "2025-08-15T14:00:00Z",
+            "eventType": "workshop",
+            "actionText": "Register",
+            "actionLink": "https://forms.google.com/workshop-react",
+            "organizerId": "87654321-4321-4321-4321-210987654321",
+            "organizerName": "John Silva"
           }
         }
         ```
@@ -1895,12 +1960,12 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
         | Campo        | Tipo       | Obrigatório | Descrição                                       |
         |--------------|------------|-------------|-------------------------------------------------|
-        | `titulo`     | `string`   | Não         | Título do evento                                |
-        | `descricao`  | `string`   | Não         | Descrição detalhada do evento                   |
-        | `data`       | `datetime` | Não         | Data e hora do evento                           |
-        | `tipoEvento` | `string`   | Não         | Tipo do evento (workshop/seminário/hackathon)   |
-        | `textoAcao`  | `string`   | Não         | Texto do botão de ação                          |
-        | `linkAcao`   | `string`   | Não         | Link para inscrição ou mais informações         |
+        | `title`      | `string`   | No          | Event title                                     |
+        | `description`| `string`   | No          | Detailed description                            |
+        | `date`       | `datetime` | No          | Event date and time                             |
+        | `eventType`  | `string`   | No          | Event type (workshop/seminar/hackathon)         |
+        | `actionText` | `string`   | No          | Action button text                              |
+        | `actionLink` | `string`   | No          | Link for registration or more info              |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
@@ -2072,10 +2137,10 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "data": [
             {
               "id": "44444444-4444-4444-4444-444444444444",
-              "titulo": "Sistema de Gestão Acadêmica",
-              "descricao": "Sistema para gerenciar atividades acadêmicas",
-              "status": "em progresso",
-              "diretoria": "Tecnologia",
+              "title": "Academic Management System",
+              "description": "System to manage academic activities",
+              "status": "in progress",
+              "department": "Technology",
               "tags": ["web", "backend", "frontend"]
             }
           ]
@@ -2108,14 +2173,14 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Requisição bem-sucedida",
           "data": {
             "id": "44444444-4444-4444-4444-444444444444",
-            "titulo": "Sistema de Gestão Acadêmica",
-            "descricao": "Sistema completo para gerenciar atividades acadêmicas do DACC",
-            "status": "em progresso",
-            "diretoria": "Tecnologia",
+            "title": "Academic Management System",
+            "description": "Complete system to manage DACC academic activities",
+            "status": "in progress",
+            "department": "Technology",
             "tags": ["web", "backend", "frontend"],
-            "imagemUrl": "/uploads/projeto_123.jpg",
-            "dataCriacao": "2025-08-01T10:00:00Z",
-            "dataAtualizacao": "2025-08-08T10:00:00Z"
+            "imageUrl": "/uploads/project_123.jpg",
+            "createdAt": "2025-08-01T10:00:00Z",
+            "updatedAt": "2025-08-08T10:00:00Z"
           }
         }
         ```
@@ -2134,28 +2199,31 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 * **Autorização:** Requer permissão `projetos.create`
 
 * **Parâmetros da Requisição:**
-    * **Body (`multipart/form-data`)**
+    * **Body (`application/json`)**
 
         | Campo       | Tipo     | Obrigatório | Descrição                                      |
         |-------------|----------|-------------|------------------------------------------------|
-        | `titulo`    | `string` | Não         | Título do projeto                              |
-        | `descricao` | `string` | Não         | Descrição detalhada do projeto                 |
-        | `status`    | `string` | Não         | Status (planejado/em progresso/concluído)      |
-        | `diretoria` | `string` | Não         | Diretoria responsável pelo projeto             |
+        | `title`     | `string` | No          | Project title                                  |
+        | `description`| `string` | No          | Detailed description                           |
+        | `status`    | `string` | No          | Status (planned/in progress/completed)         |
+        | `department`| `string` | No          | Responsible department                         |
         | `tags`      | `array`  | Não         | Tags relacionadas ao projeto                   |
-        | `imageFile` | `file`   | Não         | Arquivo de imagem do projeto (máximo 5MB)      |
+
+> [!NOTE]
+> A imagem do projeto deve ser adicionada separadamente através de um `POST /api/projects/{id}` com `multipart/form-data`.
 
 * **Exemplo de Requisição (cURL):**
     ```shell
     curl -X POST http://localhost:3001/v1/api/projects \
     -H "Authorization: Bearer <seu_jwt_token>" \
-    -F "titulo=Sistema de Gestão Acadêmica" \
-    -F "descricao=Sistema para gerenciar atividades acadêmicas" \
-    -F "status=planejado" \
-    -F "diretoria=Tecnologia" \
-    -F "tags=web" \
-    -F "tags=backend" \
-    -F "imageFile=@projeto.jpg"
+    -H "Content-Type: application/json" \
+    -d '{
+      "titulo": "Sistema de Gestão Acadêmica",
+      "descricao": "Sistema para gerenciar atividades acadêmicas",
+      "status": "planejado",
+      "diretoria": "Tecnologia",
+      "tags": ["web", "backend"]
+    }'
     ```
 
 * **Respostas:**
@@ -2250,12 +2318,11 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 ### **GET /api/faculty**
 
 * **Descrição:** Lista todos os diretores e diretorias
-* **Autorização:** Requer permissão `faculty.view`
+* **Autorização:** Público
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET http://localhost:3001/v1/api/faculty \
-    -H "Authorization: Bearer <seu_jwt_token>"
+    curl -X GET http://localhost:3001/v1/api/faculty
     ```
 
 * **Respostas:**
@@ -2268,12 +2335,16 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "data": [
             {
               "id": "55555555-5555-5555-5555-555555555555",
-              "nome": "João Silva",
-              "descricao": "Diretor de Tecnologia",
-              "email": "joao.silva@dacc.com",
-              "githubLink": "https://github.com/joaosilva",
-              "linkedinLink": "https://linkedin.com/in/joaosilva",
-              "imagemUrl": "/uploads/diretor_123.jpg"
+              "name": "João Silva",
+              "title": "Prof. Dr.",
+              "position": "Diretor de Tecnologia",
+              "specialization": "Desenvolvimento de Software",
+              "image": "/uploads/diretor_123.jpg",
+              "social": {
+                "linkedin": "https://linkedin.com/in/johnsilva",
+                "github": "https://github.com/johnsilva",
+                "email": "john.silva@dacc.com"
+              }
             }
           ]
         }
@@ -2314,14 +2385,14 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Requisição bem-sucedida",
           "data": {
             "id": "55555555-5555-5555-5555-555555555555",
-            "nome": "João Silva",
-            "descricao": "Diretor de Tecnologia responsável por projetos de desenvolvimento",
-            "email": "joao.silva@dacc.com",
-            "githubLink": "https://github.com/joaosilva",
-            "linkedinLink": "https://linkedin.com/in/joaosilva",
-            "imagemUrl": "/uploads/diretor_123.jpg",
-            "usuarioId": "87654321-4321-4321-4321-210987654321",
-            "diretoriaId": "66666666-6666-6666-6666-666666666666"
+            "name": "John Silva",
+            "description": "Technology Director responsible for development projects",
+            "email": "john.silva@dacc.com",
+            "githubLink": "https://github.com/johnsilva",
+            "linkedinLink": "https://linkedin.com/in/johnsilva",
+            "imageUrl": "/uploads/director_123.jpg",
+            "userId": "87654321-4321-4321-4321-210987654321",
+            "boardId": "66666666-6666-6666-6666-666666666666"
           }
         }
         ```
@@ -2344,14 +2415,14 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
         | Campo          | Tipo     | Obrigatório | Descrição                           |
         |----------------|----------|-------------|-------------------------------------|
-        | `nome`         | `string` | Não         | Nome do diretor                     |
-        | `descricao`    | `string` | Não         | Descrição do cargo/responsabilidade |
-        | `email`        | `string` | Não         | E-mail do diretor                   |
-        | `githubLink`   | `string` | Não         | Link do perfil GitHub               |
-        | `linkedinLink` | `string` | Não         | Link do perfil LinkedIn             |
-        | `imageFile`    | `file`   | Não         | Foto do diretor (máximo 5MB)        |
-        | `usuarioId`    | `uuid`   | Não         | ID do usuário associado             |
-        | `diretoriaId`  | `uuid`   | Não         | ID da diretoria                     |
+        | `name`         | `string` | No          | Director name                       |
+        | `description`  | `string` | No          | Role/Responsibility description     |
+        | `email`        | `string` | No          | Director email                      |
+        | `githubLink`   | `string` | No          | GitHub profile link                 |
+        | `linkedinLink` | `string` | No          | LinkedIn profile link               |
+        | `imageFile`    | `file`   | No          | Director photo (max 5MB)            |
+        | `userId`       | `uuid`   | No          | Associated user ID                  |
+        | `boardId`      | `uuid`   | No          | Board ID                            |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
@@ -2378,6 +2449,18 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           }
         }
         ```
+
+### **POST /api/faculty/json**
+
+* **Descrição:** Cria um novo diretor via JSON
+* **Autorização:** Requer autenticação JWT
+
+* **Parâmetros da Requisição:**
+    * **Body (`application/json`)**
+        * `name`, `description`, `email`, `githubLink`, `linkedinLink`, `userId`, `boardId`
+
+* **Respostas:**
+    * **`201 Created` - Sucesso**
 
 ### **PATCH /api/faculty/{id}**
 
@@ -2424,6 +2507,18 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           }
         }
         ```
+
+### **PATCH /api/faculty/{id}/json**
+
+* **Descrição:** Atualiza um diretor via JSON
+* **Autorização:** Requer autenticação JWT
+
+* **Parâmetros da Requisição:**
+    * **Body (`application/json`)**
+        * `name`, `description`, `email`, `githubLink`, `linkedinLink`, `userId`, `boardId`
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
 
 ### **DELETE /api/faculty/{id}**
 
@@ -2475,12 +2570,12 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "data": [
             {
               "id": "77777777-7777-7777-7777-777777777777",
-              "titulo": "Manutenção do Sistema",
-              "conteudo": "Sistema ficará em manutenção no domingo",
-              "tipoAnuncio": "importante",
-              "ativo": true,
-              "imagemUrl": "/uploads/anuncio_123.jpg",
-              "imagemAlt": "Ícone de manutenção"
+              "title": "Manutenção do Sistema",
+              "content": "Sistema ficará em manutenção no domingo",
+              "type": "importante",
+              "active": true,
+              "imageSrc": "/uploads/anuncio_123.jpg",
+              "imageAlt": "Ícone de manutenção"
             }
           ]
         }
@@ -2513,14 +2608,13 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Requisição bem-sucedida",
           "data": {
             "id": "77777777-7777-7777-7777-777777777777",
-            "titulo": "Manutenção do Sistema",
-            "conteudo": "O sistema ficará em manutenção no domingo das 8h às 12h",
-            "tipoAnuncio": "importante",
-            "ativo": true,
-            "imagemUrl": "/uploads/anuncio_123.jpg",
-            "imagemAlt": "Ícone de manutenção",
-            "autorId": "87654321-4321-4321-4321-210987654321",
-            "dataCriacao": "2025-08-08T10:00:00Z"
+            "title": "Manutenção do Sistema",
+            "content": "O sistema ficará em manutenção no domingo das 8h às 12h",
+            "type": "importante",
+            "active": true,
+            "imageSrc": "/uploads/anuncio_123.jpg",
+            "imageAlt": "Ícone de manutenção",
+            "createdAt": "2025-08-08T10:00:00Z"
           }
         }
         ```
@@ -2572,8 +2666,8 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Anúncio criado com sucesso",
           "data": {
             "id": "77777777-7777-7777-7777-777777777777",
-            "titulo": "Manutenção do Sistema",
-            "tipoAnuncio": "importante"
+            "title": "Manutenção do Sistema",
+            "type": "importante"
           }
         }
         ```
