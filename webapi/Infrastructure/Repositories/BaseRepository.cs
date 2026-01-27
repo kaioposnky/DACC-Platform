@@ -48,8 +48,8 @@ namespace DaccApi.Data.Orm
         /// <returns>Uma lista de entidades do tipo <typeparamref name="T"/>.</returns>
         public async Task<List<T>> GetAllAsync()
         {
-            // Dapper com MatchNamesWithUnderscores = true faz o mapeamento automático
-            var sql = $"SELECT * FROM \"{_tableName}\"";
+            var columns = GetSelectColumns();
+            var sql = $"SELECT {columns} FROM \"{_tableName}\"";
             var result = await _dapper.QueryAsync<T>(sql);
             return result.ToList();
         }
@@ -61,10 +61,25 @@ namespace DaccApi.Data.Orm
         /// <returns>A entidade encontrada ou null se não existir.</returns>
         public async Task<T?> GetByIdAsync(Guid id)
         {
-            var sql = $"SELECT * FROM \"{_tableName}\" WHERE \"id\" = @Id";
+            var columns = GetSelectColumns();
+            var sql = $"SELECT {columns} FROM \"{_tableName}\" WHERE \"id\" = @Id";
             // Usamos QueryAsync + FirstOrDefault para evitar exceção se não encontrar (QueryFirstAsync lança erro)
             var result = await _dapper.QueryAsync<T>(sql, new { Id = id });
             return result.FirstOrDefault();
+        }
+
+        private string GetSelectColumns()
+        {
+            var columns = new List<string>();
+            foreach (var prop in _properties)
+            {
+                var colAttr = prop.GetCustomAttribute<ColumnAttribute>();
+                var colName = colAttr?.Name ?? prop.Name;
+
+                // Maps column_name as PropertyName
+                columns.Add($"\"{colName}\" AS \"{prop.Name}\"");
+            }
+            return string.Join(", ", columns);
         }
 
         /// <summary>
