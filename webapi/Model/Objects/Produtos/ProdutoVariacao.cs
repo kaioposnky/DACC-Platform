@@ -103,10 +103,10 @@ namespace DaccApi.Model
             {
                 Id = variationId,
                 ProdutoId = productId,
-                Cor = request.Cor.Trim(),
-                Tamanho = request.Tamanho,
-                Estoque = request.Estoque,
-                Ordem = request.OrdemVariacao,
+                Cor = request.Color.Trim(),
+                Tamanho = request.Size,
+                Estoque = request.Stock,
+                Ordem = request.DisplayOrder,
                 Sku = sku,
                 DataCriacao = DateTime.UtcNow
             };
@@ -117,10 +117,10 @@ namespace DaccApi.Model
         /// </summary>
         public void UpdateFromRequest(RequestUpdateProdutoVariacao request)
         {
-            if (request.Cor != null) Cor = request.Cor.Trim();
-            if (request.Tamanho != null) Tamanho = request.Tamanho;
-            if (request.Estoque.HasValue) Estoque = request.Estoque.Value;
-            if (request.OrdemVariacao.HasValue) Ordem = request.OrdemVariacao.Value;
+            if (request.Color != null) Cor = request.Color.Trim();
+            if (request.Size != null) Tamanho = request.Size;
+            if (request.Stock.HasValue) Estoque = request.Stock.Value;
+            if (request.DisplayOrder.HasValue) Ordem = request.DisplayOrder.Value;
             DataAtualizacao = DateTime.UtcNow;
         }
     }

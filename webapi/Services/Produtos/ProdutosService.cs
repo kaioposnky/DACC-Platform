@@ -72,13 +72,13 @@ namespace DaccApi.Services.Products
             try
             {
                 var productId = Guid.NewGuid();
-                var categoryId = await ResolveCategoryIdAsync(requestCreateProduto.Categoria);
-                var subcategoryId = await ResolveSubcategoryIdAsync(requestCreateProduto.Subcategoria);
+                var categoryId = await ResolveCategoryIdAsync(requestCreateProduto.Category);
+                var subcategoryId = await ResolveSubcategoryIdAsync(requestCreateProduto.Subcategory);
 
                 var product = await CreateProductEntityAsync(requestCreateProduto, productId, categoryId, subcategoryId);
 
                 return ResponseHelper.CreateSuccessResponse(
-                    ResponseSuccess.CREATED.WithData(new { productId = product.Id }),
+                    ResponseSuccess.CREATED.WithData(new { id = product.Id }),
                     "Produto criado com sucesso! Use o endpoint de variações para adicionar opções de compra.");
             }
             catch (ArgumentException ex)
@@ -152,15 +152,15 @@ namespace DaccApi.Services.Products
                         "Produto não encontrado!");
                 }
 
-                var variationExists = await _produtosRepository.VariationExistsAsync(productId, request.Cor.Trim(), request.Tamanho);
+                var variationExists = await _produtosRepository.VariationExistsAsync(productId, request.Color.Trim(), request.Size);
                 if (variationExists)
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_ALREADY_EXISTS,
-                        $"Já existe uma variação com cor '{request.Cor}' e tamanho '{request.Tamanho}' para este produto!");
+                        $"Já existe uma variação com cor '{request.Color}' e tamanho '{request.Size}' para este produto!");
                 }
 
                 var variationId = Guid.NewGuid();
-                var sku = ProdutoVariacao.GenerateSku(productId, request.Cor.Trim(), request.Tamanho);
+                var sku = ProdutoVariacao.GenerateSku(productId, request.Color.Trim(), request.Size);
                 var variation = ProdutoVariacao.FromRequest(request, productId, variationId, sku);
 
                 await _produtosRepository.CreateProductVariationAsync(variation);
@@ -235,11 +235,11 @@ namespace DaccApi.Services.Products
                         "Variação não encontrada para este produto!");
                 }
 
-                if ((request.Cor != null && request.Cor.Trim() != existingVariation.Cor) || 
-                    (request.Tamanho != null && request.Tamanho != existingVariation.Tamanho))
+                if ((request.Color != null && request.Color.Trim() != existingVariation.Cor) || 
+                    (request.Size != null && request.Size != existingVariation.Tamanho))
                 {
-                    var newCor = request.Cor?.Trim() ?? existingVariation.Cor;
-                    var newTamanho = request.Tamanho ?? existingVariation.Tamanho;
+                    var newCor = request.Color?.Trim() ?? existingVariation.Cor;
+                    var newTamanho = request.Size ?? existingVariation.Tamanho;
                     
                     var variationExists = await _produtosRepository.VariationExistsAsync(productId, newCor.Trim(), newTamanho);
                     if (variationExists)
@@ -251,7 +251,7 @@ namespace DaccApi.Services.Products
 
                 existingVariation.UpdateFromRequest(request);
                 
-                if (request.Cor != null || request.Tamanho != null)
+                if (request.Color != null || request.Size != null)
                 {
                     existingVariation.Sku = ProdutoVariacao.GenerateSku(productId, existingVariation.Cor, existingVariation.Tamanho);
                 }
@@ -337,15 +337,15 @@ namespace DaccApi.Services.Products
                 }
 
                 Guid? categoryId = null;
-                if (!string.IsNullOrEmpty(requestUpdateProduto.Categoria))
+                if (!string.IsNullOrEmpty(requestUpdateProduto.Category))
                 {
-                    categoryId = await ResolveCategoryIdAsync(requestUpdateProduto.Categoria);
+                    categoryId = await ResolveCategoryIdAsync(requestUpdateProduto.Category);
                 }
                 
                 Guid? subcategoryId = null;
-                if (requestUpdateProduto.Subcategoria != null) // != null pois pode ser string vazia para limpar
+                if (requestUpdateProduto.Subcategory != null) // != null pois pode ser string vazia para limpar
                 {
-                    subcategoryId = await ResolveSubcategoryIdAsync(requestUpdateProduto.Subcategoria);
+                    subcategoryId = await ResolveSubcategoryIdAsync(requestUpdateProduto.Subcategory);
                 }
 
                 product.UpdateFromRequest(requestUpdateProduto, categoryId, subcategoryId);
@@ -387,14 +387,14 @@ namespace DaccApi.Services.Products
                         "Variação não encontrada para este produto!");
                 }
 
-                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.Imagem);
+                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.Image);
                 var produtoImagem = new ProdutoImagem
                 {
                     Id = Guid.NewGuid(),
                     ProdutoVariacaoId = variationId,
                     ImagemUrl = imageUrl,
-                    ImagemAlt = request.ImagemAlt?.Trim(),
-                    Ordem = request.Ordem,
+                    ImagemAlt = request.ImageAlt?.Trim(),
+                    Ordem = request.Order,
                 };
 
                 await _produtosRepository.AddProductImagesAsync(produtoImagem);
@@ -447,19 +447,19 @@ namespace DaccApi.Services.Products
                         "Imagem não encontrada!");
                 }
 
-                if (request.Imagem != null)
+                if (request.Image != null)
                 {
-                    existingImage.ImagemUrl = await _fileStorageService.SaveImageFileAsync(request.Imagem);
+                    existingImage.ImagemUrl = await _fileStorageService.SaveImageFileAsync(request.Image);
                 }
 
-                if (request.Ordem.HasValue)
+                if (request.Order.HasValue)
                 {
-                    existingImage.Ordem = request.Ordem.Value;
+                    existingImage.Ordem = request.Order.Value;
                 }
 
-                if (request.ImagemAlt != null)
+                if (request.ImageAlt != null)
                 {
-                    existingImage.ImagemAlt = request.ImagemAlt.Trim();
+                    existingImage.ImagemAlt = request.ImageAlt.Trim();
                 }
 
                 await _produtosRepository.UpdateProductImageAsync(existingImage);

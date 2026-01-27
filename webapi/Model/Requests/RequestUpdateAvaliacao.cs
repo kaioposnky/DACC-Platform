@@ -12,11 +12,11 @@ namespace DaccApi.Model
         /// Obtém ou define a nova nota da avaliação.
         /// </summary>
         [Range(1, 5, ErrorMessage = "A nota deve ser de 1 a 5!")]
-        public double Nota { get; set; }
+        public double Rating { get; set; }
         /// <summary>
         /// Obtém ou define o novo comentário da avaliação.
         /// </summary>
-        public string? Comentario { get; set; }
+        public string? Comment { get; set; }
 
     }
 }

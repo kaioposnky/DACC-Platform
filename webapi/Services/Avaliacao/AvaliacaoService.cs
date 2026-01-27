@@ -22,10 +22,10 @@ public class AvaliacaoService : IAvaliacaoService
             var newProductRating = new AvaliacaoProduto()
             {
                 Id = Guid.NewGuid(),
-                ProdutoId = avaliacao.ProdutoId,
+                ProdutoId = avaliacao.ProductId,
                 UsuarioId = userId,
-                Comentario = avaliacao.Comentario,
-                Nota = avaliacao.Nota,
+                Comentario = avaliacao.Comment,
+                Nota = avaliacao.Rating,
                 DataPostada = DateTime.UtcNow,
                 DataAtualizacao = DateTime.UtcNow,
                 Ativo = true
@@ -50,7 +50,7 @@ public class AvaliacaoService : IAvaliacaoService
             if (avaliacoes.Count == 0) return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
 
             var responseAvaliacoes = avaliacoes.Select(avaliacao => new ResponseAvaliacaoProduto(avaliacao));
-            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { avaliacoes = responseAvaliacoes}));
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { reviews = responseAvaliacoes }));
         }
         catch (Exception ex)
         {
@@ -71,7 +71,7 @@ public class AvaliacaoService : IAvaliacaoService
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
-                new { avaliacao = new ResponseAvaliacaoProduto(avaliacao)}));
+                new { review = new ResponseAvaliacaoProduto(avaliacao) }));
         }
         catch (Exception ex)
         {
@@ -92,7 +92,7 @@ public class AvaliacaoService : IAvaliacaoService
 
             var responseAvaliacoes = avaliacoes.Select(avaliacao => new ResponseAvaliacaoProduto(avaliacao));
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
-                new { avaliacoes = responseAvaliacoes}));
+                new { reviews = responseAvaliacoes }));
         }
         catch (Exception ex)
         {
@@ -112,7 +112,7 @@ public class AvaliacaoService : IAvaliacaoService
 
             var responseAvaliacoes = avaliacoes.Select(avaliacao => new ResponseAvaliacaoProduto(avaliacao));
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
-                new { avaliacoes = responseAvaliacoes}));
+                new { reviews = responseAvaliacoes }));
         }
         catch (Exception ex)
         {
@@ -150,8 +150,9 @@ public class AvaliacaoService : IAvaliacaoService
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
             
-            avaliacaoQuery.Nota = avaliacao.Nota;
-            avaliacaoQuery.Comentario = avaliacao.Comentario;
+            avaliacaoQuery.Nota = avaliacao.Rating;
+            avaliacaoQuery.Comentario = avaliacao.Comment;
+            avaliacaoQuery.DataPostada = DateTime.SpecifyKind(avaliacaoQuery.DataPostada, DateTimeKind.Utc);
             avaliacaoQuery.DataAtualizacao = DateTime.UtcNow;
             
             await _avaliacaoRepository.UpdateAsync(id, avaliacaoQuery);

@@ -34,7 +34,7 @@ namespace DaccApi.Services.Anuncios
                 // Mapeia os anuncios para responses
                 var anunciosResponse = anuncios.Select(anuncio => new ResponseAnuncio(anuncio));
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
-                    new { anuncios = anunciosResponse }));
+                    new { announcements = anunciosResponse }));
             }
             catch (Exception ex)
             {
@@ -51,7 +51,7 @@ namespace DaccApi.Services.Anuncios
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Anúncio não encontrado!");
                 var anuncioResponse = new ResponseAnuncio(anuncio);
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
-                    new { anuncio = anuncioResponse }));
+                    new { announcement = anuncioResponse }));
             }
             catch (Exception ex)
             {
@@ -64,9 +64,9 @@ namespace DaccApi.Services.Anuncios
             try
             {
                 if (
-                    string.IsNullOrEmpty(anuncio.Titulo) ||
-                    string.IsNullOrEmpty(anuncio.Conteudo) ||
-                    string.IsNullOrEmpty(anuncio.TipoAnuncio)
+                    string.IsNullOrEmpty(anuncio.Title) ||
+                    string.IsNullOrEmpty(anuncio.Content) ||
+                    string.IsNullOrEmpty(anuncio.Type)
                 )
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
@@ -75,17 +75,17 @@ namespace DaccApi.Services.Anuncios
                 var entity = new Anuncio
                 {
                     Id = Guid.NewGuid(),
-                    Titulo = anuncio.Titulo,
-                    Conteudo = anuncio.Conteudo,
-                    TipoAnuncio = anuncio.TipoAnuncio,
-                    Ativo = anuncio.Ativo,
+                    Titulo = anuncio.Title,
+                    Conteudo = anuncio.Content,
+                    TipoAnuncio = anuncio.Type,
+                    Ativo = anuncio.IsActive,
                     AutorId = autorId,
-                    BotaoPrimarioTexto = anuncio.BotaoPrimarioTexto ?? string.Empty,
-                    BotaoPrimarioLink = anuncio.BotaoPrimarioLink ?? string.Empty,
-                    BotaoSecundarioTexto = anuncio.BotaoSecundarioTexto ?? string.Empty,
-                    BotaoSecundarioLink = anuncio.BotaoSecundarioLink ?? string.Empty,
-                    ImagemUrl = anuncio.ImagemUrl ?? string.Empty,
-                    ImagemAlt = anuncio.ImagemAlt ?? string.Empty,
+                    BotaoPrimarioTexto = anuncio.PrimaryButtonText ?? string.Empty,
+                    BotaoPrimarioLink = anuncio.PrimaryButtonLink ?? string.Empty,
+                    BotaoSecundarioTexto = anuncio.SecondaryButtonText ?? string.Empty,
+                    BotaoSecundarioLink = anuncio.SecondaryButtonLink ?? string.Empty,
+                    ImagemUrl = anuncio.ImageUrl ?? string.Empty,
+                    ImagemAlt = anuncio.ImageAlt ?? string.Empty,
                     DataCriacao = DateTime.UtcNow,
                     DataAtualizacao = DateTime.UtcNow
                 };
@@ -161,22 +161,22 @@ namespace DaccApi.Services.Anuncios
                         "Anúncio não encontrado!");
                 }
 
-                anuncioQuery.Titulo = request.Titulo;
-                anuncioQuery.Conteudo = request.Conteudo;
-                anuncioQuery.TipoAnuncio = request.TipoAnuncio;
-                anuncioQuery.Ativo = request.Ativo;
-                anuncioQuery.BotaoPrimarioTexto = request.BotaoPrimarioTexto ?? anuncioQuery.BotaoPrimarioTexto;
-                anuncioQuery.BotaoPrimarioLink = request.BotaoPrimarioLink ?? anuncioQuery.BotaoPrimarioLink;
-                anuncioQuery.BotaoSecundarioTexto = request.BotaoSecundarioTexto ?? anuncioQuery.BotaoSecundarioTexto;
-                anuncioQuery.BotaoSecundarioLink = request.BotaoSecundarioLink ?? anuncioQuery.BotaoSecundarioLink;
-                anuncioQuery.ImagemUrl = request.ImagemUrl ?? anuncioQuery.ImagemUrl;
-                anuncioQuery.ImagemAlt = request.ImagemAlt ?? anuncioQuery.ImagemAlt;
+                anuncioQuery.Titulo = request.Title ?? anuncioQuery.Titulo;
+                anuncioQuery.Conteudo = request.Content ?? anuncioQuery.Conteudo;
+                anuncioQuery.TipoAnuncio = request.Type ?? anuncioQuery.TipoAnuncio;
+                anuncioQuery.Ativo = request.IsActive;
+                anuncioQuery.BotaoPrimarioTexto = request.PrimaryButtonText ?? anuncioQuery.BotaoPrimarioTexto;
+                anuncioQuery.BotaoPrimarioLink = request.PrimaryButtonLink ?? anuncioQuery.BotaoPrimarioLink;
+                anuncioQuery.BotaoSecundarioTexto = request.SecondaryButtonText ?? anuncioQuery.BotaoSecundarioTexto;
+                anuncioQuery.BotaoSecundarioLink = request.SecondaryButtonLink ?? anuncioQuery.BotaoSecundarioLink;
+                anuncioQuery.ImagemUrl = request.ImageUrl ?? anuncioQuery.ImagemUrl;
+                anuncioQuery.ImagemAlt = request.ImageAlt ?? anuncioQuery.ImagemAlt;
                 anuncioQuery.DataAtualizacao = DateTime.UtcNow;
                 
                 await _anuncioRepository.UpdateAsync(id, anuncioQuery);
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
-                    new { anuncio = request }));
+                    new { announcement = request }));
             }
             catch (Exception ex)
             {

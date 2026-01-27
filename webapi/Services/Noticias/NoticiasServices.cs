@@ -33,9 +33,9 @@ public class NoticiasServices : INoticiasServices
     {
         try
         {
-            if (String.IsNullOrWhiteSpace(request.Titulo) ||
-                String.IsNullOrWhiteSpace(request.Categoria) ||
-                String.IsNullOrWhiteSpace(request.Descricao))
+            if (String.IsNullOrWhiteSpace(request.Title) ||
+                String.IsNullOrWhiteSpace(request.Category) ||
+                String.IsNullOrWhiteSpace(request.Description))
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
@@ -43,10 +43,10 @@ public class NoticiasServices : INoticiasServices
             var noticia = new Noticia()
             {
                 Id = Guid.NewGuid(),
-                Categoria = request.Categoria.ToLower(),
-                Descricao = request.Descricao,
-                Conteudo = request.Conteudo,
-                Titulo = request.Titulo,
+                Categoria = request.Category?.ToLower() ?? string.Empty,
+                Descricao = request.Description,
+                Conteudo = request.Content,
+                Titulo = request.Title,
                 AutorId = autorId,
                 DataPublicacao = DateTime.UtcNow,
                 DataAtualizacao = DateTime.UtcNow
@@ -120,7 +120,7 @@ public class NoticiasServices : INoticiasServices
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
-                new { noticias = new ResponseNoticia(noticia)}));
+                new { news = new ResponseNoticia(noticia) }));
         }
         catch (Exception ex)
         {
@@ -138,9 +138,9 @@ public class NoticiasServices : INoticiasServices
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
             
-            noticiaQuery.Titulo = request.Titulo;
-            noticiaQuery.Descricao = request.Descricao;
-            noticiaQuery.Categoria = request.Categoria;
+            noticiaQuery.Titulo = request.Title;
+            noticiaQuery.Descricao = request.Description;
+            noticiaQuery.Categoria = request.Category;
             
             await _noticiasRepository.UpdateAsync(id, noticiaQuery);
 

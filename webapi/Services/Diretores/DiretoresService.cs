@@ -29,7 +29,7 @@ namespace DaccApi.Services.Diretores
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
                 
                 var response = diretores.Select(d => new ResponseDiretor(d)).ToList();
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { diretores = response}));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { faculty = response }));
             }
             catch (Exception ex)
             {
@@ -48,7 +48,7 @@ namespace DaccApi.Services.Diretores
 
                 if (request.ImageFile != null)
                 {
-                    diretor.ImagemUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
+                    diretor.ImageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
                 }
 
                 await _diretoresRepository.CreateAsync(diretor);
@@ -94,7 +94,7 @@ namespace DaccApi.Services.Diretores
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
 
                 var response = new ResponseDiretor(diretor);
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { diretor = response}));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { facultyMember = response }));
             }
             catch (Exception ex)
             {
@@ -116,13 +116,17 @@ namespace DaccApi.Services.Diretores
 
                 if (request.ImageFile != null)
                 {
-                    diretor.ImagemUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
+                    diretor.ImageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
                 }
+                
+                // Preserve original creation date and set correct Kind
+                diretor.DataCriacao = DateTime.SpecifyKind(diretorQuery.DataCriacao, DateTimeKind.Utc);
+                diretor.DataAtualizacao = DateTime.UtcNow;
 
                 await _diretoresRepository.UpdateAsync(id, diretor);
 
                 var response = new ResponseDiretor(diretor);
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { diretor = response}));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { facultyMember = response }));
             }
             catch (Exception ex)
             {
@@ -137,15 +141,15 @@ namespace DaccApi.Services.Diretores
                 var diretor = new Diretor
                 {
                     Id = Guid.NewGuid(),
-                    Nome = request.Nome,
-                    Titulo = request.Titulo,
-                    Cargo = request.Cargo,
-                    Especializacao = request.Especializacao,
-                    ImagemUrl = request.ImagemUrl, // URL já fornecida ou null
+                    Nome = request.Name,
+                    Titulo = request.Title,
+                    Cargo = request.Position,
+                    Especializacao = request.Specialization,
+                    ImageUrl = request.ImageUrl, // URL já fornecida ou null
                     Email = request.Email,
                     Linkedin = request.Linkedin,
                     Github = request.Github,
-                    UsuarioId = request.UsuarioId
+                    UserId = request.UserId
                 };
 
                 await _diretoresRepository.CreateAsync(diretor);
@@ -170,21 +174,21 @@ namespace DaccApi.Services.Diretores
 
                 var diretor = new Diretor
                 {
-                    Nome = request.Nome,
-                    Titulo = request.Titulo,
-                    Cargo = request.Cargo,
-                    Especializacao = request.Especializacao,
-                    ImagemUrl = request.ImagemUrl ?? diretorQuery.ImagemUrl, // Mantém a URL existente se não fornecida
+                    Nome = request.Name,
+                    Titulo = request.Title,
+                    Cargo = request.Position,
+                    Especializacao = request.Specialization,
+                    ImageUrl = request.ImageUrl ?? diretorQuery.ImageUrl, // Mantém a URL existente se não fornecida
                     Email = request.Email,
                     Linkedin = request.Linkedin,
                     Github = request.Github,
-                    UsuarioId = request.UsuarioId
+                    UserId = request.UserId
                 };
 
                 await _diretoresRepository.UpdateAsync(id, diretor);
 
                 var response = new ResponseDiretor(diretor);
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { diretor = response }));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { facultyMember = response }));
             }
             catch (Exception ex)
             {

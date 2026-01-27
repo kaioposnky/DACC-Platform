@@ -12,25 +12,25 @@ namespace DaccApi.Model
         /// Nome do diretor.
         /// </summary>
         [Required(ErrorMessage = "O nome é obrigatório")]
-        public string Nome { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Título acadêmico (Dr., Ms., etc).
         /// </summary>
         [Required(ErrorMessage = "O título é obrigatório")]
-        public string Titulo { get; set; }
+        public string Title { get; set; }
 
         /// <summary>
         /// Cargo na instituição.
         /// </summary>
         [Required(ErrorMessage = "O cargo é obrigatório")]
-        public string Cargo { get; set; }
+        public string Position { get; set; }
 
         /// <summary>
         /// Especialização ou área de atuação.
         /// </summary>
         [Required(ErrorMessage = "A especialização é obrigatória")]
-        public string Especializacao { get; set; }
+        public string Specialization { get; set; }
 
         /// <summary>
         /// Arquivo de imagem de perfil.
@@ -57,6 +57,6 @@ namespace DaccApi.Model
         /// <summary>
         /// ID do usuário vinculado (opcional).
         /// </summary>
-        public Guid? UsuarioId { get; set; }
+        public Guid? UserId { get; set; }
     }
 }

@@ -40,9 +40,9 @@ namespace DaccApi.Services.Posts
     {
         try
         {
-            if (String.IsNullOrWhiteSpace(post.Titulo) ||
-                String.IsNullOrWhiteSpace(post.Conteudo) ||
-                post.Tags == null || post .Tags.Length == 0)
+            if (String.IsNullOrWhiteSpace(post.Title) ||
+                String.IsNullOrWhiteSpace(post.Content) ||
+                post.Tags == null || post.Tags.Length == 0)
                 
             {
                 // TODO: Adicionar campo de detalhes no request
@@ -52,8 +52,8 @@ namespace DaccApi.Services.Posts
             var newPost = new Post
             {
                 Id = Guid.NewGuid(),
-                Titulo = post.Titulo,
-                Conteudo = post.Conteudo,
+                Titulo = post.Title,
+                Conteudo = post.Content,
                 Tags = post.Tags,
                 DataCriacao = DateTime.UtcNow,
                 DataAtualizacao = DateTime.UtcNow
@@ -120,15 +120,15 @@ namespace DaccApi.Services.Posts
             {
                 ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
             }
-            else if (string.IsNullOrWhiteSpace(postUpdated.Conteudo) ||
-                postUpdated.Tags.Length == 0)
+            else if (string.IsNullOrWhiteSpace(postUpdated.Content) ||
+                postUpdated.Tags == null || postUpdated.Tags.Length == 0)
             {
                 // TODO: Adicionar campo de detalhes no request
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
             
-            post.Titulo = postUpdated.Titulo;
-            post.Conteudo = postUpdated.Conteudo;
+            post.Titulo = postUpdated.Title;
+            post.Conteudo = postUpdated.Content;
             post.Tags = postUpdated.Tags;
             post.DataAtualizacao = DateTime.UtcNow;
             

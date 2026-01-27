@@ -98,7 +98,7 @@ namespace DaccApi.Controllers.Orders
             {
                 var order = await _ordersService.GetOrderById(id);
                 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { orders = order }));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { order = order }));
             }
             catch (KeyNotFoundException ex)
             {
@@ -121,7 +121,7 @@ namespace DaccApi.Controllers.Orders
             try
             {
                 var orders = await _ordersService.GetOrdersByUserId(userId);
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(orders));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { orders }));
             }
             catch (KeyNotFoundException ex)
             {
@@ -143,7 +143,7 @@ namespace DaccApi.Controllers.Orders
             try
             {
                 await _ordersService.UpdateOrderStatus(id, status);
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData( new { OrderId = id, Status = status }));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData( new { orderId = id, status = status }));
             }
             catch (KeyNotFoundException ex)
             {

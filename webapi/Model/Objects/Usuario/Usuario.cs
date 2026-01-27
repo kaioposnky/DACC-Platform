@@ -103,14 +103,14 @@ namespace DaccApi.Model
         {
             return new Usuario()
             {
-                Nome = requestCreate.Nome,
-                Sobrenome = requestCreate.Sobrenome,
+                Nome = requestCreate.FirstName,
+                Sobrenome = requestCreate.LastName,
                 Ra = requestCreate.Ra,
                 Email = requestCreate.Email,
-                Telefone = requestCreate.Telefone,
-                InscritoNoticia = requestCreate.InscritoNoticia,
-                SenhaHash = requestCreate.Senha,
-                Curso = requestCreate.Curso
+                Telefone = requestCreate.Phone,
+                InscritoNoticia = requestCreate.IsSubscribedToNews,
+                SenhaHash = requestCreate.Password,
+                Curso = requestCreate.Course
             };
         }
 

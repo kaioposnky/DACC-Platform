@@ -42,7 +42,7 @@ namespace DaccApi.Model.Objects
         /// Obtém ou define a URL da imagem do diretor.
         /// </summary>
         [Column("imagem_url")]
-        public string? ImagemUrl { get; set; }
+        public string? ImageUrl { get; set; }
 
         /// <summary>
         /// Obtém ou define o e-mail de contato do diretor.
@@ -66,7 +66,7 @@ namespace DaccApi.Model.Objects
         /// Obtém ou define o ID do usuário associado.
         /// </summary>
         [Column("usuario_id")]
-        public Guid? UsuarioId { get; set; }
+        public Guid? UserId { get; set; }
 
         [Column("data_criacao")]
         public DateTime DataCriacao { get; set; }
@@ -81,14 +81,14 @@ namespace DaccApi.Model.Objects
         {
             return new Diretor
             {
-                Nome = request.Nome,
-                Titulo = request.Titulo,
-                Cargo = request.Cargo,
-                Especializacao = request.Especializacao,
+                Nome = request.Name,
+                Titulo = request.Title,
+                Cargo = request.Position,
+                Especializacao = request.Specialization,
                 Email = request.Email,
                 Linkedin = request.Linkedin,
                 Github = request.Github,
-                UsuarioId = request.UsuarioId
+                UserId = request.UserId
             };
         }
     }

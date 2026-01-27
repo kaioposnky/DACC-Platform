@@ -48,16 +48,16 @@ namespace DaccApi.Services.Auth
         public async Task<IActionResult> LoginUser(RequestLogin request)
         {
             try{
-                if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Senha))
+                if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
                 {
                     var validationDetails = new List<object>();
                     if (string.IsNullOrEmpty(request.Email))
                     {
                         validationDetails.Add(new { field = "email", message = "Email é obrigatório" });
                     }
-                    if (string.IsNullOrEmpty(request.Senha))
+                    if (string.IsNullOrEmpty(request.Password))
                     {
-                        validationDetails.Add(new { field = "senha", message = "Senha é obrigatória" });
+                        validationDetails.Add(new { field = "password", message = "Senha é obrigatória" });
                     }
 
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST.WithDetails(validationDetails.ToArray()));
@@ -65,7 +65,7 @@ namespace DaccApi.Services.Auth
 
                 var usuario = await _usuarioRepository.GetUserByEmail(request.Email);
 
-                if (usuario is not { Ativo: true } || !ValidateCredentials(request.Email, request.Senha, usuario.SenhaHash!))
+                if (usuario is not { Ativo: true } || !ValidateCredentials(request.Email, request.Password, usuario.SenhaHash!))
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.INVALID_CREDENTIALS);
                 }
@@ -98,9 +98,9 @@ namespace DaccApi.Services.Auth
 
         public async Task<Usuario> RegisterUser(RequestRegistro requestCreate)
         {
-            if (string.IsNullOrWhiteSpace(requestCreate.Nome) ||
-                string.IsNullOrWhiteSpace(requestCreate.Sobrenome) ||
-                string.IsNullOrWhiteSpace(requestCreate.Curso))
+            if (string.IsNullOrWhiteSpace(requestCreate.FirstName) ||
+                string.IsNullOrWhiteSpace(requestCreate.LastName) ||
+                string.IsNullOrWhiteSpace(requestCreate.Course))
             {
                 throw new ArgumentException("Campos obrigatórios não preenchidos.");
             }
@@ -115,7 +115,7 @@ namespace DaccApi.Services.Auth
                 throw new ArgumentException("Formato de email inválido!");
             }
 
-            if (!IsValidPassword(requestCreate.Senha) || string.IsNullOrEmpty(requestCreate.Senha))
+            if (!IsValidPassword(requestCreate.Password) || string.IsNullOrEmpty(requestCreate.Password))
             {
                 throw new ArgumentException("Senha muito fraca! A senha deve ter ao menos 8 caracteres, uma letra maiúscula, uma letra minúscula e um número!");
             }
@@ -126,16 +126,16 @@ namespace DaccApi.Services.Auth
 
             var usuario = new Usuario
             {
-                Nome = requestCreate.Nome,
-                Sobrenome = requestCreate.Sobrenome,
+                Nome = requestCreate.FirstName!,
+                Sobrenome = requestCreate.LastName!,
                 Ra = requestCreate.Ra,
-                Curso = requestCreate.Curso,
-                Email = requestCreate.Email,
+                Curso = requestCreate.Course!,
+                Email = requestCreate.Email!,
                 ImagemUrl = randomStartImageUrl,
-                Telefone = requestCreate.Telefone,
-                SenhaHash = _argon2Utility.HashPassword(requestCreate.Senha),
+                Telefone = requestCreate.Phone,
+                SenhaHash = _argon2Utility.HashPassword(requestCreate.Password!),
                 Ativo = true,
-                InscritoNoticia = requestCreate.InscritoNoticia ?? false,
+                InscritoNoticia = requestCreate.IsSubscribedToNews ?? false,
                 Cargo = CargoUsuario.Aluno,
                 DataCriacao = DateTime.Now,
                 DataAtualizacao = DateTime.Now

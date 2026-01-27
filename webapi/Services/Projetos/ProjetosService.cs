@@ -29,7 +29,7 @@ namespace DaccApi.Services.Projetos
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
 
                 var response = projetos.Select(projeto => new ResponseProjeto(projeto));
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { projetos = response }));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { projects = response }));
             }
             catch (Exception ex)
             {
@@ -47,7 +47,7 @@ namespace DaccApi.Services.Projetos
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
 
                 var response = new ResponseProjeto(projeto);
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { projeto = response}));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { project = response }));
             }
             catch (Exception ex)
             {
@@ -61,10 +61,10 @@ namespace DaccApi.Services.Projetos
             try
             {
                 
-                if (String.IsNullOrWhiteSpace(request.Titulo) ||
-                    String.IsNullOrWhiteSpace(request.Descricao) ||
+                if (String.IsNullOrWhiteSpace(request.Title) ||
+                    String.IsNullOrWhiteSpace(request.Description) ||
                     String.IsNullOrWhiteSpace(request.Status)||
-                    String.IsNullOrWhiteSpace(request.Diretoria)||
+                    String.IsNullOrWhiteSpace(request.Department)||
                     request.Tags == null)
                     
                 {
@@ -74,12 +74,12 @@ namespace DaccApi.Services.Projetos
                 var projeto = new Projeto()
                 {
                     Id = Guid.NewGuid(),
-                    Titulo = request.Titulo,
-                    Descricao = request.Descricao,
+                    Titulo = request.Title,
+                    Descricao = request.Description,
                     Status = request.Status,
-                    Diretoria = request.Diretoria,
+                    Diretoria = request.Department,
                     Tags = request.Tags,
-                    TextoConclusao = request.TextoConclusao ?? string.Empty,
+                    TextoConclusao = request.CompletionText ?? string.Empty,
                     DataCriacao = DateTime.UtcNow,
                     DataAtualizacao = DateTime.UtcNow
                 };
@@ -148,21 +148,21 @@ namespace DaccApi.Services.Projetos
             {
                 var projetoQuery = await _projetosRepository.GetByIdAsync(id);
                 if (projetoQuery == null ||
-                    String.IsNullOrWhiteSpace(request.Titulo) ||
-                    String.IsNullOrWhiteSpace(request.Descricao) ||
+                    String.IsNullOrWhiteSpace(request.Title) ||
+                    String.IsNullOrWhiteSpace(request.Description) ||
                     String.IsNullOrWhiteSpace(request.Status)||
-                    String.IsNullOrWhiteSpace(request.Diretoria)||
+                    String.IsNullOrWhiteSpace(request.Department)||
                     request.Tags == null)
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
                 
-                projetoQuery.Titulo = request.Titulo;
-                projetoQuery.Descricao = request.Descricao;
+                projetoQuery.Titulo = request.Title;
+                projetoQuery.Descricao = request.Description;
                 projetoQuery.Status = request.Status;
-                projetoQuery.Diretoria = request.Diretoria;
+                projetoQuery.Diretoria = request.Department;
                 projetoQuery.Tags = request.Tags;
-                projetoQuery.TextoConclusao = request.TextoConclusao ?? projetoQuery.TextoConclusao;
+                projetoQuery.TextoConclusao = request.CompletionText ?? projetoQuery.TextoConclusao;
                 projetoQuery.DataAtualizacao = DateTime.UtcNow;
                 
                 await _projetosRepository.UpdateAsync(id, projetoQuery);

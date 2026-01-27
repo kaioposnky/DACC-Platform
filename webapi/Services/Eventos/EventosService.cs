@@ -27,7 +27,7 @@ namespace DaccApi.Services.Eventos
                 if (eventos.Count == 0)
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
                 var response = eventos.Select(evento => new ResponseEvento(evento));
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { eventos = response}));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { events = response }));
             }
             catch (Exception ex)
             {
@@ -40,11 +40,11 @@ namespace DaccApi.Services.Eventos
                 try
                 {
                     if (
-                        String.IsNullOrWhiteSpace(request.Titulo) ||
-                        String.IsNullOrWhiteSpace(request.Descricao) ||
-                        String.IsNullOrWhiteSpace(request.TipoEvento) ||
-                        String.IsNullOrWhiteSpace(request.TextoAcao)||
-                        String.IsNullOrWhiteSpace(request.LinkAcao)
+                        String.IsNullOrWhiteSpace(request.Title) ||
+                        String.IsNullOrWhiteSpace(request.Description) ||
+                        String.IsNullOrWhiteSpace(request.EventType) ||
+                        String.IsNullOrWhiteSpace(request.ActionText)||
+                        String.IsNullOrWhiteSpace(request.ActionLink)
                         )
                     {
                         return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
@@ -53,13 +53,13 @@ namespace DaccApi.Services.Eventos
                     var evento = new Evento()
                     {
                         Id = Guid.NewGuid(),
-                        Titulo = request.Titulo,
+                        Titulo = request.Title,
                         AutorId = autorId,
-                        Descricao = request.Descricao,
-                        LinkAcao = request.LinkAcao,
-                        TextoAcao = request.TextoAcao,
-                        TipoEvento = request.TipoEvento,
-                        Data = request.Data
+                        Descricao = request.Description,
+                        LinkAcao = request.ActionLink,
+                        TextoAcao = request.ActionText,
+                        TipoEvento = request.EventType,
+                        Data = request.Date
                     };
 
                     await _eventosRepository.CreateAsync(evento);
@@ -105,7 +105,7 @@ namespace DaccApi.Services.Eventos
                         return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
                     var response = new ResponseEvento(evento);
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
-                        new { evento = response}));
+                        new { @event = response }));
                 }
                 catch (Exception ex)
                 {
@@ -124,12 +124,12 @@ namespace DaccApi.Services.Eventos
                         return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                     }
 
-                    eventoQuery.Titulo = request.Titulo;
-                    eventoQuery.TextoAcao = request.TextoAcao;
-                    eventoQuery.Descricao = request.Descricao;
-                    eventoQuery.LinkAcao = request.LinkAcao;
-                    eventoQuery.TipoEvento = request.TipoEvento;
-                    eventoQuery.Data = request.Data;
+                    eventoQuery.Titulo = request.Title;
+                    eventoQuery.TextoAcao = request.ActionText;
+                    eventoQuery.Descricao = request.Description;
+                    eventoQuery.LinkAcao = request.ActionLink;
+                    eventoQuery.TipoEvento = request.EventType;
+                    eventoQuery.Data = request.Date;
                     
                     await _eventosRepository.UpdateAsync(id, eventoQuery);
 

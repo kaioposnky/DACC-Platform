@@ -10,11 +10,11 @@ namespace DaccApi.Model
         /// <summary>
         /// Obtém ou define o título do projeto.
         /// </summary>
-        public string? Titulo { get; set; }
+        public string? Title { get; set; }
         /// <summary>
         /// Obtém ou define a descrição do projeto.
         /// </summary>
-        public string? Descricao { get; set; }
+        public string? Description { get; set; }
         
         /// <summary>
         /// Obtém ou define o status do projeto.
@@ -24,7 +24,7 @@ namespace DaccApi.Model
         /// <summary>
         /// Obtém ou define a diretoria responsável.
         /// </summary>
-        public string? Diretoria { get; set; }
+        public string? Department { get; set; }
         /// <summary>
         /// Obtém ou define as tags do projeto.
         /// </summary>
@@ -33,6 +33,6 @@ namespace DaccApi.Model
         /// <summary>
         /// Obtém ou define o texto de conclusão do projeto.
         /// </summary>
-        public string? TextoConclusao { get; set; }
+        public string? CompletionText { get; set; }
     }
 }

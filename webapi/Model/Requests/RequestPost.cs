@@ -8,11 +8,11 @@
         /// <summary>
         /// Obtém ou define o título do post.
         /// </summary>
-        public string? Titulo { get; set; }
+        public string? Title { get; set; }
         /// <summary>
         /// Obtém ou define o conteúdo do post.
         /// </summary>
-        public string? Conteudo { get; set; }
+        public string? Content { get; set; }
         /// <summary>
         /// Obtém ou define as tags do post.
         /// </summary>

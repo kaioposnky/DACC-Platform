@@ -139,27 +139,27 @@ namespace DaccApi.Model
             return new Produto
             {
                 Id = productId,
-                Nome = request.Nome,
-                Descricao = request.Descricao,
+                Nome = request.Name,
+                Descricao = request.Description,
                 Categoria = categoryId,
                 Subcategoria = subcategoryId,
-                Preco = Convert.ToDecimal(request.Preco),
-                PrecoOriginal = Convert.ToDecimal(request.Preco),
+                Preco = Convert.ToDecimal(request.Price),
+                PrecoOriginal = Convert.ToDecimal(request.Price),
                 Ativo = true,
                 DataCriacao = DateTime.UtcNow,
-                DescricaoDetalhada = request.DescricaoDetalhada,
-                PerfeitoPara = request.PerfeitoPara,
-                Destaque = request.Destaque,
-                Especificacoes = request.Especificacoes?.Select(e => new ProdutoEspecificacao { Id = Guid.NewGuid(), ProdutoId = productId, Nome = e.Name, Valor = e.Value }).ToList(),
-                InformacaoEnvio = request.InformacaoEnvio != null ? new ProdutoInformacaoEnvio
+                DescricaoDetalhada = request.DetailedDescription,
+                PerfeitoPara = request.PerfectFor,
+                Destaque = request.Featured,
+                Especificacoes = request.Specifications?.Select(e => new ProdutoEspecificacao { Id = Guid.NewGuid(), ProdutoId = productId, Nome = e.Name, Valor = e.Value }).ToList(),
+                InformacaoEnvio = request.ShippingInfo != null ? new ProdutoInformacaoEnvio
                 {
                     Id = Guid.NewGuid(),
                     ProdutoId = productId,
-                    FreteGratis = request.InformacaoEnvio.FreeShipping,
-                    DiasEstimados = request.InformacaoEnvio.EstimatedDays,
-                    CustoEnvio = request.InformacaoEnvio.ShippingCost,
-                    PoliticaDevolucao = request.InformacaoEnvio.ReturnPolicy,
-                    Garantia = request.InformacaoEnvio.Warranty
+                    FreteGratis = request.ShippingInfo.FreeShipping,
+                    DiasEstimados = request.ShippingInfo.EstimatedDays,
+                    CustoEnvio = request.ShippingInfo.ShippingCost,
+                    PoliticaDevolucao = request.ShippingInfo.ReturnPolicy,
+                    Garantia = request.ShippingInfo.Warranty
                 } : null
             };
         }
@@ -169,25 +169,25 @@ namespace DaccApi.Model
         /// </summary>
         public void UpdateFromRequest(RequestUpdateProduto request, Guid? categoryId = null, Guid? subcategoryId = null)
         {
-            if (request.Nome != null) Nome = request.Nome;
-            if (request.Descricao != null) Descricao = request.Descricao;
+            if (request.Name != null) Nome = request.Name;
+            if (request.Description != null) Descricao = request.Description;
             if (categoryId.HasValue) Categoria = categoryId.Value;
-            if (request.Subcategoria != null) Subcategoria = subcategoryId;
-            if (request.Preco.HasValue) Preco = Convert.ToDecimal(request.Preco.Value);
-            if (request.PrecoOriginal.HasValue) PrecoOriginal = Convert.ToDecimal(request.PrecoOriginal.Value);
-            if (request.DescricaoDetalhada != null) DescricaoDetalhada = request.DescricaoDetalhada;
-            if (request.PerfeitoPara != null) PerfeitoPara = request.PerfeitoPara;
-            if (request.Destaque.HasValue) Destaque = request.Destaque.Value;
-            if (request.Especificacoes != null) Especificacoes = request.Especificacoes.Select(e => new ProdutoEspecificacao { Id = Guid.NewGuid(), ProdutoId = Id, Nome = e.Name, Valor = e.Value }).ToList();
-            if (request.InformacaoEnvio != null) InformacaoEnvio = new ProdutoInformacaoEnvio
+            if (request.Subcategory != null) Subcategoria = subcategoryId;
+            if (request.Price.HasValue) Preco = Convert.ToDecimal(request.Price.Value);
+            if (request.OriginalPrice.HasValue) PrecoOriginal = Convert.ToDecimal(request.OriginalPrice.Value);
+            if (request.DetailedDescription != null) DescricaoDetalhada = request.DetailedDescription;
+            if (request.PerfectFor != null) PerfeitoPara = request.PerfectFor;
+            if (request.Featured.HasValue) Destaque = request.Featured.Value;
+            if (request.Specifications != null) Especificacoes = request.Specifications.Select(e => new ProdutoEspecificacao { Id = Guid.NewGuid(), ProdutoId = Id, Nome = e.Name, Valor = e.Value }).ToList();
+            if (request.ShippingInfo != null) InformacaoEnvio = new ProdutoInformacaoEnvio
             {
                 Id = InformacaoEnvio?.Id ?? Guid.NewGuid(),
                 ProdutoId = Id,
-                FreteGratis = request.InformacaoEnvio.FreeShipping,
-                DiasEstimados = request.InformacaoEnvio.EstimatedDays,
-                CustoEnvio = request.InformacaoEnvio.ShippingCost,
-                PoliticaDevolucao = request.InformacaoEnvio.ReturnPolicy,
-                Garantia = request.InformacaoEnvio.Warranty
+                FreteGratis = request.ShippingInfo.FreeShipping,
+                DiasEstimados = request.ShippingInfo.EstimatedDays,
+                CustoEnvio = request.ShippingInfo.ShippingCost,
+                PoliticaDevolucao = request.ShippingInfo.ReturnPolicy,
+                Garantia = request.ShippingInfo.Warranty
             };
             
             DataAtualizacao = DateTime.UtcNow;
