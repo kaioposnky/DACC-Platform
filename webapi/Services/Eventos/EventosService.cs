@@ -25,7 +25,7 @@ namespace DaccApi.Services.Eventos
                 var eventos = await _eventosRepository.GetAllAsync();
 
                 if (eventos.Count == 0)
-                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Evento>()));
                 var response = eventos.Select(evento => new ResponseEvento(evento));
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { events = response }));
             }
@@ -102,7 +102,7 @@ namespace DaccApi.Services.Eventos
 
                     
                     if (evento == null) 
-                        return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                        return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Evento>()));
                     var response = new ResponseEvento(evento);
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
                         new { @event = response }));

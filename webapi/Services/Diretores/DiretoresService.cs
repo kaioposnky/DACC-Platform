@@ -26,7 +26,7 @@ namespace DaccApi.Services.Diretores
                 var diretores = await _diretoresRepository.GetAllAsync();
 
                 if (diretores.Count == 0)
-                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Diretor>()));
                 
                 var response = diretores.Select(d => new ResponseDiretor(d)).ToList();
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { faculty = response }));
@@ -91,7 +91,7 @@ namespace DaccApi.Services.Diretores
 
                 
                 if (diretor == null) 
-                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Diretor>()));
 
                 var response = new ResponseDiretor(diretor);
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { facultyMember = response }));

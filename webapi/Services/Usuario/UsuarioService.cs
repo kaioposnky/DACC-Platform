@@ -26,7 +26,7 @@ namespace DaccApi.Services.User
                 var users = await _usuarioRepository.GetAllAsync();
                 if (users.Count == 0)
                 {
-                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Usuario>()));
                 }
 
                 var response = users.Select(user => new ResponseUsuario(user));

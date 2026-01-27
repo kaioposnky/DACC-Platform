@@ -24,7 +24,7 @@ namespace DaccApi.Services.Posts
             var posts = await _postsRepository.GetAllAsync();
 
             if (posts.Count == 0)
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Post>()));
 
             var response = posts.Select(post => new ResponsePost(post));
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,

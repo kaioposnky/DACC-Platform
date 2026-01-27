@@ -29,7 +29,7 @@ namespace DaccApi.Services.Anuncios
             {
                 var anuncios = await _anuncioRepository.GetAllAsync();
                 if (anuncios.Count == 0)
-                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Anuncio>()));
 
                 // Mapeia os anuncios para responses
                 var anunciosResponse = anuncios.Select(anuncio => new ResponseAnuncio(anuncio));

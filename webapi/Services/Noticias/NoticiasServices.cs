@@ -117,7 +117,7 @@ public class NoticiasServices : INoticiasServices
             var noticia =  await _noticiasRepository.GetByIdAsync(id);
 
             if (noticia == null) 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Noticia>()));
 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
                 new { news = new ResponseNoticia(noticia) }));

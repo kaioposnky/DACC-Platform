@@ -18,13 +18,17 @@ namespace DaccApi.Infrastructure.Repositories.Noticias
         {
             var sql = _dapper.GetQueryNamed("SearchNoticias");
 
+            var page = queryNoticia.Page ?? 1;
+            var limit = queryNoticia.Limit ?? 16;
+            var offset = (page - 1) * limit;
+
             var param = new
             {
                 SearchQuery = string.IsNullOrEmpty(queryNoticia.SearchQuery) ? null : $"%{queryNoticia.SearchQuery}%",
-                Limit = queryNoticia.Limit,
+                Limit = limit,
+                Offset = offset,
                 Category = queryNoticia.Category,
-                PublishDate = queryNoticia.PublishDate,
-                Page = queryNoticia.Page
+                PublishDate = queryNoticia.PublishDate
             };
 
             var result = await _dapper.QueryAsync<dynamic>(sql, param);

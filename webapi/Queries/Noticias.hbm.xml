@@ -103,7 +103,7 @@
                 AND (@PublishDate IS NULL OR n.data_publicacao >= @PublishDate)
             ORDER BY
                 n.data_publicacao DESC
-            OFFSET (@Page - 1) * @Limit
+            OFFSET @Offset
             LIMIT @Limit;
         ]]>
     </query>

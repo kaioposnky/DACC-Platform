@@ -47,7 +47,8 @@ public class AvaliacaoService : IAvaliacaoService
         {
             var avaliacoes = await _avaliacaoRepository.GetAllAsync();
 
-            if (avaliacoes.Count == 0) return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+            if (avaliacoes.Count == 0)
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<AvaliacaoProduto>()));
 
             var responseAvaliacoes = avaliacoes.Select(avaliacao => new ResponseAvaliacaoProduto(avaliacao));
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { reviews = responseAvaliacoes }));
@@ -68,7 +69,7 @@ public class AvaliacaoService : IAvaliacaoService
 
                 
             if (avaliacao == null) 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<AvaliacaoProduto>()));
 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
                 new { review = new ResponseAvaliacaoProduto(avaliacao) }));
@@ -87,8 +88,8 @@ public class AvaliacaoService : IAvaliacaoService
         {
             var avaliacoes = await _avaliacaoRepository.GetAvaliacoesByProductId(produtoId);
 
-            if (avaliacoes.Count == 0) 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+            if (avaliacoes.Count == 0)
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<AvaliacaoProduto>()));
 
             var responseAvaliacoes = avaliacoes.Select(avaliacao => new ResponseAvaliacaoProduto(avaliacao));
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
@@ -108,7 +109,7 @@ public class AvaliacaoService : IAvaliacaoService
             var avaliacoes = await _avaliacaoRepository.GetAvaliacoesByUserId(usuarioId);
 
             if (avaliacoes.Count == 0)
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<AvaliacaoProduto>()));
 
             var responseAvaliacoes = avaliacoes.Select(avaliacao => new ResponseAvaliacaoProduto(avaliacao));
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,

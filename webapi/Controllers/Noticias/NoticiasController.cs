@@ -36,7 +36,7 @@ namespace DaccApi.Controllers.Noticias
         [PublicGetResponses]
         [AllowAnonymous]
         [HttpGet("")]
-        public async Task<IActionResult> GetAllNoticias([FromQuery] RequestQueryNoticia requestQuery)
+        public async Task<IActionResult> GetAllNoticias([FromQuery] RequestQueryNoticia requestQuery, ILogger<NoticiasController> logger)
         {
             try
             {
@@ -44,7 +44,7 @@ namespace DaccApi.Controllers.Noticias
 
                 if (noticias.Count == 0)
                 {
-                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new {}));
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Noticia>()));
                 }
 
                 var response = noticias.Select((noticia) =>  new ResponseNoticia(noticia));

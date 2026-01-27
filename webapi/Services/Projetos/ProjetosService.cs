@@ -39,7 +39,7 @@ namespace DaccApi.Services.Projetos
                 var projetos = await _projetosRepository.GetAllAsync();
                 
                 if (projetos.Count == 0)
-                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Projeto>()));
 
                 var response = projetos.Select(projeto => new ResponseProjeto(projeto));
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { projects = response }));
@@ -62,7 +62,7 @@ namespace DaccApi.Services.Projetos
             {
                 var projeto = await _projetosRepository.GetByIdAsync(id);
                 if (projeto == null)
-                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Projeto>()));
 
                 var response = new ResponseProjeto(projeto);
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { project = response }));

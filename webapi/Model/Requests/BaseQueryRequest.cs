@@ -14,11 +14,11 @@ public class BaseQueryRequest
     /// Obtém ou define o número da página.
     /// </summary>
     [Range(1, int.MaxValue, ErrorMessage = "Página deve ser maior que 0")]
-    public int Page { get; set; } = 1;
+    public int? Page { get; set; } = 1;
 
     /// <summary>
     /// Obtém ou define o limite de itens por página.
     /// </summary>
     [Range(1, 100, ErrorMessage = "Limite deve estar entre 1 e 100")]
-    public int Limit { get; set; } = 16;
+    public int? Limit { get; set; } = 16;
 }
