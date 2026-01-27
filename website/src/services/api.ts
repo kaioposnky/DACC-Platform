@@ -11,9 +11,9 @@ import {
   User,
   UserStats
 } from '@/types';
-import {storageService} from "@/services/storage";
-import {RegisterData} from "@/context/AuthContext";
-import {toast} from "sonner";
+import { storageService } from "@/services/storage";
+import { RegisterData } from "@/context/AuthContext";
+import { toast } from "sonner";
 
 // Forum types
 export interface ForumCategory {
@@ -77,7 +77,7 @@ class ApiService {
 
     const accessToken = storageService.getAccessToken();
 
-    const headers : Record<string, string> = {
+    const headers: Record<string, string> = {
       ...options?.headers as Record<string, string>,
     }
 
@@ -105,14 +105,13 @@ class ApiService {
 
       return apiResponse.data;
     }
-
     return data as T;
   }
 
   async refreshToken(refreshToken: string): Promise<{ accessToken: string; refreshToken: string; expiresIn: number; }> {
     const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
       method: 'POST',
-      body: refreshToken,
+      body: JSON.stringify({ refreshToken }),
       headers: {
         'Content-Type': 'application/json'
       }
@@ -134,7 +133,7 @@ class ApiService {
     return data as { accessToken: string; refreshToken: string; expiresIn: number; };
   }
 
-  async login(credentials: { email: string; senha: string }): Promise<{ accessToken: string; refreshToken: string; expiresIn: number; user: User }> {
+  async login(credentials: { email: string; password: string }): Promise<{ accessToken: string; refreshToken: string; expiresIn: number; user: User }> {
     return this.request<{ accessToken: string; refreshToken: string; expiresIn: number; user: User }>('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
@@ -176,11 +175,13 @@ class ApiService {
 
   // Users
   async getUsers(): Promise<User[]> {
-    return this.request<User[]>('/users');
+    const data = await this.request<{ users: User[] }>('/users');
+    return data.users;
   }
 
   async getUser(id: string): Promise<User> {
-    return this.request<User>(`/users/${id}`);
+    const data = await this.request<{ user: User }>(`/users/${id}`);
+    return data.user;
   }
 
   async getUserStats(id: string): Promise<UserStats> {
@@ -190,10 +191,11 @@ class ApiService {
   async updateUser(id: string, user: Partial<User> | FormData): Promise<User> {
     const isFormData = user instanceof FormData;
 
-    return this.request<User>(`/users/${id}`, {
+    const data = await this.request<{ user: User }>(`/users/${id}`, {
       method: 'PATCH',
       body: isFormData ? user : JSON.stringify(user),
     });
+    return data.user;
   }
 
   async deleteUser(id: string): Promise<void> {
@@ -204,25 +206,29 @@ class ApiService {
 
   // Posts
   async getPosts(): Promise<Post[]> {
-    return this.request<Post[]>('/posts');
+    const data = await this.request<{ posts: Post[] }>('/posts');
+    return data.posts;
   }
 
   async getPost(id: string): Promise<Post> {
-    return this.request<Post>(`/posts/${id}`);
+    const data = await this.request<{ post: Post }>(`/posts/${id}`);
+    return data.post;
   }
 
   async createPost(post: Omit<Post, 'id'>): Promise<Post> {
-    return this.request<Post>('/posts', {
+    const data = await this.request<{ post: Post }>('/posts', {
       method: 'POST',
       body: JSON.stringify(post),
     });
+    return data.post;
   }
 
   async updatePost(id: string, post: Partial<Post>): Promise<Post> {
-    return this.request<Post>(`/posts/${id}`, {
+    const data = await this.request<{ post: Post }>(`/posts/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(post),
     });
+    return data.post;
   }
 
   async deletePost(id: string): Promise<void> {
@@ -233,29 +239,34 @@ class ApiService {
 
   // Comments
   async getComments(): Promise<Comment[]> {
-    return this.request<Comment[]>('/comments');
+    const data = await this.request<{ comments: Comment[] }>('/comments');
+    return data.comments;
   }
 
   async getComment(id: string): Promise<Comment> {
-    return this.request<Comment>(`/comments/${id}`);
+    const data = await this.request<{ comment: Comment }>(`/comments/${id}`);
+    return data.comment;
   }
 
   async getCommentsByPost(postId: string): Promise<Comment[]> {
-    return this.request<Comment[]>(`/comments?postId=${postId}`);
+    const data = await this.request<{ comments: Comment[] }>(`/comments?postId=${postId}`);
+    return data.comments;
   }
 
   async createComment(comment: Omit<Comment, 'id'>): Promise<Comment> {
-    return this.request<Comment>('/comments', {
+    const data = await this.request<{ comment: Comment }>('/comments', {
       method: 'POST',
       body: JSON.stringify(comment),
     });
+    return data.comment;
   }
 
   async updateComment(id: string, comment: Partial<Comment>): Promise<Comment> {
-    return this.request<Comment>(`/comments/${id}`, {
+    const data = await this.request<{ comment: Comment }>(`/comments/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(comment),
     });
+    return data.comment;
   }
 
   async deleteComment(id: string): Promise<void> {
@@ -266,25 +277,29 @@ class ApiService {
 
   // Announcements
   async getAnnouncements(): Promise<Announcement[]> {
-    return this.request<Announcement[]>('/announcements');
+    const data = await this.request<{ announcements: Announcement[] }>('/announcements');
+    return data.announcements;
   }
 
   async getAnnouncement(id: string): Promise<Announcement> {
-    return this.request<Announcement>(`/announcements/${id}`);
+    const data = await this.request<{ announcement: Announcement }>(`/announcements/${id}`);
+    return data.announcement;
   }
 
   async createAnnouncement(announcement: Omit<Announcement, 'id'>): Promise<Announcement> {
-    return this.request<Announcement>('/announcements', {
+    const data = await this.request<{ announcement: Announcement }>('/announcements', {
       method: 'POST',
       body: JSON.stringify(announcement),
     });
+    return data.announcement;
   }
 
   async updateAnnouncement(id: string, announcement: Partial<Announcement>): Promise<Announcement> {
-    return this.request<Announcement>(`/announcements/${id}`, {
+    const data = await this.request<{ announcement: Announcement }>(`/announcements/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(announcement),
     });
+    return data.announcement;
   }
 
   async deleteAnnouncement(id: string): Promise<void> {
@@ -295,25 +310,29 @@ class ApiService {
 
   // Events
   async getEvents(): Promise<Event[]> {
-    return this.request<Event[]>('/events');
+    const data = await this.request<{ events: Event[] }>('/events');
+    return data.events;
   }
 
   async getEvent(id: string): Promise<Event> {
-    return this.request<Event>(`/events/${id}`);
+    const data = await this.request<{ event: Event }>(`/events/${id}`);
+    return data.event;
   }
 
   async createEvent(event: Omit<Event, 'id'>): Promise<Event> {
-    return this.request<Event>('/events', {
+    const data = await this.request<{ event: Event }>('/events', {
       method: 'POST',
       body: JSON.stringify(event),
     });
+    return data.event;
   }
 
   async updateEvent(id: string, event: Partial<Event>): Promise<Event> {
-    return this.request<Event>(`/events/${id}`, {
+    const data = await this.request<{ event: Event }>(`/events/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(event),
     });
+    return data.event;
   }
 
   async deleteEvent(id: string): Promise<void> {
@@ -324,25 +343,29 @@ class ApiService {
 
   // Projects
   async getProjects(): Promise<Project[]> {
-    return this.request<Project[]>('/projects');
+    const data = await this.request<{ projects: Project[] }>('/projects');
+    return data.projects;
   }
 
   async getProject(id: string): Promise<Project> {
-    return this.request<Project>(`/projects/${id}`);
+    const data = await this.request<{ project: Project }>(`/projects/${id}`);
+    return data.project;
   }
 
   async createProject(project: Omit<Project, 'id'>): Promise<Project> {
-    return this.request<Project>('/projects', {
+    const data = await this.request<{ project: Project }>('/projects', {
       method: 'POST',
       body: JSON.stringify(project),
     });
+    return data.project;
   }
 
   async updateProject(id: string, project: Partial<Project>): Promise<Project> {
-    return this.request<Project>(`/projects/${id}`, {
+    const data = await this.request<{ project: Project }>(`/projects/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(project),
     });
+    return data.project;
   }
 
   async deleteProject(id: string): Promise<void> {
@@ -353,25 +376,29 @@ class ApiService {
 
   // News
   async getNews(): Promise<News[]> {
-    return this.request<News[]>('/news');
+    const data = await this.request<{ news: News[] }>('/news');
+    return data.news;
   }
 
   async getNewsItem(id: string): Promise<News> {
-    return this.request<News>(`/news/${id}`);
+    const data = await this.request<{ news: News }>(`/news/${id}`);
+    return data.news;
   }
 
   async createNews(news: Omit<News, 'id'>): Promise<News> {
-    return this.request<News>('/news', {
+    const data = await this.request<{ news: News }>('/news', {
       method: 'POST',
       body: JSON.stringify(news),
     });
+    return data.news;
   }
 
   async updateNews(id: string, news: Partial<News>): Promise<News> {
-    return this.request<News>(`/news/${id}`, {
+    const data = await this.request<{ news: News }>(`/news/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(news),
     });
+    return data.news;
   }
 
   async deleteNews(id: string): Promise<void> {
@@ -382,25 +409,29 @@ class ApiService {
 
   // Faculty
   async getFaculty(): Promise<Faculty[]> {
-    return this.request<Faculty[]>('/faculty');
+    const data = await this.request<{ faculty: Faculty[] }>('/faculty');
+    return data.faculty;
   }
 
   async getFacultyMember(id: string): Promise<Faculty> {
-    return this.request<Faculty>(`/faculty/${id}`);
+    const data = await this.request<{ faculty: Faculty }>(`/faculty/${id}`);
+    return data.faculty;
   }
 
   async createFacultyMember(faculty: Omit<Faculty, 'id'>): Promise<Faculty> {
-    return this.request<Faculty>('/faculty', {
+    const data = await this.request<{ faculty: Faculty }>('/faculty', {
       method: 'POST',
       body: JSON.stringify(faculty),
     });
+    return data.faculty;
   }
 
   async updateFacultyMember(id: string, faculty: Partial<Faculty>): Promise<Faculty> {
-    return this.request<Faculty>(`/faculty/${id}`, {
+    const data = await this.request<{ faculty: Faculty }>(`/faculty/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(faculty),
     });
+    return data.faculty;
   }
 
   async deleteFacultyMember(id: string): Promise<void> {
@@ -418,77 +449,76 @@ class ApiService {
     limit?: number;
   }): Promise<Product[]> {
     const searchParams = new URLSearchParams();
-    
+
     if (params?.category && params.category !== 'all') {
-      searchParams.append('category', params.category);
+      searchParams.append('category', params.category); // Case insensitive on backend
     }
-    
+
     if (params?.search) {
-      searchParams.append('name_like', params.search);
+      searchParams.append('SearchQuery', params.search);
     }
-    
+
     if (params?.page && params?.limit) {
-      searchParams.append('_page', params.page.toString());
-      searchParams.append('_limit', params.limit.toString());
+      searchParams.append('Page', params.page.toString());
+      searchParams.append('Limit', params.limit.toString());
     }
-    
+
     // Handle sorting
     if (params?.sortBy) {
       switch (params.sortBy) {
         case 'price-low':
-          searchParams.append('_sort', 'price');
-          searchParams.append('_order', 'asc');
+          searchParams.append('OrderBy', 'price-low');
           break;
         case 'price-high':
-          searchParams.append('_sort', 'price');
-          searchParams.append('_order', 'desc');
+          searchParams.append('OrderBy', 'price-high');
           break;
         case 'newest':
-          searchParams.append('_sort', 'createdAt');
-          searchParams.append('_order', 'desc');
+          searchParams.append('OrderBy', 'newest');
           break;
         case 'name-az':
-          searchParams.append('_sort', 'name');
-          searchParams.append('_order', 'asc');
+          searchParams.append('OrderBy', 'name');
           break;
         case 'popular':
-          searchParams.append('_sort', 'reviews');
-          searchParams.append('_order', 'desc');
+          // Backend might not support popular yet, mapping to newest or keeping logic if custom
+          searchParams.append('OrderBy', 'newest');
           break;
         case 'featured':
         default:
-          searchParams.append('_sort', 'featured,createdAt');
-          searchParams.append('_order', 'desc,desc');
+          searchParams.append('OrderBy', 'newest');
           break;
       }
     }
-    
+
     const query = searchParams.toString();
     const endpoint = query ? `/products?${query}` : '/products';
-    
-    return this.request<Product[]>(endpoint);
+
+    const data = await this.request<{ products: Product[] }>(endpoint);
+    return data.products;
   }
 
   async getProduct(id: string): Promise<Product> {
-    return this.request<Product>(`/products/${id}`);
+    const data = await this.request<{ product: Product }>(`/products/${id}`);
+    return data.product;
   }
 
   async createProduct(product: Omit<Product, 'id'> | FormData): Promise<Product> {
     const isFormData = product instanceof FormData;
 
-    return this.request<Product>('/products', {
+    const data = await this.request<{ product: Product }>('/products', {
       method: 'POST',
       body: isFormData ? product : JSON.stringify(product),
     });
+    return data.product;
   }
 
   async updateProduct(id: string, product: Partial<Product> | FormData): Promise<Product> {
     const isFormData = product instanceof FormData;
 
-    return this.request<Product>(`/products/${id}`, {
+    const data = await this.request<{ product: Product }>(`/products/${id}`, {
       method: 'PATCH',
       body: isFormData ? product : JSON.stringify(product),
     });
+    return data.product;
   }
 
   async deleteProduct(id: string): Promise<void> {
@@ -515,20 +545,20 @@ class ApiService {
     limit?: number;
   }): Promise<ForumThread[]> {
     const searchParams = new URLSearchParams();
-    
+
     if (params?.categoryId && params.categoryId !== 'all') {
       searchParams.append('categoryId', params.categoryId);
     }
-    
+
     if (params?.search) {
       searchParams.append('title_like', params.search);
     }
-    
+
     if (params?.page && params?.limit) {
       searchParams.append('_page', params.page.toString());
       searchParams.append('_limit', params.limit.toString());
     }
-    
+
     // Handle sorting
     if (params?.sortBy) {
       switch (params.sortBy) {
@@ -562,10 +592,10 @@ class ApiService {
       searchParams.append('_sort', 'isPinned,lastActivity');
       searchParams.append('_order', 'desc,desc');
     }
-    
+
     const query = searchParams.toString();
     const endpoint = query ? `/forumThreads?${query}` : '/forumThreads';
-    
+
     return this.request<ForumThread[]>(endpoint);
   }
 
@@ -581,7 +611,7 @@ class ApiService {
       lastActivity: new Date().toISOString(),
       createdAt: new Date().toISOString(),
     };
-    
+
     return this.request<ForumThread>('/forumThreads', {
       method: 'POST',
       body: JSON.stringify(newThread),
