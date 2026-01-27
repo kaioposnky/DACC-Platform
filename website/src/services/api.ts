@@ -93,6 +93,10 @@ class ApiService {
       headers: headers,
     });
 
+    if (response.status === 204) {
+      return null as T;
+    }
+
     const data = await response.json();
 
     // Verifica se a resposta segue o padrão ApiResponse do backend
@@ -176,7 +180,7 @@ class ApiService {
   // Users
   async getUsers(): Promise<User[]> {
     const data = await this.request<{ users: User[] }>('/users');
-    return data.users;
+    return data?.users || [];
   }
 
   async getUser(id: string): Promise<User> {
@@ -207,7 +211,7 @@ class ApiService {
   // Posts
   async getPosts(): Promise<Post[]> {
     const data = await this.request<{ posts: Post[] }>('/posts');
-    return data.posts;
+    return data?.posts || [];
   }
 
   async getPost(id: string): Promise<Post> {
@@ -240,7 +244,7 @@ class ApiService {
   // Comments
   async getComments(): Promise<Comment[]> {
     const data = await this.request<{ comments: Comment[] }>('/comments');
-    return data.comments;
+    return data?.comments || [];
   }
 
   async getComment(id: string): Promise<Comment> {
@@ -250,7 +254,7 @@ class ApiService {
 
   async getCommentsByPost(postId: string): Promise<Comment[]> {
     const data = await this.request<{ comments: Comment[] }>(`/comments?postId=${postId}`);
-    return data.comments;
+    return data?.comments || [];
   }
 
   async createComment(comment: Omit<Comment, 'id'>): Promise<Comment> {
@@ -278,7 +282,7 @@ class ApiService {
   // Announcements
   async getAnnouncements(): Promise<Announcement[]> {
     const data = await this.request<{ announcements: Announcement[] }>('/announcements');
-    return data.announcements;
+    return data?.announcements || [];
   }
 
   async getAnnouncement(id: string): Promise<Announcement> {
@@ -311,7 +315,7 @@ class ApiService {
   // Events
   async getEvents(): Promise<Event[]> {
     const data = await this.request<{ events: Event[] }>('/events');
-    return data.events;
+    return data?.events || [];
   }
 
   async getEvent(id: string): Promise<Event> {
@@ -344,7 +348,7 @@ class ApiService {
   // Projects
   async getProjects(): Promise<Project[]> {
     const data = await this.request<{ projects: Project[] }>('/projects');
-    return data.projects;
+    return data?.projects || [];
   }
 
   async getProject(id: string): Promise<Project> {
@@ -377,7 +381,7 @@ class ApiService {
   // News
   async getNews(): Promise<News[]> {
     const data = await this.request<{ news: News[] }>('/news');
-    return data.news;
+    return data?.news || [];
   }
 
   async getNewsItem(id: string): Promise<News> {
@@ -410,7 +414,7 @@ class ApiService {
   // Faculty
   async getFaculty(): Promise<Faculty[]> {
     const data = await this.request<{ faculty: Faculty[] }>('/faculty');
-    return data.faculty;
+    return data?.faculty || [];
   }
 
   async getFacultyMember(id: string): Promise<Faculty> {
@@ -493,7 +497,7 @@ class ApiService {
     const endpoint = query ? `/products?${query}` : '/products';
 
     const data = await this.request<{ products: Product[] }>(endpoint);
-    return data.products;
+    return data?.products || [];
   }
 
   async getProduct(id: string): Promise<Product> {
@@ -529,7 +533,7 @@ class ApiService {
 
   // Forum Categories
   async getForumCategories(): Promise<ForumCategory[]> {
-    return this.request<ForumCategory[]>('/forumCategories');
+    return (await this.request<ForumCategory[]>('/forumCategories')) || [];
   }
 
   async getForumCategory(id: string): Promise<ForumCategory> {
@@ -596,7 +600,7 @@ class ApiService {
     const query = searchParams.toString();
     const endpoint = query ? `/forumThreads?${query}` : '/forumThreads';
 
-    return this.request<ForumThread[]>(endpoint);
+    return (await this.request<ForumThread[]>(endpoint)) || [];
   }
 
   async getForumThread(id: string): Promise<ForumThread> {
