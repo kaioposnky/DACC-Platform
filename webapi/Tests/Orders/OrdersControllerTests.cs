@@ -26,7 +26,7 @@ public class OrdersControllerTests : IntegrationTestBase
         var userToken = _client.DefaultRequestHeaders.Authorization; // Guarda token de usuário
         await AuthenticateAsAdminAsync();
 
-        var product = ProductTestDataBuilder.CreateValidProduct(nome: $"Produto Order {Guid.NewGuid()}");
+        var product = ProductTestDataBuilder.CreateValidProduct(name: $"Produto Order {Guid.NewGuid()}");
         await _client.PostAsJsonAsync(ProductsUrl, product);
         
         // Obter ID do produto
@@ -37,12 +37,12 @@ public class OrdersControllerTests : IntegrationTestBase
         {
             var dataElement = doc.RootElement.GetProperty("data");
             JsonElement productsList = dataElement;
-            if (dataElement.ValueKind == JsonValueKind.Object && dataElement.TryGetProperty("produtos", out var inner))
+            if (dataElement.ValueKind == JsonValueKind.Object && dataElement.TryGetProperty("products", out var inner))
                 productsList = inner;
             
             foreach (var item in productsList.EnumerateArray())
             {
-                if (item.GetProperty("name").GetString() == product.Nome)
+                if (item.GetProperty("name").GetString() == product.Name)
                 {
                     productId = item.GetProperty("id").GetGuid();
                     break;
@@ -52,12 +52,12 @@ public class OrdersControllerTests : IntegrationTestBase
         productId.Should().NotBeNull();
 
         // Criar variação com estoque (usando FormData pois controller usa [FromForm])
-        var variationRequest = ProductTestDataBuilder.CreateVariationRequest(estoque: 100);
+        var variationRequest = ProductTestDataBuilder.CreateVariationRequest(stock: 100);
         var formContent = new MultipartFormDataContent();
-        formContent.Add(new StringContent(variationRequest.Cor ?? ""), "Cor");
-        formContent.Add(new StringContent(variationRequest.Tamanho ?? ""), "Tamanho");
-        formContent.Add(new StringContent(variationRequest.Estoque.ToString()), "Estoque");
-        formContent.Add(new StringContent(variationRequest.OrdemVariacao.ToString()), "OrdemVariacao");
+        formContent.Add(new StringContent(variationRequest.Color ?? ""), "Color");
+        formContent.Add(new StringContent(variationRequest.Size ?? ""), "Size");
+        formContent.Add(new StringContent(variationRequest.Stock.ToString()), "Stock");
+        formContent.Add(new StringContent(variationRequest.DisplayOrder.ToString()), "DisplayOrder");
         var variationResponse = await _client.PostAsync($"{ProductsUrl}/{productId}/variations", formContent);
         variationResponse.StatusCode.Should().Be(HttpStatusCode.Created); // Controller retorna 201 para criar variação
 
@@ -67,8 +67,8 @@ public class OrdersControllerTests : IntegrationTestBase
         Guid? variationId = null;
         using (var doc = JsonDocument.Parse(variationsContent))
         {
-            var dataElement = doc.RootElement.GetProperty("data"); 
-            // Variações retorna lista envelopada em data
+            var dataElement = doc.RootElement.GetProperty("data").GetProperty("variations"); 
+            // Variações retorna lista envelopada em data.variations
             foreach(var item in dataElement.EnumerateArray())
             {
                 variationId = item.GetProperty("id").GetGuid();
@@ -144,7 +144,7 @@ public class OrdersControllerTests : IntegrationTestBase
     {
         // 1. Setup Produto sem estoque
         await AuthenticateAsAdminAsync();
-        var product = ProductTestDataBuilder.CreateValidProduct(nome: $"ProdSE_{Guid.NewGuid().ToString().Substring(0, 8)}");
+        var product = ProductTestDataBuilder.CreateValidProduct(name: $"ProdSE_{Guid.NewGuid().ToString().Substring(0, 8)}");
         var createResponse = await _client.PostAsJsonAsync(ProductsUrl, product);
         var content = await createResponse.Content.ReadAsStringAsync();
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created, $"Creation failed: {content}");
@@ -167,32 +167,32 @@ public class OrdersControllerTests : IntegrationTestBase
             }
             else
             {
-                list = dataElement.ValueKind == JsonValueKind.Object ? dataElement.GetProperty("produtos") : dataElement;
+                list = dataElement.ValueKind == JsonValueKind.Object ? dataElement.GetProperty("products") : dataElement;
             }
 
             foreach (var item in list.EnumerateArray())
             {
                 // Verifica 'name' (padrão) ou 'Nome' (caso venha do backend assim)
-                var name = item.TryGetProperty("name", out var n) ? n.GetString() : item.GetProperty("Nome").GetString();
+                var name = item.GetProperty("name").GetString();
                 
-                if (name == product.Nome) { productId = item.GetProperty("id").GetGuid(); break; }
+                if (name == product.Name) { productId = item.GetProperty("id").GetGuid(); break; }
             }
         }
 
         // Criar variação com estoque ZERO (usando FormData, pois controller usa [FromForm])
-        var variationRequest = ProductTestDataBuilder.CreateVariationRequest(estoque: 0);
+        var variationRequest = ProductTestDataBuilder.CreateVariationRequest(stock: 0);
         var formContent = new MultipartFormDataContent();
-        formContent.Add(new StringContent(variationRequest.Cor ?? ""), "Cor");
-        formContent.Add(new StringContent(variationRequest.Tamanho ?? ""), "Tamanho");
-        formContent.Add(new StringContent(variationRequest.Estoque.ToString()), "Estoque");
-        formContent.Add(new StringContent(variationRequest.OrdemVariacao.ToString()), "OrdemVariacao");
+        formContent.Add(new StringContent(variationRequest.Color ?? ""), "Color");
+        formContent.Add(new StringContent(variationRequest.Size ?? ""), "Size");
+        formContent.Add(new StringContent(variationRequest.Stock.ToString()), "Stock");
+        formContent.Add(new StringContent(variationRequest.DisplayOrder.ToString()), "DisplayOrder");
         var varResponse = await _client.PostAsync($"{ProductsUrl}/{productId}/variations", formContent);
         varResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         
         // Pegar ID Variação
         var varsResponse = await _client.GetAsync($"{ProductsUrl}/{productId}/variations");
         var varsContent = await varsResponse.Content.ReadAsStringAsync();
-        Guid? varId = JsonDocument.Parse(varsContent).RootElement.GetProperty("data")[0].GetProperty("id").GetGuid();
+        Guid? varId = JsonDocument.Parse(varsContent).RootElement.GetProperty("data").GetProperty("variations")[0].GetProperty("id").GetGuid();
 
         // 2. Tentar comprar
         await AuthenticateAsUserAsync();
@@ -207,7 +207,7 @@ public class OrdersControllerTests : IntegrationTestBase
         response.StatusCode.Should().BeOneOf(HttpStatusCode.Conflict, HttpStatusCode.BadRequest, HttpStatusCode.UnprocessableEntity);
         
         var errorContent = await response.Content.ReadAsStringAsync();
-        errorContent.Should().ContainEquivalentOf("estoque");
+        errorContent.Should().ContainEquivalentOf("stock");
     }
 
 
@@ -223,27 +223,27 @@ public class OrdersControllerTests : IntegrationTestBase
             // Obter ID do produto criado
             var listResponse = await _client.GetAsync(ProductsUrl);
             var listContent = await listResponse.Content.ReadAsStringAsync();
-            var products = JsonDocument.Parse(listContent).RootElement.GetProperty("data").EnumerateArray();
+            var products = JsonDocument.Parse(listContent).RootElement.GetProperty("data").GetProperty("products").EnumerateArray();
             Guid? productId = null;
             foreach (var item in products)
             {
-                var name = item.TryGetProperty("name", out var n) ? n.GetString() : item.GetProperty("Nome").GetString();
-                if (name == product.Nome) { productId = item.GetProperty("id").GetGuid(); break; }
+                var name = item.GetProperty("name").GetString();
+                if (name == product.Name) { productId = item.GetProperty("id").GetGuid(); break; }
             }
 
             // Criar Variação
-            var variationRequest = ProductTestDataBuilder.CreateVariationRequest(estoque: 10);
+            var variationRequest = ProductTestDataBuilder.CreateVariationRequest(stock: 10);
             var formContent = new MultipartFormDataContent();
-            formContent.Add(new StringContent(variationRequest.Cor ?? ""), "Cor");
-            formContent.Add(new StringContent(variationRequest.Tamanho ?? ""), "Tamanho");
-            formContent.Add(new StringContent(variationRequest.Estoque.ToString()), "Estoque");
-            formContent.Add(new StringContent(variationRequest.OrdemVariacao.ToString()), "OrdemVariacao");
+            formContent.Add(new StringContent(variationRequest.Color ?? ""), "Color");
+            formContent.Add(new StringContent(variationRequest.Size ?? ""), "Size");
+            formContent.Add(new StringContent(variationRequest.Stock.ToString()), "Stock");
+            formContent.Add(new StringContent(variationRequest.DisplayOrder.ToString()), "DisplayOrder");
             await _client.PostAsync($"{ProductsUrl}/{productId}/variations", formContent);
             
             // Obter ID da Variação
             var varsResponse = await _client.GetAsync($"{ProductsUrl}/{productId}/variations");
             var varsContent = await varsResponse.Content.ReadAsStringAsync();
-            var varId = JsonDocument.Parse(varsContent).RootElement.GetProperty("data")[0].GetProperty("id").GetGuid();
+            var varId = JsonDocument.Parse(varsContent).RootElement.GetProperty("data").GetProperty("variations")[0].GetProperty("id").GetGuid();
 
             // 2. Criar Pedido (User)
             await AuthenticateAsUserAsync();
@@ -265,7 +265,7 @@ public class OrdersControllerTests : IntegrationTestBase
             getOrderResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             
             var getOrderContent = await getOrderResponse.Content.ReadAsStringAsync();
-            var status = JsonDocument.Parse(getOrderContent).RootElement.GetProperty("data").GetProperty("status").GetString();
+            var status = JsonDocument.Parse(getOrderContent).RootElement.GetProperty("data").GetProperty("order").GetProperty("status").GetString();
             
             status.Should().Be(newStatus);
         }

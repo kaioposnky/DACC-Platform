@@ -115,16 +115,23 @@ public class IntegrationTestBase : IAsyncLifetime
 
     protected async Task CreateTestUserIfNotExistsAsync(string email, string password, string cargo)
     {
+        var ra = cargo == "administrador" ? "999999999" : "123456789";
+        var role = "User"; // Default value for LastName if not admin
+        if (cargo == "administrador")
+        {
+            role = "Admin";
+        }
+
         var registerRequest = new
         {
-            nome = "Test",
-            sobrenome = "User",
-            email = email,
-            ra = cargo == "administrador" ? "999999999" : "123456789", // 9 dígitos conforme validação
-            curso = "Ciência da Computação",
-            telefone = "11999999999",
-            senha = password,
-            inscritoNoticia = false
+            FirstName = "Test",
+            LastName = role,
+            Email = email,
+            Ra = ra,
+            Course = "CC",
+            Phone = "11999999999",
+            Password = password,
+            IsSubscribedToNews = false
         };
 
         var response = await _client.PostAsJsonAsync("v1/api/auth/register", registerRequest);
@@ -166,7 +173,7 @@ public class IntegrationTestBase : IAsyncLifetime
 
     private async Task<string> LoginAsync(string email, string password)
     {
-        var loginRequest = new { email, senha = password };
+        var loginRequest = new { email, Password = password };
         var response = await _client.PostAsJsonAsync("v1/api/auth/login", loginRequest);
         
         if (!response.IsSuccessStatusCode)

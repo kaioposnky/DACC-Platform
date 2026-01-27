@@ -11,17 +11,17 @@ public static class DiretorTestDataBuilder
     /// Cria um objeto RequestDiretor válido com dados padrão
     /// </summary>
     public static RequestDiretor CreateValidDiretor(
-        string? nome = null,
-        string? titulo = null,
-        string? cargo = null,
-        string? especializacao = null)
+        string? name = null,
+        string? title = null,
+        string? position = null,
+        string? specialization = null)
     {
         return new RequestDiretor
         {
-            Nome = nome ?? "Dr. João Silva",
-            Titulo = titulo ?? "Doutor",
-            Cargo = cargo ?? "Diretor Acadêmico",
-            Especializacao = especializacao ?? "Ciência da Computação e Inteligência Artificial",
+            Name = name ?? "Dr. João Silva",
+            Title = title ?? "Doutor",
+            Position = position ?? "Diretor Acadêmico",
+            Specialization = specialization ?? "Ciência da Computação e Inteligência Artificial",
             Email = "joao.silva@fatec.sp.gov.br",
             Linkedin = "https://linkedin.com/in/joaosilva",
             Github = "https://github.com/joaosilva",
@@ -36,10 +36,10 @@ public static class DiretorTestDataBuilder
     {
         return new RequestDiretor
         {
-            Nome = "Diretor Teste",
-            Titulo = "Mestre",
-            Cargo = "Coordenador",
-            Especializacao = "Engenharia de Software",
+            Name = "Diretor Teste",
+            Title = "Mestre",
+            Position = "Coordenador",
+            Specialization = "Engenharia de Software",
             ImageFile = null
         };
     }
@@ -53,18 +53,18 @@ public static class DiretorTestDataBuilder
         {
             "nome_vazio" => new RequestDiretor
             {
-                Nome = "",
-                Titulo = "Doutor",
-                Cargo = "Diretor",
-                Especializacao = "Computação",
+                Name = "",
+                Title = "Doutor",
+                Position = "Diretor",
+                Specialization = "Computação",
                 ImageFile = null
             },
             "email_invalido" => new RequestDiretor
             {
-                Nome = "Teste",
-                Titulo = "Doutor",
-                Cargo = "Diretor",
-                Especializacao = "Computação",
+                Name = "Teste",
+                Title = "Doutor",
+                Position = "Diretor",
+                Specialization = "Computação",
                 Email = "email-invalido",
                 ImageFile = null
             },
@@ -76,15 +76,15 @@ public static class DiretorTestDataBuilder
     /// Cria um diretor para update
     /// </summary>
     public static RequestDiretor CreateUpdateDiretor(
-        string? nome = null,
-        string? cargo = null)
+        string? name = null,
+        string? position = null)
     {
         return new RequestDiretor
         {
-            Nome = nome ?? "Dr. João Silva Atualizado",
-            Titulo = "Doutor",
-            Cargo = cargo ?? "Diretor Geral",
-            Especializacao = "Inteligência Artificial e Machine Learning",
+            Name = name ?? "Dr. João Silva Atualizado",
+            Title = "Doutor",
+            Position = position ?? "Diretor Geral",
+            Specialization = "Inteligência Artificial e Machine Learning",
             Email = "joao.atualizado@fatec.sp.gov.br",
             Linkedin = "https://linkedin.com/in/joaosilva-updated",
             ImageFile = null
@@ -101,9 +101,9 @@ public static class DiretorTestDataBuilder
         for (int i = 1; i <= count; i++)
         {
             diretores.Add(CreateValidDiretor(
-                nome: $"Dr. Diretor {i}",
-                cargo: i % 2 == 0 ? "Diretor Acadêmico" : "Coordenador de Curso",
-                especializacao: $"Área de Especialização {i}"
+                name: $"Dr. Diretor {i}",
+                position: i % 2 == 0 ? "Diretor Acadêmico" : "Coordenador de Curso",
+                specialization: $"Área de Especialização {i}"
             ));
         }
 

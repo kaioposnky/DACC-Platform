@@ -7,22 +7,22 @@ namespace DaccApi.Tests.Helpers;
 /// </summary>
 public static class AvaliacaoTestDataBuilder
 {
-    public static RequestCreateAvaliacao CreateValidAvaliacao(Guid produtoId, double nota = 5, string? comentario = null)
+    public static RequestCreateAvaliacao CreateValidAvaliacao(Guid productId, double rating = 5, string? comment = null)
     {
         return new RequestCreateAvaliacao
         {
-            ProdutoId = produtoId,
-            Nota = nota,
-            Comentario = comentario ?? "Excelente produto! Recomendo muito."
+            ProductId = productId,
+            Rating = rating,
+            Comment = comment ?? "Excelente produto! Recomendo muito."
         };
     }
 
-    public static RequestUpdateAvaliacao CreateUpdateAvaliacao(double nota = 4, string? comentario = null)
+    public static RequestUpdateAvaliacao CreateUpdateAvaliacao(double rating = 4, string? comment = null)
     {
         return new RequestUpdateAvaliacao
         {
-            Nota = nota,
-            Comentario = comentario ?? "Atualizando minha opinião, ainda é bom."
+            Rating = rating,
+            Comment = comment ?? "Atualizando minha opinião, ainda é bom."
         };
     }
 }

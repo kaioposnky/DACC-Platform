@@ -21,8 +21,8 @@ public class ProdutosControllerTests : IntegrationTestBase
         var subcategoriaId = await GetSubcategoriaIdAsync("camisetas");
         
         var product = ProductTestDataBuilder.CreateValidProduct(
-            categoria: categoriaId,
-            subcategoria: subcategoriaId
+            category: categoriaId,
+            subcategory: subcategoriaId
         );
 
         var response = await _client.PostAsJsonAsync("v1/api/products", product);
@@ -47,8 +47,8 @@ public class ProdutosControllerTests : IntegrationTestBase
         var subcategoriaId = await GetSubcategoriaIdAsync("adesivos");
         
         var product = ProductTestDataBuilder.CreateMinimalProduct(
-            categoria: categoriaId,
-            subcategoria: subcategoriaId
+            category: categoriaId,
+            subcategory: subcategoriaId
         );
 
         var response = await _client.PostAsJsonAsync("v1/api/products", product);
@@ -103,11 +103,11 @@ public class ProdutosControllerTests : IntegrationTestBase
         await AuthenticateAsAdminAsync();
         var catId = await GetCategoriaIdAsync("roupas");
         var subId = await GetSubcategoriaIdAsync("camisetas");
-        var productRequest = ProductTestDataBuilder.CreateValidProduct(categoria: catId, subcategoria: subId);
+        var productRequest = ProductTestDataBuilder.CreateValidProduct(category: catId, subcategory: subId);
         
         var createResponse = await _client.PostAsJsonAsync("v1/api/products", productRequest);
         var createData = await createResponse.Content.ReadFromJsonAsync<CreateProductResponse>();
-        var productId = createData!.Data;
+        var productId = createData!.Data.Id;
 
         var response = await _client.GetAsync($"v1/api/products/{productId}");
 
@@ -136,7 +136,7 @@ public class ProdutosControllerTests : IntegrationTestBase
         await AuthenticateAsAdminAsync();
         var catId = await GetCategoriaIdAsync("roupas");
         var subId = await GetSubcategoriaIdAsync("camisetas");
-        var productRequest = ProductTestDataBuilder.CreateValidProduct(nome: "BuscaTeste", categoria: catId, subcategoria: subId);
+        var productRequest = ProductTestDataBuilder.CreateValidProduct(name: "BuscaTeste", category: catId, subcategory: subId);
         await _client.PostAsJsonAsync("v1/api/products", productRequest);
 
         var response = await _client.GetAsync("v1/api/products/search?searchQuery=BuscaTeste");
@@ -153,11 +153,11 @@ public class ProdutosControllerTests : IntegrationTestBase
         await AuthenticateAsAdminAsync();
         var catId = await GetCategoriaIdAsync("roupas");
         var subId = await GetSubcategoriaIdAsync("camisetas");
-        var productRequest = ProductTestDataBuilder.CreateValidProduct(categoria: catId, subcategoria: subId);
+        var productRequest = ProductTestDataBuilder.CreateValidProduct(category: catId, subcategory: subId);
         
         var createResponse = await _client.PostAsJsonAsync("v1/api/products", productRequest);
         var createData = await createResponse.Content.ReadFromJsonAsync<CreateProductResponse>();
-        var productId = createData!.Data;
+        var productId = createData!.Data.Id;
 
         var response = await _client.DeleteAsync($"v1/api/products/{productId}");
 
@@ -174,9 +174,9 @@ public class ProdutosControllerTests : IntegrationTestBase
         await AuthenticateAsAdminAsync();
         var catId = await GetCategoriaIdAsync("roupas");
         var subId = await GetSubcategoriaIdAsync("camisetas");
-        var createResponse = await _client.PostAsJsonAsync("v1/api/products", ProductTestDataBuilder.CreateValidProduct(categoria: catId, subcategoria: subId));
+        var createResponse = await _client.PostAsJsonAsync("v1/api/products", ProductTestDataBuilder.CreateValidProduct(category: catId, subcategory: subId));
         var createData = await createResponse.Content.ReadFromJsonAsync<CreateProductResponse>();
-        var productId = createData!.Data;
+        var productId = createData!.Data.Id;
 
         // Troca para usuário normal
         await AuthenticateAsUserAsync();
@@ -196,12 +196,12 @@ public class ProdutosControllerTests : IntegrationTestBase
         var subId = await GetSubcategoriaIdAsync("camisetas");
         
         // 1. Cria o produto
-        var createResponse = await _client.PostAsJsonAsync("v1/api/products", ProductTestDataBuilder.CreateValidProduct(categoria: catId, subcategoria: subId));
+        var createResponse = await _client.PostAsJsonAsync("v1/api/products", ProductTestDataBuilder.CreateValidProduct(category: catId, subcategory: subId));
         var createData = await createResponse.Content.ReadFromJsonAsync<CreateProductResponse>();
-        var productId = createData!.Data;
+        var productId = createData!.Data.Id;
 
         // 2. Atualiza o produto (PATCH + FormData)
-        var updateRequest = ProductTestDataBuilder.CreateUpdateProduct(nome: "Produto Totalmente Novo", preco: 150.00);
+        var updateRequest = ProductTestDataBuilder.CreateUpdateProduct(name: "Produto Totalmente Novo", price: 150.00);
         var formData = ToFormData(updateRequest);
         
         var response = await _client.PatchAsync($"v1/api/products/{productId}", formData);
@@ -232,12 +232,12 @@ public class ProdutosControllerTests : IntegrationTestBase
         var subId = await GetSubcategoriaIdAsync("camisetas");
         
         // 1. Cria o produto base
-        var productRequest = ProductTestDataBuilder.CreateValidProduct(categoria: catId, subcategoria: subId);
+        var productRequest = ProductTestDataBuilder.CreateValidProduct(category: catId, subcategory: subId);
         var createProdResp = await _client.PostAsJsonAsync("v1/api/products", productRequest);
-        var productId = (await createProdResp.Content.ReadFromJsonAsync<CreateProductResponse>())!.Data;
+        var productId = (await createProdResp.Content.ReadFromJsonAsync<CreateProductResponse>())!.Data.Id;
 
         // 2. Cria uma variação (POST + FormData + URL Correta)
-        var variationRequest = ProductTestDataBuilder.CreateVariationRequest(cor: "Verde", tamanho: "P", estoque: 20);
+        var variationRequest = ProductTestDataBuilder.CreateVariationRequest(color: "Verde", size: "P", stock: 20);
         var createFormData = ToFormData(variationRequest);
         
         var createVarResp = await _client.PostAsync($"v1/api/products/{productId}/variations", createFormData);
@@ -255,7 +255,7 @@ public class ProdutosControllerTests : IntegrationTestBase
         var variationId = variationData!.Data.Id;
 
         // 3. Atualiza a variação (PATCH + FormData + URL Correta com ProductId)
-        var updateVarRequest = ProductTestDataBuilder.CreateUpdateVariation(estoque: 100);
+        var updateVarRequest = ProductTestDataBuilder.CreateUpdateVariation(stock: 100);
         var updateFormData = ToFormData(updateVarRequest);
         
         var updateVarResp = await _client.PatchAsync($"v1/api/products/{productId}/variations/{variationId}", updateFormData);
@@ -296,12 +296,12 @@ public class ProdutosControllerTests : IntegrationTestBase
         
         var request = new
         {
-            Nome = "Produto Teste Nome Categoria",
-            Descricao = "Descrição do produto criado com nome de categoria",
-            Categoria = "Roupas", // NOME
-            Subcategoria = "Camisetas", // NOME
-            Preco = 99.90,
-            Destaque = false
+            Name = "Produto Teste Nome Categoria",
+            Description = "Descrição do produto criado com nome de categoria",
+            Category = "Roupas", // NOME
+            Subcategory = "Camisetas", // NOME
+            Price = 99.90,
+            Featured = false
         };
 
         var response = await _client.PostAsJsonAsync("v1/api/products", request);
@@ -309,14 +309,14 @@ public class ProdutosControllerTests : IntegrationTestBase
         if (!response.IsSuccessStatusCode)
         {
             var errorContent = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Erro ao criar produto com nome de categoria: {response.StatusCode} - {errorContent}");
+            throw new Exception($"Erro ao criar produto com nome de category: {response.StatusCode} - {errorContent}");
         }
         
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         
         // Verificar se foi criado corretamente recuperando o produto
         var data = await response.Content.ReadFromJsonAsync<CreateProductResponse>();
-        var getResponse = await _client.GetAsync($"v1/api/products/{data!.Data}");
+        var getResponse = await _client.GetAsync($"v1/api/products/{data!.Data.Id}");
         var content = await getResponse.Content.ReadAsStringAsync();
         
         // O Get deve retornar os nomes e IDs resolvidos
@@ -333,15 +333,15 @@ public class ProdutosControllerTests : IntegrationTestBase
         // 1. Cria com ID normal
         var catId = await GetCategoriaIdAsync("roupas");
         var subId = await GetSubcategoriaIdAsync("camisetas");
-        var createRequest = ProductTestDataBuilder.CreateValidProduct(categoria: catId, subcategoria: subId);
+        var createRequest = ProductTestDataBuilder.CreateValidProduct(category: catId, subcategory: subId);
         var createResp = await _client.PostAsJsonAsync("v1/api/products", createRequest);
-        var prodId = (await createResp.Content.ReadFromJsonAsync<CreateProductResponse>())!.Data;
+        var prodId = (await createResp.Content.ReadFromJsonAsync<CreateProductResponse>())!.Data.Id;
 
         // 2. Atualiza muda para "Acessórios" usando NOME
         var updateRequest = new Dictionary<string, string>
         {
-            { "Categoria", "Acessórios" }, // NOME
-            { "Subcategoria", "Bonés" }    // NOME, assumindo que existe em Acessórios no seed ou similar
+            { "Category", "Acessórios" }, // NOME
+            { "Subcategory", "Bonés" }    // NOME, assumindo que existe em Acessórios no seed ou similar
              // Se 'Acessórios'/'Bonés' não existirem no seed padrão, isso pode falhar.
              // Vamos usar 'Calçados'/'Tênis' se for mais garantido, ou reusar 'Roupas'/'Calças'.
              // O seed padrão geralmente tem Roupas, Acessórios, Calçados. Vamos tentar Acessórios.
@@ -362,7 +362,7 @@ public class ProdutosControllerTests : IntegrationTestBase
              {
                  // Fallback para Roupas novamente só para validar que aceita string
                  formData = new MultipartFormDataContent();
-                 formData.Add(new StringContent("Roupas"), "Categoria");
+                 formData.Add(new StringContent("Roupas"), "Category");
                  response = await _client.PatchAsync($"v1/api/products/{prodId}", formData);
              }
              else 
@@ -391,7 +391,9 @@ public class ProdutosControllerTests : IntegrationTestBase
     }
     
     // Classes auxiliares para deserialização. 
-    private class CreateProductResponse { public Guid Data { get; set; } }
+    // Classes auxiliares para deserialização. 
+    private class CreateProductResponse { public ProductIdData Data { get; set; } = new(); }
+    private class ProductIdData { public Guid Id { get; set; } }
     private class GenericResponse<T> { public T Data { get; set; } = default!; }
     private class VariationResponse { public Guid Id { get; set; } }
 }

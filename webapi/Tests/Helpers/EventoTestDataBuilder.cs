@@ -11,19 +11,19 @@ public static class EventoTestDataBuilder
     /// Cria um objeto RequestEvento válido com dados padrão
     /// </summary>
     public static RequestEvento CreateValidEvento(
-        string? titulo = null,
-        string? descricao = null,
-        string? tipoEvento = null)
+        string? title = null,
+        string? description = null,
+        string? eventType = null)
     {
         return new RequestEvento
         {
             Id = Guid.NewGuid(), // API provavelmente ignora no create, mas é bom ter
-            Titulo = titulo ?? "Evento de Tecnologia DACC",
-            Descricao = descricao ?? "Um evento incrível sobre as novidades do setor.",
-            Data = DateTime.UtcNow.AddDays(7),
-            TipoEvento = tipoEvento ?? "workshop", // Valor válido do banco
-            TextoAcao = "Inscrever-se",
-            LinkAcao = "https://dacc.com/evento/inscricao"
+            Title = title ?? "Evento de Tecnologia DACC",
+            Description = description ?? "Um evento incrível sobre as novidades do setor.",
+            Date = DateTime.UtcNow.AddDays(7),
+            EventType = eventType ?? "workshop", // Valor válido do banco
+            ActionText = "Inscrever-se",
+            ActionLink = "https://dacc.com/evento/inscricao"
         };
     }
 
@@ -34,12 +34,12 @@ public static class EventoTestDataBuilder
     {
         return new RequestEvento
         {
-            Titulo = "Evento Mínimo",
-            Descricao = "Descrição Obrigatória", // Validar se service exige
-            Data = DateTime.UtcNow.AddDays(1),
-            TipoEvento = "seminario",
-            TextoAcao = "Ver",
-            LinkAcao = "link"
+            Title = "Evento Mínimo",
+            Description = "Descrição Obrigatória", // Validar se service exige
+            Date = DateTime.UtcNow.AddDays(1),
+            EventType = "seminario",
+            ActionText = "Ver",
+            ActionLink = "link"
         };
     }
     
@@ -47,16 +47,16 @@ public static class EventoTestDataBuilder
     /// Cria um evento para update
     /// </summary>
     public static RequestEvento CreateUpdateEvento(
-        string? titulo = null)
+        string? title = null)
     {
         return new RequestEvento
         {
-            Titulo = titulo ?? "Evento Atualizado",
-            Descricao = "Nova descrição atualizada.",
-            Data = DateTime.UtcNow.AddDays(14),
-            TipoEvento = "hackathon",
-            TextoAcao = "Participar",
-            LinkAcao = "https://dacc.com/hackathon"
+            Title = title ?? "Evento Atualizado",
+            Description = "Nova descrição atualizada.",
+            Date = DateTime.UtcNow.AddDays(14),
+            EventType = "hackathon",
+            ActionText = "Participar",
+            ActionLink = "https://dacc.com/hackathon"
         };
     }
 }

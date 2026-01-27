@@ -23,8 +23,10 @@ public class ProjetosControllerTests : IntegrationTestBase
         // Como o sqlcode.sql parece não ter inserts para diretoria, este teste pode falhar com 500.
         // Se falhar, documentaremos no Relatório de Bugs.
         // Garante que a diretoria "Inovação" exista para não quebrar a FK
-        await EnsureDiretoriaExistsAsync("Marketing");
-        var projeto = ProjetoTestDataBuilder.CreateValidProjeto(titulo: "Projeto Teste Criação", diretoria: "Marketing");
+        var projeto = ProjetoTestDataBuilder.CreateValidProjeto(title: "Projeto Teste Criação", department: "Marketing");
+        // Nota: O builder já retorna as chaves em inglês agora.
+        // Se quisermos acessar o valor no teste:
+        var titulo = projeto.Title;
 
         var response = await _client.PostAsJsonAsync(BaseUrl, projeto);
 
@@ -72,7 +74,7 @@ public class ProjetosControllerTests : IntegrationTestBase
     {
         await AuthenticateAsAdminAsync();
         var tituloUnico = $"DEL-{Guid.NewGuid().ToString().Substring(0, 8)}";
-        var projeto = ProjetoTestDataBuilder.CreateValidProjeto(titulo: tituloUnico);
+        var projeto = ProjetoTestDataBuilder.CreateValidProjeto(title: tituloUnico);
         
         var createResponse = await _client.PostAsJsonAsync(BaseUrl, projeto);
         if (createResponse.StatusCode == HttpStatusCode.Created)
@@ -88,7 +90,7 @@ public class ProjetosControllerTests : IntegrationTestBase
                 System.Text.Json.JsonElement projetosList;
                 if (dataProp.ValueKind == System.Text.Json.JsonValueKind.Array)
                     projetosList = dataProp;
-                else if (dataProp.ValueKind == System.Text.Json.JsonValueKind.Object && dataProp.TryGetProperty("projetos", out var inner))
+                else if (dataProp.ValueKind == System.Text.Json.JsonValueKind.Object && dataProp.TryGetProperty("projects", out var inner))
                     projetosList = inner;
                 else
                     return;
@@ -115,7 +117,7 @@ public class ProjetosControllerTests : IntegrationTestBase
     {
         await AuthenticateAsAdminAsync();
         var tituloUnico = $"UPD-{Guid.NewGuid().ToString().Substring(0, 8)}";
-        var projeto = ProjetoTestDataBuilder.CreateValidProjeto(titulo: tituloUnico);
+        var projeto = ProjetoTestDataBuilder.CreateValidProjeto(title: tituloUnico);
         await _client.PostAsJsonAsync(BaseUrl, projeto);
 
         var listResponse = await _client.GetAsync(BaseUrl);
@@ -130,7 +132,7 @@ public class ProjetosControllerTests : IntegrationTestBase
                 System.Text.Json.JsonElement projetosList;
                 if (dataProp.ValueKind == System.Text.Json.JsonValueKind.Array)
                     projetosList = dataProp;
-                else if (dataProp.ValueKind == System.Text.Json.JsonValueKind.Object && dataProp.TryGetProperty("projetos", out var inner))
+                else if (dataProp.ValueKind == System.Text.Json.JsonValueKind.Object && dataProp.TryGetProperty("projects", out var inner))
                     projetosList = inner;
                 else
                     return;
@@ -163,10 +165,10 @@ public class ProjetosControllerTests : IntegrationTestBase
     private MultipartFormDataContent ToFormData(RequestProjeto request)
     {
         var formData = new MultipartFormDataContent();
-        formData.Add(new StringContent(request.Titulo ?? ""), "Titulo");
-        formData.Add(new StringContent(request.Descricao ?? ""), "Descricao");
+        formData.Add(new StringContent(request.Title ?? ""), "Title");
+        formData.Add(new StringContent(request.Description ?? ""), "Description");
         formData.Add(new StringContent(request.Status ?? ""), "Status");
-        formData.Add(new StringContent(request.Diretoria ?? ""), "Diretoria");
+        formData.Add(new StringContent(request.Department ?? ""), "Department");
         
         if (request.Tags != null)
         {
@@ -176,9 +178,9 @@ public class ProjetosControllerTests : IntegrationTestBase
             }
         }
         
-        if (request.TextoConclusao != null)
+        if (request.CompletionText != null)
         {
-            formData.Add(new StringContent(request.TextoConclusao), "TextoConclusao");
+            formData.Add(new StringContent(request.CompletionText), "CompletionText");
         }
         
         return formData;

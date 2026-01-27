@@ -84,20 +84,56 @@ public class DiretoresControllerTests : IntegrationTestBase
     public async Task Get_Diretor_By_Id_Should_Return_200_When_Exists()
     {
         await AuthenticateAsUserAsync();
-        var diretorRequest = DiretorTestDataBuilder.CreateValidDiretor(nome: "Dr. Teste GetById");
+        var diretorRequest = DiretorTestDataBuilder.CreateValidDiretor(name: "Dr. Teste GetById");
         var formData = ToFormData(diretorRequest);
         
         // Cria o diretor
         var createResponse = await _client.PostAsync("v1/api/faculty", formData);
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         
-        // Busca todos os diretores para validar
+        // Busca por ID
         var listResponse = await _client.GetAsync("v1/api/faculty");
         if (listResponse.StatusCode == HttpStatusCode.OK)
         {
             var listContent = await listResponse.Content.ReadAsStringAsync();
-            listContent.Should().Contain("Dr. Teste GetById");
+            using var doc = System.Text.Json.JsonDocument.Parse(listContent);
+            var root = doc.RootElement;
+            if (root.TryGetProperty("data", out var dataProp))
+            {
+                System.Text.Json.JsonElement list;
+                if (dataProp.ValueKind == System.Text.Json.JsonValueKind.Array)
+                {
+                    list = dataProp;
+                }
+                else
+                {
+                    list = dataProp.TryGetProperty("faculty", out var f) ? f : dataProp;
+                }
+                foreach (var item in list.EnumerateArray())
+                {
+                    if (item.GetProperty("name").GetString() == "Dr. Teste GetById")
+                    {
+                        var id = item.GetProperty("id").GetGuid();
+                        var getByIdResponse = await _client.GetAsync($"v1/api/faculty/{id}");
+                        
+                        if (!getByIdResponse.IsSuccessStatusCode)
+                        {
+                            var error = await getByIdResponse.Content.ReadAsStringAsync();
+                            var status = getByIdResponse.StatusCode;
+                            Assert.Fail($"GetById falhou. Status: {status}, Erro: {error}");
+                        }
+                        
+                        getByIdResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+                        
+                        var getByIdContent = await getByIdResponse.Content.ReadAsStringAsync();
+
+                        getByIdContent.Should().Contain("Dr. Teste GetById");
+                        return;
+                    }
+                }
+            }
         }
+        Assert.Fail("Diretor criado não foi encontrado na listagem para teste de GetById");
     }
 
     /// <summary>
@@ -121,7 +157,7 @@ public class DiretoresControllerTests : IntegrationTestBase
     public async Task Delete_Diretor_Should_Return_200_When_Authenticated()
     {
         await AuthenticateAsUserAsync();
-        var diretorRequest = DiretorTestDataBuilder.CreateValidDiretor(nome: "Dr. Para Deletar");
+        var diretorRequest = DiretorTestDataBuilder.CreateValidDiretor(name: "Dr. Para Deletar");
         var formData = ToFormData(diretorRequest);
         
         // Cria o diretor
@@ -140,7 +176,7 @@ public class DiretoresControllerTests : IntegrationTestBase
         await AuthenticateAsUserAsync();
         
         // 1. Cria o diretor
-        var createFormData = ToFormData(DiretorTestDataBuilder.CreateValidDiretor(nome: "Dr. Para Atualizar"));
+        var createFormData = ToFormData(DiretorTestDataBuilder.CreateValidDiretor(name: "Dr. Para Atualizar"));
         var createResponse = await _client.PostAsync("v1/api/faculty", createFormData);
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         

@@ -19,7 +19,7 @@ public class EventosControllerTests : IntegrationTestBase
     public async Task Create_Evento_Should_Return_201_When_Authenticated_As_Admin()
     {
         await AuthenticateAsAdminAsync();
-        var evento = EventoTestDataBuilder.CreateValidEvento(titulo: "Evento Teste Criação");
+        var evento = EventoTestDataBuilder.CreateValidEvento(title: "Evento Teste Criação");
 
         var response = await _client.PostAsJsonAsync(BaseUrl, evento);
 
@@ -71,7 +71,7 @@ public class EventosControllerTests : IntegrationTestBase
     {
         await AuthenticateAsAdminAsync();
         var tituloUnico = $"ID-{Guid.NewGuid().ToString().Substring(0, 8)}";
-        var evento = EventoTestDataBuilder.CreateValidEvento(titulo: tituloUnico);
+        var evento = EventoTestDataBuilder.CreateValidEvento(title: tituloUnico);
         
         var createResponse = await _client.PostAsJsonAsync(BaseUrl, evento);
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -94,7 +94,7 @@ public class EventosControllerTests : IntegrationTestBase
                         eventosList = dataProp;
                     }
                     else if (dataProp.ValueKind == System.Text.Json.JsonValueKind.Object && 
-                             dataProp.TryGetProperty("eventos", out var innerEventos))
+                             dataProp.TryGetProperty("events", out var innerEventos))
                     {
                         eventosList = innerEventos;
                     }
@@ -108,7 +108,7 @@ public class EventosControllerTests : IntegrationTestBase
                     {
                         foreach (var evt in eventosList.EnumerateArray())
                         {
-                            if (evt.TryGetProperty("titulo", out var t) && t.GetString() == tituloUnico)
+                            if (evt.GetProperty("title").GetString() == tituloUnico)
                             {
                                 var id = evt.GetProperty("id").GetString();
                                 var response = await _client.GetAsync($"{BaseUrl}/{id}");
@@ -144,7 +144,7 @@ public class EventosControllerTests : IntegrationTestBase
     {
         await AuthenticateAsAdminAsync();
         var tituloUnico = $"DEL-{Guid.NewGuid().ToString().Substring(0, 8)}";
-        var evento = EventoTestDataBuilder.CreateValidEvento(titulo: tituloUnico);
+        var evento = EventoTestDataBuilder.CreateValidEvento(title: tituloUnico);
         
         await _client.PostAsJsonAsync(BaseUrl, evento);
         
@@ -160,7 +160,7 @@ public class EventosControllerTests : IntegrationTestBase
                 System.Text.Json.JsonElement eventosList;
                 if (dataProp.ValueKind == System.Text.Json.JsonValueKind.Array)
                     eventosList = dataProp;
-                else if (dataProp.ValueKind == System.Text.Json.JsonValueKind.Object && dataProp.TryGetProperty("eventos", out var inner))
+                else if (dataProp.ValueKind == System.Text.Json.JsonValueKind.Object && dataProp.TryGetProperty("events", out var inner))
                     eventosList = inner;
                 else
                     return;
@@ -169,7 +169,7 @@ public class EventosControllerTests : IntegrationTestBase
                 {
                     foreach (var evt in eventosList.EnumerateArray())
                     {
-                        if (evt.TryGetProperty("titulo", out var t) && t.GetString() == tituloUnico)
+                        if (evt.GetProperty("title").GetString() == tituloUnico)
                         {
                             var id = evt.GetProperty("id").GetString();
                             var deleteResponse = await _client.DeleteAsync($"{BaseUrl}/{id}");
@@ -190,7 +190,7 @@ public class EventosControllerTests : IntegrationTestBase
     {
         await AuthenticateAsAdminAsync();
         var tituloUnico = $"UPD-{Guid.NewGuid().ToString().Substring(0, 8)}";
-        var evento = EventoTestDataBuilder.CreateValidEvento(titulo: tituloUnico);
+        var evento = EventoTestDataBuilder.CreateValidEvento(title: tituloUnico);
         await _client.PostAsJsonAsync(BaseUrl, evento);
 
         var listResponse = await _client.GetAsync(BaseUrl);
@@ -205,7 +205,7 @@ public class EventosControllerTests : IntegrationTestBase
                 System.Text.Json.JsonElement eventosList;
                 if (dataProp.ValueKind == System.Text.Json.JsonValueKind.Array)
                     eventosList = dataProp;
-                else if (dataProp.ValueKind == System.Text.Json.JsonValueKind.Object && dataProp.TryGetProperty("eventos", out var inner))
+                else if (dataProp.ValueKind == System.Text.Json.JsonValueKind.Object && dataProp.TryGetProperty("events", out var inner))
                     eventosList = inner;
                 else
                     return; // Fail silently or log
@@ -214,7 +214,7 @@ public class EventosControllerTests : IntegrationTestBase
                 {
                     foreach (var evt in eventosList.EnumerateArray())
                     {
-                        if (evt.TryGetProperty("titulo", out var t) && t.GetString() == tituloUnico)
+                        if (evt.GetProperty("title").GetString() == tituloUnico)
                         {
                             var id = evt.GetProperty("id").GetString();
                             var updateRequest = EventoTestDataBuilder.CreateUpdateEvento("Título Alterado");

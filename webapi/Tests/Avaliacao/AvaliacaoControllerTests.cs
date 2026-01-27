@@ -22,7 +22,7 @@ public class AvaliacaoControllerTests : IntegrationTestBase
         await AuthenticateAsAdminAsync();
 
         // 1. Criar um produto para avaliar
-        var product = ProductTestDataBuilder.CreateValidProduct(nome: "Produto Para Avaliar");
+        var product = ProductTestDataBuilder.CreateValidProduct(name: "Produto Para Avaliar");
         var productCreateResponse = await _client.PostAsJsonAsync(ProductsUrl, product);
         if (productCreateResponse.StatusCode != HttpStatusCode.Created)
         {
@@ -42,7 +42,7 @@ public class AvaliacaoControllerTests : IntegrationTestBase
             // Lidando com unwrapping do ResponseSuccess
             JsonElement dataElement = root.GetProperty("data");
             JsonElement productsList = dataElement;
-            if (dataElement.ValueKind == JsonValueKind.Object && dataElement.TryGetProperty("produtos", out var inner))
+            if (dataElement.ValueKind == JsonValueKind.Object && dataElement.TryGetProperty("products", out var inner))
                 productsList = inner;
 
             foreach (var item in productsList.EnumerateArray())
@@ -81,7 +81,7 @@ public class AvaliacaoControllerTests : IntegrationTestBase
             var data = ratingsDoc.RootElement.GetProperty("data");
             JsonElement ratingsList = data;
             // Verificar se está envelopado em "avaliacoes" ou similar
-            if (data.ValueKind == JsonValueKind.Object && data.TryGetProperty("avaliacoes", out var inner))
+            if (data.ValueKind == JsonValueKind.Object && data.TryGetProperty("reviews", out var inner))
                 ratingsList = inner;
             
             foreach (var item in ratingsList.EnumerateArray())
@@ -99,6 +99,12 @@ public class AvaliacaoControllerTests : IntegrationTestBase
         // 6. Atualizar a avaliação
         var updateRequest = AvaliacaoTestDataBuilder.CreateUpdateAvaliacao(4, "Bom, mas pode melhorar.");
         var updateResponse = await _client.PatchAsJsonAsync($"{BaseUrl}/{avaliacaoId}", updateRequest);
+        
+        if (!updateResponse.IsSuccessStatusCode)
+        {
+             var error = await updateResponse.Content.ReadAsStringAsync();
+             Assert.Fail($"Patch avaliacao falhou. Status: {updateResponse.StatusCode}, Erro: {error}");
+        }
         updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // 7. Deletar a avaliação
@@ -140,7 +146,7 @@ public class AvaliacaoControllerTests : IntegrationTestBase
         await AuthenticateAsAdminAsync();
         
         // Setup: Criar Produto -> Criar Avaliação -> Obter ID
-        var product = ProductTestDataBuilder.CreateValidProduct(nome: $"Prod GetById {Guid.NewGuid()}");
+        var product = ProductTestDataBuilder.CreateValidProduct(name: $"Prod GetById {Guid.NewGuid()}");
         await _client.PostAsJsonAsync(ProductsUrl, product);
         
         // Busca produto para pegar ID (via listagem pois Create não retorna)
@@ -151,12 +157,12 @@ public class AvaliacaoControllerTests : IntegrationTestBase
         {
             var dataElement = doc.RootElement.GetProperty("data");
             JsonElement productsList = dataElement;
-            if (dataElement.ValueKind == JsonValueKind.Object && dataElement.TryGetProperty("produtos", out var inner))
+            if (dataElement.ValueKind == JsonValueKind.Object && dataElement.TryGetProperty("products", out var inner))
                 productsList = inner;
 
             foreach (var item in productsList.EnumerateArray())
             {
-                if (item.GetProperty("name").GetString() == product.Nome)
+                if (item.GetProperty("name").GetString() == product.Name)
                 {
                     produtoId = item.GetProperty("id").GetGuid();
                     break;
@@ -176,7 +182,7 @@ public class AvaliacaoControllerTests : IntegrationTestBase
         {
             var dataElement = doc.RootElement.GetProperty("data");
             JsonElement list = dataElement;
-            if (dataElement.ValueKind == JsonValueKind.Object && dataElement.TryGetProperty("avaliacoes", out var inner))
+            if (dataElement.ValueKind == JsonValueKind.Object && dataElement.TryGetProperty("reviews", out var inner))
                 list = inner;
                 
             foreach (var item in list.EnumerateArray())

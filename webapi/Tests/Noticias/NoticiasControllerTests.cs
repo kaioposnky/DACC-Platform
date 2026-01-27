@@ -20,7 +20,7 @@ public class NoticiasControllerTests : IntegrationTestBase
     public async Task Create_Noticia_Should_Return_201_When_Authenticated_As_Admin()
     {
         await AuthenticateAsAdminAsync();
-        var noticia = NoticiaTestDataBuilder.CreateValidNoticia(titulo: "Notícia Teste Criação");
+        var noticia = NoticiaTestDataBuilder.CreateValidNoticia(title: "Notícia Teste Criação");
 
         var response = await _client.PostAsJsonAsync(BaseUrl, noticia);
 
@@ -69,7 +69,7 @@ public class NoticiasControllerTests : IntegrationTestBase
     public async Task Get_Noticia_By_Id_Should_Return_200_When_Exists()
     {
         await AuthenticateAsAdminAsync();
-        var noticia = NoticiaTestDataBuilder.CreateValidNoticia(titulo: "Notícia Para Busca");
+        var noticia = NoticiaTestDataBuilder.CreateValidNoticia(title: "Notícia Para Busca");
         
         // Cria
         var createResponse = await _client.PostAsJsonAsync(BaseUrl, noticia);
@@ -99,7 +99,7 @@ public class NoticiasControllerTests : IntegrationTestBase
     public async Task Delete_Noticia_Should_Return_200_When_Authenticated()
     {
         await AuthenticateAsAdminAsync();
-        var noticia = NoticiaTestDataBuilder.CreateValidNoticia(titulo: "Notícia Para Deletar");
+        var noticia = NoticiaTestDataBuilder.CreateValidNoticia(title: "Notícia Para Deletar");
         
         var createResponse = await _client.PostAsJsonAsync(BaseUrl, noticia);
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -116,7 +116,7 @@ public class NoticiasControllerTests : IntegrationTestBase
     {
         await AuthenticateAsAdminAsync();
         // Criação (JSON)
-        var noticia = NoticiaTestDataBuilder.CreateValidNoticia(titulo: "Notícia Antes Update");
+        var noticia = NoticiaTestDataBuilder.CreateValidNoticia(title: "Notícia Antes Update");
         var createResponse = await _client.PostAsJsonAsync(BaseUrl, noticia);
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 

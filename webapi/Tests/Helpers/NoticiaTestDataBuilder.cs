@@ -11,17 +11,17 @@ public static class NoticiaTestDataBuilder
     /// Cria um objeto RequestNoticia válido com dados padrão
     /// </summary>
     public static RequestNoticia CreateValidNoticia(
-        string? titulo = null,
-        string? descricao = null,
-        string? conteudo = null)
+        string? title = null,
+        string? description = null,
+        string? content = null)
     {
         return new RequestNoticia
         {
-            Titulo = titulo ?? "Notícia de Teste Exclusiva",
-            Descricao = descricao ?? "Descrição curta da notícia para listagem.",
-            Conteudo = conteudo ?? "Conteúdo completo da notícia com detalhes importantes.",
-            Categoria = "tecnologia", // minúsculo
-            DataPublicacao = DateTime.UtcNow
+            Title = title ?? "Notícia de Teste Exclusiva",
+            Description = description ?? "Descrição curta da notícia para listagem.",
+            Content = content ?? "Conteúdo completo da notícia com detalhes importantes.",
+            Category = "tecnologia", // minúsculo
+            PublishedAt = DateTime.UtcNow
         };
     }
 
@@ -32,10 +32,10 @@ public static class NoticiaTestDataBuilder
     {
         return new RequestNoticia
         {
-            Titulo = "Notícia Mínima",
-            Descricao = "Apenas descrição.",
-            Conteudo = null, 
-            Categoria = "geral" // minúsculo
+            Title = "Notícia Mínima",
+            Description = "Apenas descrição.",
+            Content = null, 
+            Category = "geral" // minúsculo
         };
     }
 
@@ -45,15 +45,15 @@ public static class NoticiaTestDataBuilder
     /// Cria uma notícia para update
     /// </summary>
     public static RequestNoticia CreateUpdateNoticia(
-        string? titulo = null)
+        string? title = null)
     {
         return new RequestNoticia
         {
-            Titulo = titulo ?? "Título da Notícia Atualizado",
-            Descricao = "Descrição atualizada.",
-            Conteudo = "Conteúdo atualizado.",
-            Categoria = "academico", // minúsculo e existente
-            DataAtualizacao = DateTime.UtcNow
+            Title = title ?? "Título da Notícia Atualizado",
+            Description = "Descrição atualizada.",
+            Content = "Conteúdo atualizado.",
+            Category = "academico", // minúsculo e existente
+            UpdatedAt = DateTime.UtcNow
         };
     }
 }

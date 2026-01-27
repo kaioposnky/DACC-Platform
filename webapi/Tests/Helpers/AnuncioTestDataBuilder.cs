@@ -11,23 +11,23 @@ public static class AnuncioTestDataBuilder
     /// Cria um objeto RequestAnuncio válido com dados padrão
     /// </summary>
     public static RequestAnuncio CreateValidAnuncio(
-        string? titulo = null,
-        string? conteudo = null,
-        string? tipo = null,
-        bool ativo = true)
+        string? title = null,
+        string? content = null,
+        string? type = null,
+        bool isActive = true)
     {
         return new RequestAnuncio
         {
-            Titulo = titulo ?? "Novo Evento na FATEC",
-            Conteudo = conteudo ?? "Participe do nosso próximo evento sobre tecnologia e inovação! Vagas limitadas.",
-            TipoAnuncio = tipo ?? "evento",
-            Ativo = ativo,
-            BotaoPrimarioTexto = "Inscreva-se Agora",
-            BotaoPrimarioLink = "https://fatec.sp.gov.br/eventos/inscricao",
-            BotaoSecundarioTexto = "Saber Mais",
-            BotaoSecundarioLink = "https://fatec.sp.gov.br/eventos/detalhes",
-            ImagemUrl = "https://fatec.sp.gov.br/imagens/evento-tech.jpg",
-            ImagemAlt = "Banner do evento de tecnologia"
+            Title = title ?? "Novo Evento na FATEC",
+            Content = content ?? "Participe do nosso próximo evento sobre tecnologia e inovação! Vagas limitadas.",
+            Type = type ?? "evento",
+            IsActive = isActive,
+            PrimaryButtonText = "Inscreva-se Agora",
+            PrimaryButtonLink = "https://fatec.sp.gov.br/eventos/inscricao",
+            SecondaryButtonText = "Saber Mais",
+            SecondaryButtonLink = "https://fatec.sp.gov.br/eventos/detalhes",
+            ImageUrl = "https://fatec.sp.gov.br/imagens/evento-tech.jpg",
+            ImageAlt = "Banner do evento de tecnologia"
         };
     }
 
@@ -38,10 +38,10 @@ public static class AnuncioTestDataBuilder
     {
         return new RequestAnuncio
         {
-            Titulo = "Anúncio Mínimo",
-            Conteudo = "Conteúdo básico do anúncio de teste",
-            TipoAnuncio = "noticia",
-            Ativo = true
+            Title = "Anúncio Mínimo",
+            Content = "Conteúdo básico do anúncio de teste",
+            Type = "noticia",
+            IsActive = true
         };
     }
 
@@ -54,17 +54,17 @@ public static class AnuncioTestDataBuilder
         {
             "titulo_vazio" => new RequestAnuncio
             {
-                Titulo = "",
-                Conteudo = "Conteúdo válido",
-                TipoAnuncio = "noticia",
-                Ativo = true
+                Title = "",
+                Content = "Conteúdo válido",
+                Type = "noticia",
+                IsActive = true
             },
             "conteudo_vazio" => new RequestAnuncio
             {
-                Titulo = "Título válido",
-                Conteudo = "",
-                TipoAnuncio = "noticia",
-                Ativo = true
+                Title = "Título válido",
+                Content = "",
+                Type = "noticia",
+                IsActive = true
             },
             _ => CreateValidAnuncio()
         };
@@ -74,17 +74,17 @@ public static class AnuncioTestDataBuilder
     /// Cria um anúncio para update
     /// </summary>
     public static RequestAnuncio CreateUpdateAnuncio(
-        string? titulo = null,
-        bool ativo = true)
+        string? title = null,
+        bool isActive = true)
     {
         return new RequestAnuncio
         {
-            Titulo = titulo ?? "Anúncio Atualizado",
-            Conteudo = "Conteúdo atualizado do anúncio",
-            TipoAnuncio = "aviso",
-            Ativo = ativo,
-            BotaoPrimarioTexto = "Novo Botão",
-            BotaoPrimarioLink = "https://exemplo.com/novo"
+            Title = title ?? "Anúncio Atualizado",
+            Content = "Conteúdo atualizado do anúncio",
+            Type = "aviso",
+            IsActive = isActive,
+            PrimaryButtonText = "Novo Botão",
+            PrimaryButtonLink = "https://exemplo.com/novo"
         };
     }
 
@@ -98,9 +98,9 @@ public static class AnuncioTestDataBuilder
         for (int i = 1; i <= count; i++)
         {
             anuncios.Add(CreateValidAnuncio(
-                titulo: $"Anúncio {i}",
-                conteudo: $"Conteúdo do anúncio número {i}",
-                tipo: i % 2 == 0 ? "evento" : "noticia"
+                title: $"Anúncio {i}",
+                content: $"Conteúdo do anúncio número {i}",
+                type: i % 2 == 0 ? "evento" : "noticia"
             ));
         }
 

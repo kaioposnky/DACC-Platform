@@ -8,23 +8,23 @@ public static class AuthTestDataBuilder
     {
         return new RequestRegistro
         {
-            Nome = "Test",
-            Sobrenome = "User",
+            FirstName = "Test",
+            LastName = "User",
             Email = email,
             Ra = ra,
-            Curso = "Civil Engineering",
-            Telefone = "11912345678",
-            Senha = "Password@123",
-            InscritoNoticia = true
+            Course = "Civil Engineering",
+            Phone = "11912345678",
+            Password = "Password@123",
+            IsSubscribedToNews = true
         };
     }
 
-    public static RequestLogin CreateValidLogin(string email, string senha)
+    public static RequestLogin CreateValidLogin(string email, string password)
     {
         return new RequestLogin
         {
             Email = email,
-            Senha = senha
+            Password = password
         };
     }
 }

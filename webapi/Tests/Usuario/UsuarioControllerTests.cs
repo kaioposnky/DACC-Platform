@@ -73,14 +73,14 @@ public class UsuarioControllerTests : IntegrationTestBase
         var alunoEmail = "aluno_del@dacc.com";
         var registerRequest = new
         {
-            nome = "Aluno",
-            sobrenome = "Delete",
-            email = alunoEmail,
-            ra = "111222333",
-            curso = "CC",
-            telefone = "11999999999",
-            senha = "Password123",
-            inscritoNoticia = false
+            FirstName = "Aluno",
+            LastName = "Delete",
+            Email = alunoEmail,
+            Ra = "111222333",
+            Course = "CC",
+            Phone = "11999999999",
+            Password = "Password123",
+            IsSubscribedToNews = false
         };
         await _client.PostAsJsonAsync("v1/api/auth/register", registerRequest);
         

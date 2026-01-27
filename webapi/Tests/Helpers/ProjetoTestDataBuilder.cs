@@ -11,19 +11,19 @@ public static class ProjetoTestDataBuilder
     /// Cria um objeto RequestProjeto válido com dados padrão.
     /// </summary>
     public static RequestProjeto CreateValidProjeto(
-        string? titulo = null,
-        string? descricao = null,
+        string? title = null,
+        string? description = null,
         string? status = null,
-        string? diretoria = null)
+        string? department = null)
     {
         return new RequestProjeto
         {
-            Titulo = titulo ?? "Projeto Inovador DACC",
-            Descricao = descricao ?? "Um projeto focado em IA e automação para a comunidade.",
+            Title = title ?? "Projeto Inovador DACC",
+            Description = description ?? "Um projeto focado em IA e automação para a comunidade.",
             Status = status ?? "planejado", // Valor válido do tipos_progresso
-            Diretoria = diretoria ?? "Inovação", // Atenção: deve existir na tabela diretoria
+            Department = department ?? "Inovação", // Atenção: deve existir na tabela diretoria
             Tags = new[] { "IA", "Python", "DACC" },
-            TextoConclusao = "Projeto finalizado com sucesso."
+            CompletionText = "Projeto finalizado com sucesso."
         };
     }
 
@@ -34,10 +34,10 @@ public static class ProjetoTestDataBuilder
     {
         return new RequestProjeto
         {
-            Titulo = "Projeto Minimalista",
-            Descricao = "Descrição essencial do projeto.",
+            Title = "Projeto Minimalista",
+            Description = "Descrição essencial do projeto.",
             Status = "planejado",
-            Diretoria = "Geral",
+            Department = "Geral",
             Tags = new[] { "Teste" }
         };
     }
@@ -45,16 +45,16 @@ public static class ProjetoTestDataBuilder
     /// <summary>
     /// Cria um projeto para atualização.
     /// </summary>
-    public static RequestProjeto CreateUpdateProjeto(string? titulo = null)
+    public static RequestProjeto CreateUpdateProjeto(string? title = null)
     {
         return new RequestProjeto
         {
-            Titulo = titulo ?? "Projeto Atualizado",
-            Descricao = "Nova descrição do projeto após atualização.",
+            Title = title ?? "Projeto Atualizado",
+            Description = "Nova descrição do projeto após atualização.",
             Status = "em progresso",
-            Diretoria = "Inovação",
+            Department = "Inovação",
             Tags = new[] { "IA", "React" },
-            TextoConclusao = "Quase lá!"
+            CompletionText = "Quase lá!"
         };
     }
 }

@@ -69,7 +69,7 @@ public class AnunciosControllerTests : IntegrationTestBase
     public async Task Get_Anuncio_By_Id_Should_Return_200_When_Exists()
     {
         await AuthenticateAsUserAsync();
-        var anuncioRequest = AnuncioTestDataBuilder.CreateValidAnuncio(titulo: "AnuncioTesteGetById");
+        var anuncioRequest = AnuncioTestDataBuilder.CreateValidAnuncio(title: "AnuncioTesteGetById");
         
         // Cria o anúncio
         var createResponse = await _client.PostAsJsonAsync("v1/api/announcements", anuncioRequest);
@@ -105,7 +105,7 @@ public class AnunciosControllerTests : IntegrationTestBase
     public async Task Delete_Anuncio_Should_Return_200_When_Authenticated()
     {
         await AuthenticateAsUserAsync();
-        var anuncioRequest = AnuncioTestDataBuilder.CreateValidAnuncio(titulo: "AnuncioParaDeletar");
+        var anuncioRequest = AnuncioTestDataBuilder.CreateValidAnuncio(title: "AnuncioParaDeletar");
         
         // Cria o anúncio
         var createResponse = await _client.PostAsJsonAsync("v1/api/announcements", anuncioRequest);
@@ -125,7 +125,7 @@ public class AnunciosControllerTests : IntegrationTestBase
         
         // 1. Cria o anúncio
         var createResponse = await _client.PostAsJsonAsync("v1/api/announcements", 
-            AnuncioTestDataBuilder.CreateValidAnuncio(titulo: "AnuncioParaAtualizar"));
+            AnuncioTestDataBuilder.CreateValidAnuncio(title: "AnuncioParaAtualizar"));
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         
         // Como a API não retorna ID, validamos apenas a criação
@@ -141,7 +141,7 @@ public class AnunciosControllerTests : IntegrationTestBase
         await AuthenticateAsUserAsync();
         
         var createResponse = await _client.PostAsJsonAsync("v1/api/announcements", 
-            AnuncioTestDataBuilder.CreateValidAnuncio(titulo: "AnuncioParaDesativar"));
+            AnuncioTestDataBuilder.CreateValidAnuncio(title: "AnuncioParaDesativar"));
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         
         // Como a API não retorna ID, validamos apenas a criação
