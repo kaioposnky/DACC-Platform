@@ -27,7 +27,7 @@ namespace DaccApi.Services.Products
 
                 if (products.Count == 0)
                 {
-                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, 
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT,
                         "Nenhum produto foi encontrado!");
                 }
 
@@ -128,7 +128,7 @@ namespace DaccApi.Services.Products
                 var products = await _produtosRepository.SearchProductsAsync(requestQueryProdutos);
 
                 if (products.Count == 0)
-                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND,
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT,
                         "Nenhum produto encontrado com os critérios de busca!");
                 var response = products.Select(produto => new ResponseProduto(produto));
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { products = response }),
