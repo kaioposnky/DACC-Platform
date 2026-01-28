@@ -102,7 +102,7 @@ export default function Register() {
     if (validateForm()) {
       try {
         await registerUser({
-          name: formData.firstName,
+          firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
           password: formData.password,
