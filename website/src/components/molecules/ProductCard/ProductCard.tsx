@@ -80,7 +80,7 @@ export default function ProductCard({
       {/* Product Image */}
       <div className="relative aspect-square overflow-hidden">
         <Image
-          src={product.image}
+          src={product.image || "https://gerenciador.fei.edu.br/Content/Arquivos/logo_fei_color-01.svg"}
           alt={product.name}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-300"
