@@ -49,7 +49,7 @@ namespace DaccApi.Controllers.Noticias
 
                 var response = noticias.Select((noticia) =>  new ResponseNoticia(noticia));
 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(response));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData( new { news = response} ));
             }
             catch (Exception ex)
             {
@@ -57,7 +57,7 @@ namespace DaccApi.Controllers.Noticias
                     "Ocorreu um erro ao obter as notícias.");
             }
         }
-        
+
         /// <summary>
         /// Cria uma nova notícia.
         /// </summary>
@@ -81,7 +81,7 @@ namespace DaccApi.Controllers.Noticias
             var response = await _noticiasServices.UpdateNoticiaImage(id, request);
             return response;
         }
-        
+
         /// <summary>
         /// Obtém uma notícia específica pelo seu ID.
         /// </summary>
@@ -93,7 +93,7 @@ namespace DaccApi.Controllers.Noticias
             var response = await _noticiasServices.GetNoticiaById(id);
             return response;
         }
-        
+
         /// <summary>
         /// Deleta uma notícia existente.
         /// </summary>
@@ -105,7 +105,7 @@ namespace DaccApi.Controllers.Noticias
             var response = await _noticiasServices.DeleteNoticia(id);
             return response;
         }
-        
+
         /// <summary>
         /// Atualiza uma notícia existente.
         /// </summary>
@@ -117,7 +117,7 @@ namespace DaccApi.Controllers.Noticias
             var response = await _noticiasServices.UpdateNoticia(id, request);
             return response;
         }
-        
+
         /// <summary>
         /// Atualiza uma notícia existente via JSON.
         /// </summary>
