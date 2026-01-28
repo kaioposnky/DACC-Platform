@@ -1,0 +1,1 @@
+export { default as AdminProductList } from './AdminProductList';

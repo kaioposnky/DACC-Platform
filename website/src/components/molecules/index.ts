@@ -30,4 +30,5 @@ export { default as ProductTabs } from './ProductTabs';
 export { default as RecommendationCard } from './RecommendationCard';
 export { default as FormInput } from './FormInput';
 export { default as SocialLoginButton } from './SocialLoginButton';
-export { StepIndicator } from './StepIndicator'; 
+export { StepIndicator } from './StepIndicator';
+export { ManageProductCard } from './admin'

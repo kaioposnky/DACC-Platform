@@ -1,0 +1,1 @@
+export { ManageProductCard } from './ManageProductCard';
