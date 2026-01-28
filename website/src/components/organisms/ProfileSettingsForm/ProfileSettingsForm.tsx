@@ -29,7 +29,7 @@ export const ProfileSettingsForm = ({
   onReset,
   className = ''
 }: ProfileSettingsFormProps) => {
-  
+
   const [formData, setFormData] = useState<UserFormData>({
     firstName: initialData.firstName || '',
     lastName: initialData.lastName || '',
@@ -54,7 +54,7 @@ export const ProfileSettingsForm = ({
 
   const academicYears = [
     '1º Ano',
-    '2º Ano', 
+    '2º Ano',
     '3º Ano',
     '4º Ano',
     '5º Ano'
@@ -63,7 +63,7 @@ export const ProfileSettingsForm = ({
   const handleInputChange = (field: keyof UserFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     setIsDirty(true);
-    
+
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
@@ -174,7 +174,7 @@ export const ProfileSettingsForm = ({
         <Typography variant="h4" className="text-gray-900 font-semibold mb-6">
           Informações Pessoais
         </Typography>
-        
+
         <div className="space-y-6">
           {/* First Name and Last Name */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -228,7 +228,7 @@ export const ProfileSettingsForm = ({
         <Typography variant="h4" className="text-gray-900 font-semibold mb-6">
           Informações Acadêmicas
         </Typography>
-        
+
         <div className="space-y-6">
           {/* Student ID and Course */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -241,7 +241,7 @@ export const ProfileSettingsForm = ({
               placeholder="12.345.678-9"
               required
             />
-            
+
             <div className="w-full">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Curso *
@@ -307,7 +307,7 @@ export const ProfileSettingsForm = ({
           variant="secondary"
           onClick={handleReset}
           disabled={!isDirty}
-          className="w-full sm:w-auto"
+          className="w-full sm:w-auto disabled:opacity-50"
         >
           Redefinir Alterações
         </Button>
@@ -315,11 +315,11 @@ export const ProfileSettingsForm = ({
           variant="primary"
           onClick={handleSave}
           disabled={!isDirty}
-          className="w-full sm:w-auto"
+          className="w-full sm:w-auto disabled:opacity-50"
         >
           Salvar Alterações
         </Button>
       </div>
     </motion.div>
   );
-}; 
+};
