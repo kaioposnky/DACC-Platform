@@ -46,6 +46,9 @@ export const Navigation = () => {
               <NavItem href="/noticias">Noticias</NavItem>
               <NavItem href="/loja">Loja</NavItem>
               <NavItem href="/#apoie">Apoie o DACC</NavItem>
+              {user?.role === "administrador" &&
+                <NavItem href="/admin">Admin</NavItem>
+              }
             </nav>
 
             {/* User Actions */}
