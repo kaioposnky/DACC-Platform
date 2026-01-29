@@ -1,6 +1,6 @@
 import { Slide, SlideDetail } from './annoucementsSlide';
 
-export type { Slide, SlideDetail};
+export type { Slide, SlideDetail };
 
 export interface User {
   id: string;
@@ -44,7 +44,7 @@ export interface ApiResponse<T> {
   message: string;
   data: T;
   details?: any;
-} 
+}
 
 export interface Announcement {
   id: string;
@@ -163,7 +163,7 @@ export interface Product {
   specifications?: ProductSpecification[];
   shippingInfo?: {
     freeShipping: boolean;
-    estimatedDays: string;
+    estimatedDays: number;
     shippingCost?: number;
     returnPolicy: string;
     warranty?: string;

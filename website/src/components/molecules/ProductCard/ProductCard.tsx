@@ -15,16 +15,16 @@ interface ProductCardProps {
   className?: string;
 }
 
-export default function ProductCard({ 
-  product, 
-  onAddToCart, 
-  onToggleFavorite, 
+export default function ProductCard({
+  product,
+  onAddToCart,
+  onToggleFavorite,
   isFavorite = false,
-  className = '' 
+  className = ''
 }: ProductCardProps) {
   const router = useRouter();
   const hasDiscount = product.originalPrice && product.originalPrice > product.price;
-  const discountPercentage = hasDiscount 
+  const discountPercentage = hasDiscount
     ? Math.round(((product.originalPrice! - product.price) / product.originalPrice!) * 100)
     : 0;
 
@@ -43,13 +43,13 @@ export default function ProductCard({
     const stars = [];
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 !== 0;
-    
+
     for (let i = 0; i < fullStars; i++) {
       stars.push(
         <StarIcon key={i} className="w-4 h-4 text-yellow-400" />
       );
     }
-    
+
     if (hasHalfStar) {
       stars.push(
         <div key="half" className="relative">
@@ -58,14 +58,14 @@ export default function ProductCard({
         </div>
       );
     }
-    
+
     const remainingStars = 5 - Math.ceil(rating);
     for (let i = 0; i < remainingStars; i++) {
       stars.push(
         <StarOutlineIcon key={`outline-${i}`} className="w-4 h-4 text-gray-300" />
       );
     }
-    
+
     return stars;
   };
 
@@ -85,7 +85,7 @@ export default function ProductCard({
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-300"
         />
-        
+
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-2">
           {hasDiscount && (
@@ -129,11 +129,7 @@ export default function ProductCard({
       <div className="p-4">
         {/* Category */}
         <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">
-          {product.category === 'tshirts' && 'Camisetas'}
-          {product.category === 'hoodies' && 'Moletons'}
-          {product.category === 'cups' && 'Canecas'}
-          {product.category === 'stickers' && 'Adesivos'}
-          {product.category === 'accessories' && 'Acessórios'}
+          {product.category}
         </div>
 
         {/* Product Name */}
@@ -166,8 +162,8 @@ export default function ProductCard({
         {/* Stock Info */}
         <div className="flex items-center justify-between text-sm text-gray-500">
           <span>
-            {product.inStock 
-              ? `${product.stockCount} em estoque` 
+            {product.inStock
+              ? `${product.stockCount} em estoque`
               : 'Fora de estoque'
             }
           </span>

@@ -500,6 +500,11 @@ class ApiService {
     return data?.products || [];
   }
 
+  async getSubcategories(): Promise<{ id: string; name: string; categoryId: string }[]> {
+    const response = await this.request<{ subcategories: { id: string; name: string; categoryId: string }[] }>('/products/subcategorias');
+    return response.subcategories;
+  }
+
   async getProduct(id: string): Promise<Product> {
     const data = await this.request<{ product: Product }>(`/products/${id}`);
     return data.product;

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { apiService } from '@/services/api';
 
 export interface ProductFilterOptions {
   category: string;
@@ -14,24 +15,39 @@ interface ProductFilterProps {
   className?: string;
 }
 
-export const ProductFilter = ({ 
+export const ProductFilter = ({
   onFilterChange,
-  className = '' 
+  className = ''
 }: ProductFilterProps) => {
+  const [categories, setCategories] = useState<{ value: string; label: string }[]>([
+    { value: 'all', label: 'Todos os Produtos' }
+  ]);
+
   const [filters, setFilters] = useState<ProductFilterOptions>({
     category: 'all',
     sortBy: 'featured',
     searchQuery: ''
   });
 
-  const categoryOptions = [
-    { value: 'all', label: 'Todos os Produtos' },
-    { value: 'tshirts', label: 'Camisetas' },
-    { value: 'hoodies', label: 'Moletons' },
-    { value: 'cups', label: 'Canecas' },
-    { value: 'stickers', label: 'Adesivos' },
-    { value: 'accessories', label: 'Acessórios' }
-  ];
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const subcategories = await apiService.getSubcategories();
+        const options = [
+          { value: 'all', label: 'Todos os Produtos' },
+          ...subcategories.map(sub => ({
+            value: sub.name, // We use the name as value for filtering
+            label: sub.name
+          }))
+        ];
+        setCategories(options);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const sortOptions = [
     { value: 'featured', label: 'Destaque' },
@@ -55,16 +71,16 @@ export const ProductFilter = ({
     // Search is handled by the onChange, but we can add additional logic here if needed
   };
 
-  const SelectDropdown = ({ 
-    label, 
-    value, 
-    options, 
-    onChange 
-  }: { 
-    label: string; 
-    value: string; 
-    options: { value: string; label: string }[]; 
-    onChange: (value: string) => void; 
+  const SelectDropdown = ({
+    label,
+    value,
+    options,
+    onChange
+  }: {
+    label: string;
+    value: string;
+    options: { value: string; label: string }[];
+    onChange: (value: string) => void;
   }) => (
     <div className="flex flex-col gap-2">
       <label className="text-sm font-bold text-primary min-w-fit">
@@ -125,10 +141,10 @@ export const ProductFilter = ({
             <SelectDropdown
               label="Categoria"
               value={filters.category}
-              options={categoryOptions}
+              options={categories}
               onChange={(value) => handleFilterChange('category', value)}
             />
-            
+
             <SelectDropdown
               label="Ordenar por"
               value={filters.sortBy}
@@ -145,4 +161,4 @@ export const ProductFilter = ({
       </div>
     </motion.div>
   );
-}; 
+};
