@@ -1,0 +1,582 @@
+"use client";
+
+import { useParams, useRouter } from "next/navigation";
+import { apiService } from "@/services/api";
+import { useEffect, useState } from "react";
+import { Product, ProductReview, ProductSpecification, ProductVariation } from "@/types";
+import {
+  Button,
+  Footer,
+  Input,
+  Navigation,
+  ShoppingCart,
+  EditPageHeader,
+  AdminCard,
+  TagInput,
+  Select,
+  Modal,
+  ImageGalleryEditor,
+} from "@/components";
+import { TrashIcon } from "@heroicons/react/24/outline";
+
+export default function AdminProdutoEditPage() {
+  const params = useParams();
+  const router = useRouter();
+
+  // Mock atualizado para suportar a estrutura de variações
+  const initialProduct: Product = {
+    id: "prod-123",
+    name: "Camiseta Coruja Overflow Dark Edition",
+    description: "Edição especial limitada para desenvolvedores noturnos.",
+    detailedDescription:
+      "A Camiseta Dark Edition foi pensada para quem passa longas horas codificando. Feita com malha penteada 30.1 de alta qualidade, garante respirabilidade e conforto térmico.",
+    category: "tshirts", // Isso será mapeado para Subcategoria ID
+    price: 79.9,
+    originalPrice: 95.0,
+    perfectFor: [
+      "Maratonas de Programação",
+      "Aulas no DACC",
+      "Eventos de Tecnologia",
+    ],
+    specifications: [
+      { name: "Material", value: "100% Algodão Penteado" },
+      { name: "Estampa", value: "Silk Screen de alta densidade" },
+      { name: "Gola", value: "Canaelê com reforço ombro a ombro" },
+    ],
+    // Variações que agregam estoque + imagens
+    variations: [
+      {
+        id: "v1",
+        color: "Preto Fosco",
+        size: "G",
+        stock: 10,
+        sku: "TSHIRT-DARK-G",
+        images: [
+          "https://gerenciador.fei.edu.br/Content/Arquivos/logo_fei_color-01.svg",
+        ],
+      },
+      {
+        id: "v2",
+        color: "Preto Fosco",
+        size: "M",
+        stock: 5,
+        sku: "TSHIRT-DARK-M",
+        images: [],
+      },
+    ],
+    shippingInfo: {
+      estimatedDays: "2-4 dias",
+      returnPolicy: "Troca em 7 dias",
+      freeShipping: true,
+    },
+    inStock: true,
+  };
+
+  const [product, setProduct] = useState<Product>(initialProduct);
+  const [loading, setLoading] = useState(false);
+
+  const [newSpecName, setNewSpecName] = useState("");
+  const [newSpecValue, setNewSpecValue] = useState("");
+
+  // Controle do Modal de Galeria
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState<
+    number | null
+  >(null);
+  const [tempImageUrl, setTempImageUrl] = useState("");
+
+  const handleGoBack = () => router.back();
+  const handleSaveChanges = () => console.log("Salvando...", product);
+
+  const handleAddTag = (tag: string) => {
+    setProduct({
+      ...product,
+      perfectFor: [...(product.perfectFor || []), tag],
+    });
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    setProduct({
+      ...product,
+      perfectFor: product.perfectFor?.filter((t: string) => t !== tagToRemove),
+    });
+  };
+
+  // Lógica de Preços
+  const calculateDiscount = (orig: number, final: number) => {
+    if (!orig || orig === 0) return 0;
+    return Math.round(((orig - final) / orig) * 100);
+  };
+
+  const handlePriceChange = (field: "price" | "originalPrice" | "discount", value: number) => {
+    const currentPrice = product.price || 0;
+    const currentOriginal = product.originalPrice || currentPrice;
+
+    if (field === "originalPrice") {
+      const discount = calculateDiscount(currentOriginal, currentPrice);
+      const newPrice = value * (1 - discount / 100);
+      setProduct({ ...product, originalPrice: value, price: Number(newPrice.toFixed(2)) });
+    } else if (field === "price") {
+      setProduct({ ...product, price: value });
+    } else if (field === "discount") {
+      const newPrice = currentOriginal * (1 - value / 100);
+      setProduct({ ...product, price: Number(newPrice.toFixed(2)) });
+    }
+  };
+
+  const updateVariation = (index: number, field: keyof ProductVariation, value: any) => {
+    if (!product.variations) return;
+    const newVariations = [...product.variations];
+    newVariations[index] = { ...newVariations[index], [field]: value };
+    setProduct({ ...product, variations: newVariations });
+  };
+
+  const removeVariation = (index: number) => {
+    if (!product.variations) return;
+    const newVariations = product.variations.filter(
+      (_: ProductVariation, i: number) => i !== index,
+    );
+    setProduct({ ...product, variations: newVariations });
+  };
+
+  const addVariation = () => {
+    setProduct({
+      ...product,
+      variations: [
+        ...(product.variations || []),
+        {
+          id: `temp-${Date.now()}`,
+          color: "",
+          size: "",
+          stock: 0,
+          sku: "",
+          images: [],
+        },
+      ],
+    });
+  };
+
+  // Funções da Galeria
+  const handleOpenGallery = (index: number) => {
+    setSelectedVariantIndex(index);
+    setIsGalleryOpen(true);
+  };
+
+  const handleAddImageToVariant = () => {
+    if (!tempImageUrl || selectedVariantIndex === null || !product.variations) return;
+
+    // Validar se é uma URL válida ou Data URI
+    if (!tempImageUrl.trim()) return;
+
+    const newVariations = [...product.variations];
+    const currentImages = newVariations[selectedVariantIndex].images || [];
+
+    newVariations[selectedVariantIndex] = {
+      ...newVariations[selectedVariantIndex],
+      images: [...currentImages, tempImageUrl],
+    };
+
+    setProduct({ ...product, variations: newVariations });
+    setTempImageUrl("");
+  };
+
+  const handleRemoveImageFromVariant = (imageIndex: number) => {
+    if (selectedVariantIndex === null || !product.variations) return;
+
+    const newVariations = [...product.variations];
+    newVariations[selectedVariantIndex].images = newVariations[
+      selectedVariantIndex
+    ].images.filter((_: any, i: number) => i !== imageIndex);
+
+    setProduct({ ...product, variations: newVariations });
+  };
+
+  const handleSpecificationChange = (index: number, updatedSpec: ProductSpecification) => {
+    if (!product.specifications) return;
+
+    const newSpecifications = product.specifications;
+    newSpecifications[index] = updatedSpec;
+
+    setProduct({ ...product, specifications: newSpecifications });
+  };
+
+  const handleAddSpecification = (specification: ProductSpecification) => {
+    if (!product.specifications) return;
+
+    const specifications = product.specifications;
+
+    setProduct({ ...product, specifications: [...specifications, specification] });
+  };
+
+  if (loading) return <div>Carregando...</div>;
+
+  return (
+    <div className="min-h-screen bg-gray-50 pb-12">
+      <EditPageHeader
+        title={product.name}
+        id={product.id}
+        status={{
+          text: product.inStock ? "Ativo" : "Rascunho",
+          colorClass: product.inStock
+            ? "bg-green-100 text-green-700"
+            : "bg-gray-100 text-gray-700",
+        }}
+        onSave={handleSaveChanges}
+        onBack={handleGoBack}
+      />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* COLUNA ESQUERDA (PRINCIPAL) */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* 1. INFO GERAL */}
+            <AdminCard title="Informações Gerais">
+              <div className="space-y-6">
+                <Input
+                  label="Nome do Produto"
+                  value={product.name}
+                  onChange={(e) =>
+                    setProduct({ ...product, name: e.target.value })
+                  }
+                />
+                <div className="space-y-4">
+                  <Input
+                    label="Descrição Curta"
+                    multiline
+                    rows={3}
+                    value={product.description}
+                    onChange={(e) =>
+                      setProduct({ ...product, description: e.target.value })
+                    }
+                  />
+                  <Input
+                    label="Descrição Detalhada"
+                    multiline
+                    rows={6}
+                    value={product.detailedDescription}
+                    onChange={(e) =>
+                      setProduct({
+                        ...product,
+                        detailedDescription: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <TagInput
+                  label="Perfeito Para (Ocasiões de Uso)"
+                  tags={product.perfectFor || []}
+                  onAddTag={handleAddTag}
+                  onRemoveTag={handleRemoveTag}
+                />
+              </div>
+            </AdminCard>
+
+            {/* 2. GERENCIADOR DE VARIAÇÕES (IMPORTANTE) */}
+            <AdminCard
+              title="Variações de Estoque e Imagens"
+              actions={
+                <button
+                  onClick={addVariation}
+                  className="text-xs font-bold text-blue-600 hover:text-blue-800 uppercase"
+                >
+                  + Adicionar Variação
+                </button>
+              }
+            >
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead>
+                    <tr>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                        Cor / Tamanho
+                      </th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                        SKU
+                      </th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase w-20">
+                        Estoque
+                      </th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                        Mídia
+                      </th>
+                      <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase w-10"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 bg-white">
+                    {(product.variations || []).map((variant: ProductVariation, idx: number) => (
+                      <tr key={variant.id} className="group hover:bg-gray-50">
+                        <td className="px-3 py-4 whitespace-nowrap">
+                          <div className="flex gap-2">
+                            <Select
+                              className="w-32 py-1! text-xs!"
+                              value={variant.color}
+                              onChange={(e) =>
+                                updateVariation(idx, "color", e.target.value)
+                              }
+                              options={[
+                                { label: "Preto Fosco", value: "Preto Fosco" },
+                                { label: "Branco", value: "Branco" },
+                                { label: "Azul", value: "Azul" },
+                              ]}
+                            />
+                            <Select
+                              className="w-20 py-1! text-xs!"
+                              value={variant.size}
+                              onChange={(e) =>
+                                updateVariation(idx, "size", e.target.value)
+                              }
+                              options={["PP", "P", "M", "G", "GG", "XG"].map(
+                                (s) => ({ label: s, value: s }),
+                              )}
+                            />
+                          </div>
+                        </td>
+                        <td className="px-3 py-4">
+                          <Input
+                            className="py-1! text-xs! font-mono"
+                            value={variant.sku}
+                            onChange={(e) =>
+                              updateVariation(idx, "sku", e.target.value)
+                            }
+                            placeholder="SKU-AUTO"
+                          />
+                        </td>
+                        <td className="px-3 py-4">
+                          <Input
+                            type="number"
+                            className="py-1! text-xs! w-20"
+                            value={variant.stock}
+                            onChange={(e) =>
+                              updateVariation(
+                                idx,
+                                "stock",
+                                Number(e.target.value),
+                              )
+                            }
+                          />
+                        </td>
+                        <td className="px-3 py-4">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleOpenGallery(idx)}
+                              className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-md transition-all group/btn w-full justify-center"
+                            >
+                              <div className="relative">
+                                {variant.images.length > 0 ? (
+                                  <img
+                                    src={variant.images[0]}
+                                    className="w-6 h-6 rounded object-cover shadow-sm"
+                                    alt="Preview"
+                                  />
+                                ) : (
+                                  <div className="w-6 h-6 bg-gray-200 rounded flex items-center justify-center text-gray-400">
+                                    <svg
+                                      className="w-3 h-3"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                      ></path>
+                                    </svg>
+                                  </div>
+                                )}
+                                {variant.images.length > 0 && (
+                                  <span className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full font-bold shadow-sm">
+                                    {variant.images.length}
+                                  </span>
+                                )}
+                              </div>
+                              <span className="text-xs font-medium text-gray-600 group-hover/btn:text-gray-900">
+                                Fotos
+                              </span>
+                            </button>
+                          </div>
+                        </td>
+                        <td className="px-3 py-4 text-right">
+                          <button
+                            onClick={() => removeVariation(idx)}
+                            className="text-gray-400 hover:text-red-500"
+                          >
+                            <TrashIcon className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {(!product.variations || product.variations.length === 0) && (
+                <div className="bg-yellow-50 p-4 rounded-lg text-center text-sm text-yellow-700 mt-4">
+                  Esse produto ainda não tem variações cadastradas. Adicione uma
+                  para definir o estoque.
+                </div>
+              )}
+            </AdminCard>
+
+            {/* 3. ESPECIFICAÇÕES */}
+            <AdminCard title="Especificações Técnicas" className="justify-center">
+              {/* Mantendo lógica antiga mas simplificada */}
+              <div className="space-y-3">
+                {product.specifications?.map((spec: any, idx: number) => (
+                  <div key={idx} className="flex gap-2">
+                    <div className="flex-1">
+                      <Input
+                        label="Nome"
+                        value={spec.name}
+                        className="py-1! text-xs! bg-gray-50"
+                        onChange={(e) => handleSpecificationChange(idx, { name: e.target.value, value: spec.value })}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <Input
+                        label="Valor"
+                        onChange={(e) => handleSpecificationChange(idx, { name: spec.name, value: e.target.value })}
+                        value={spec.value}
+                        className="py-1! text-xs!"
+                      />
+                    </div>
+                  </div>
+                ))}
+                <div className="mt-6">
+                  <h6 className="font-bold text-lg text-primary mb-3">
+                    Adicionar nova especificação
+                  </h6>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <Input
+                        label="Nome"
+                        value={newSpecName}
+                        className="py-1! text-xs! bg-gray-50"
+                        onChange={(e) => setNewSpecName(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <Input
+                        label="Valor"
+                        value={newSpecValue}
+                        onChange={(e) => setNewSpecValue(e.target.value)}
+                        className="py-1! text-xs!"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-center mt-4">
+                    <Button
+                      disabled={!newSpecName || !newSpecValue}
+                      onClick={() => handleAddSpecification({ name: newSpecName, value: newSpecValue })}
+                    >
+                      Adicionar
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </AdminCard>
+          </div>
+
+          {/* COLUNA DIREITA */}
+          <div className="space-y-8">
+            <AdminCard title="Classificação e Preço">
+              <div className="space-y-4">
+                <Select
+                  label="Categoria (Subcategoria)"
+                  value={product.category}
+                  onChange={(e) =>
+                    setProduct({ ...product, category: e.target.value })
+                  }
+                  options={[
+                    { label: "Camisetas", value: "tshirts" },
+                    { label: "Moletons", value: "hoodies" },
+                    { label: "Canecas", value: "mugs" },
+                  ]}
+                />
+
+                <div className="space-y-4 pt-2">
+                  <Input
+                    label="Preço Original (R$)"
+                    type="number"
+                    value={product.originalPrice ?? undefined}
+                    onChange={(e) => handlePriceChange("originalPrice", Number(e.target.value))}
+                  />
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input
+                      label="Desconto (%)"
+                      type="number"
+                      value={calculateDiscount(product.originalPrice || 0, product.price)}
+                      onChange={(e) => handlePriceChange("discount", Number(e.target.value))}
+                    />
+                    <Input
+                      label="Preço Final (R$)"
+                      type="number"
+                      value={product.price}
+                      onChange={(e) => handlePriceChange("price", Number(e.target.value))}
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t mt-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={product.inStock}
+                      onChange={(e) =>
+                        setProduct({ ...product, inStock: e.target.checked })
+                      }
+                      className="rounded text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm font-medium text-gray-700">
+                      Produto Ativo no Site
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </AdminCard>
+
+            <AdminCard title="Envio e Entrega (DESABILITADO)">
+              <div className="space-y-4 opacity-70 pointer-events-none grayscale">
+                <Input
+                  label="Prazo Estimado"
+                  value="DESABILITADO"
+                  onChange={() => { }}
+                />
+                <Input
+                  label="Política"
+                  multiline
+                  value="DESABILITADO"
+                  onChange={() => { }}
+                />
+              </div>
+            </AdminCard>
+          </div>
+        </div>
+      </div>
+
+      {/* MODAL DE GALERIA */}
+      <Modal
+        isOpen={isGalleryOpen}
+        onClose={() => setIsGalleryOpen(false)}
+        className="max-w-3xl"
+      >
+        <ImageGalleryEditor
+          title="Gerenciar Fotos da Variação"
+          description={
+            selectedVariantIndex !== null && product.variations
+              ? `${product.variations[selectedVariantIndex].color} - ${product.variations[selectedVariantIndex].size}`
+              : undefined
+          }
+          images={
+            selectedVariantIndex !== null && product.variations
+              ? product.variations[selectedVariantIndex].images
+              : []
+          }
+          onAddImage={handleAddImageToVariant}
+          onRemoveImage={handleRemoveImageFromVariant}
+        />
+      </Modal>
+    </div>
+  );
+}

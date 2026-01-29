@@ -6,3 +6,4 @@ export { Typography } from './Typography';
 export { Icon } from './Icon';
 export { Dot } from './Dot';
 export { LoadingSpinner } from './LoadingSpinner';
+export { Select } from './Select';

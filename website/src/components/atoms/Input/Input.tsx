@@ -1,23 +1,27 @@
 import { InputHTMLAttributes, forwardRef } from 'react';
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> {
   variant?: 'default' | 'error' | 'success';
   label?: string;
   error?: string;
   helperText?: string;
+  multiline?: boolean;
+  rows?: number;
 }
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ 
-    variant = 'default', 
-    label, 
-    error, 
-    helperText, 
-    className = '', 
-    ...props 
+export const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProps>(
+  ({
+    variant = 'default',
+    label,
+    error,
+    helperText,
+    className = '',
+    multiline = false,
+    rows = 4,
+    ...props
   }, ref) => {
     const baseClasses = 'block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200';
-    
+
     const variantClasses = {
       default: 'border-gray-300 focus:border-blue-500 focus:ring-blue-500',
       error: 'border-red-300 focus:border-red-500 focus:ring-red-500',
@@ -25,6 +29,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     };
 
     const finalVariant = error ? 'error' : variant;
+    const finalClasses = `${baseClasses} ${variantClasses[finalVariant]} ${className} !text-primary`;
 
     return (
       <div className="w-full">
@@ -33,11 +38,22 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {label}
           </label>
         )}
-        <input
-          ref={ref}
-          className={`${baseClasses} ${variantClasses[finalVariant]} ${className} !text-primary`}
-          {...props}
-        />
+
+        {multiline ? (
+          <textarea
+            ref={ref as any}
+            rows={rows}
+            className={finalClasses}
+            {...(props as any)}
+          />
+        ) : (
+          <input
+            ref={ref as any}
+            className={finalClasses}
+            {...(props as any)}
+          />
+        )}
+
         {error && (
           <p className="mt-1 text-sm text-red-600">{error}</p>
         )}
@@ -48,5 +64,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     );
   }
 );
+
 
 Input.displayName = 'Input'; 

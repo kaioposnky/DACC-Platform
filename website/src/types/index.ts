@@ -141,6 +141,15 @@ export interface ProductSpecification {
   value: string;
 }
 
+export interface ProductVariation {
+  id: string;
+  color: string;
+  size: string;
+  stock: number;
+  sku: string;
+  images: string[];
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -151,24 +160,25 @@ export interface Product {
   originalPrice?: number | null;
   category: string;
   inStock: boolean;
-  stockCount: number;
-  image: string;
-  images: string[];
-  sizes: string[];
-  colors: string[];
-  featured: boolean;
-  rating: number;
-  reviews: number;
+  stockCount?: number; // Agora derivado das variacoes, mas mantido opcional por compatibilidade
+  image?: string; // Mantido por compatibilidade
+  images?: string[]; // Mantido por compatibilidade
+  sizes?: string[]; // Mantido por compatibilidade
+  colors?: string[]; // Mantido por compatibilidade
+  featured?: boolean;
+  rating?: number;
+  reviews?: number;
   reviewsList?: ProductReview[];
   specifications?: ProductSpecification[];
+  variations?: ProductVariation[];
   shippingInfo?: {
     freeShipping: boolean;
-    estimatedDays: number;
+    estimatedDays: number | string;
     shippingCost?: number;
     returnPolicy: string;
     warranty?: string;
   };
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface CartItem {
