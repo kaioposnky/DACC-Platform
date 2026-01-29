@@ -149,7 +149,7 @@ export interface Product {
   perfectFor?: string[];
   price: number;
   originalPrice?: number | null;
-  category: 'tshirts' | 'hoodies' | 'cups' | 'stickers' | 'accessories';
+  category: string;
   inStock: boolean;
   stockCount: number;
   image: string;
