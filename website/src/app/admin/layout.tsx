@@ -10,7 +10,7 @@ export default function AdminLayout({
         <div className="min-h-screen bg-gray-50">
             <NavigationAdmin />
 
-            <main className="ml-64 p-4">
+            <main className="ml-64">
                 {children}
             </main>
         </div>
