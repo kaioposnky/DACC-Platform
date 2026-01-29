@@ -428,4 +428,9 @@
         WHERE a.produto_id = @ProductId AND a.ativo = true
         ORDER BY a.data_avaliacao DESC;
     </query>
+
+    <query name="CreateSubcategory">
+        INSERT INTO produto_subcategoria(nome, categoria_id)
+        VALUES (@Nome, a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12);
+    </query>
 </queries>

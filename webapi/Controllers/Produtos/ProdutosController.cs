@@ -264,5 +264,25 @@ namespace DaccApi.Controllers.Produtos
             var response = await _produtosService.UpdateVariationAsync(id, variationId, request);
             return response;
         }
+
+        [PublicGetResponses]
+        [HttpGet("subcategorias")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetSubcategories()
+        {
+            var response = await _produtosService.GetSubcategories();
+            return response;
+        }
+
+        [AuthenticatedPostResponses]
+        [HttpPost("subcategorias")]
+        [HasPermission(AppPermissions.Produtos.Create)]
+        public async Task<IActionResult> CreateSubcategory([FromBody] string name)
+        {
+            var subcategory = new ProdutoSubcategoria{ Nome = name };
+
+            var response = await _produtosService.CreateSubcategory(subcategory);
+            return response;
+        }
     }
 }

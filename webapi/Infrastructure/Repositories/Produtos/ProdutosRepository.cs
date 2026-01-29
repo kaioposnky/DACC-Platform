@@ -71,7 +71,8 @@ namespace DaccApi.Infrastructure.Repositories.Products
             {
                 var sql = _repositoryDapper.GetQueryNamed("SearchProducts");
 
-                var categoriaId = await GetCategoryIdByNameAsync(query.Category);
+                var subcategoryId = await GetSubcategoryIdByNameAsync(query.Category);
+                var categoriaId = subcategoryId == null ? await GetCategoryIdByNameAsync(query.Category) : null;
 
                 var queryParams = new
                 {
@@ -79,7 +80,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
                     Limit = query.Limit,
                     SearchPattern = string.IsNullOrWhiteSpace(query.SearchQuery) ? null : $"%{query.SearchQuery}%",
                     CategoriaID = categoriaId,
-                    SubcategoriaID = (Guid?)null,
+                    SubcategoriaID = subcategoryId,
                     MinPrice = query.MinPrice,
                     MaxPrice = query.MaxPrice,
                     SortBy = query.OrderBy

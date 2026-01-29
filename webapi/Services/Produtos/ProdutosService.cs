@@ -1,3 +1,4 @@
+using DaccApi.Data.Orm.Subcategoria;
 using DaccApi.Model;
 using DaccApi.Model.Responses;
 using DaccApi.Infrastructure.Repositories.Products;
@@ -12,11 +13,13 @@ namespace DaccApi.Services.Products
     {
         private readonly IProdutosRepository _produtosRepository;
         private readonly IFileStorageService _fileStorageService;
+        private readonly ISubcategoriaRepository _subcategoriaRepository;
 
-        public ProdutosService(IProdutosRepository produtosRepository, IFileStorageService fileStorageService)
+        public ProdutosService(IProdutosRepository produtosRepository, IFileStorageService fileStorageService, ISubcategoriaRepository subcategoriaRepository)
         {
             _produtosRepository = produtosRepository;
             _fileStorageService = fileStorageService;
+            _subcategoriaRepository = subcategoriaRepository;
         }
 
         public async Task<IActionResult> GetAllProductsAsync()
@@ -497,6 +500,30 @@ namespace DaccApi.Services.Products
                     $"Erro ao remover imagem: {ex.Message}");
             }
         }
+
+        public async Task<IActionResult> GetSubcategories()
+        {
+            var subcategories = await _subcategoriaRepository.GetAllAsync();
+
+            if (subcategories.Count == 0)
+            {
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT,
+                    "Não há subcategorias disponíveis.");
+            }
+
+            var subcategoriesResponse = subcategories.Select(subcategoria => subcategoria.ToResponse());
+
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { subcategories = subcategoriesResponse }));
+        }
+
+        public async Task<IActionResult> CreateSubcategory(ProdutoSubcategoria subcategoria)
+        {
+            await _subcategoriaRepository.CreateAsync(subcategoria);
+
+            return ResponseHelper.CreateSuccessResponse(
+                ResponseSuccess.CREATED.WithData(new { subcategoria = subcategoria.ToResponse() }));
+        }
+
 
         // Métodos Auxiliares para Resolução de ID vs Nome
         
