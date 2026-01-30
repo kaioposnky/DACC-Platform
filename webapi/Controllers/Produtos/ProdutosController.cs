@@ -1,6 +1,8 @@
-﻿using DaccApi.Helpers.Attributes;
+﻿using DaccApi.Helpers;
+using DaccApi.Helpers.Attributes;
 using DaccApi.Infrastructure.Authentication;
 using DaccApi.Model;
+using DaccApi.Responses;
 using DaccApi.Services.Products;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -283,6 +285,26 @@ namespace DaccApi.Controllers.Produtos
 
             var response = await _produtosService.CreateSubcategory(subcategory);
             return response;
+        }
+
+        [AuthenticatedPatchResponses]
+        [HttpPatch("{id:guid}/batch-update")]
+        [HasPermission(AppPermissions.Produtos.Update)]
+        public async Task<IActionResult> UpdateFullProduct(Guid id, [FromBody] RequestBatchUpdateProduto request)
+        {
+            try
+            {
+                await _produtosService.BatchUpdateProductInfo(request);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK, "Produto foi atualizado com sucesso!");
+            }
+            catch (KeyNotFoundException)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Produto não encontrado!");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
         }
     }
 }

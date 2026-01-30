@@ -115,5 +115,15 @@ namespace DaccApi.Infrastructure.Repositories.Products
         /// Obtém as avaliações de um produto.
         /// </summary>
         Task<List<AvaliacaoProduto>> GetProductReviewsAsync(Guid productId);
+        
+        /// <summary>
+        /// Atualiza em lote as informações principais do produto (Scalar, Specs, PerfectFor, Envio).
+        /// </summary>
+        Task BatchUpdateProductAsync(RequestBatchUpdateProduto request, IDbTransaction? transaction = null);
+
+        /// <summary>
+        /// Atualiza em lote as variações (Cor, Tamanho, Estoque, Imagens).
+        /// </summary>
+        Task BatchUpdateVariationsAsync(Guid productId, List<VariationUpdateRequest> variations, IDbTransaction? transaction = null);
     }
 }

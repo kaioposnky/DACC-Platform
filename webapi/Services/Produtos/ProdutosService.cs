@@ -5,6 +5,7 @@ using DaccApi.Infrastructure.Repositories.Products;
 using DaccApi.Services.FileStorage;
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Helpers;
+using DaccApi.Infrastructure.Dapper;
 using DaccApi.Responses;
 
 namespace DaccApi.Services.Products
@@ -14,12 +15,14 @@ namespace DaccApi.Services.Products
         private readonly IProdutosRepository _produtosRepository;
         private readonly IFileStorageService _fileStorageService;
         private readonly ISubcategoriaRepository _subcategoriaRepository;
+        private readonly IRepositoryDapper _repositoryDapper;
 
-        public ProdutosService(IProdutosRepository produtosRepository, IFileStorageService fileStorageService, ISubcategoriaRepository subcategoriaRepository)
+        public ProdutosService(IProdutosRepository produtosRepository, IFileStorageService fileStorageService, ISubcategoriaRepository subcategoriaRepository, IRepositoryDapper repositoryDapper)
         {
             _produtosRepository = produtosRepository;
             _fileStorageService = fileStorageService;
             _subcategoriaRepository = subcategoriaRepository;
+            _repositoryDapper = repositoryDapper;
         }
 
         public async Task<IActionResult> GetAllProductsAsync()
@@ -524,6 +527,33 @@ namespace DaccApi.Services.Products
                 ResponseSuccess.CREATED.WithData(new { subcategoria = subcategoria.ToResponse() }));
         }
 
+        public async Task BatchUpdateProductInfo(RequestBatchUpdateProduto request)
+        {
+            var product = await _produtosRepository.GetProductByIdAsync(request.Id);
+
+            if (product == null)
+            {
+                throw new KeyNotFoundException("Produto não encontrado!");
+            }
+
+            var transaction = _repositoryDapper.BeginTransaction();
+            try
+            {
+                await _produtosRepository.BatchUpdateProductAsync(request, transaction);
+
+                var variations = request.Variations;
+                if (variations != null)
+                {
+                    await _produtosRepository.BatchUpdateVariationsAsync(product.Id, variations, transaction);
+                }
+                transaction.Commit();
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
+            }
+        }
 
         // Métodos Auxiliares para Resolução de ID vs Nome
         

@@ -1,4 +1,5 @@
 using System.Data;
+using System.Text.Json;
 using DaccApi.Data.Orm;
 using DaccApi.Exceptions;
 using DaccApi.Infrastructure.Dapper;
@@ -834,6 +835,56 @@ namespace DaccApi.Infrastructure.Repositories.Products
             var param = new { ProdutoId = productId };
             var result = await _repositoryDapper.QueryAsync<string>(sql, param);
             return result.ToList();
+        }
+
+        public async Task BatchUpdateProductAsync(RequestBatchUpdateProduto request, IDbTransaction? transaction = null)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("BatchUpdateProductGraph");
+                
+                var param = new
+                {
+                    Id = request.Id,
+                    Nome = request.Name,
+                    Descricao = request.Description,
+                    Preco = request.Price,
+                    PrecoOriginal = request.OriginalPrice,
+                    SubcategoriaNome = request.Subcategory, // Procura por nome na query, se não existir é criado
+                    CategoriaNome = request.Category, // Atualmente não implementando, query tem fallback
+                    DetailedDescription = request.DetailedDescription,
+                    Featured = request.Featured,
+                    SpecificationsJson = request.Specifications != null ? JsonSerializer.Serialize(request.Specifications) : null,
+                    PerfectForJson = request.PerfectFor != null ? JsonSerializer.Serialize(request.PerfectFor) : null,
+                    ShippingInfoJson = request.ShippingInfo != null ? JsonSerializer.Serialize(request.ShippingInfo) : null
+                };
+
+                await _repositoryDapper.ExecuteAsync(sql, param, transaction);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao realizar atualização em lote do produto: {ex.Message}", ex);
+            }
+        }
+
+        public async Task BatchUpdateVariationsAsync(Guid productId, List<VariationUpdateRequest> variations, IDbTransaction? transaction = null)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("BatchUpdateVariationsGraph");
+
+                var param = new
+                {
+                    ProductId = productId,
+                    VariationsJson = variations != null ? JsonSerializer.Serialize(variations) : null
+                };
+
+                await _repositoryDapper.ExecuteAsync(sql, param, transaction);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao realizar atualização em lote das variações: {ex.Message}", ex);
+            }
         }
     }
 }

@@ -21,5 +21,6 @@ namespace DaccApi.Services.Products
         public Task<IActionResult> DeleteImageAsync(Guid imageId);
         public Task<IActionResult> GetSubcategories();
         public Task<IActionResult> CreateSubcategory(ProdutoSubcategoria subcategoria);
+        public Task BatchUpdateProductInfo(RequestBatchUpdateProduto request);
     }
 }
