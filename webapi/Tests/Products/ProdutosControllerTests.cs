@@ -6,6 +6,7 @@ using DaccApi.Tests.Helpers;
 using FluentAssertions;
 using Xunit;
 
+using DaccApi.Model; // Add this line
 namespace DaccApi.Tests.Products;
 
 public class ProdutosControllerTests : IntegrationTestBase
@@ -396,4 +397,66 @@ public class ProdutosControllerTests : IntegrationTestBase
     private class ProductIdData { public Guid Id { get; set; } }
     private class GenericResponse<T> { public T Data { get; set; } = default!; }
     private class VariationResponse { public Guid Id { get; set; } }
+
+    /// <summary>
+    /// Testa a atualização em lote (Batch Update) de produto e variações.
+    /// OBS: Assume que a rota foi corrigida para "v1/api/products/{id}/batch-update" para evitar conflito.
+    /// </summary>
+    [Fact]
+    public async Task Batch_Update_Product_Should_Update_Info_And_Variations()
+    {
+        await AuthenticateAsAdminAsync();
+        
+        // 1. Cria produto inicial
+        var catId = await GetCategoriaIdAsync("roupas");
+        var subId = await GetSubcategoriaIdAsync("camisetas");
+        var createRequest = ProductTestDataBuilder.CreateValidProduct(category: catId, subcategory: subId);
+        var createResponse = await _client.PostAsJsonAsync("v1/api/products", createRequest);
+        var productId = (await createResponse.Content.ReadFromJsonAsync<CreateProductResponse>())!.Data.Id;
+
+        // 2. Prepara o Request de Batch Update com novas infos e uma variação nova
+        var batchRequestId = productId;
+        var batchUpdate = new RequestBatchUpdateProduto
+        {
+            Id = batchRequestId,
+            Name = "Produto Atualizado em Lote",
+            Description = "Nova descrição atualizada via batch",
+            Price = 250.00,
+            Category = "Roupas",
+            Subcategory = "Camisetas",
+            Variations = new List<VariationUpdateRequest>
+            {
+                new VariationUpdateRequest 
+                { 
+                    Color = "Dourado", 
+                    Size = "G", 
+                    Stock = 77,
+                    SKU = "TEST-GOLD-G"
+                }
+            }
+        };
+
+        // 3. Envia o Patch para a rota recomendada (batch-update)
+        var response = await _client.PatchAsJsonAsync($"v1/api/products/{productId}/batch-update", batchUpdate);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Erro no Batch Update: {response.StatusCode} - {error}");
+        }
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        // 4. Validados dados do produto atualizado
+        var getProdResp = await _client.GetAsync($"v1/api/products/{productId}");
+        var prodContent = await getProdResp.Content.ReadAsStringAsync();
+        prodContent.Should().Contain("Produto Atualizado em Lote");
+        prodContent.Should().Contain("250");
+
+        // 5. Valida se a variação foi criada/atualizada
+        var getVarResp = await _client.GetAsync($"v1/api/products/{productId}/variations");
+        var varContent = await getVarResp.Content.ReadAsStringAsync();
+        varContent.Should().Contain("dourado");
+        varContent.Should().Contain("77");
+    }
 }
