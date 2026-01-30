@@ -3,7 +3,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { apiService } from "@/services/api";
 import { useEffect, useState } from "react";
-import { Product, ProductReview, ProductSpecification, ProductVariation } from "@/types";
+import { Product, ProductReview, ProductSpecification, ProductVariation, ProductBatchUpdateRequest } from "@/types";
 import {
   Button,
   Footer,
@@ -18,10 +18,19 @@ import {
   ImageGalleryEditor,
 } from "@/components";
 import { TrashIcon } from "@heroicons/react/24/outline";
+import { toast } from "sonner";
 
 export default function AdminProdutoEditPage() {
   const params = useParams();
+  const productId = params.id;
   const router = useRouter();
+
+  if (!productId) {
+    return <div className="flex flex-col items-center justify-center h-screen">
+      <p className="text-2xl font-bold">Produto não encontrado</p>
+      <Button onClick={() => router.back()}>Voltar</Button>
+    </div>;
+  }
 
   // Mock atualizado para suportar a estrutura de variações
   const initialProduct: Product = {
@@ -52,7 +61,10 @@ export default function AdminProdutoEditPage() {
         stock: 10,
         sku: "TSHIRT-DARK-G",
         images: [
-          "https://gerenciador.fei.edu.br/Content/Arquivos/logo_fei_color-01.svg",
+          {
+            url: "https://gerenciador.fei.edu.br/Content/Arquivos/logo_fei_color-01.svg",
+            order: 0
+          }
         ],
       },
       {
@@ -75,9 +87,6 @@ export default function AdminProdutoEditPage() {
   const [product, setProduct] = useState<Product>(initialProduct);
   const [loading, setLoading] = useState(false);
 
-  const [newSpecName, setNewSpecName] = useState("");
-  const [newSpecValue, setNewSpecValue] = useState("");
-
   // Controle do Modal de Galeria
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [selectedVariantIndex, setSelectedVariantIndex] = useState<
@@ -86,7 +95,32 @@ export default function AdminProdutoEditPage() {
   const [tempImageUrl, setTempImageUrl] = useState("");
 
   const handleGoBack = () => router.back();
-  const handleSaveChanges = () => console.log("Salvando...", product);
+
+  const handleSaveChanges = async () => {
+    try {
+      setLoading(true);
+      const {
+        rating,
+        reviews,
+        image,
+        stockCount,
+        images,
+        colors,
+        sizes,
+        reviewsList,
+        createdAt,
+        ...updateData
+      } = product;
+
+      await apiService.updateProductFull(product.id, updateData as any);
+      toast.success("Produto atualizado com sucesso!");
+    } catch (err: any) {
+      console.error("Erro ao salvar produto:", err);
+      toast.error(err.message || "Erro ao atualizar produto");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAddTag = (tag: string) => {
     setProduct({
@@ -173,7 +207,14 @@ export default function AdminProdutoEditPage() {
 
     newVariations[selectedVariantIndex] = {
       ...newVariations[selectedVariantIndex],
-      images: [...currentImages, tempImageUrl],
+      images: [
+        ...currentImages,
+        {
+          url: tempImageUrl,
+          order: currentImages.length,
+          id: undefined
+        }
+      ],
     };
 
     setProduct({ ...product, variations: newVariations });
@@ -191,21 +232,22 @@ export default function AdminProdutoEditPage() {
     setProduct({ ...product, variations: newVariations });
   };
 
-  const handleSpecificationChange = (index: number, updatedSpec: ProductSpecification) => {
-    if (!product.specifications) return;
+  const addSpecification = () => {
+    setProduct({ ...product, specifications: [...product.specifications ?? [], { name: "Insira um nome", value: "Insira um valor" }] });
+  };
 
-    const newSpecifications = product.specifications;
-    newSpecifications[index] = updatedSpec;
-
+  const handleSpecificationChange = (index: number, spec: ProductSpecification) => {
+    const newSpecifications = [...product.specifications ?? []];
+    newSpecifications[index] = spec;
     setProduct({ ...product, specifications: newSpecifications });
   };
 
-  const handleAddSpecification = (specification: ProductSpecification) => {
+  const removeSpecification = (index: number) => {
     if (!product.specifications) return;
-
-    const specifications = product.specifications;
-
-    setProduct({ ...product, specifications: [...specifications, specification] });
+    const newSpecs = product.specifications.filter(
+      (_: ProductSpecification, i: number) => i !== index,
+    );
+    setProduct({ ...product, specifications: newSpecs });
   };
 
   if (loading) return <div>Carregando...</div>;
@@ -271,7 +313,7 @@ export default function AdminProdutoEditPage() {
               </div>
             </AdminCard>
 
-            {/* 2. GERENCIADOR DE VARIAÇÕES (IMPORTANTE) */}
+            {/* 2. GERENCIADOR DE VARIAÇÕES */}
             <AdminCard
               title="Variações de Estoque e Imagens"
               actions={
@@ -364,7 +406,7 @@ export default function AdminProdutoEditPage() {
                               <div className="relative">
                                 {variant.images.length > 0 ? (
                                   <img
-                                    src={variant.images[0]}
+                                    src={variant.images[0].url}
                                     className="w-6 h-6 rounded object-cover shadow-sm"
                                     alt="Preview"
                                   />
@@ -419,60 +461,63 @@ export default function AdminProdutoEditPage() {
             </AdminCard>
 
             {/* 3. ESPECIFICAÇÕES */}
-            <AdminCard title="Especificações Técnicas" className="justify-center">
+            <AdminCard
+              title="Especificações Técnicas"
+              className="justify-center"
+              actions={
+                <button
+                  onClick={addSpecification}
+                  className="text-xs font-bold text-blue-600 hover:text-blue-800 uppercase"
+                >
+                  + Adicionar Especificação
+                </button>
+              }
+            >
               {/* Mantendo lógica antiga mas simplificada */}
-              <div className="space-y-3">
-                {product.specifications?.map((spec: any, idx: number) => (
-                  <div key={idx} className="flex gap-2">
-                    <div className="flex-1">
-                      <Input
-                        label="Nome"
-                        value={spec.name}
-                        className="py-1! text-xs! bg-gray-50"
-                        onChange={(e) => handleSpecificationChange(idx, { name: e.target.value, value: spec.value })}
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <Input
-                        label="Valor"
-                        onChange={(e) => handleSpecificationChange(idx, { name: spec.name, value: e.target.value })}
-                        value={spec.value}
-                        className="py-1! text-xs!"
-                      />
-                    </div>
-                  </div>
-                ))}
-                <div className="mt-6">
-                  <h6 className="font-bold text-lg text-primary mb-3">
-                    Adicionar nova especificação
-                  </h6>
-                  <div className="flex gap-2">
-                    <div className="flex-1">
-                      <Input
-                        label="Nome"
-                        value={newSpecName}
-                        className="py-1! text-xs! bg-gray-50"
-                        onChange={(e) => setNewSpecName(e.target.value)}
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <Input
-                        label="Valor"
-                        value={newSpecValue}
-                        onChange={(e) => setNewSpecValue(e.target.value)}
-                        className="py-1! text-xs!"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex justify-center mt-4">
-                    <Button
-                      disabled={!newSpecName || !newSpecValue}
-                      onClick={() => handleAddSpecification({ name: newSpecName, value: newSpecValue })}
-                    >
-                      Adicionar
-                    </Button>
-                  </div>
-                </div>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead>
+                    <tr>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase w-1/2">
+                        Nome
+                      </th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase w-1/2">
+                        Valor
+                      </th>
+                      <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase w-10"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 bg-white">
+                    {product.specifications?.map((spec: any, idx: number) => (
+                      <tr key={idx} className="group hover:bg-gray-50">
+                        <td className="px-3 py-4 align-top">
+                          <Input
+                            value={spec.name}
+                            className="py-1! text-xs! bg-gray-50"
+                            onChange={(e) => handleSpecificationChange(idx, { name: e.target.value, value: spec.value })}
+                            placeholder="Ex: Material"
+                          />
+                        </td>
+                        <td className="px-3 py-4 align-top">
+                          <Input
+                            onChange={(e) => handleSpecificationChange(idx, { name: spec.name, value: e.target.value })}
+                            value={spec.value}
+                            className="py-1! text-xs!"
+                            placeholder="Ex: Algodão"
+                          />
+                        </td>
+                        <td className="px-3 py-4 text-right align-middle">
+                          <button
+                            onClick={() => removeSpecification(idx)}
+                            className="text-gray-400 hover:text-red-500"
+                          >
+                            <TrashIcon className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </AdminCard>
           </div>

@@ -230,3 +230,48 @@ export interface UserStats {
   reviews: number;
   registryDate: string;
 }
+
+export interface ProductBatchUpdateRequest {
+  id: string;
+  name: string;
+  description?: string;
+  detailedDescription?: string;
+  category?: string;
+  subcategory?: string;
+  price: number;
+  originalPrice?: number | null;
+  featured?: boolean;
+  inStock?: boolean;
+  perfectFor?: string[];
+  specifications?: SpecificationItemRequest[];
+  shippingInfo?: ShippingInfoRequest;
+  variations?: VariationUpdateRequest[];
+}
+
+export interface VariationUpdateRequest {
+  id?: string;
+  color: string;
+  size: string;
+  stock: number;
+  sku?: string;
+  images?: VariationImageRequest[];
+}
+
+export interface VariationImageRequest {
+  id?: string;
+  url: string;
+  order: number;
+  imageAlt?: string;
+}
+
+export interface SpecificationItemRequest {
+  name: string;
+  value: string;
+}
+
+export interface ShippingInfoRequest {
+  freeShipping: boolean;
+  estimatedDays: string;
+  returnPolicy: string;
+  warranty?: string;
+}

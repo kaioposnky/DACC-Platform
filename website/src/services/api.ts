@@ -8,6 +8,7 @@ import {
   Post,
   Product,
   Project,
+  ProductBatchUpdateRequest,
   User,
   UserStats
 } from '@/types';
@@ -526,6 +527,14 @@ class ApiService {
     const data = await this.request<{ product: Product }>(`/products/${id}`, {
       method: 'PATCH',
       body: isFormData ? product : JSON.stringify(product),
+    });
+    return data.product;
+  }
+
+  async updateProductFull(id: string, product: ProductBatchUpdateRequest): Promise<Product> {
+    const data = await this.request<{ product: Product }>(`/products/${id}/batch-update`, {
+      method: 'PATCH',
+      body: JSON.stringify(product),
     });
     return data.product;
   }
