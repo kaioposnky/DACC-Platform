@@ -536,6 +536,16 @@ class ApiService {
     });
   }
 
+  async uploadImage(file: File): Promise<{ url: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.request<{ url: string }>('/filestorage/uploadImage', {
+      method: 'POST',
+      body: formData,
+    });
+  }
+
   // Forum Categories
   async getForumCategories(): Promise<ForumCategory[]> {
     return (await this.request<ForumCategory[]>('/forumCategories')) || [];

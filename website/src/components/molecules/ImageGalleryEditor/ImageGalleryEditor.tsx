@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { Input } from "../../atoms/Input";
 
 import { ProductVariationImage } from "@/types";
+import { apiService } from "@/services/api";
+import { toast } from "sonner";
 
 interface ImageGalleryEditorProps {
     title?: string;
@@ -60,6 +62,20 @@ export const ImageGalleryEditor = ({
         }
     };
 
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            try {
+                const response = await apiService.uploadImage(file);
+                onAddImage(response.url);
+                toast.success("Imagem adicionada com sucesso!");
+            } catch (error) {
+                console.error("Erro ao fazer upload da imagem:", error);
+                toast.error("Erro ao fazer upload da imagem.");
+            }
+        }
+    };
+
     return (
         <div className="space-y-6">
             {(title || description) && (
@@ -97,14 +113,7 @@ export const ImageGalleryEditor = ({
                         accept="image/*"
                         className="hidden"
                         onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                                const reader = new FileReader();
-                                reader.onload = (ev) => {
-                                    if (ev.target?.result) setTempImageUrl(ev.target.result as string);
-                                };
-                                reader.readAsDataURL(file);
-                            }
+                            handleImageUpload(e);
                         }}
                     />
                 </label>
