@@ -4,7 +4,7 @@ import { Post } from '@/types';
 interface PostCardProps {
   post: Post;
   onEdit?: (post: Post) => void;
-  onDelete?: (postId: number) => void;
+  onDelete?: (postId: string) => void;
   onClick?: (post: Post) => void;
 }
 
