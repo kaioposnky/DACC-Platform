@@ -6,7 +6,7 @@ namespace DaccApi.Model;
 /// <summary>
 /// Representa a entidade de Subcategoria de um produto
 /// </summary>
-[Table("ProdutoSubcategorias")]
+[Table("produto_subcategoria")]
 public class ProdutoSubcategoria
 {
     /// <summary>
