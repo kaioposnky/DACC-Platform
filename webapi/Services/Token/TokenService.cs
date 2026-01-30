@@ -58,7 +58,7 @@ namespace DaccApi.Services.Token
 
         public string GenerateRefreshToken(Usuario usuario)
         {
-            var expirationTime = DateTime.UtcNow.AddHours(1);
+            var expirationTime = DateTime.UtcNow.AddDays(2);
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var issuer = _configuration["Jwt:Issuer"];
