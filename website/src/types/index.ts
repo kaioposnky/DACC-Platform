@@ -141,13 +141,20 @@ export interface ProductSpecification {
   value: string;
 }
 
+export interface ProductVariationImage {
+  id?: string;
+  url: string;
+  order: number;
+  imageAlt?: string;
+}
+
 export interface ProductVariation {
   id: string;
   color: string;
   size: string;
   stock: number;
   sku: string;
-  images: string[];
+  images: ProductVariationImage[];
 }
 
 export interface Product {
@@ -159,18 +166,26 @@ export interface Product {
   price: number;
   originalPrice?: number | null;
   category: string;
+  subcategory?: string;
   inStock: boolean;
-  stockCount?: number; // Agora derivado das variacoes, mas mantido opcional por compatibilidade
-  image?: string; // Mantido por compatibilidade
-  images?: string[]; // Mantido por compatibilidade
-  sizes?: string[]; // Mantido por compatibilidade
-  colors?: string[]; // Mantido por compatibilidade
   featured?: boolean;
   rating?: number;
   reviews?: number;
   reviewsList?: ProductReview[];
   specifications?: ProductSpecification[];
-  variations?: ProductVariation[];
+
+  // A fonte de verdade para Estoque, Imagens e Atributos são as variações.
+  variations: ProductVariation[];
+
+  // Campos de visualização (geralmente derivados das variações no backend ou frontend)
+  image?: string; // Thumbnail principal
+  stockCount?: number; // Soma de variations.stock
+
+  // Campos legados ou de leitura
+  images?: string[]; // Para compatibilidade
+  sizes?: string[]; // Derivado: variations.map(v => v.size)
+  colors?: string[]; // Derivado: variations.map(v => v.color)
+
   shippingInfo?: {
     freeShipping: boolean;
     estimatedDays: number | string;

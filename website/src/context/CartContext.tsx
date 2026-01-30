@@ -56,13 +56,13 @@ function cartReducer(state: CartState, action: CartAction): CartState {
     case 'ADD_TO_CART': {
       const { product, quantity, size, color } = action.payload;
       const existingItemIndex = state.items.findIndex(
-        item => item.productId === product.id && 
-                item.selectedSize === size && 
-                item.selectedColor === color
+        item => item.productId === product.id &&
+          item.selectedSize === size &&
+          item.selectedColor === color
       );
 
       let newItems: CartItem[];
-      
+
       if (existingItemIndex > -1) {
         // Update existing item quantity
         newItems = state.items.map((item, index) =>
@@ -77,7 +77,10 @@ function cartReducer(state: CartState, action: CartAction): CartState {
           productId: product.id,
           name: product.name,
           price: product.price,
-          image: product.image,
+          image: (() => {
+            const matchingVariation = product.variations?.find(v => v.size === size && v.color === color);
+            return matchingVariation?.images?.[0]?.url || product.image || product.variations?.[0]?.images?.[0]?.url || "";
+          })(),
           quantity,
           selectedSize: size,
           selectedColor: color,
@@ -86,7 +89,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       }
 
       const totals = calculateTotals(newItems, state.shippingCost);
-      
+
       return {
         ...state,
         items: newItems,
@@ -97,7 +100,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
     case 'REMOVE_FROM_CART': {
       const newItems = state.items.filter(item => item.id !== action.payload);
       const totals = calculateTotals(newItems, state.shippingCost);
-      
+
       return {
         ...state,
         items: newItems,
@@ -107,7 +110,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 
     case 'UPDATE_QUANTITY': {
       const { itemId, quantity } = action.payload;
-      
+
       if (quantity <= 0) {
         return cartReducer(state, { type: 'REMOVE_FROM_CART', payload: itemId });
       }
@@ -116,7 +119,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         item.id === itemId ? { ...item, quantity } : item
       );
       const totals = calculateTotals(newItems, state.shippingCost);
-      
+
       return {
         ...state,
         items: newItems,
@@ -127,7 +130,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
     case 'UPDATE_SHIPPING_COST': {
       const newShippingCost = action.payload;
       const totals = calculateTotals(state.items, newShippingCost);
-      
+
       return {
         ...state,
         ...totals,
@@ -192,11 +195,11 @@ export function CartProvider({ children }: CartProviderProps) {
   }, [cart]);
 
   const addToCart = (product: Product, quantity = 1, size?: string, color?: string) => {
-    dispatch({ 
-      type: 'ADD_TO_CART', 
-      payload: { product, quantity, size, color } 
+    dispatch({
+      type: 'ADD_TO_CART',
+      payload: { product, quantity, size, color }
     });
-    
+
     toast.success(`${product.name} adicionado ao carrinho!`, {
       description: `Quantidade: ${quantity}`,
     });

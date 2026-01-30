@@ -28,13 +28,13 @@ export default function ProductTabs({ product, className = '' }: ProductTabsProp
     const stars = [];
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 !== 0;
-    
+
     for (let i = 0; i < fullStars; i++) {
       stars.push(
         <StarIcon key={i} className="w-4 h-4 text-yellow-400" />
       );
     }
-    
+
     if (hasHalfStar) {
       stars.push(
         <div key="half" className="relative">
@@ -43,14 +43,14 @@ export default function ProductTabs({ product, className = '' }: ProductTabsProp
         </div>
       );
     }
-    
+
     const remainingStars = 5 - Math.ceil(rating);
     for (let i = 0; i < remainingStars; i++) {
       stars.push(
         <StarOutlineIcon key={`outline-${i}`} className="w-4 h-4 text-gray-300" />
       );
     }
-    
+
     return stars;
   };
 
@@ -78,7 +78,7 @@ export default function ProductTabs({ product, className = '' }: ProductTabsProp
                   ))}
                 </div>
               </div>
-              
+
               {product.perfectFor && product.perfectFor.length > 0 && (
                 <div>
                   <h4 className="text-lg font-semibold text-gray-900 mb-3">Perfeito para:</h4>
@@ -93,11 +93,11 @@ export default function ProductTabs({ product, className = '' }: ProductTabsProp
                 </div>
               )}
             </div>
-            
+
             <div className="lg:col-span-1">
               <div className="bg-gray-50 rounded-xl p-6">
                 <Image
-                  src={product.images[2] || product.images[0]}
+                  src={product.images?.[2] || product.images?.[0] || ''}
                   alt="Product lifestyle"
                   width={400}
                   height={400}
@@ -136,7 +136,7 @@ export default function ProductTabs({ product, className = '' }: ProductTabsProp
               <h3 className="text-2xl font-bold text-gray-900">Avaliações</h3>
               <div className="flex items-center gap-2">
                 <div className="flex items-center">
-                  {renderStars(product.rating)}
+                  {renderStars(product.rating ?? 0)}
                 </div>
                 <span className="text-lg font-semibold text-gray-900">{product.rating}</span>
                 <span className="text-gray-500">({product.reviews} avaliações)</span>
@@ -157,7 +157,7 @@ export default function ProductTabs({ product, className = '' }: ProductTabsProp
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      
+
                       <div className="flex-1 space-y-3">
                         <div className="flex items-center justify-between">
                           <div>
@@ -173,12 +173,12 @@ export default function ProductTabs({ product, className = '' }: ProductTabsProp
                             {renderStars(review.rating)}
                           </div>
                         </div>
-                        
+
                         <div>
                           <h5 className="font-medium text-gray-900 mb-2">{review.title}</h5>
                           <p className="text-gray-600 leading-relaxed">{review.comment}</p>
                         </div>
-                        
+
                         <div className="flex items-center gap-2 pt-2">
                           <button className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition-colors">
                             <HandThumbUpIcon className="w-4 h-4" />
@@ -203,7 +203,7 @@ export default function ProductTabs({ product, className = '' }: ProductTabsProp
           <div className="max-w-4xl space-y-8">
             <div>
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Envio & Devoluções</h3>
-              
+
               {product.shippingInfo ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="bg-blue-50 rounded-xl p-6">
@@ -219,7 +219,7 @@ export default function ProductTabs({ product, className = '' }: ProductTabsProp
                       </li>
                     </ul>
                   </div>
-                  
+
                   <div className="bg-green-50 rounded-xl p-6">
                     <h4 className="text-lg font-semibold text-green-900 mb-3">Devoluções & Garantia</h4>
                     <ul className="space-y-2 text-green-800">
@@ -290,4 +290,4 @@ export default function ProductTabs({ product, className = '' }: ProductTabsProp
       </div>
     </div>
   );
-} 
+}

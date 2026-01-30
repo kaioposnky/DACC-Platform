@@ -86,9 +86,9 @@ export default function ShoppingCart() {
                     className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
                   >
                     {/* Product Image */}
-                    <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0">
                       <Image
-                        src={item.image}
+                        src={item.image || 'https://i.postimg.cc/WzRPmW3r/LOGO-DACC-OFICIAL.png'}
                         alt={item.name}
                         width={64}
                         height={64}
@@ -186,4 +186,4 @@ export default function ShoppingCart() {
       </motion.div>
     </AnimatePresence>
   );
-} 
+}

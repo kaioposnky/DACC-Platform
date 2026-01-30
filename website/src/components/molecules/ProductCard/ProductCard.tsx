@@ -80,7 +80,7 @@ export default function ProductCard({
       {/* Product Image */}
       <div className="relative aspect-square overflow-hidden">
         <Image
-          src={product.image || "https://gerenciador.fei.edu.br/Content/Arquivos/logo_fei_color-01.svg"}
+          src={product.image || product.variations?.[0]?.images?.[0]?.url || "https://gerenciador.fei.edu.br/Content/Arquivos/logo_fei_color-01.svg"}
           alt={product.name}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -140,9 +140,9 @@ export default function ProductCard({
         {/* Rating */}
         <div className="flex items-center gap-1 mb-3">
           <div className="flex items-center">
-            {renderStars(product.rating)}
+            {renderStars(product.rating || 0)}
           </div>
-          <span className="text-sm text-gray-500">({product.reviews})</span>
+          <span className="text-sm text-gray-500">({product.reviews || 0})</span>
         </div>
 
         {/* Price */}
@@ -163,12 +163,18 @@ export default function ProductCard({
         <div className="flex items-center justify-between text-sm text-gray-500">
           <span>
             {product.inStock
-              ? `${product.stockCount} em estoque`
+              ? `${product.variations ? product.variations.reduce((acc, v) => acc + (v.stock || 0), 0) : 0} em estoque`
               : 'Fora de estoque'
             }
           </span>
           <span className="text-xs">
-            {product.sizes.length > 1 ? `${product.sizes.length} tamanhos` : product.sizes[0]}
+            {product.variations && product.variations.length > 0
+              ? (() => {
+                const uniqueSizes = Array.from(new Set(product.variations.map(v => v.size))).filter(Boolean);
+                return uniqueSizes.length > 1 ? `${uniqueSizes.length} tamanhos` : uniqueSizes[0];
+              })()
+              : 'Padrão'
+            }
           </span>
         </div>
       </div>

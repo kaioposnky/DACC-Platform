@@ -2,10 +2,12 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import { Input } from "../../atoms/Input";
 
+import { ProductVariationImage } from "@/types";
+
 interface ImageGalleryEditorProps {
     title?: string;
     description?: string;
-    images: string[];
+    images: ProductVariationImage[];
     onAddImage: (imageUrl: string) => void;
     onRemoveImage: (index: number) => void;
 }
@@ -71,7 +73,7 @@ export const ImageGalleryEditor = ({
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
                 {images.map((img, idx) => (
                     <div key={idx} className="group relative aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-                        <img src={img} alt={`Foto ${idx}`} className="w-full h-full object-cover" />
+                        <img src={img.url} alt={`Foto ${idx}`} className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                             <button
                                 onClick={() => onRemoveImage(idx)}

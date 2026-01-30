@@ -45,7 +45,7 @@ export default function ManageProductCard({
       {/* Product Image */}
       <div className="relative aspect-square overflow-hidden w-24 h-24 ml-4 rounded-lg flex-shrink-0">
         <Image
-          src={product.image || "https://gerenciador.fei.edu.br/Content/Arquivos/logo_fei_color-01.svg"}
+          src={product.image || product.variations?.[0]?.images?.[0]?.url || "https://gerenciador.fei.edu.br/Content/Arquivos/logo_fei_color-01.svg"}
           alt={product.name}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -97,7 +97,7 @@ export default function ManageProductCard({
           </span>
           <span className="text-sm text-gray-500 flex items-center gap-1 mt-1">
             <CubeIcon className="w-4 h-4" />
-            {product.stockCount} und
+            {product.variations ? product.variations.reduce((acc, v) => acc + (v.stock || 0), 0) : 0} und
           </span>
         </div>
 
