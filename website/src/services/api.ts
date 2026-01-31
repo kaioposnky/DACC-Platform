@@ -66,7 +66,7 @@ class ApiService {
         const refreshToken = storageService.getRefreshToken();
         if (refreshToken) {
           const tokens = await this.refreshToken(refreshToken);
-          storageService.setTokens(tokens.accessToken, tokens.accessToken, tokens.expiresIn);
+          storageService.setTokens(tokens.accessToken, tokens.refreshToken, tokens.expiresIn);
         }
       } catch (e) {
         storageService.clear();
