@@ -196,11 +196,8 @@ export default function AdminProdutoEditPage() {
     setIsGalleryOpen(true);
   };
 
-  const handleAddImageToVariant = () => {
-    if (!tempImageUrl || selectedVariantIndex === null || !product.variations) return;
-
-    // Validar se é uma URL válida ou Data URI
-    if (!tempImageUrl.trim()) return;
+  const handleAddImageToVariant = (imageUrl: string) => {
+    if (!imageUrl || selectedVariantIndex === null || !product.variations) return;
 
     const newVariations = [...product.variations];
     const currentImages = newVariations[selectedVariantIndex].images || [];
@@ -210,7 +207,7 @@ export default function AdminProdutoEditPage() {
       images: [
         ...currentImages,
         {
-          url: tempImageUrl,
+          url: imageUrl,
           order: currentImages.length,
           id: undefined
         }
@@ -218,7 +215,6 @@ export default function AdminProdutoEditPage() {
     };
 
     setProduct({ ...product, variations: newVariations });
-    setTempImageUrl("");
   };
 
   const handleRemoveImageFromVariant = (imageIndex: number) => {
