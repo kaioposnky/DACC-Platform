@@ -13,7 +13,7 @@ export interface User {
   avatar: string;
   isActive?: boolean;
   isSubscribedToNews?: boolean;
-  role: string;
+  role: 'aluno'|'diretor'|'administrador';
   isLoggedIn?: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -221,7 +221,7 @@ export interface UserProfile {
   name: string;
   email: string;
   avatar: string;
-  role?: string;
+  role?: 'aluno'|'diretor'|'administrador';
   isLoggedIn: boolean;
 }
 
