@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { FormInput, SocialLoginButton } from '@/components/molecules';
@@ -14,14 +14,19 @@ import { useRouter } from 'next/navigation';
 export default function LoginPage() {
   const { login, isAuthenticated, user } = useAuth();
   const router = useRouter();
-  if (isAuthenticated) {
-    if (["administrador", "diretor"].includes(user?.role || "")) {
-      router.push('/admin');
-      return null;
-    } else {
-      router.push('/dashboard');
-      return null;
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (["administrador", "diretor"].includes(user?.role || "")) {
+        router.push('/admin');
+      } else {
+        router.push('/dashboard');
+      }
     }
+  }, [isAuthenticated, user?.role, router]);
+
+  if (isAuthenticated) {
+    return null;
   }
 
   const [email, setEmail] = useState('');
