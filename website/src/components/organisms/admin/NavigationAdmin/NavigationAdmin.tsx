@@ -2,25 +2,29 @@
 
 import {
   Squares2X2Icon,
-  ShoppingCartIcon,
-  CubeIcon,
-  NewspaperIcon,
   UsersIcon,
-  ChatBubbleLeftRightIcon,
-  AcademicCapIcon,
-  ArrowLeftOnRectangleIcon
+  ArrowLeftOnRectangleIcon,
+  StarIcon,
+  NewspaperIcon,
+  BuildingLibraryIcon,
+  ClipboardDocumentListIcon,
+  ShieldCheckIcon,
+  TagIcon
 } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
 
 const menuItems = [
-  { name: "Painel Geral", href: "/admin", icon: Squares2X2Icon },
-  { name: "Pedidos", href: "/admin/pedidos", icon: ShoppingCartIcon },
-  { name: "Produtos", href: "/admin/produtos", icon: CubeIcon },
-  { name: "Notícias", href: "/admin/noticias", icon: NewspaperIcon },
+  { name: "Dashboard", href: "/admin", icon: Squares2X2Icon },
+  { name: "Avaliacoes", href: "/admin/avaliacoes", icon: StarIcon },
+  { name: "Conteúdo", href: "/admin/conteudo", icon: NewspaperIcon },
+  { name: "Faculdade", href: "/admin/faculdade", icon: BuildingLibraryIcon },
+  { name: "Pedidos", href: "/admin/pedidos", icon: ClipboardDocumentListIcon },
+  { name: "Permissões", href: "/admin/permissoes", icon: ShieldCheckIcon },
+  { name: "Produtos", href: "/admin/produtos", icon: TagIcon },
   { name: "Usuários", href: "/admin/usuarios", icon: UsersIcon },
-  { name: "Fórum", href: "/admin/forum", icon: ChatBubbleLeftRightIcon },
 ];
 
 export const NavigationAdmin = () => {
@@ -37,11 +41,11 @@ export const NavigationAdmin = () => {
     <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0a0b10] text-white flex flex-col z-50 border-r border-zinc-800/50">
       {/* Logo Header */}
       <div className="p-6 flex items-center gap-3">
-        <div className="p-2 bg-blue-600 rounded-xl shadow-[0_0_15px_rgba(37,99,235,0.4)]">
-          <AcademicCapIcon className="w-6 h-6 text-white" />
+        <div className="p-2 rounded-xl shadow-[0_0_15px_rgba(37,99,235,0.4)]">
+          <Image src='https://i.postimg.cc/WzRPmW3r/LOGO-DACC-OFICIAL.png' alt="Logo DACC" width={24} height={24}></Image>
         </div>
         <div>
-          <h2 className="text-xl font-bold tracking-tight">UniPortal</h2>
+          <h2 className="text-xl font-bold tracking-tight">Coruja Overflow</h2>
           <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest leading-none">
             Administração
           </p>
@@ -52,7 +56,7 @@ export const NavigationAdmin = () => {
       <div className="flex-1 px-4 py-4 space-y-8">
         <div>
           <h3 className="px-4 text-[11px] font-bold text-zinc-500 uppercase tracking-widest mb-4">
-            Menu Principal
+            Dashboard
           </h3>
           <nav className="space-y-2">
             {menuItems.map((item) => {
@@ -99,4 +103,3 @@ export const NavigationAdmin = () => {
     </aside>
   );
 };
-
