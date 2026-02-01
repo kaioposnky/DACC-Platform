@@ -17,6 +17,7 @@ import {
   Modal,
   ImageGalleryEditor,
 } from "@/components";
+import { ConfirmationModal } from "@/components/molecules/admin/ConfirmationModal";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { toast } from "sonner";
 
@@ -32,59 +33,8 @@ export default function AdminProdutoEditPage() {
     </div>;
   }
 
-  // Mock atualizado para suportar a estrutura de variações
-  const initialProduct: Product = {
-    id: "prod-123",
-    name: "Camiseta Coruja Overflow Dark Edition",
-    description: "Edição especial limitada para desenvolvedores noturnos.",
-    detailedDescription:
-      "A Camiseta Dark Edition foi pensada para quem passa longas horas codificando. Feita com malha penteada 30.1 de alta qualidade, garante respirabilidade e conforto térmico.",
-    category: "tshirts", // Isso será mapeado para Subcategoria ID
-    price: 79.9,
-    originalPrice: 95.0,
-    perfectFor: [
-      "Maratonas de Programação",
-      "Aulas no DACC",
-      "Eventos de Tecnologia",
-    ],
-    specifications: [
-      { name: "Material", value: "100% Algodão Penteado" },
-      { name: "Estampa", value: "Silk Screen de alta densidade" },
-      { name: "Gola", value: "Canaelê com reforço ombro a ombro" },
-    ],
-    // Variações que agregam estoque + imagens
-    variations: [
-      {
-        id: "v1",
-        color: "Preto Fosco",
-        size: "G",
-        stock: 10,
-        sku: "TSHIRT-DARK-G",
-        images: [
-          {
-            url: "https://gerenciador.fei.edu.br/Content/Arquivos/logo_fei_color-01.svg",
-            order: 0
-          }
-        ],
-      },
-      {
-        id: "v2",
-        color: "Preto Fosco",
-        size: "M",
-        stock: 5,
-        sku: "TSHIRT-DARK-M",
-        images: [],
-      },
-    ],
-    shippingInfo: {
-      estimatedDays: "2-4 dias",
-      returnPolicy: "Troca em 7 dias",
-      freeShipping: true,
-    },
-    inStock: true,
-  };
-
-  const [product, setProduct] = useState<Product>(initialProduct);
+  const [isLoading, setIsLoading] = useState(true);
+  const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(false);
 
   // Controle do Modal de Galeria
@@ -92,7 +42,46 @@ export default function AdminProdutoEditPage() {
   const [selectedVariantIndex, setSelectedVariantIndex] = useState<
     number | null
   >(null);
-  const [tempImageUrl, setTempImageUrl] = useState("");
+
+  // States para exclusão
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(true);
+    const fetchProduct = async () => {
+      try {
+        const productInfo = await apiService.getProduct(productId as string);
+        setProduct(productInfo);
+      } catch (error) {
+        console.error("Erro ao buscar produto:", error);
+        toast.error("Erro ao buscar produto: " + error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProduct();
+  }, [productId]);
+
+  if (!product && !isLoading) {
+    return <div className="flex flex-col items-center justify-center h-full">
+      <p className="text-2xl font-bold text-primary">Produto não encontrado</p>
+      <Button onClick={() => router.back()}>Voltar</Button>
+    </div>;
+  }
+
+  if (!product && isLoading) {
+    return <div className="flex flex-col items-center justify-center h-full">
+      <p className="text-2xl font-bold text-primary">Carregando produto...</p>
+    </div>;
+  }
+
+  if (!product) {
+    return <div className="flex flex-col items-center justify-center h-full">
+      <p className="text-2xl font-bold text-primary">Produto não encontrado</p>
+      <Button onClick={() => router.back()}>Voltar</Button>
+    </div>;
+  }
 
   const handleGoBack = () => router.back();
 
@@ -119,6 +108,23 @@ export default function AdminProdutoEditPage() {
       toast.error(err.message || "Erro ao atualizar produto");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteProduct = async () => {
+    if (!product) return;
+
+    try {
+      setIsDeleting(true);
+      await apiService.deleteProduct(product.id);
+      toast.success("Produto excluído com sucesso!");
+      router.push("/admin/produtos");
+    } catch (error: any) {
+      console.error("Erro ao excluir produto:", error);
+      toast.error(error.message || "Erro ao excluir produto");
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteModalOpen(false);
     }
   };
 
@@ -261,6 +267,10 @@ export default function AdminProdutoEditPage() {
         }}
         onSave={handleSaveChanges}
         onBack={handleGoBack}
+        showDelete={true}
+        onDelete={() => setIsDeleteModalOpen(true)}
+        loadingSave={loading}
+        loadingDelete={isDeleting}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -618,6 +628,19 @@ export default function AdminProdutoEditPage() {
           onRemoveImage={handleRemoveImageFromVariant}
         />
       </Modal>
+
+      {/* MODAL DE CONFIRMAÇÃO DE EXCLUSÃO */}
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteProduct}
+        title="Excluir Produto"
+        message={`Tem certeza que deseja excluir o produto "${product?.name}"? Esta ação não pode ser desfeita.`}
+        confirmLabel="Sim, Excluir"
+        cancelLabel="Cancelar"
+        isLoading={isDeleting}
+        variant="danger"
+      />
     </div>
   );
 }

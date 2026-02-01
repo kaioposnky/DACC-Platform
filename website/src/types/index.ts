@@ -13,7 +13,7 @@ export interface User {
   avatar: string;
   isActive?: boolean;
   isSubscribedToNews?: boolean;
-  role: 'aluno'|'diretor'|'administrador';
+  role: 'aluno' | 'diretor' | 'administrador';
   isLoggedIn?: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -221,7 +221,7 @@ export interface UserProfile {
   name: string;
   email: string;
   avatar: string;
-  role?: 'aluno'|'diretor'|'administrador';
+  role?: 'aluno' | 'diretor' | 'administrador';
   isLoggedIn: boolean;
 }
 
@@ -274,4 +274,49 @@ export interface ShippingInfoRequest {
   estimatedDays: string;
   returnPolicy: string;
   warranty?: string;
+}
+
+export type OrderStatus = 'created' | 'pending' | 'approved' | 'rejected' | 'delivered' | 'cancelled';
+export type PaymentMethod = 'venda física' | 'pix';
+
+export interface OrderItem {
+  id: string;
+  orderId: string;
+  productId: string;
+  productVariationId: string;
+  quantity: number;
+  unitPrice: number;
+  // Campos virtuais para facilitar o frontend (devem vir no join)
+  productName?: string;
+  productImage?: string;
+  variationColor?: string;
+  variationSize?: string;
+}
+
+export interface Coupon {
+  id: string;
+  code: string;
+  discountType: 'porcentagem' | 'valor_fixo';
+  value: number;
+  expirationDate?: string;
+  usageLimit?: number;
+  currentUsage: number;
+  active: boolean;
+}
+
+export interface Order {
+  id: string;
+  userId: string;
+  orderDate: string;
+  status: OrderStatus;
+  mercadopagoPaymentId?: number;
+  preferenceId?: string;
+  paymentMethod?: PaymentMethod;
+  totalAmount: number;
+  cupomId?: string;
+
+  // Campos virtuais
+  items?: OrderItem[];
+  user?: User; // Dados do usuário populados
+  coupon?: Coupon;
 }

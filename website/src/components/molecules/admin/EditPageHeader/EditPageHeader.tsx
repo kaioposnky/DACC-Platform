@@ -12,7 +12,13 @@ interface EditPageHeaderProps {
     };
     onSave: () => void;
     onBack: () => void;
+    onDelete?: () => void;
     saveButtonText?: string;
+    deleteButtonText?: string;
+    showSave?: boolean;
+    showDelete?: boolean;
+    loadingSave?: boolean;
+    loadingDelete?: boolean;
 }
 
 export const EditPageHeader = ({
@@ -22,7 +28,13 @@ export const EditPageHeader = ({
     status,
     onSave,
     onBack,
-    saveButtonText = "Salvar Alterações"
+    onDelete,
+    saveButtonText = "Salvar Alterações",
+    deleteButtonText = "Excluir",
+    showSave = true,
+    showDelete = false,
+    loadingSave = false,
+    loadingDelete = false
 }: EditPageHeaderProps) => {
     return (
         <section className="sticky top-0 z-30 bg-primary/80 backdrop-blur-md border-b border-white/5 p-4 sm:p-6 mb-10">
@@ -52,14 +64,27 @@ export const EditPageHeader = ({
                     </div>
                 </div>
 
-                <div className="w-full sm:w-auto flex justify-end">
-                    <Button
-                        variant="hero-outline"
-                        onClick={onSave}
-                        className="w-full sm:w-auto font-semibold py-2 px-6 rounded-lg transition-all active:scale-95"
-                    >
-                        {saveButtonText}
-                    </Button>
+                <div className="w-full sm:w-auto flex flex-col sm:flex-row justify-end gap-3">
+                    {showDelete && (
+                        <Button
+                            variant="danger"
+                            onClick={onDelete}
+                            loading={loadingDelete}
+                            className="w-full sm:w-auto font-semibold py-2 px-6 rounded-lg transition-all active:scale-95"
+                        >
+                            {deleteButtonText}
+                        </Button>
+                    )}
+                    {showSave && (
+                        <Button
+                            variant="hero-outline"
+                            onClick={onSave}
+                            loading={loadingSave}
+                            className="w-full sm:w-auto font-semibold py-2 px-6 rounded-lg transition-all active:scale-95"
+                        >
+                            {saveButtonText}
+                        </Button>
+                    )}
                 </div>
             </div>
         </section>

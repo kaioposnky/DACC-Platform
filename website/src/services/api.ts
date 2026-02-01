@@ -10,7 +10,8 @@ import {
   Project,
   ProductBatchUpdateRequest,
   User,
-  UserStats
+  UserStats,
+  Order
 } from '@/types';
 import { DashboardStats } from '@/types/dashboard';
 import { storageService } from "@/services/storage";
@@ -663,6 +664,21 @@ class ApiService {
   // Statistics
   async getDashboardStats(): Promise<DashboardStats> {
     return this.request<DashboardStats>('/statistics/dashboard');
+  }
+
+  // Orders
+  async searchOrders(params?: any): Promise<Order[]> {
+
+    const query = new URLSearchParams(params).toString();
+    return this.request<Order[]>(`/orders${query ? `?${query}` : ''}`, {
+      method: 'GET',
+    });
+  }
+
+  async deleteOrder(id: string): Promise<void> {
+    return this.request<void>(`/orders/${id}`, {
+      method: 'DELETE',
+    });
   }
 }
 
