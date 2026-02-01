@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { apiService } from '@/services/api';
 import { Input, Select } from '@/components';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export interface ProductFilterOptions {
   category: string;
@@ -22,10 +23,15 @@ export const ProductFilter = ({
     { value: 'all', label: 'Todos os Produtos' }
   ]);
 
-  const [filters, setFilters] = useState<ProductFilterOptions>({
+  // Estado local para busca
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Debounce da busca
+  const debouncedSearch = useDebounce(searchQuery, 600);
+
+  const [filters, setFilters] = useState<Omit<ProductFilterOptions, 'searchQuery'>>({
     category: 'all',
     sortBy: 'featured',
-    searchQuery: ''
   });
 
   useEffect(() => {
@@ -48,6 +54,16 @@ export const ProductFilter = ({
     fetchCategories();
   }, []);
 
+  // Propagar mudança na busca quando debounce terminar
+  useEffect(() => {
+    if (onFilterChange) {
+      onFilterChange({
+        ...filters,
+        searchQuery: debouncedSearch
+      });
+    }
+  }, [debouncedSearch, filters, onFilterChange]);
+
   const sortOptions = [
     { value: 'featured', label: 'Destaque' },
     { value: 'price-low', label: 'Preço: Baixo para Alto' },
@@ -57,11 +73,14 @@ export const ProductFilter = ({
     { value: 'name', label: 'Nome A-Z' }
   ];
 
-  const handleFilterChange = (key: keyof ProductFilterOptions, value: string) => {
+  const handleFilterChange = (key: keyof Omit<ProductFilterOptions, 'searchQuery'>, value: string) => {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
     if (onFilterChange) {
-      onFilterChange(newFilters);
+      onFilterChange({
+        ...newFilters,
+        searchQuery: debouncedSearch
+      });
     }
   };
 
@@ -100,8 +119,8 @@ export const ProductFilter = ({
             <Input
               label="Pesquisar"
               type="text"
-              value={filters.searchQuery}
-              onChange={(e) => handleFilterChange('searchQuery', e.target.value)}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Pesquisar produtos..."
             />
           </div>

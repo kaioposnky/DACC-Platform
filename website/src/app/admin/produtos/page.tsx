@@ -5,7 +5,7 @@ import { apiService } from "@/services/api";
 import { Product } from "@/types";
 import { toast } from "sonner";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 export default function AdminProdutosPage() {
 
@@ -15,9 +15,9 @@ export default function AdminProdutosPage() {
         searchQuery: ''
     });
 
-    const handleFilterChange = (filters: ProductFilterOptions) => {
-        setFilters(filters);
-    }
+    const handleFilterChange = useCallback((newFilters: ProductFilterOptions) => {
+        setFilters(newFilters);
+    }, []);
 
     const handleDeleteProduct = (product: Product) => {
         apiService.deleteProduct(product.id)

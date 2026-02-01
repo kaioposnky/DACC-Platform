@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { EditPageHeader, AdminOrderList, ConfirmationModal } from "@/components";
 import { OrderFilter, OrderFilterOptions } from "@/components/molecules/OrderFilter/OrderFilter";
@@ -23,9 +23,9 @@ export default function PedidosAdminPage() {
 
   const handleGoBack = () => router.back();
 
-  const handleFilterChange = (newFilters: OrderFilterOptions) => {
+  const handleFilterChange = useCallback((newFilters: OrderFilterOptions) => {
     setFilters(newFilters);
-  };
+  }, []);
 
   const handleDeleteOrder = async () => {
     if (!orderToDelete) return;

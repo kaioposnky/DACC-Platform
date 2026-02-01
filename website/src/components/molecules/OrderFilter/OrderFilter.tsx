@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { OrderStatus } from '@/types';
 import { Input, Select } from '@/components';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export interface OrderFilterOptions {
   searchQuery: string;
@@ -29,17 +30,35 @@ export const OrderFilter = ({
   onFilterChange,
   className = ''
 }: OrderFilterProps) => {
-  const [filters, setFilters] = useState<OrderFilterOptions>({
-    searchQuery: '',
+  // Estado local para o input de busca (atualização imediata para o usuário)
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Valor com debounce (atraso na propagação)
+  const debouncedSearch = useDebounce(searchQuery, 600);
+
+  const [filters, setFilters] = useState<Omit<OrderFilterOptions, 'searchQuery'>>({
     status: 'all',
     startDate: '',
     endDate: '',
   });
 
-  const handleFilterChange = (key: keyof OrderFilterOptions, value: string) => {
+  // Efeito para propagar mudança na busca quando o debounce terminar
+  useEffect(() => {
+    onFilterChange({
+      ...filters,
+      searchQuery: debouncedSearch
+    });
+  }, [debouncedSearch, filters]);
+
+  const handleFilterChange = (key: keyof Omit<OrderFilterOptions, 'searchQuery'>, value: string) => {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
-    onFilterChange(newFilters);
+    // Para filtros que não são busca, propagamos imediatamente
+    // Mas usamos o valor debouncedSearch atual para manter a consistência
+    onFilterChange({
+      ...newFilters,
+      searchQuery: debouncedSearch
+    });
   };
 
   return (
@@ -86,8 +105,8 @@ export const OrderFilter = ({
             <Input
               label="Pesquisar"
               type="text"
-              value={filters.searchQuery}
-              onChange={(e) => handleFilterChange('searchQuery', e.target.value)}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="ID, Nome ou E-mail..."
             />
           </div>
