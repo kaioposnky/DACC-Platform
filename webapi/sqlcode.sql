@@ -667,6 +667,9 @@ VALUES
     ('cart.items.remove', 'Remover itens do carrinho'),
     ('cart.clear', 'Limpar o carrinho');
 
+    -- Permissões do Dashboard
+    ('dashboard.view', 'Visualizar o dashboard de estatísticas');
+
 -- Atribuindo Permissões aos Roles (Tipos de Usuário)
 TRUNCATE TABLE role_permissoes;
 DO

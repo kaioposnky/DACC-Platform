@@ -135,5 +135,13 @@
         {
             public const string UploadImage = "filestorage.uploadimage";
         }
+
+        /// <summary>
+        /// Permissões relacionadas ao Dashboard de Estatísticas.
+        /// </summary>
+        public static class Dashboard
+        {
+            public const string View = "dashboard.view";
+        }
     }
 }

@@ -39,6 +39,8 @@ using DaccApi.Services.Products;
 using DaccApi.Services.Projetos;
 using DaccApi.Services.Token;
 using DaccApi.Services.User;
+using DaccApi.Services.Statistics;
+using DaccApi.Infrastructure.Repositories.Statistics;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -216,6 +218,8 @@ builder.Services.AddScoped<ICupomService, CupomService>();
 builder.Services.AddScoped<IMercadoPagoService, MercadoPagoService>();
 builder.Services.AddScoped<IReservaRepository, ReservaRepository>();
 builder.Services.AddScoped<IMailService, MailService>();
+builder.Services.AddScoped<IStatisticsRepository, StatisticsRepository>();
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 
 builder.Services.AddHostedService<ReservationCleanupService>();
 
