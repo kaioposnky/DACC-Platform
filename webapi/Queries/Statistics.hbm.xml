@@ -4,34 +4,34 @@
         <![CDATA[
         -- 1. Users Basic
         SELECT 
-            COUNT(*) AS Total,
-            COUNT(*) FILTER (WHERE ativo = true) AS Active,
-            COUNT(*) FILTER (WHERE newsletter_subscriber = true) AS Subscribers,
-            COUNT(*) FILTER (WHERE data_criacao >= date_trunc('month', CURRENT_DATE)) AS NewThisMonth
+            COUNT(*) AS "Total",
+            COUNT(*) FILTER (WHERE ativo = true) AS "Active",
+            COUNT(*) FILTER (WHERE newsletter_subscriber = true) AS "Subscribers",
+            COUNT(*) FILTER (WHERE data_criacao >= date_trunc('month', CURRENT_DATE)) AS "NewThisMonth"
         FROM usuario;
 
         -- 2. Users By Role
-        SELECT cargo as Key, COUNT(*) as Value FROM usuario GROUP BY cargo;
+        SELECT cargo as "Key", COUNT(*) as "Value" FROM usuario GROUP BY cargo;
 
         -- 3. Orders Basic
         SELECT 
-            COUNT(*) AS Total,
-            COALESCE(SUM(total_pedido) FILTER (WHERE status_pedido IN ('approved', 'delivered')), 0) AS TotalRevenue,
-            COUNT(*) FILTER (WHERE status_pedido = 'pending') AS Pending,
-            COUNT(*) FILTER (WHERE data_pedido >= (CURRENT_DATE - INTERVAL '30 days')) AS SalesLast30Days
+            COUNT(*) AS "Total",
+            COALESCE(SUM(total_pedido) FILTER (WHERE status_pedido IN ('approved', 'delivered')), 0) AS "TotalRevenue",
+            COUNT(*) FILTER (WHERE status_pedido = 'pending') AS "Pending",
+            COUNT(*) FILTER (WHERE data_pedido >= (CURRENT_DATE - INTERVAL '30 days')) AS "SalesLast30Days"
         FROM pedido;
 
         -- 4. Orders By Status
-        SELECT status_pedido as Key, COUNT(*) as Value FROM pedido GROUP BY status_pedido;
+        SELECT status_pedido as "Key", COUNT(*) as "Value" FROM pedido GROUP BY status_pedido;
 
         -- 5. Products Basic
         SELECT 
-            COUNT(*) AS TotalActive,
-            (SELECT COUNT(*) FROM produto_variacao WHERE estoque < 5) AS LowStockCount 
+            COUNT(*) AS "TotalActive",
+            (SELECT COUNT(*) FROM produto_variacao WHERE estoque < 5) AS "LowStockCount" 
         FROM produto WHERE ativo = true;
 
         -- 6. Products By Category
-        SELECT c.nome as Key, COUNT(p.id) as Value 
+        SELECT c.nome as "Key", COUNT(p.id) as "Value" 
         FROM produto p 
         JOIN produto_subcategoria sc ON p.subcategoria_id = sc.id
         JOIN produto_categoria c ON sc.categoria_id = c.id
@@ -40,42 +40,42 @@
 
         -- 7. Reviews Basic
         SELECT 
-            COUNT(*) AS Total,
-            COALESCE(AVG(nota), 0) AS AverageRating
+            COUNT(*) AS "Total",
+            COALESCE(AVG(nota), 0) AS "AverageRating"
         FROM avaliacao WHERE ativo = true;
 
         -- 8. Reviews Distribution
-        SELECT ROUND(nota)::int as Key, COUNT(*) as Value FROM avaliacao WHERE ativo = true GROUP BY ROUND(nota);
+        SELECT ROUND(nota)::int as "Key", COUNT(*) as "Value" FROM avaliacao WHERE ativo = true GROUP BY ROUND(nota);
 
         -- 9. Events Basic
         SELECT 
-            COUNT(*) AS Total,
-            COUNT(*) FILTER (WHERE data > NOW()) AS Upcoming
+            COUNT(*) AS "Total",
+            COUNT(*) FILTER (WHERE data > NOW()) AS "Upcoming"
         FROM evento;
         
         -- 10. Events By Type
-        SELECT tipo_evento as Key, COUNT(*) as Value FROM evento GROUP BY tipo_evento;
+        SELECT tipo_evento as "Key", COUNT(*) as "Value" FROM evento GROUP BY tipo_evento;
 
         -- 11. News Basic
-        SELECT COUNT(*) AS Total FROM noticia;
+        SELECT COUNT(*) AS "Total" FROM noticia;
 
         -- 12. News By Category
-        SELECT categoria as Key, COUNT(*) as Value FROM noticia GROUP BY categoria;
+        SELECT categoria as "Key", COUNT(*) as "Value" FROM noticia GROUP BY categoria;
 
         -- 13. Ads Basic
-        SELECT COUNT(*) AS TotalActive FROM anuncio WHERE ativo = true;
+        SELECT COUNT(*) AS "TotalActive" FROM anuncio WHERE ativo = true;
 
         -- 14. Ads By Type
-        SELECT tipo_anuncio as Key, COUNT(*) as Value FROM anuncio WHERE ativo = true GROUP BY tipo_anuncio;
+        SELECT tipo_anuncio as "Key", COUNT(*) as "Value" FROM anuncio WHERE ativo = true GROUP BY tipo_anuncio;
 
         -- 15. Faculty Basic
-        SELECT COUNT(*) AS Total FROM diretores;
+        SELECT COUNT(*) AS "Total" FROM diretores;
 
         -- 16. Faculty By Title
-        SELECT titulo as Key, COUNT(*) as Value FROM diretores GROUP BY titulo;
+        SELECT titulo as "Key", COUNT(*) as "Value" FROM diretores GROUP BY titulo;
 
         -- 17. Permissions
-        SELECT COUNT(*) AS TotalDefinitions FROM permissoes;
+        SELECT COUNT(*) AS "TotalDefinitions" FROM permissoes;
         ]]>
     </query>
 </queries>
