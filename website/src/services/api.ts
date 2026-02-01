@@ -12,6 +12,7 @@ import {
   User,
   UserStats
 } from '@/types';
+import { DashboardStats } from '@/types/dashboard';
 import { storageService } from "@/services/storage";
 import { RegisterData } from "@/context/AuthContext";
 import { toast } from "sonner";
@@ -657,6 +658,11 @@ class ApiService {
     return this.request<void>(`/forumThreads/${id}`, {
       method: 'DELETE',
     });
+  }
+
+  // Statistics
+  async getDashboardStats(): Promise<DashboardStats> {
+    return this.request<DashboardStats>('/statistics/dashboard');
   }
 }
 
