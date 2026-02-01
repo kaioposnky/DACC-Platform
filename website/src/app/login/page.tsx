@@ -9,9 +9,21 @@ import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Navigation } from '@/components/organisms/Navigation';
 import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
+  const router = useRouter();
+  if (isAuthenticated) {
+    if (["administrador", "diretor"].includes(user?.role || "")) {
+      router.push('/admin');
+      return null;
+    } else {
+      router.push('/dashboard');
+      return null;
+    }
+  }
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -198,7 +210,7 @@ export default function LoginPage() {
             </motion.div>
           </motion.div>
         </div>
-    
+
         <div className="lg:flex lg:flex-1 bg-blue-900 items-center justify-center px-8 rounded-xl shadow-xl p-8">
           <motion.div
             initial={{ opacity: 0, x: 20 }}
@@ -214,4 +226,4 @@ export default function LoginPage() {
       <Footer />
     </>
   );
-} 
+}
