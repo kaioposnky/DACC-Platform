@@ -43,12 +43,10 @@ export default function AdminProdutosPage() {
                 </button>
             </div>
 
-            {/* 2. BARRA DE BUSCA RÁPIDA */}
-            <ProductFilter onFilterChange={handleFilterChange} />
-
-            {/* 3. A LISTA DE PRODUTOS */}
+            {/* 2. LISTA DE PRODUTOS INTEGRADA COM FILTROS */}
             <AdminProductList
                 filters={filters}
+                filterComponent={<ProductFilter onFilterChange={handleFilterChange} />}
                 onDeleteProduct={handleDeleteProduct}
             />
         </div>

@@ -1,1 +1,1 @@
-export { default as AdminProductList } from './AdminProductList';
+export { AdminProductList } from './AdminProductList';
