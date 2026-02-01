@@ -2794,6 +2794,110 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
+## Estatísticas
+
+### **GET /api/statistics/dashboard**
+
+* **Descrição:** Retorna estatísticas gerais do sistema para o dashboard administrativo.
+* **Autorização:** Requer permissão `dashboard.view`
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X GET http://localhost:3001/v1/api/statistics/dashboard \
+    -H "Authorization: Bearer <seu_jwt_token>"
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": {
+            "users": {
+              "total": 1500,
+              "active": 1450,
+              "subscribers": 800,
+              "newThisMonth": 45,
+              "byRole": {
+                "admin": 5,
+                "diretor": 10,
+                "aluno": 1485
+              }
+            },
+            "orders": {
+              "total": 350,
+              "totalRevenue": 15490.50,
+              "pending": 12,
+              "salesLast30Days": 45,
+              "byStatus": {
+                "pending": 12,
+                "approved": 200,
+                "delivered": 138
+              }
+            },
+            "products": {
+              "totalActive": 120,
+              "lowStockCount": 5,
+              "byCategory": {
+                "Roupas": 80,
+                "Acessórios": 40
+              }
+            },
+            "reviews": {
+              "total": 85,
+              "averageRating": 4.8,
+              "ratingDistribution": {
+                "5": 70,
+                "4": 10,
+                "3": 5
+              }
+            },
+            "events": {
+              "total": 12,
+              "upcoming": 2,
+              "byType": {
+                "Workshop": 5,
+                "Palestra": 7
+              }
+            },
+            "news": {
+              "total": 45,
+              "byCategory": {
+                "Acadêmico": 30,
+                "Eventos": 15
+              }
+            },
+            "ads": {
+              "totalActive": 8,
+              "byType": {
+                "Banner": 4,
+                "Sidebar": 4
+              }
+            },
+            "faculty": {
+              "total": 15,
+              "byTitle": {
+                "Presidente": 1,
+                "Diretor": 14
+              }
+            },
+            "permissions": {
+              "totalDefinitions": 56
+            }
+          }
+        }
+        ```
+    * **`403 Forbidden` - Permissões Insuficientes**
+        ```json
+        {
+          "success": false,
+          "code": "AUTH_INSUFFICIENT_PERMISSIONS",
+          "message": "Permissões insuficientes"
+        }
+        ```
+
 ---
 
 ## Códigos de Erro Específicos
