@@ -25,15 +25,15 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, user?.role, router]);
 
-  if (isAuthenticated) {
-    return null;
-  }
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  if (isAuthenticated) {
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
