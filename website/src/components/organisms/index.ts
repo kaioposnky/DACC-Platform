@@ -58,4 +58,4 @@ export { NewsArticleBanner } from './NewsArticleBanner';
 export type { NewsArticleBannerProps } from './NewsArticleBanner';
 export { NewsArticleContent } from './NewsArticleContent';
 export type { NewsArticleContentProps } from './NewsArticleContent';
-export { AdminProductList } from './admin'
+export * from './admin';
