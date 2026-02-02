@@ -670,16 +670,18 @@ class ApiService {
   async searchOrders(params?: any): Promise<Order[]> {
 
     const query = new URLSearchParams(params).toString();
-    return this.request<Order[]>(`/orders${query ? `?${query}` : ''}`, {
+    const data = await this.request<{ orders: Order[] }>(`/orders/search${query ? `?${query}` : ''}`, {
       method: 'GET',
     });
+    return data?.orders || [];
   }
 
   async getOrder(id: string): Promise<Order> {
-    return this.request<Order>(`/orders/${id}`, {
+    const data = await this.request<{ order: Order }>(`/orders/${id}`, {
       method: 'GET',
     });
-}
+    return data.order;
+  }
 
   async deleteOrder(id: string): Promise<void> {
     return this.request<void>(`/orders/${id}`, {
