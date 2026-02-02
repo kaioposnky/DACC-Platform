@@ -77,9 +77,8 @@ namespace DaccApi.Controllers.Orders
         {
             try
             {
-                var userId = ClaimsHelper.GetUserId(User);
-                var orders = await _ordersService.SearchOrders(userId, requestQuery);
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(orders));
+                var orders = await _ordersService.SearchOrders(requestQuery);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { orders = orders }));
             }
             catch (Exception ex)
             {

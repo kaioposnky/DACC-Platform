@@ -36,7 +36,7 @@ namespace DaccApi.Infrastructure.Repositories.Orders
         /// <summary>
         /// Busca pedidos com base em filtros.
         /// </summary>
-        Task<List<Order>> SearchOrdersAsync(Guid userId, RequestQueryOrders query);
+        Task<List<Order>> SearchOrdersAsync(RequestQueryOrders query);
         /// <summary>
         /// Atualiza o status de um pedido.
         /// </summary>

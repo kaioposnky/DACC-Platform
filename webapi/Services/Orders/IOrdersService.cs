@@ -9,7 +9,7 @@ namespace DaccApi.Services.Orders
         Task<CreateOrderResponse> CreateOrderWithPayment(Guid userId, CreateOrderRequest request);
         Task<OrderResponse> GetOrderById(Guid id);
         Task<List<OrderResponse>> GetOrdersByUserId(Guid userId);
-        Task<List<OrderResponse>> SearchOrders(Guid userId, RequestQueryOrders query);
+        Task<List<OrderResponse>> SearchOrders(RequestQueryOrders query);
         Task UpdateOrderStatus(Guid id, string status);
         Task ProcessWebhookPayment(long paymentId);
     }

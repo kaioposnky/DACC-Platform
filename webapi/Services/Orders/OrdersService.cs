@@ -14,6 +14,7 @@ using DaccApi.Model;
 using DaccApi.Model.Objects.Order;
 using DaccApi.Model.Requests;
 using DaccApi.Model.Requests.Order;
+using DaccApi.Model.Responses;
 using DaccApi.Model.Responses.Order;
 
 namespace DaccApi.Services.Orders
@@ -202,31 +203,33 @@ namespace DaccApi.Services.Orders
 
             order.OrderItems = await _ordersRepository.GetOrderItemsByOrderId(id);
 
-            return order.ToOrderResponse();
+            var response = order.ToOrderResponse();
+            await EnrichOrderResponses(new List<OrderResponse> { response });
+            return response;
         }
 
         public async Task<List<OrderResponse>> GetOrdersByUserId(Guid userId)
         {
             var orders = await _ordersRepository.GetOrdersByUserId(userId);
-            var orderResponses = new List<OrderResponse>();
-
             if (orders.Count == 0)
             {
                 throw new KeyNotFoundException("Nenhum pedido encontrado para o usuário!");
             }
             
+            var orderResponses = new List<OrderResponse>();
             foreach (var order in orders)
             {
                 order.OrderItems = await _ordersRepository.GetOrderItemsByOrderId(order.Id);
                 orderResponses.Add(order.ToOrderResponse());
             }
 
+            await EnrichOrderResponses(orderResponses);
             return orderResponses;
         }
 
-        public async Task<List<OrderResponse>> SearchOrders(Guid userId, RequestQueryOrders query)
+        public async Task<List<OrderResponse>> SearchOrders(RequestQueryOrders query)
         {
-            var orders = await _ordersRepository.SearchOrdersAsync(userId, query);
+            var orders = await _ordersRepository.SearchOrdersAsync(query);
             var orderResponses = new List<OrderResponse>();
 
             foreach (var order in orders)
@@ -235,7 +238,55 @@ namespace DaccApi.Services.Orders
                 orderResponses.Add(order.ToOrderResponse());
             }
 
+            await EnrichOrderResponses(orderResponses);
             return orderResponses;
+        }
+
+        private async Task EnrichOrderResponses(List<OrderResponse> orderResponses)
+        {
+            if (orderResponses == null || !orderResponses.Any()) return;
+
+            // Coleta IDs para busca em lote
+            var userIds = orderResponses.Select(o => o.UserId).Distinct().ToList();
+            var cupomIds = orderResponses.Where(o => o.CupomId.HasValue).Select(o => o.CupomId!.Value).Distinct().ToList();
+            var variationIds = orderResponses.SelectMany(o => o.Items ?? new List<ResponseOrderItem>())
+                                           .Select(i => i.ProductVariationId).Distinct().ToList();
+
+            // Busca dados em lote
+            var users = (await _usuarioRepository.GetByIdsAsync(userIds)).ToDictionary(u => u.Id);
+            var cupons = (await _cupomRepository.GetByIdsAsync(cupomIds)).ToDictionary(c => c.Id);
+            var variations = (await _produtosRepository.GetVariationsWithProductByIdsAsync(variationIds))
+                                .ToDictionary(v => v.VariationId);
+
+            foreach (var response in orderResponses)
+            {
+                // Popula Usuário
+                if (users.TryGetValue(response.UserId, out var user))
+                {
+                    response.User = new ResponseUsuario(user);
+                }
+
+                // Popula Cupom
+                if (response.CupomId.HasValue && cupons.TryGetValue(response.CupomId.Value, out var cupom))
+                {
+                    response.Coupon = new ResponseCupom(cupom);
+                }
+
+                // Popula Detalhes dos Itens (Nome do Produto, Imagem, etc.)
+                if (response.Items != null)
+                {
+                    foreach (var item in response.Items)
+                    {
+                        if (variations.TryGetValue(item.ProductVariationId, out var vInfo))
+                        {
+                            item.ProductName = vInfo.ProductName;
+                            item.ProductImage = vInfo.ImageUrl;
+                            item.VariationSize = vInfo.SizeName;
+                            item.VariationColor = vInfo.ColorName;
+                        }
+                    }
+                }
+            }
         }
 
         public async Task UpdateOrderStatus(Guid id, string status)

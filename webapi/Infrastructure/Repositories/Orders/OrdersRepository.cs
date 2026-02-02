@@ -202,14 +202,13 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
 
-        public async Task<List<Order>> SearchOrdersAsync(Guid userId, RequestQueryOrders query)
+        public async Task<List<Order>> SearchOrdersAsync(RequestQueryOrders query)
         {
             try
             {
                 var sql = _repositoryDapper.GetQueryNamed("SearchOrders");
                 var param = new
                 {
-                    UserId = userId,
                     Status = query.Status,
                     StartDate = query.StartDate,
                     EndDate = query.EndDate,

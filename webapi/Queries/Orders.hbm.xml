@@ -38,25 +38,31 @@
     <query name="SearchOrders">
         <![CDATA[
             SELECT
-                id as Id,
-                usuario_id as UserId,
-                data_pedido as OrderDate,
-                status_pedido as Status,
-                mercadopago_pagamento_id as PaymentId,
-                preference_id as PreferenceId,
-                metodo_pagamento as PaymentMethod,
-                total_pedido as TotalAmount,
-                cupom_id as CupomId
+                pedido.id as Id,
+                pedido.usuario_id as UserId,
+                pedido.data_pedido as OrderDate,
+                pedido.status_pedido as Status,
+                pedido.mercadopago_pagamento_id as MercadoPagoPaymentId,
+                pedido.preference_id as PreferenceId,
+                pedido.metodo_pagamento as PaymentMethod,
+                pedido.total_pedido as TotalAmount,
+                pedido.cupom_id as CupomId
             FROM
                 pedido
+            INNER JOIN usuario u ON pedido.usuario_id = u.id
             WHERE
-                usuario_id = @UserId
-                AND (@Status IS NULL OR status_pedido = @Status)
-                AND (@StartDate IS NULL OR data_pedido >= @StartDate)
-                AND (@EndDate IS NULL OR data_pedido <= @EndDate)
-                AND (@SearchQuery IS NULL OR id::text ILIKE @SearchQuery)
+                (@Status IS NULL OR pedido.status_pedido = @Status)
+                AND (@StartDate IS NULL OR pedido.data_pedido >= @StartDate)
+                AND (@EndDate IS NULL OR pedido.data_pedido <= @EndDate)
+                AND (@SearchQuery IS NULL 
+                     OR pedido.id::text ILIKE @SearchQuery
+                     OR u.id::text ILIKE @SearchQuery
+                     OR u.nome ILIKE @SearchQuery 
+                     OR u.sobrenome ILIKE @SearchQuery 
+                     OR u.email ILIKE @SearchQuery 
+                     OR u.ra ILIKE @SearchQuery)
             ORDER BY
-                data_pedido DESC
+                pedido.data_pedido DESC
             OFFSET (@Page - 1) * @Limit
             LIMIT @Limit;
         ]]>
@@ -123,7 +129,7 @@
         usuario_id as UserId,
         data_pedido as OrderDate,
         status_pedido as Status,
-        mercadopago_pagamento_id as PaymentId,
+        mercadopago_pagamento_id as MercadoPagoPaymentId,
         preference_id as PreferenceId,
         metodo_pagamento as PaymentMethod,
         total_pedido as TotalAmount,
@@ -135,7 +141,7 @@
     <query name="GetOrderItemsByOrderId">
         SELECT
         id as Id,
-        pedido_id as PedidoId,
+        pedido_id as OrderId,
         produto_id as ProdutoId,
         produto_variacao_id as ProdutoVariacaoId,
         quantidade as Quantidade,
@@ -150,7 +156,7 @@
         usuario_id as UserId,
         data_pedido as OrderDate,
         status_pedido as Status,
-        mercadopago_pagamento_id as PaymentId,
+        mercadopago_pagamento_id as MercadoPagoPaymentId,
         preference_id as PreferenceId,
         metodo_pagamento as PaymentMethod,
         total_pedido as TotalAmount,
