@@ -12,5 +12,6 @@ namespace DaccApi.Services.Diretores
         Task<IActionResult> DeleteDiretor(Guid id);
         Task<IActionResult> CreateDiretorJson(RequestDiretorJson request);
         Task<IActionResult> UpdateDiretorJson(Guid id, RequestDiretorJson request);
+        Task<IActionResult> SearchDiretores(Model.Requests.RequestQueryDiretor query);
     }
 }

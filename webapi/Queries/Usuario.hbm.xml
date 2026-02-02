@@ -163,4 +163,34 @@
 		SET usado = true, data_usada = CURRENT_TIMESTAMP
 		WHERE id = @Id;
 	</query>
+
+
+    <query name="SearchUsuarios">
+        SELECT
+            id as Id,
+            nome as Nome,
+            sobrenome as Sobrenome,
+            ra as Ra,
+            curso as Curso,
+            email as Email,
+            telefone as Telefone,
+            imagem_url as ImagemUrl,
+            ativo as Ativo,
+            newsletter_subscriber as NewsLetterSubscriber,
+            cargo as Cargo,
+            data_criacao as DataCriacao,
+            data_atualizacao as DataAtualizacao,
+            COUNT(*) OVER() as TotalCount
+        FROM usuario
+        WHERE 1=1
+        AND (@SearchPattern IS NULL OR nome ILIKE @SearchPattern OR sobrenome ILIKE @SearchPattern OR email ILIKE @SearchPattern)
+        AND (@Role IS NULL OR cargo = @Role)
+        AND (@Course IS NULL OR curso = @Course)
+        AND (@IsActive IS NULL OR ativo = @IsActive)
+        AND (@CreatedFrom IS NULL OR data_criacao &gt;= @CreatedFrom)
+        AND (@CreatedTo IS NULL OR data_criacao &lt;= @CreatedTo)
+        ORDER BY nome ASC
+        OFFSET (@Page - 1) * @Limit
+        LIMIT @Limit
+    </query>
 </queries>

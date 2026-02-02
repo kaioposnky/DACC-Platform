@@ -57,6 +57,9 @@ namespace DaccApi.Model
         /// </summary>
         [Column("link_acao")]
         public string LinkAcao { get; set; }
+
+        [NotMapped]
+        public int TotalCount { get; set; }
     
     }
 }

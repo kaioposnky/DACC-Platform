@@ -10,5 +10,7 @@ namespace DaccApi.Services.User
         Task<IActionResult> GetAllUsers();
         Task<IActionResult> UpdateUser(Guid id, RequestUpdateUsuario newUserData);
         Task<IActionResult> DeleteUser(Guid id);
+        
+        Task<IActionResult> SearchUsuarios(Model.Requests.Usuario.RequestQueryUsuario query);
     }
 }

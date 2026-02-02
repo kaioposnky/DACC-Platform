@@ -9,5 +9,6 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
         Task<bool> CreateAsync(Projeto entity);
         Task<bool> UpdateAsync(Guid id, Projeto entity);
         Task<bool> DeleteAsync(Guid id);
+        Task<(List<Projeto> Projetos, int TotalCount)> SearchProjetos(DaccApi.Model.Requests.RequestQueryProjeto query);
     }
 }

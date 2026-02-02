@@ -10,5 +10,6 @@ namespace DaccApi.Infrastructure.Repositories.Diretores
         Task<bool> CreateAsync(Diretor diretor);
         Task<bool> UpdateAsync(Guid id, Diretor diretor);
         Task<bool> DeleteAsync(Guid id);
+        Task<(List<Diretor> Diretores, int TotalCount)> SearchDiretores(Model.Requests.RequestQueryDiretor query);
     }
 }

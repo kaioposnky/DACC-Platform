@@ -38,6 +38,15 @@ namespace DaccApi.Controllers.Avaliacao
             return response;
         }
 
+        [AuthenticatedGetResponses]
+        [HttpGet("search")]
+        [HasPermission(AppPermissions.Reviews.View)]
+        public async Task<IActionResult> SearchAvaliacoes([FromQuery] DaccApi.Model.Requests.RequestQueryAvaliacao query)
+        {
+            var response = await _avaliacaoService.SearchAvaliacoes(query);
+            return response;
+        }
+        
         /// <summary>
         /// Obtém uma avaliação específica pelo seu ID.
         /// </summary>

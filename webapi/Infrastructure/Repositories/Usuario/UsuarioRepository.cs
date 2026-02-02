@@ -248,5 +248,30 @@ public class UsuarioRepository : BaseRepository<Usuario>, IUsuarioRepository
                 throw new Exception("Erro ao atualizar senha do usuário!" + ex.Message);
             }
         }
+        public async Task<(List<Usuario> Usuarios, int TotalCount)> SearchUsuarios(Model.Requests.Usuario.RequestQueryUsuario query)
+        {
+            var sql = _repositoryDapper.GetQueryNamed("SearchUsuarios");
+            var queryParams = new
+            {
+                SearchPattern = string.IsNullOrEmpty(query.SearchQuery) ? null : $"%{query.SearchQuery}%",
+                Page = query.Page,
+                Limit = query.Limit,
+                Role = query.Role,
+                Course = query.Course,
+                IsActive = query.IsActive,
+                CreatedFrom = query.CreatedFrom,
+                CreatedTo = query.CreatedTo
+            };
+
+            var result = (await _repositoryDapper.QueryAsync<Usuario>(sql, queryParams)).ToList();
+
+            var totalCount = 0;
+            if (result.Any())
+            {
+                totalCount = result.First().TotalCount;
+            }
+
+            return (result, totalCount);
+        }
     }
 }

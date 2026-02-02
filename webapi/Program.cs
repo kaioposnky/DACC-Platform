@@ -41,6 +41,8 @@ using DaccApi.Services.Token;
 using DaccApi.Services.User;
 using DaccApi.Services.Statistics;
 using DaccApi.Infrastructure.Repositories.Statistics;
+using DaccApi.Infrastructure.Repositories.Home;
+using DaccApi.Services.Home;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -220,6 +222,8 @@ builder.Services.AddScoped<IReservaRepository, ReservaRepository>();
 builder.Services.AddScoped<IMailService, MailService>();
 builder.Services.AddScoped<IStatisticsRepository, StatisticsRepository>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+builder.Services.AddScoped<IHomeRepository, HomeRepository>();
+builder.Services.AddScoped<IHomeService, HomeService>();
 
 builder.Services.AddHostedService<ReservationCleanupService>();
 

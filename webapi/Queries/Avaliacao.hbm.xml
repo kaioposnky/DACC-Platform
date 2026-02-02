@@ -62,4 +62,27 @@
         WHERE id = @id;
     </query>
     
+
+
+    <query name="SearchAvaliacoes">
+        SELECT 
+            id as Id,
+            nota as Nota,
+            usuario_id as UsuarioId,
+            comentario as Comentario,
+            produto_id as ProdutoId,
+            data_avaliacao as DataPostada,
+            ativo as Ativo,
+            COUNT(*) OVER() as TotalCount
+        FROM avaliacao
+        WHERE 1=1
+        AND (@SearchPattern IS NULL OR comentario ILIKE @SearchPattern)
+        AND (@MinRating IS NULL OR nota &gt;= @MinRating)
+        AND (@MaxRating IS NULL OR nota &lt;= @MaxRating)
+        AND (@DateFrom IS NULL OR data_avaliacao &gt;= @DateFrom)
+        AND (@DateTo IS NULL OR data_avaliacao &lt;= @DateTo)
+        ORDER BY data_avaliacao DESC
+        OFFSET (@Page - 1) * @Limit
+        LIMIT @Limit
+    </query>
 </queries>

@@ -50,4 +50,27 @@
             link_acao = @LinkAcao
         WHERE id=@id
     </query>
+
+
+    <query name="SearchEventos">
+        SELECT 
+            id as Id,
+            titulo as Titulo,
+            descricao as Descricao,
+            data as Data,
+            tipo_evento as TipoEvento,
+            autor_id as AutorId,
+            texto_acao as TextoAcao,
+            link_acao as LinkAcao,
+            COUNT(*) OVER() as TotalCount
+        FROM evento
+        WHERE 1=1
+        AND (@SearchPattern IS NULL OR titulo ILIKE @SearchPattern OR descricao ILIKE @SearchPattern)
+        AND (@Type IS NULL OR tipo_evento = @Type)
+        AND (@DateFrom IS NULL OR data &gt;= @DateFrom)
+        AND (@DateTo IS NULL OR data &lt;= @DateTo)
+        ORDER BY data DESC
+        OFFSET (@Page - 1) * @Limit
+        LIMIT @Limit
+    </query>
 </queries>

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Infrastructure.Authentication;
 using DaccApi.Services.Diretores;
+using DaccApi.Model.Requests;
 
 namespace DaccApi.Controllers.Diretores
 {
@@ -38,6 +39,15 @@ namespace DaccApi.Controllers.Diretores
             return response;
         }
         
+        [AllowAnonymous]
+        [PublicGetResponses]
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchDiretores([FromQuery] RequestQueryDiretor query)
+        {
+            var response = await _diretoresService.SearchDiretores(query);
+            return response;
+        }
+
         /// <summary>
         /// Obtém um diretor específico pelo seu ID.
         /// </summary>

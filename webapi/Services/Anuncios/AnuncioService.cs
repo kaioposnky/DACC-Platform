@@ -183,5 +183,25 @@ namespace DaccApi.Services.Anuncios
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
             }
         }
+
+
+        public async Task<IActionResult> SearchAnuncio(RequestQueryAnuncio query)
+        {
+            try
+            {
+                var (anuncios, totalCount) = await _anuncioRepository.SearchAnuncio(query);
+                if (anuncios.Count == 0 && totalCount == 0)
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Anuncio>()));
+
+                // Mapeia os anuncios para responses
+                var anunciosResponse = anuncios.Select(anuncio => new ResponseAnuncio(anuncio));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
+                    new { announcements = anunciosResponse, totalCount = totalCount }));
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
     }
 }

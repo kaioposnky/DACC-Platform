@@ -50,5 +50,8 @@ namespace DaccApi.Model
 
         [Column("data_atualizacao")]
         public DateTime DataAtualizacao { get; set; }
+
+        [NotMapped]
+        public int TotalCount { get; set; }
     }
 }

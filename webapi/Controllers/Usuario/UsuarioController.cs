@@ -42,6 +42,15 @@ namespace DaccApi.Controllers.Usuario
             return response;
         }
 
+        [AuthenticatedGetResponses]
+        [HasPermission(AppPermissions.Users.ViewAll)]
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchUsuarios([FromQuery] DaccApi.Model.Requests.Usuario.RequestQueryUsuario query)
+        {
+            var response = await _usuarioService.SearchUsuarios(query);
+            return response;
+        }
+
         /// <summary>
         /// Obtém um usuário específico pelo seu ID.
         /// </summary>

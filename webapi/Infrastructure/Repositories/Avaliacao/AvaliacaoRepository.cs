@@ -56,4 +56,30 @@ public class AvaliacaoRepository : BaseRepository<AvaliacaoProduto>, IAvaliacaoR
         }
     }
     
+
+
+    public async Task<(List<AvaliacaoProduto> Avaliacoes, int TotalCount)> SearchAvaliacoes(Model.Requests.RequestQueryAvaliacao query)
+    {
+        var sql = _repositoryDapper.GetQueryNamed("SearchAvaliacoes");
+        var queryParams = new
+        {
+            SearchPattern = string.IsNullOrEmpty(query.SearchQuery) ? null : $"%{query.SearchQuery}%",
+            Page = query.Page,
+            Limit = query.Limit,
+            MinRating = query.MinRating,
+            MaxRating = query.MaxRating,
+            DateFrom = query.DateFrom,
+            DateTo = query.DateTo
+        };
+
+        var result = (await _repositoryDapper.QueryAsync<AvaliacaoProduto>(sql, queryParams)).ToList();
+
+        var totalCount = 0;
+        if (result.Any())
+        {
+            totalCount = result.First().TotalCount;
+        }
+
+        return (result, totalCount);
+    }
 }

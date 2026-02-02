@@ -53,4 +53,31 @@
 				tags = @Tags
 			WHERE id=@id
 	</query>
+
+
+    <query name="SearchProjetos">
+        SELECT
+            id as Id,
+            titulo as Titulo,
+            descricao as Descricao,
+            imagem_url as ImagemUrl,
+            status as Status,
+            diretoria as Diretoria,
+            tags as Tags,
+            progresso as Progresso,
+            texto_conclusao as TextoConclusao,
+            data_criacao as DataCriacao,
+            data_atualizacao as DataAtualizacao,
+            COUNT(*) OVER() as TotalCount
+        FROM projeto
+        WHERE 1=1
+        AND (@SearchPattern IS NULL OR titulo ILIKE @SearchPattern OR descricao ILIKE @SearchPattern)
+        AND (@Status IS NULL OR status = @Status)
+        AND (@Directorate IS NULL OR diretoria = @Directorate)
+        AND (@MinProgress IS NULL OR progresso &gt;= @MinProgress)
+        AND (@MaxProgress IS NULL OR progresso &lt;= @MaxProgress)
+        ORDER BY titulo ASC
+        OFFSET (@Page - 1) * @Limit
+        LIMIT @Limit
+    </query>
 </queries>

@@ -195,5 +195,24 @@ namespace DaccApi.Services.Diretores
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
             }
         }
+
+
+        public async Task<IActionResult> SearchDiretores(Model.Requests.RequestQueryDiretor query)
+        {
+            try
+            {
+                var (diretores, totalCount) = await _diretoresRepository.SearchDiretores(query);
+
+                if (diretores.Count == 0 && totalCount == 0)
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Diretor>()));
+
+                var response = diretores.Select(d => new ResponseDiretor(d)).ToList();
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { faculty = response, totalCount = totalCount }));
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
     }
 }

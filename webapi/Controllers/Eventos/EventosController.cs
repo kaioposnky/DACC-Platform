@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using DaccApi.Infrastructure.Authentication;
 using DaccApi.Services.Eventos;
 using DaccApi.Model;
+using DaccApi.Model.Requests;
 
 namespace DaccApi.Controllers.Eventos
 {
@@ -26,6 +27,15 @@ namespace DaccApi.Controllers.Eventos
             _eventosService = eventosService;
         }
         
+        [PublicGetResponses]
+        [AllowAnonymous]
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchEventos([FromQuery] RequestQueryEvento query)
+        {
+            var response = await _eventosService.SearchEventos(query);
+            return response;
+        }
+
         /// <summary>
         /// Obtém todos os eventos.
         /// </summary>

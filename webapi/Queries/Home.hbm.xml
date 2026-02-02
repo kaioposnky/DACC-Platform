@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<queries>
+    <query name="GetUnifiedFeed">
+        <!-- Get Top N Noticias -->
+        SELECT 
+            id as Id,
+            titulo as Titulo,
+            thumb_url as ThumbUrl,
+            slug_url as SlugUrl,
+            data_publicacao as DataPublicacao,
+            tempo_leitura as TempoLeitura,
+            autor_nome as AutorNome
+        FROM noticias
+        WHERE ativo = true
+        ORDER BY data_publicacao DESC
+        LIMIT @Limit;
+
+        <!-- Get Top N Eventos -->
+        SELECT 
+            id as Id,
+            titulo as Titulo,
+            descricao as Descricao,
+            data_inicio as DataInicio,
+            data_fim as DataFim,
+            local as Local,
+            imagem_url as ImagemUrl
+        FROM eventos
+        WHERE ativo = true
+        ORDER BY data_inicio ASC -- Future events first? Or newest created? Usually date of event.
+        LIMIT @Limit;
+
+        <!-- Get Top N Projetos -->
+        SELECT 
+            id as Id,
+            titulo as Titulo,
+            descricao as Descricao,
+            imagem_url as ImagemUrl,
+            status as Status,
+            progresso as Progresso
+        FROM projeto
+        LIMIT @Limit;
+    </query>
+</queries>

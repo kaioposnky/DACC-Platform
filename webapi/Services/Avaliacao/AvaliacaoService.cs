@@ -164,6 +164,24 @@ public class AvaliacaoService : IAvaliacaoService
         {
             return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
         }
-    }
+        }
 
-}
+        public async Task<IActionResult> SearchAvaliacoes(Model.Requests.RequestQueryAvaliacao query)
+        {
+            try
+            {
+                var (avaliacoes, totalCount) = await _avaliacaoRepository.SearchAvaliacoes(query);
+
+                if (avaliacoes.Count == 0 && totalCount == 0)
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<AvaliacaoProduto>()));
+
+                var responseAvaliacoes = avaliacoes.Select(avaliacao => new ResponseAvaliacaoProduto(avaliacao));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
+                    new { reviews = responseAvaliacoes, totalCount = totalCount }));
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
+    }

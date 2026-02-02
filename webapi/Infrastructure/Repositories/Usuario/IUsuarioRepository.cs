@@ -23,5 +23,6 @@ namespace DaccApi.Infrastructure.Repositories.User
         Task<UsuarioResetToken?> GetResetTokenAsync(string token);
         Task InvalidateResetTokenAsync(Guid tokenId);
         Task UpdatePasswordAsync(Guid userId, string newPasswordHash);
+        Task<(List<Usuario> Usuarios, int TotalCount)> SearchUsuarios(Model.Requests.Usuario.RequestQueryUsuario query);
     }
 }

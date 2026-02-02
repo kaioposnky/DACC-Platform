@@ -12,5 +12,6 @@ namespace DaccApi.Services.Anuncios
         public Task<IActionResult> AddAnuncioImage(Guid id,ImageRequest image);
         public Task<IActionResult> GetAnuncioById(Guid id);
         public Task<IActionResult> UpdateAnuncio(Guid id, RequestAnuncio request);
+        public Task<IActionResult> SearchAnuncio(RequestQueryAnuncio query);
     }
 }

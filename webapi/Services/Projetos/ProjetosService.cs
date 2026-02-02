@@ -214,5 +214,24 @@ namespace DaccApi.Services.Projetos
             }
         }
 
+        public async Task<IActionResult> SearchProjetos(RequestQueryProjeto query)
+        {
+            try
+            {
+                var (projetos, totalCount) = await _projetosRepository.SearchProjetos(query);
+
+                if (projetos.Count == 0 && totalCount == 0)
+                {
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Projeto>()));
+                }
+
+                var response = projetos.Select(p => new ResponseProjeto(p));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { projects = response, totalCount = totalCount }));
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
     }
 }

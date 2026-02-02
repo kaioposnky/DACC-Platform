@@ -146,5 +146,9 @@ namespace DaccApi.Model
             return new ResponseUsuario(this);
         }
         
+
+        [NotMapped]
+        public int TotalCount { get; set; }
+        
     }
 }

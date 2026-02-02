@@ -140,5 +140,26 @@ namespace DaccApi.Services.Eventos
                     return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
                 }
             }
+
+
+            public async Task<IActionResult> SearchEventos(DaccApi.Model.Requests.RequestQueryEvento query)
+            {
+                try
+                {
+                    var (eventos, totalCount) = await _eventosRepository.SearchEventos(query);
+
+                    if (eventos.Count == 0 && totalCount == 0)
+                    {
+                        return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Evento>()));
+                    }
+
+                    var response = eventos.Select(e => new ResponseEvento(e));
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { events = response, totalCount = totalCount }));
+                }
+                catch (Exception ex)
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+                }
+            }
     }
 } 

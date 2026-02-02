@@ -57,4 +57,26 @@
 				linkedin = @Linkedin
 				WHERE id=@id
 	</query>
+
+
+    <query name="SearchDiretores">
+        SELECT 
+            id as Id,
+            nome as Nome,
+            titulo as Titulo,
+            cargo as Cargo,
+            especializacao as Especializacao,
+            imagem_url as ImagemUrl,
+            usuario_id as UsuarioId,
+            email as Email,
+            github as Github,
+            linkedin as Linkedin,
+            COUNT(*) OVER() as TotalCount
+        FROM diretores
+        WHERE 1=1
+        AND (@SearchPattern IS NULL OR nome ILIKE @SearchPattern OR cargo ILIKE @SearchPattern OR especializacao ILIKE @SearchPattern)
+        ORDER BY nome ASC
+        OFFSET (@Page - 1) * @Limit
+        LIMIT @Limit
+    </query>
 </queries>

@@ -160,5 +160,26 @@ namespace DaccApi.Services.User
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, "Erro ao obter usuário pelo Email! " + ex.Message);
             }
         }
+
+
+        public async Task<IActionResult> SearchUsuarios(Model.Requests.Usuario.RequestQueryUsuario query)
+        {
+            try
+            {
+                var (users, totalCount) = await _usuarioRepository.SearchUsuarios(query);
+                if (users.Count == 0 && totalCount == 0)
+                {
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Usuario>()));
+                }
+
+                var response = users.Select(user => new ResponseUsuario(user));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { users = response, totalCount = totalCount }),
+                    "Usuários obtidos com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
     }
 }

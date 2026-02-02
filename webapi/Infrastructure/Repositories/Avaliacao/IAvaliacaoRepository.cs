@@ -12,4 +12,5 @@ public interface IAvaliacaoRepository
 
     Task<List<AvaliacaoProduto>> GetAvaliacoesByProductId(Guid produtoId);
     Task<List<AvaliacaoProduto>> GetAvaliacoesByUserId(Guid usuarioId);
+    Task<(List<AvaliacaoProduto> Avaliacoes, int TotalCount)> SearchAvaliacoes(Model.Requests.RequestQueryAvaliacao query);
 }

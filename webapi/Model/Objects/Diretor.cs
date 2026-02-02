@@ -74,6 +74,9 @@ namespace DaccApi.Model.Objects
         [Column("data_atualizacao")]
         public DateTime DataAtualizacao { get; set; }
 
+        [NotMapped]
+        public int TotalCount { get; set; }
+
         /// <summary>
         /// Cria uma instância de Diretor a partir de um RequestDiretor.
         /// </summary>

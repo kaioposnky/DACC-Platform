@@ -39,6 +39,15 @@ namespace DaccApi.Controllers.Anuncio
             return response;
         }
 
+        [AllowAnonymous]
+        [PublicGetResponses]
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchAnuncio([FromQuery] RequestQueryAnuncio query)
+        {
+            var response = await _anuncioService.SearchAnuncio(query);
+            return response;
+        }
+
         /// <summary>
         /// Obtém um anúncio específico pelo seu ID.
         /// </summary>

@@ -28,6 +28,15 @@ namespace DaccApi.Controllers.Projetos
             _projetosService = projetosService;
         }
 
+        [PublicGetResponses]
+        [AllowAnonymous]
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchProjetos([FromQuery] RequestQueryProjeto query)
+        {
+            var response = await _projetosService.SearchProjetos(query);
+            return response;
+        }
+
         /// <summary>
         /// Obtém todos os projetos.
         /// </summary>
@@ -36,7 +45,6 @@ namespace DaccApi.Controllers.Projetos
         [HttpGet("")]
         public async Task<IActionResult> GetAllProjetos()
         {
-
             var response = await _projetosService.GetAllProjetos();
             return response;
         }
