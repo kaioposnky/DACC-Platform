@@ -5,7 +5,7 @@ namespace DaccApi.Model.Requests.Order
         /// <summary>
         /// Filtro por status do pedido (ex: approved, pending, rejected).
         /// </summary>
-        public string? Status { get; set; }
+        public string? Status { get; set; } = "all";
 
 
         /// <summary>
