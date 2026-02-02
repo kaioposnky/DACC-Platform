@@ -2,40 +2,48 @@ namespace DaccApi.Model.Responses.Order
 {
     using DaccApi.Model.Objects.Order; 
     using System.Linq;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Representa a resposta de um pedido.
     /// </summary>
     public class OrderResponse
     {
-        /// <summary>
-        /// Obtém ou define o ID do pedido.
-        /// </summary>
+        [JsonPropertyName("id")]
         public Guid Id { get; set; }
-        /// <summary>
-        /// Obtém ou define o ID do usuário.
-        /// </summary>
+
+        [JsonPropertyName("userId")]
         public Guid UserId { get; set; }
-        /// <summary>
-        /// Obtém ou define a data do pedido.
-        /// </summary>
+
+        [JsonPropertyName("orderDate")]
         public DateTime OrderDate { get; set; }
-        /// <summary>
-        /// Obtém ou define o status do pedido.
-        /// </summary>
+
+        [JsonPropertyName("status")]
         public string? Status { get; set; }
-        /// <summary>
-        /// Obtém ou define o método de pagamento.
-        /// </summary>
+
+        [JsonPropertyName("mercadopagoPaymentId")]
+        public long? MercadoPagoPaymentId { get; set; }
+
+        [JsonPropertyName("preferenceId")]
+        public string? PreferenceId { get; set; }
+
+        [JsonPropertyName("paymentMethod")]
         public string? PaymentMethod { get; set; }
-        /// <summary>
-        /// Obtém ou define o valor total do pedido.
-        /// </summary>
+
+        [JsonPropertyName("totalAmount")]
         public decimal TotalAmount { get; set; }
-        /// <summary>
-        /// Obtém ou define a lista de itens do pedido.
-        /// </summary>
-        public List<ResponseOrderItem>? OrderItems { get; set; }
+
+        [JsonPropertyName("cupomId")]
+        public Guid? CupomId { get; set; }
+
+        [JsonPropertyName("items")]
+        public List<ResponseOrderItem>? Items { get; set; }
+
+        [JsonPropertyName("user")]
+        public ResponseUsuario? User { get; set; }
+
+        [JsonPropertyName("coupon")]
+        public ResponseCupom? Coupon { get; set; }
 
         /// <summary>
         /// Construtor para mapear de uma entidade Order.
@@ -47,14 +55,14 @@ namespace DaccApi.Model.Responses.Order
             UserId = order.UserId;
             OrderDate = order.OrderDate;
             Status = order.Status;
+            MercadoPagoPaymentId = order.MercadoPagoPaymentId;
+            PreferenceId = order.PreferenceId;
             PaymentMethod = order.PaymentMethod;
             TotalAmount = order.TotalAmount;
-            OrderItems = order.OrderItems?.Select(item => new ResponseOrderItem(item)).ToList() ?? new List<ResponseOrderItem>();
+            CupomId = order.CupomId;
+            Items = order.OrderItems?.Select(item => new ResponseOrderItem(item)).ToList() ?? new List<ResponseOrderItem>();
         }
 
-        /// <summary>
-        /// Construtor sem parâmetros para deserialização
-        /// </summary>
         public OrderResponse() { }
     }
 }

@@ -7,6 +7,7 @@ namespace DaccApi.Model.Requests.Order
         /// </summary>
         public string? Status { get; set; }
 
+
         /// <summary>
         /// Data inicial para filtro.
         /// </summary>

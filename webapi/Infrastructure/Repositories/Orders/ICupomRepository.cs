@@ -6,6 +6,7 @@ namespace DaccApi.Infrastructure.Repositories.Orders
     {
         Task<Cupom?> GetByCodeAsync(string code);
         Task<Cupom?> GetByIdAsync(Guid id);
+        Task<List<Cupom>> GetByIdsAsync(IEnumerable<Guid> ids);
         Task<List<Cupom>> GetAllAsync();
         Task<bool> CreateAsync(Cupom entity);
         Task<bool> UpdateAsync(Guid id, Cupom entity);

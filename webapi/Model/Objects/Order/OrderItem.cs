@@ -14,6 +14,10 @@ namespace DaccApi.Model.Objects.Order
         /// <summary>
         /// Obtém ou define o ID do produto.
         /// </summary>
+        public Guid OrderId { get; set; }
+        /// <summary>
+        /// Obtém ou define o ID do produto.
+        /// </summary>
         public Guid ProdutoId { get; set; }
         /// <summary>
         /// Obtém ou define o ID da variação do produto.
