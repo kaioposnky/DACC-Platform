@@ -26,6 +26,7 @@
     "IntervalMinutes": 1,
     "MaxRequests": 200
   },
+  "EnableMailService": false, // Habilita o envio de emails
   "SmtpSettings": {
     "Server": "sandbox.smtp.mailtrap.io", // Configurações do SMTP Para envio de emails (Achei o Mailtrap bom o bastante)
     "Port": 2525,

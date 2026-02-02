@@ -12,15 +12,21 @@ namespace DaccApi.Infrastructure.Mail
     {
         private readonly SmtpSettings _smtpSettings;
         private readonly string _websiteUrl;
+        private readonly bool _enableMailService;
 
         public MailService(IOptions<SmtpSettings> smtpSettings, IConfiguration configuration)
         {
             _smtpSettings = smtpSettings.Value;
             _websiteUrl = configuration["WebsiteURL"]!;
+            _enableMailService = configuration.GetValue<bool>("EnableMailService");
         }
 
         public async Task SendCustomEmailAsync(string name, string email, string subject, string body)
         {
+            if (!_enableMailService)
+            {
+                return;
+            }
             var message = GenerateMessage(name, email, subject);
             message.Body = new TextPart("plain") { Text = body };
             await SendEmailToSMTP(message);
@@ -28,6 +34,10 @@ namespace DaccApi.Infrastructure.Mail
 
         public async Task SendOrderConfirmationEmailAsync(Usuario user, Order order)
         {
+            if (!_enableMailService)
+            {
+                return;
+            }
             var message = GenerateMessage(user.Nome, user.Email, $"Coruja Overflow - Pedido {order.Id} Confirmado");
             message.Body = OrderConfirmationEmailTemplate.GenerateBodyHtml(user, order);
             await SendEmailToSMTP(message);
@@ -35,6 +45,10 @@ namespace DaccApi.Infrastructure.Mail
 
         public async Task SendOrderCreatedEmailAsync(Usuario user, Order order)
         {
+            if (!_enableMailService)
+            {
+                return;
+            }
             var message = GenerateMessage(user.Nome, user.Email, $"Coruja Overflow - Pedido {order.Id} Criado");
             message.Body = OrderCreatedEmailTemplate.GenerateBodyHtml(user, order);
             await SendEmailToSMTP(message);
@@ -42,6 +56,10 @@ namespace DaccApi.Infrastructure.Mail
 
         public async Task SendWelcomeEmailAsync(Usuario user)
         {
+            if (!_enableMailService)
+            {
+                return;
+            }
             var message = GenerateMessage(user.Nome, user.Email, "Bem-vindo ao Coruja Overflow!");
             message.Body = WelcomeEmailTemplate.GenerateBodyHtml(user);
             await SendEmailToSMTP(message);
@@ -49,6 +67,10 @@ namespace DaccApi.Infrastructure.Mail
 
         public async Task SendResetPasswordEmailAsync(Usuario user, string token)
         {
+            if (!_enableMailService)
+            {
+                return;
+            }
             var resetLink = $"{_websiteUrl}/reset-password?token={token}";
             var message = GenerateMessage(user.Nome, user.Email, "Recuperação de Senha - Coruja Overflow");
             message.Body = ResetPasswordEmailTemplate.GenerateBodyHtml(user, resetLink);
