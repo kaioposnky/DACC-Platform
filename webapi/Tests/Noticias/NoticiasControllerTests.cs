@@ -60,6 +60,30 @@ public class NoticiasControllerTests : IntegrationTestBase
         var response = await _client.GetAsync(BaseUrl);
 
         response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.NoContent);
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            content.Should().Contain("totalCount");
+            content.Should().Contain("news");
+        }
+    }
+
+    [Fact]
+    public async Task Get_Noticias_Should_Return_Correct_Structure()
+    {
+        await AuthenticateAsAdminAsync();
+        // Create one to ensure we have data
+        await _client.PostAsJsonAsync(BaseUrl, NoticiaTestDataBuilder.CreateValidNoticia());
+
+        var response = await _client.GetAsync(BaseUrl);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        var json = await response.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
+        var data = json.GetProperty("data");
+        
+        data.GetProperty("news").ValueKind.Should().NotBe(System.Text.Json.JsonValueKind.Null);
+        data.GetProperty("totalCount").GetInt32().Should().BeGreaterThan(0);
     }
 
     /// <summary>

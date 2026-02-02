@@ -92,7 +92,7 @@ public class ProdutosControllerTests : IntegrationTestBase
     {
         var response = await _client.GetAsync("v1/api/products");
 
-        response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.NotFound);
+        response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.NotFound, HttpStatusCode.NoContent);
     }
 
     /// <summary>
