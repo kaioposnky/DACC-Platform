@@ -6,6 +6,7 @@ namespace DaccApi.Infrastructure.Repositories.User
     {
         Task<List<Usuario>> GetAllAsync();
         Task<Usuario?> GetByIdAsync(Guid id);
+        Task<List<Usuario>> GetByIdsAsync(IEnumerable<Guid> ids);
         Task<bool> UpdateAsync(Guid id, Usuario entity);
         Task<bool> DeleteAsync(Guid id);
 

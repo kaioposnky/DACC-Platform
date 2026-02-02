@@ -68,6 +68,21 @@ namespace DaccApi.Data.Orm
             return result.FirstOrDefault();
         }
 
+        /// <summary>
+        /// Obtém múltiplas entidades pelos seus IDs de forma assíncrona.
+        /// </summary>
+        /// <param name="ids">A lista de IDs das entidades a serem buscadas.</param>
+        /// <returns>Uma lista de entidades encontradas.</returns>
+        public async Task<List<T>> GetByIdsAsync(IEnumerable<Guid> ids)
+        {
+            if (ids == null || !ids.Any()) return new List<T>();
+
+            var columns = GetSelectColumns();
+            var sql = $"SELECT {columns} FROM \"{_tableName}\" WHERE \"id\" = ANY(@Ids)";
+            var result = await _dapper.QueryAsync<T>(sql, new { Ids = ids.ToArray() });
+            return result.ToList();
+        }
+
         private string GetSelectColumns()
         {
             var columns = new List<string>();
