@@ -227,9 +227,9 @@ namespace DaccApi.Services.Orders
             return orderResponses;
         }
 
-        public async Task<List<OrderResponse>> SearchOrders(RequestQueryOrders query)
+        public async Task<(List<OrderResponse> Orders, int TotalCount)> SearchOrders(RequestQueryOrders query)
         {
-            var orders = await _ordersRepository.SearchOrdersAsync(query);
+            var (orders, totalCount) = await _ordersRepository.SearchOrdersAsync(query);
             var orderResponses = new List<OrderResponse>();
 
             foreach (var order in orders)
@@ -239,7 +239,7 @@ namespace DaccApi.Services.Orders
             }
 
             await EnrichOrderResponses(orderResponses);
-            return orderResponses;
+            return (orderResponses, totalCount);
         }
 
         private async Task EnrichOrderResponses(List<OrderResponse> orderResponses)

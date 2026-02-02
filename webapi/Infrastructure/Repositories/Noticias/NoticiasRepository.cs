@@ -14,7 +14,7 @@ namespace DaccApi.Infrastructure.Repositories.Noticias
 
         }
 
-        public async Task<List<Noticia>> SearchNoticias(RequestQueryNoticia queryNoticia)
+        public async Task<(List<Noticia> Noticias, int TotalCount)> SearchNoticias(RequestQueryNoticia queryNoticia)
         {
             var sql = _dapper.GetQueryNamed("SearchNoticias");
 
@@ -31,8 +31,27 @@ namespace DaccApi.Infrastructure.Repositories.Noticias
                 PublishDate = queryNoticia.PublishDate
             };
 
-            var result = await _dapper.QueryAsync<dynamic>(sql, param);
-            return MapNoticias(result);
+            var result = (await _dapper.QueryAsync<dynamic>(sql, param)).ToList();
+            var noticias = MapNoticias(result);
+            
+            // Extrair TotalCount do primeiro item se existir
+            var totalCount = 0;
+            if (result.Any())
+            {
+                var firstItem = result.First();
+                if (firstItem is IDictionary<string, object> dict && dict.ContainsKey("totalcount"))
+                {
+                    totalCount = Convert.ToInt32(dict["totalcount"]);
+                }
+                else 
+                {
+                     try {
+                        totalCount = (int)firstItem.totalcount;
+                     } catch {}
+                }
+            }
+
+            return (noticias, totalCount);
         }
 
         public new async Task<Noticia?> GetByIdAsync(Guid id)

@@ -66,7 +66,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
         /// <summary>
         /// Busca produtos com base em filtros de consulta.
         /// </summary>
-        public async Task<List<Produto>> SearchProductsAsync(RequestQueryProdutos query)
+        public async Task<(List<Produto> Products, int TotalCount)> SearchProductsAsync(RequestQueryProdutos query)
         {
             try
             {
@@ -87,9 +87,10 @@ namespace DaccApi.Infrastructure.Repositories.Products
                     SortBy = query.OrderBy
                 };
 
-                var products = (await _repositoryDapper.QueryAsync<Produto>(sql, queryParams)).ToList();
+                var result = (await _repositoryDapper.QueryAsync<Produto>(sql, queryParams)).ToList();
+                var totalCount = result.FirstOrDefault()?.TotalCount ?? 0;
                 
-                foreach (var product in products)
+                foreach (var product in result)
                 {
                     product.Variacoes = await GetVariationsByProductIdAsync(product.Id);
                     product.Especificacoes = await GetProductSpecificationsAsync(product.Id);
@@ -97,7 +98,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
                     product.PerfeitoPara = await GetProductPerfectForAsync(product.Id);
                 }
                 
-                return products;
+                return (result, totalCount);
             }
             catch (Exception ex)
             {

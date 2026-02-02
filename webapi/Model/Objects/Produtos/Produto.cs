@@ -115,6 +115,12 @@ namespace DaccApi.Model
         public ProdutoInformacaoEnvio? InformacaoEnvio { get; set; }
 
         /// <summary>
+        /// Obtém ou define a contagem total de itens (usado para paginação).
+        /// </summary>
+        [NotMapped]
+        public int TotalCount { get; set; }
+
+        /// <summary>
         /// Mapeia uma variação de produto para seu objeto de resposta.
         /// </summary>
         public static ResponseProdutoVariacao MapToResponseVariacao(ProdutoVariacao variation)

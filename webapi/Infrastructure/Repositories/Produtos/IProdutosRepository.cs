@@ -35,7 +35,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
         /// <summary>
         /// Busca produtos com base em filtros.
         /// </summary>
-        Task<List<Produto>> SearchProductsAsync(RequestQueryProdutos query);
+        Task<(List<Produto> Products, int TotalCount)> SearchProductsAsync(RequestQueryProdutos query);
         /// <summary>
         /// Atualiza um produto existente.
         /// </summary>

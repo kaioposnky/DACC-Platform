@@ -69,6 +69,12 @@ namespace DaccApi.Model.Objects.Order
         /// </summary>
         [NotMapped]
         public Guid? CupomId { get; set; }
+
+        /// <summary>
+        /// Obtém ou define a contagem total de itens (usado para paginação).
+        /// </summary>
+        [NotMapped]
+        public int TotalCount { get; set; }
         
         /// <summary>
         /// Converte o objeto Order em um OrderResponse.

@@ -131,13 +131,13 @@ namespace DaccApi.Services.Products
         {
             try
             {
-                var products = await _produtosRepository.SearchProductsAsync(requestQueryProdutos);
+                var (products, totalCount) = await _produtosRepository.SearchProductsAsync(requestQueryProdutos);
 
                 if (products.Count == 0)
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT,
                         "Nenhum produto encontrado com os critérios de busca!");
                 var response = products.Select(produto => new ResponseProduto(produto));
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { products = response }),
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { products = response, totalCount = totalCount }),
                     "Produtos encontrados com sucesso!");
             }
             catch (Exception ex)

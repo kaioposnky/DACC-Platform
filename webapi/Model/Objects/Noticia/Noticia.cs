@@ -82,6 +82,12 @@ namespace DaccApi.Model
         public List<NoticiaTag> Tags { get; set; } = [];
 
         /// <summary>
+        /// Total de notícias encontradas (para paginação).
+        /// </summary>
+        [NotMapped]
+        public int TotalCount { get; set; }
+
+        /// <summary>
         /// Autor da notícia.
         /// </summary>
         [NotMapped]

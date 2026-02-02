@@ -46,7 +46,8 @@
                 pedido.preference_id as PreferenceId,
                 pedido.metodo_pagamento as PaymentMethod,
                 pedido.total_pedido as TotalAmount,
-                pedido.cupom_id as CupomId
+                pedido.cupom_id as CupomId,
+                COUNT(*) OVER() AS TotalCount
             FROM
                 pedido
             INNER JOIN usuario u ON pedido.usuario_id = u.id

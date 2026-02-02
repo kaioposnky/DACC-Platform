@@ -40,7 +40,7 @@ namespace DaccApi.Controllers.Noticias
         {
             try
             {
-                var noticias = await _noticiasServices.GetAllNoticias(requestQuery);
+                var (noticias, totalCount) = await _noticiasServices.GetAllNoticias(requestQuery);
 
                 if (noticias.Count == 0)
                 {
@@ -49,7 +49,7 @@ namespace DaccApi.Controllers.Noticias
 
                 var response = noticias.Select((noticia) =>  new ResponseNoticia(noticia));
 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData( new { news = response} ));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData( new { news = response, totalCount } ));
             }
             catch (Exception ex)
             {

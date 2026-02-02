@@ -22,11 +22,11 @@ public class NoticiasServices : INoticiasServices
         _fileStorageService = fileStorageService;   
     }
 
-    public async Task<List<Noticia>> GetAllNoticias(RequestQueryNoticia request)
+    public async Task<(List<Noticia> Noticias, int TotalCount)> GetAllNoticias(RequestQueryNoticia request)
     {
-        var noticias = await _noticiasRepository.SearchNoticias(request);
+        var result = await _noticiasRepository.SearchNoticias(request);
 
-        return noticias;
+        return result;
     }
 
     public async Task<IActionResult> CreateNoticia(Guid autorId, RequestNoticia request)

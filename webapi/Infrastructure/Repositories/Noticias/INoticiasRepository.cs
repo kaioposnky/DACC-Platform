@@ -10,5 +10,5 @@ public interface INoticiasRepository
     Task<bool> CreateAsync(Noticia entity);
     Task<bool> UpdateAsync(Guid id, Noticia entity);
     Task<bool> DeleteAsync(Guid id);
-    Task<List<Noticia>> SearchNoticias(RequestQueryNoticia queryNoticia);
+    Task<(List<Noticia> Noticias, int TotalCount)> SearchNoticias(RequestQueryNoticia queryNoticia);
 }

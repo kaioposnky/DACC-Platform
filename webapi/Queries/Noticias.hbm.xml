@@ -87,6 +87,7 @@
                 n.data_atualizacao as DataAtualizacao,
                 n.data_publicacao as DataPublicacao,
                 n.tempo_leitura as TempoLeitura,
+                COUNT(*) OVER() as TotalCount,
                 json_build_object('Id', u.id, 'Nome', u.nome, 'Sobrenome', u.sobrenome) as AutorJson,
                 (
                     SELECT json_agg(json_build_object('Id', nt.id, 'Nome', nt.nome))

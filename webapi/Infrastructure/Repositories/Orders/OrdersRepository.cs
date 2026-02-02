@@ -202,7 +202,7 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
 
-        public async Task<List<Order>> SearchOrdersAsync(RequestQueryOrders query)
+        public async Task<(List<Order> Orders, int TotalCount)> SearchOrdersAsync(RequestQueryOrders query)
         {
             try
             {
@@ -217,8 +217,9 @@ namespace DaccApi.Infrastructure.Repositories.Orders
                     Limit = query.Limit
                 };
 
-                var result = await _repositoryDapper.QueryAsync<Order>(sql, param);
-                return result.ToList();
+                var result = (await _repositoryDapper.QueryAsync<Order>(sql, param)).ToList();
+                var totalCount = result.FirstOrDefault()?.TotalCount ?? 0;
+                return (result, totalCount);
             }
             catch (Exception ex)
             {

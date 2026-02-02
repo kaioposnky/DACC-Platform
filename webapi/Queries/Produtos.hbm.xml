@@ -67,7 +67,8 @@
                 p.descricao_detalhada AS "DescricaoDetalhada",
                 p.destaque AS "Destaque",
                 (SELECT COALESCE(AVG(nota), 0) FROM avaliacao WHERE produto_id = p.id AND ativo = true) as AvaliacaoMedia,
-                (SELECT COUNT(*) FROM avaliacao WHERE produto_id = p.id AND ativo = true) as NumeroAvaliacoes
+                (SELECT COUNT(*) FROM avaliacao WHERE produto_id = p.id AND ativo = true) as NumeroAvaliacoes,
+                COUNT(*) OVER() AS "TotalCount"
             FROM
                 produto AS p
             LEFT JOIN

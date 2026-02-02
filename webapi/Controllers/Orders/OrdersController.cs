@@ -77,8 +77,8 @@ namespace DaccApi.Controllers.Orders
         {
             try
             {
-                var orders = await _ordersService.SearchOrders(requestQuery);
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { orders = orders }));
+                var (orders, totalCount) = await _ordersService.SearchOrders(requestQuery);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { orders = orders, totalCount = totalCount }));
             }
             catch (Exception ex)
             {
