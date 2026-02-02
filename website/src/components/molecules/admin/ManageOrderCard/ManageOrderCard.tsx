@@ -1,6 +1,7 @@
 "use client";
 
 import { Order, OrderStatus } from "@/types";
+import { statusColors, statusLabels } from "@/utils/order";
 import { motion } from "framer-motion";
 import {
     ClipboardDocumentListIcon,
@@ -17,24 +18,6 @@ interface ManageOrderCardProps {
     onDeleteOrder: (order: Order) => void;
     className?: string;
 }
-
-const statusColors: Record<OrderStatus, string> = {
-    created: "bg-gray-100 text-gray-700",
-    pending: "bg-yellow-100 text-yellow-800",
-    approved: "bg-blue-100 text-blue-800",
-    rejected: "bg-red-100 text-red-800",
-    delivered: "bg-green-100 text-green-800",
-    cancelled: "bg-gray-200 text-gray-600",
-};
-
-const statusLabels: Record<OrderStatus, string> = {
-    created: "Criado",
-    pending: "Pendente",
-    approved: "Aprovado",
-    rejected: "Rejeitado",
-    delivered: "Entregue",
-    cancelled: "Cancelado",
-};
 
 export default function ManageOrderCard({
     order,

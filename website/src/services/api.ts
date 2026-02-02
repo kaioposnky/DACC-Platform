@@ -675,6 +675,12 @@ class ApiService {
     });
   }
 
+  async getOrder(id: string): Promise<Order> {
+    return this.request<Order>(`/orders/${id}`, {
+      method: 'GET',
+    });
+}
+
   async deleteOrder(id: string): Promise<void> {
     return this.request<void>(`/orders/${id}`, {
       method: 'DELETE',
