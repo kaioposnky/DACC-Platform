@@ -665,7 +665,7 @@ VALUES
     ('cart.items.add', 'Adicionar itens ao carrinho'),
     ('cart.items.update', 'Atualizar itens no carrinho'),
     ('cart.items.remove', 'Remover itens do carrinho'),
-    ('cart.clear', 'Limpar o carrinho');
+    ('cart.clear', 'Limpar o carrinho'),
 
     -- Permissões do Dashboard
     ('dashboard.view', 'Visualizar o dashboard de estatísticas');

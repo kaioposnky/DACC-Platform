@@ -117,11 +117,12 @@
 	</query>
 
 	<query name="UpdateUserTokens">
-		UPDATE usuario_tokens
-		SET
-		access_token = @AccessToken,
-		refresh_token = @RefreshToken
-		WHERE usuario_id = @Id;
+		INSERT INTO usuario_tokens (usuario_id, access_token, refresh_token)
+		VALUES (@Id, @AccessToken, @RefreshToken)
+		ON CONFLICT (usuario_id)
+		DO UPDATE SET
+			access_token = EXCLUDED.access_token,
+			refresh_token = EXCLUDED.refresh_token;
 	</query>
 
 	<query name="CreateUserToken">

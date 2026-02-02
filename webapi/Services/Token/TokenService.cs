@@ -86,7 +86,10 @@ namespace DaccApi.Services.Token
         public async Task<bool> ValidateRefreshToken(Guid userId, string refreshToken)
         {
             var userTokensOld = await _usuarioRepository.GetUserTokens(userId);
-            var oldRefeshToken = userTokensOld!.RefreshToken;
+            
+            if (userTokensOld == null) return false;
+            
+            var oldRefeshToken = userTokensOld.RefreshToken;
             
             var token = new JwtSecurityTokenHandler().ReadJwtToken(refreshToken);
 
@@ -96,7 +99,7 @@ namespace DaccApi.Services.Token
             }
             
             // se o token salvo for "" ele deu logout, então o token é inválido
-            return !string.IsNullOrWhiteSpace(oldRefeshToken) || oldRefeshToken.Equals(refreshToken);
+            return !string.IsNullOrWhiteSpace(oldRefeshToken) && oldRefeshToken.Equals(refreshToken);
         }
 
         public string GenerateResetToken()
