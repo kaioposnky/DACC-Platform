@@ -279,4 +279,15 @@ public class OrdersControllerTests : IntegrationTestBase
             var content = await response.Content.ReadAsStringAsync();
             content.Should().Contain("data");
         }
+
+        [Fact]
+        public async Task SearchOrders_Should_Work_With_StatusAll()
+        {
+            await AuthenticateAsAdminAsync();
+            // Sem query params ou com status=all deve funcionar
+            var response = await _client.GetAsync($"{BaseUrl}/search?status=all");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var content = await response.Content.ReadAsStringAsync();
+            content.Should().Contain("data");
+        }
     }
