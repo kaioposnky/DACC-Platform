@@ -34,3 +34,5 @@ export { StepIndicator } from './StepIndicator';
 export { TagInput } from './TagInput';
 export { ImageGalleryEditor } from './ImageGalleryEditor';
 export * from './admin';
+export { PageLoader } from './PageLoader';
+
