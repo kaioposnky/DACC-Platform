@@ -269,4 +269,14 @@ public class OrdersControllerTests : IntegrationTestBase
             
             status.Should().Be(newStatus);
         }
+
+        [Fact]
+        public async Task SearchOrders_Should_Work_With_SearchQuery()
+        {
+            await AuthenticateAsAdminAsync();
+            var response = await _client.GetAsync($"{BaseUrl}/search?searchQuery=Test");
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var content = await response.Content.ReadAsStringAsync();
+            content.Should().Contain("data");
+        }
     }

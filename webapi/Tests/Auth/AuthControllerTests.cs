@@ -113,4 +113,38 @@ public class AuthControllerTests : IntegrationTestBase
         var content = await res2.Content.ReadAsStringAsync();
         content.Should().ContainEquivalentOf("email"); // Mensagem deve citar email
     }
+
+    /// <summary>
+    /// Testa se o login cria os tokens corretamente (UPSERT) e se o refresh funciona.
+    /// </summary>
+    [Fact]
+    public async Task Login_And_Refresh_Should_Work_For_New_User()
+    {
+        // 1. Cria usuário NOVO
+        var email = $"upsert_{Guid.NewGuid()}@dacc.com";
+        var regRequest = AuthTestDataBuilder.CreateValidRegister(email, "999888777");
+        await _client.PostAsJsonAsync($"{BaseUrl}/register", regRequest);
+        
+        // 2. Login (deve disparar o UPSERT)
+        var loginReq = AuthTestDataBuilder.CreateValidLogin(email, "Password@123"); 
+        var loginRes = await _client.PostAsJsonAsync($"{BaseUrl}/login", loginReq);
+        loginRes.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        var loginData = await loginRes.Content.ReadFromJsonAsync<JsonElement>();
+        var refreshToken = loginData.GetProperty("data").GetProperty("refreshToken").GetString();
+
+        // 3. Tenta dar Refresh. Se funcionar, a linha foi persistida no DB.
+        var refreshRes = await _client.PostAsJsonAsync($"{BaseUrl}/refresh", refreshToken);
+        refreshRes.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    /// <summary>
+    /// Testa segurança: Refresh deve falhar com token aleatório ou vazio.
+    /// </summary>
+    [Fact]
+    public async Task Refresh_Should_Return_401_With_Invalid_Token()
+    {
+        var response = await _client.PostAsJsonAsync($"{BaseUrl}/refresh", "token_completamente_invalido");
+        response.StatusCode.Should().BeOneOf(HttpStatusCode.Unauthorized, HttpStatusCode.BadRequest);
+    }
 }
