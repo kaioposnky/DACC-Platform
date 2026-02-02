@@ -25,7 +25,7 @@ namespace DaccApi.Model.Objects.Order
         /// Tipo de desconto aplicado ao cupom.
         /// </summary>
         [Column("tipo_desconto")]
-        public TipoDesconto TipoDesconto { get; set; } = TipoDesconto.Fixed;
+        public TipoDesconto TipoDesconto { get; set; } = TipoDesconto.valor_fixo;
 
         /// <summary>
         /// Valor do desconto aplicado ao cupom.

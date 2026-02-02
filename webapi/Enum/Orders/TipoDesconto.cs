@@ -8,11 +8,11 @@ namespace DaccApi.Enum.Posts
         /// <summary>
         /// Desconto com porcentagem.
         /// </summary>
-        Percentage,
+        porcentagem,
         /// <summary>
         /// Desconto fixo.
         /// </summary>
-        Fixed
+        valor_fixo
     }
 
 }

@@ -36,7 +36,7 @@ namespace DaccApi.Model.Responses.Order
         {
             Id = cupom.Id;
             Code = cupom.Codigo;
-            DiscountType = cupom.TipoDesconto == DaccApi.Enum.Posts.TipoDesconto.Percentage ? "porcentagem" : "valor_fixo";
+            DiscountType = cupom.TipoDesconto.ToString();
             Value = cupom.Valor;
             ExpirationDate = cupom.DataExpiracao;
             UsageLimit = cupom.LimiteUso;

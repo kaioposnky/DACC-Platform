@@ -99,7 +99,7 @@ namespace DaccApi.Services.Orders
                 if (cupom != null && cupom.Ativo && (cupom.DataExpiracao == null || cupom.DataExpiracao > DateTime.UtcNow) && (cupom.LimiteUso == null || cupom.UsoAtual < cupom.LimiteUso))
                 {
                     cupomId = cupom.Id;
-                    if (cupom.TipoDesconto == TipoDesconto.Percentage)
+                    if (cupom.TipoDesconto == TipoDesconto.porcentagem)
                     {
                         totalAmount -= totalAmount * (cupom.Valor / 100);
                     }

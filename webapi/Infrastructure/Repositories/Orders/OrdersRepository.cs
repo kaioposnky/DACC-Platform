@@ -209,7 +209,7 @@ namespace DaccApi.Infrastructure.Repositories.Orders
                 var sql = _repositoryDapper.GetQueryNamed("SearchOrders");
                 var param = new
                 {
-                    Status = query.Status,
+                    Status = query.Status == "all" ? null : query.Status,
                     StartDate = query.StartDate,
                     EndDate = query.EndDate,
                     SearchQuery = string.IsNullOrEmpty(query.SearchQuery) ? null : $"%{query.SearchQuery}%",
