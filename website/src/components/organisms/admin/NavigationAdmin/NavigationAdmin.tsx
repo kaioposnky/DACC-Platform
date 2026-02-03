@@ -24,7 +24,6 @@ const menuItems = [
   { name: "Conteúdo", href: "/admin/conteudo", icon: NewspaperIcon },
   { name: "Faculdade", href: "/admin/faculdade", icon: BuildingLibraryIcon },
   { name: "Pedidos", href: "/admin/pedidos", icon: ClipboardDocumentListIcon },
-  { name: "Permissões", href: "/admin/permissoes", icon: ShieldCheckIcon },
   { name: "Produtos", href: "/admin/produtos", icon: TagIcon },
   { name: "Usuários", href: "/admin/usuarios", icon: UsersIcon },
 ];
