@@ -32,7 +32,7 @@ export default function ManageEventCard({
     const { day, month } = formatDate(event.date);
 
     const handleEdit = () => {
-        router.push(`/admin/eventos/${event.id}`);
+        router.push(`/admin/conteudo/eventos/${event.id}`);
     };
 
     return (

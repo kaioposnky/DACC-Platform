@@ -38,7 +38,7 @@ export default function ManageProjectCard({
     const config = statusConfig[project.status] || statusConfig.planned;
 
     const handleEdit = () => {
-        router.push(`/admin/projetos/${project.id}`);
+        router.push(`/admin/conteudo/projetos/${project.id}`);
     };
 
     return (

@@ -20,7 +20,7 @@ export default function ManageNewsCard({
     const router = useRouter();
 
     const handleEdit = () => {
-        router.push(`/admin/noticias/${news.id}`);
+        router.push(`/admin/conteudo/noticias/${news.id}`);
     };
 
     return (
