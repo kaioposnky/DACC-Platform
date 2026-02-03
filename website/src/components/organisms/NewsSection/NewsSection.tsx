@@ -22,8 +22,8 @@ export const NewsSection = ({ className = '' }: NewsSectionProps) => {
   const fetchNews = async () => {
     try {
       setLoading(true);
-      const fetchedNews = await apiService.getNews();
-      setNews(fetchedNews);
+      const { news } = await apiService.getNews({ limit: 3 });
+      setNews(news);
     } catch (error) {
       console.error('Error fetching news:', error);
     } finally {
@@ -66,9 +66,9 @@ export const NewsSection = ({ className = '' }: NewsSectionProps) => {
         </motion.div>
 
         {/* News Grid */}
-        <NewsGrid 
-          news={news} 
-          loading={false} 
+        <NewsGrid
+          news={news}
+          loading={false}
           layout="featured"
           emptyMessage="Nenhuma notícia disponível no momento."
         />

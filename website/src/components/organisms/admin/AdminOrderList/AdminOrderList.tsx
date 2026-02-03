@@ -40,16 +40,14 @@ export function AdminOrderList({
   const loadOrders = useCallback(async (currentPage: number) => {
     try {
       setLoading(true);
-      const response = await apiService.searchOrders({
+      const { orders, totalCount } = await apiService.searchOrders({
         ...filters,
         page: currentPage,
         limit: ORDERS_PER_PAGE,
       } as any);
 
-      // Em um cenário real, o backend retornaria o total de itens. 
-      // Aqui simulamos com o tamanho da resposta para fins de demonstração.
-      setOrders(response);
-      setTotalItems(response.length * 2); // Simulação de mais páginas
+      setOrders(orders);
+      setTotalItems(totalCount);
       setError(null);
     } catch (err) {
       setError('Erro ao carregar pedidos. Tente novamente.');

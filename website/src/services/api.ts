@@ -349,9 +349,27 @@ class ApiService {
   }
 
   // Projects
-  async getProjects(): Promise<Project[]> {
-    const data = await this.request<{ projects: Project[] }>('/projects');
-    return data?.projects || [];
+  async getProjects(params?: {
+    search?: string;
+    page?: number;
+    limit?: number;
+    status?: string;
+  }): Promise<{ projects: Project[]; totalCount: number }> {
+    const searchParams = new URLSearchParams();
+
+    if (params?.search) searchParams.append('SearchQuery', params.search);
+    if (params?.page) searchParams.append('Page', params.page.toString());
+    if (params?.limit) searchParams.append('Limit', params.limit.toString());
+    if (params?.status) searchParams.append('Status', params.status);
+
+    const query = searchParams.toString();
+    const endpoint = query ? `/projects/search?${query}` : '/projects/search';
+
+    const data = await this.request<{ projects: Project[]; totalCount: number }>(endpoint);
+    return {
+      projects: data?.projects || [],
+      totalCount: data?.totalCount || 0
+    };
   }
 
   async getProject(id: string): Promise<Project> {
@@ -382,9 +400,33 @@ class ApiService {
   }
 
   // News
-  async getNews(): Promise<News[]> {
-    const data = await this.request<{ news: News[] }>('/news');
-    return data?.news || [];
+  async getNews(params?: {
+    category?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ news: News[]; totalCount: number }> {
+    const searchParams = new URLSearchParams();
+
+    if (params?.category && params.category !== 'all') searchParams.append('Category', params.category);
+    if (params?.search) searchParams.append('SearchQuery', params.search);
+    if (params?.page) searchParams.append('Page', params.page.toString());
+    if (params?.limit) searchParams.append('Limit', params.limit.toString());
+
+    const query = searchParams.toString();
+    const endpoint = `/news?${query}`;
+
+    const data = await this.request<{ news: News[]; totalCount: number }>(endpoint);
+
+    // Fallback for non-paginated old endpoint if something goes wrong, or handle structure
+    if (Array.isArray(data)) {
+      return { news: data, totalCount: data.length };
+    }
+
+    return {
+      news: data?.news || [],
+      totalCount: data?.totalCount || 0
+    };
   }
 
   async getNewsItem(id: string): Promise<News> {
@@ -454,7 +496,7 @@ class ApiService {
     search?: string;
     page?: number;
     limit?: number;
-  }): Promise<Product[]> {
+  }): Promise<{ products: Product[]; totalCount: number }> {
     const searchParams = new URLSearchParams();
 
     if (params?.category && params.category !== 'all') {
@@ -482,7 +524,7 @@ class ApiService {
         case 'newest':
           searchParams.append('OrderBy', 'newest');
           break;
-        case 'name-az':
+        case 'name':
           searchParams.append('OrderBy', 'name');
           break;
         case 'popular':
@@ -497,10 +539,13 @@ class ApiService {
     }
 
     const query = searchParams.toString();
-    const endpoint = query ? `/products?${query}` : '/products';
+    const endpoint = query ? `/products/search?${query}` : '/products';
 
-    const data = await this.request<{ products: Product[] }>(endpoint);
-    return data?.products || [];
+    const data = await this.request<{ products: Product[]; totalCount: number }>(endpoint);
+    return {
+      products: data?.products || [],
+      totalCount: data?.totalCount || 0
+    };
   }
 
   async getSubcategories(): Promise<{ id: string; name: string; categoryId: string }[]> {
@@ -667,13 +712,15 @@ class ApiService {
   }
 
   // Orders
-  async searchOrders(params?: any): Promise<Order[]> {
-
+  async searchOrders(params?: any): Promise<{ orders: Order[]; totalCount: number }> {
     const query = new URLSearchParams(params).toString();
-    const data = await this.request<{ orders: Order[] }>(`/orders/search${query ? `?${query}` : ''}`, {
+    const data = await this.request<{ orders: Order[]; totalCount: number }>(`/orders/search${query ? `?${query}` : ''}`, {
       method: 'GET',
     });
-    return data?.orders || [];
+    return {
+      orders: data?.orders || [],
+      totalCount: data?.totalCount || 0
+    };
   }
 
   async getOrder(id: string): Promise<Order> {

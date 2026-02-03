@@ -17,10 +17,10 @@ interface NewsArticlesProps {
 
 const ITEMS_PER_PAGE = 9;
 
-export const NewsArticles = ({ 
-  filters, 
+export const NewsArticles = ({
+  filters,
   searchQuery = '',
-  className = '' 
+  className = ''
 }: NewsArticlesProps) => {
   const [allNews, setAllNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,10 +38,13 @@ export const NewsArticles = ({
   const fetchAllNews = async () => {
     try {
       setLoading(true);
-      const fetchedNews = await apiService.getNews();
+      const { news: fetchedNews, totalCount } = await apiService.getNews({
+        limit: 100 // Temporarily fetching many, or we could implement real pagination here
+      });
       setAllNews(fetchedNews);
+      // We can use totalCount later for pagination
     } catch (error) {
-      console.error('Error fetching news:', error);
+      console.error("Failed to fetch news", error);
     } finally {
       setLoading(false);
     }
@@ -60,7 +63,7 @@ export const NewsArticles = ({
     if (filters.date !== 'all') {
       const now = new Date();
       const filterDate = new Date();
-      
+
       switch (filters.date) {
         case 'today':
           filterDate.setHours(0, 0, 0, 0);
@@ -84,7 +87,7 @@ export const NewsArticles = ({
     // Apply search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(news => 
+      filtered = filtered.filter(news =>
         news.title.toLowerCase().includes(query) ||
         (news.content?.toLowerCase().includes(query)) ||
         news.category.toLowerCase().includes(query)
@@ -144,12 +147,12 @@ export const NewsArticles = ({
         </motion.div>
 
         {/* News Grid */}
-        <NewsGrid 
+        <NewsGrid
           news={paginatedNews}
           loading={loading}
           layout={filters.viewMode === 'grid' ? 'grid' : 'list'}
           emptyMessage={
-            searchQuery.trim() 
+            searchQuery.trim()
               ? `Nenhum artigo encontrado para "${searchQuery}"`
               : "Nenhum artigo encontrado com os filtros atuais."
           }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { apiService } from "@/services/api";
 import { DashboardStats } from "@/types/dashboard";
-import { StatCard } from "@/components/atoms/StatCard";
+import { StatCard } from "@/components";
 import {
     UsersIcon,
     ShoppingCartIcon,

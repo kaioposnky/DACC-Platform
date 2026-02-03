@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { OrderStatus } from '@/types';
@@ -53,12 +55,6 @@ export const OrderFilter = ({
   const handleFilterChange = (key: keyof Omit<OrderFilterOptions, 'searchQuery'>, value: string) => {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
-    // Para filtros que não são busca, propagamos imediatamente
-    // Mas usamos o valor debouncedSearch atual para manter a consistência
-    onFilterChange({
-      ...newFilters,
-      searchQuery: debouncedSearch
-    });
   };
 
   return (

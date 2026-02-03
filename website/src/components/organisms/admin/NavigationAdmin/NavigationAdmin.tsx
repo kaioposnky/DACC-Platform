@@ -9,7 +9,8 @@ import {
   BuildingLibraryIcon,
   ClipboardDocumentListIcon,
   ShieldCheckIcon,
-  TagIcon
+  TagIcon,
+  HomeIcon
 } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -17,6 +18,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 
 const menuItems = [
+  { name: "Home", href: "/", icon: HomeIcon },
   { name: "Dashboard", href: "/admin", icon: Squares2X2Icon },
   { name: "Avaliacoes", href: "/admin/avaliacoes", icon: StarIcon },
   { name: "Conteúdo", href: "/admin/conteudo", icon: NewspaperIcon },

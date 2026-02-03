@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, KeyboardEvent } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 

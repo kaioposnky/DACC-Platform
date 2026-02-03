@@ -34,15 +34,14 @@ export function AdminProductList({
   const loadProducts = useCallback(async (currentPage: number) => {
     try {
       setLoading(true);
-      const response = await apiService.getProducts({
+      const { products, totalCount } = await apiService.getProducts({
         ...filters,
         page: currentPage,
         limit: PRODUCTS_PER_PAGE,
       });
 
-      setProducts(response);
-      // Simulação para paginação
-      setTotalItems(response.length * 3);
+      setProducts(products);
+      setTotalItems(totalCount);
       setError(null);
     } catch (err) {
       setError('Erro ao carregar produtos. Tente novamente.');

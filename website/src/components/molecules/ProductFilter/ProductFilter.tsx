@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { apiService } from '@/services/api';
@@ -62,7 +64,7 @@ export const ProductFilter = ({
         searchQuery: debouncedSearch
       });
     }
-  }, [debouncedSearch, filters, onFilterChange]);
+  }, [debouncedSearch, filters]);
 
   const sortOptions = [
     { value: 'featured', label: 'Destaque' },
@@ -76,12 +78,6 @@ export const ProductFilter = ({
   const handleFilterChange = (key: keyof Omit<ProductFilterOptions, 'searchQuery'>, value: string) => {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
-    if (onFilterChange) {
-      onFilterChange({
-        ...newFilters,
-        searchQuery: debouncedSearch
-      });
-    }
   };
 
   return (

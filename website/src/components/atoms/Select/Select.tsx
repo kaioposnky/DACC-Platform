@@ -1,3 +1,5 @@
+"use client";
+
 import React, { forwardRef, SelectHTMLAttributes } from 'react';
 
 interface SelectOption {

@@ -3,7 +3,7 @@ export { Input } from './Input';
 export { Card } from './Card';
 export { NavItem } from './NavItem';
 export * from './Typography';
-export * from './StatCard';
+
 export { Icon } from './Icon';
 export { Dot } from './Dot';
 export { LoadingSpinner } from './LoadingSpinner';

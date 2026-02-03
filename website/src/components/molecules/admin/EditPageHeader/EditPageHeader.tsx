@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { Button } from '@/components';
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
