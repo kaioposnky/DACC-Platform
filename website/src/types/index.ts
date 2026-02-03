@@ -276,7 +276,8 @@ export interface ShippingInfoRequest {
   warranty?: string;
 }
 
-export type OrderStatus = 'created' | 'pending' | 'approved' | 'rejected' | 'delivered' | 'cancelled';
+export const ValidStatus = ['created', 'pending', 'approved', 'rejected', 'delivered', 'cancelled'];
+export type OrderStatus = typeof ValidStatus[number];
 export type PaymentMethod = 'venda física' | 'pix';
 
 export interface OrderItem {
@@ -287,10 +288,10 @@ export interface OrderItem {
   quantity: number;
   unitPrice: number;
   // Campos virtuais para facilitar o frontend (devem vir no join)
-  productName?: string;
-  productImage?: string;
-  variationColor?: string;
-  variationSize?: string;
+  productName: string;
+  productImage: string;
+  variationColor: string;
+  variationSize: string;
 }
 
 export interface Coupon {
@@ -316,7 +317,7 @@ export interface Order {
   cupomId?: string;
 
   // Campos virtuais
-  items?: OrderItem[];
-  user?: User; // Dados do usuário populados
+  items: OrderItem[];
+  user: User; // Dados do usuário populados
   coupon?: Coupon;
 }

@@ -735,6 +735,14 @@ class ApiService {
       method: 'DELETE',
     });
   }
+
+  async updateOrderStatus(id: string, status: string): Promise<Order> {
+    const data = await this.request<{ order: Order }>(`/orders/${id}/status`, {
+      method: 'PUT',
+      body: JSON.stringify(status),
+    });
+    return data.order;
+  }
 }
 
 export const apiService = new ApiService();
