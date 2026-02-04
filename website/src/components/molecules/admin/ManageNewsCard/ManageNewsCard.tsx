@@ -70,7 +70,13 @@ export default function ManageNewsCard({
                 <div className="flex items-center gap-4 mt-1">
                     <div className="flex items-center text-[11px] text-gray-500 gap-1">
                         <UserIcon className="w-3.5 h-3.5 text-gray-400" />
-                        {news.author || "DACC"}
+                        {(() => {
+                            const author = news.author || (news as any).autor;
+                            if (!author) return "DACC";
+                            const name = author.name || author.nome;
+                            const lastName = author.lastName || author.sobrenome || "";
+                            return `${name} ${lastName}`.trim();
+                        })()}
                     </div>
                     <div className="flex items-center text-[11px] text-gray-500 gap-1">
                         <CalendarDaysIcon className="w-3.5 h-3.5 text-gray-400" />

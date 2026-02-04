@@ -11,19 +11,25 @@ import { toast } from "sonner";
 interface ImageGalleryEditorProps {
     title?: string;
     description?: string;
-    images: ProductVariationImage[];
+    images: (string | ProductVariationImage)[];
     onAddImage: (imageUrl: string) => void;
     onRemoveImage: (index: number) => void;
+    multiple?: boolean;
 }
 
 export const ImageGalleryEditor = ({
     title,
     description,
-    images,
+    images = [],
     onAddImage,
-    onRemoveImage
+    onRemoveImage,
+    multiple = true
 }: ImageGalleryEditorProps) => {
     const [tempImageUrl, setTempImageUrl] = useState("");
+
+    const getImageUrl = (img: string | ProductVariationImage) => {
+        return typeof img === 'string' ? img : img.url;
+    };
 
     // Efeito para capturar colar imagem (Paste)
     useEffect(() => {
@@ -59,6 +65,10 @@ export const ImageGalleryEditor = ({
 
     const handleConfirmAdd = () => {
         if (tempImageUrl.trim()) {
+            // Se não for múltiplo, remove a anterior antes de adicionar a nova
+            if (!multiple && images.length > 0) {
+                onRemoveImage(0);
+            }
             onAddImage(tempImageUrl);
             setTempImageUrl("");
         }
@@ -69,6 +79,12 @@ export const ImageGalleryEditor = ({
         if (file) {
             try {
                 const response = await apiService.uploadImage(file);
+
+                // Se não for múltiplo, remove a anterior antes de adicionar a nova
+                if (!multiple && images.length > 0) {
+                    onRemoveImage(0);
+                }
+
                 onAddImage(response.url);
                 toast.success("Imagem adicionada com sucesso!");
             } catch (error) {
@@ -87,11 +103,10 @@ export const ImageGalleryEditor = ({
                 </div>
             )}
 
-            {/* Grid de Imagens */}
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
                 {images.map((img, idx) => (
                     <div key={idx} className="group relative aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-                        <img src={img.url} alt={`Foto ${idx}`} className="w-full h-full object-cover" />
+                        <img src={getImageUrl(img)} alt={`Foto ${idx}`} className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                             <button
                                 onClick={() => onRemoveImage(idx)}
@@ -104,24 +119,24 @@ export const ImageGalleryEditor = ({
                     </div>
                 ))}
 
-                {/* Dropzone / Upload Button */}
-                <label className="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 bg-gray-50 hover:bg-gray-100 hover:border-blue-400 hover:text-blue-500 cursor-pointer transition-all group">
-                    <span className="text-2xl mb-1 font-light group-hover:scale-110 transition-transform">+</span>
-                    <span className="text-[10px] text-center px-1 leading-tight">
-                        Selecione ou<br /><strong className="text-inherit">Cole (Ctrl+V)</strong>
-                    </span>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                            handleImageUpload(e);
-                        }}
-                    />
-                </label>
+                {(multiple || images.length === 0) && (
+                    <label className="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 bg-gray-50 hover:bg-gray-100 hover:border-blue-400 hover:text-blue-500 cursor-pointer transition-all group">
+                        <span className="text-2xl mb-1 font-light group-hover:scale-110 transition-transform">+</span>
+                        <span className="text-[10px] text-center px-1 leading-tight">
+                            {multiple ? 'Adicionar' : 'Alterar'}<br /><strong className="text-inherit">Foto</strong>
+                        </span>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                                handleImageUpload(e);
+                            }}
+                        />
+                    </label>
+                )}
             </div>
 
-            {/* Preview da Imagem em Staging */}
             {tempImageUrl && (
                 <div className="p-4 border rounded-lg bg-blue-50 flex items-center justify-between animate-in fade-in slide-in-from-top-2">
                     <div className="flex items-center gap-4">
@@ -129,8 +144,10 @@ export const ImageGalleryEditor = ({
                             <img src={tempImageUrl} className="w-full h-full object-cover" alt="Preview a adicionar" />
                         </div>
                         <div>
-                            <p className="text-sm font-semibold text-blue-900">Imagem pronta para adicionar</p>
-                            <p className="text-xs text-blue-700">Clique em "Adicionar" para confirmar.</p>
+                            <p className="text-sm font-semibold text-blue-900">
+                                {multiple ? 'Imagem pronta para adicionar' : 'Imagem pronta para substituição'}
+                            </p>
+                            <p className="text-xs text-blue-700">Clique em "{multiple ? 'Adicionar' : 'Confirmar'}" para salvar.</p>
                         </div>
                     </div>
                     <button
@@ -142,11 +159,10 @@ export const ImageGalleryEditor = ({
                 </div>
             )}
 
-            {/* Input de URL e Ação Principal */}
             <div className="flex gap-2 pt-4 border-t items-end">
                 <div className="flex-1">
                     <Input
-                        label="Ou adicione URL da Imagem"
+                        label={multiple ? "Ou adicione URL da Imagem" : "Ou cole a URL da nova imagem"}
                         placeholder="https://..."
                         value={tempImageUrl}
                         onChange={(e) => setTempImageUrl(e.target.value)}
@@ -157,7 +173,7 @@ export const ImageGalleryEditor = ({
                     disabled={!tempImageUrl}
                     className="px-6 py-2.5 bg-blue-600 text-white rounded-md font-semibold text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed mb-0.5 shadow-sm transition-all active:scale-95"
                 >
-                    Adicionar
+                    {multiple ? 'Adicionar' : 'Confirmar'}
                 </button>
             </div>
         </div>
