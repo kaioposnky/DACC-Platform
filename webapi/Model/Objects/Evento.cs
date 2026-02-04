@@ -60,6 +60,12 @@ namespace DaccApi.Model
 
         [NotMapped]
         public int TotalCount { get; set; }
+
+    /// <summary>
+    /// Obtém ou define o autor do evento.
+    /// </summary>
+    [NotMapped]
+    public Usuario? Autor { get; set; }
     
     }
 }

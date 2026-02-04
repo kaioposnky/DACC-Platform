@@ -56,6 +56,10 @@ namespace DaccApi.Infrastructure.Dapper
         /// </summary>
         IDbConnection GetConnection();
         /// <summary>
+        /// Executa uma consulta SQL assíncrona com mapeamento múltiplo (2 tipos).
+        /// </summary>
+        Task<IEnumerable<TReturn>> QueryAsync<T1, T2, TReturn>(string sql, Func<T1, T2, TReturn> map, object? parameters = null, string splitOn = "Id");
+        /// <summary>
         /// Obtém uma consulta SQL nomeada a partir dos arquivos de configuração XML.
         /// </summary>
         string GetQueryNamed(string queryName);

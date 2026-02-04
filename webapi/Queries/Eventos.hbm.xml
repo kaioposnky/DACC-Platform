@@ -27,19 +27,37 @@
     </query>
     <query name="GetEventoById">
         SELECT
-            id as Id,
-            titulo as Titulo,
-            descricao as Descricao,
-            data as Data,
-            tipo_evento as TipoEvento,
-            autor_id as AutorId,
-            texto_acao as TextoAcao,
-            link_acao as LinkAcao
-        FROM evento WHERE id=@id
+            e.id as Id,
+            e.titulo as Titulo,
+            e.descricao as Descricao,
+            e.data as Data,
+            e.tipo_evento as TipoEvento,
+            e.autor_id as AutorId,
+            e.texto_acao as TextoAcao,
+            e.link_acao as LinkAcao,
+            u.id as Usuario_Id,
+            u.id as Id,
+            u.nome as Nome,
+            u.sobrenome as Sobrenome,
+            u.email as Email,
+            u.ra as Ra,
+            u.curso as Curso,
+            u.telefone as Telefone,
+            u.imagem_url as ImagemUrl,
+            u.ativo as Ativo,
+            u.newsletter_subscriber as InscritoNoticia,
+            u.cargo as Cargo,
+            u.data_criacao as DataCriacao,
+            u.data_atualizacao as DataAtualizacao
+        FROM evento e
+        LEFT JOIN usuario u ON e.autor_id = u.id
+        WHERE e.id = @Id
     </query>
+
     <query name="DeleteEvento">
         DELETE FROM evento WHERE id=@id
     </query>
+
     <query name="UpdateEvento">
         UPDATE evento
         SET titulo = @Titulo,
@@ -51,26 +69,40 @@
         WHERE id=@id
     </query>
 
-
     <query name="SearchEventos">
-        SELECT 
-            id as Id,
-            titulo as Titulo,
-            descricao as Descricao,
-            data as Data,
-            tipo_evento as TipoEvento,
-            autor_id as AutorId,
-            texto_acao as TextoAcao,
-            link_acao as LinkAcao,
-            COUNT(*) OVER() as TotalCount
-        FROM evento
+        SELECT
+            e.id as Id,
+            e.titulo as Titulo,
+            e.descricao as Descricao,
+            e.data as Data,
+            e.tipo_evento as TipoEvento,
+            e.autor_id as AutorId,
+            e.texto_acao as TextoAcao,
+            e.link_acao as LinkAcao,
+            COUNT(*) OVER() as TotalCount,
+            u.id as Usuario_Id,
+            u.id as Id,
+            u.nome as Nome,
+            u.sobrenome as Sobrenome,
+            u.email as Email,
+            u.ra as Ra,
+            u.curso as Curso,
+            u.telefone as Telefone,
+            u.imagem_url as ImagemUrl,
+            u.ativo as Ativo,
+            u.newsletter_subscriber as InscritoNoticia,
+            u.cargo as Cargo,
+            u.data_criacao as DataCriacao,
+            u.data_atualizacao as DataAtualizacao
+        FROM evento e
+        LEFT JOIN usuario u ON e.autor_id = u.id
         WHERE 1=1
-        AND (@SearchPattern IS NULL OR titulo ILIKE @SearchPattern OR descricao ILIKE @SearchPattern)
-        AND (@Type IS NULL OR tipo_evento = @Type)
-        AND (@DateFrom IS NULL OR data &gt;= @DateFrom)
-        AND (@DateTo IS NULL OR data &lt;= @DateTo)
-        ORDER BY data DESC
-        OFFSET (@Page - 1) * @Limit
+        AND (@SearchPattern IS NULL OR e.titulo ILIKE @SearchPattern OR e.descricao ILIKE @SearchPattern)
+        AND (@Type IS NULL OR e.tipo_evento = @Type)
+        AND (@DateFrom IS NULL OR e.data &gt;= @DateFrom)
+        AND (@DateTo IS NULL OR e.data &lt;= @DateTo)
+        ORDER BY e.data DESC
+        OFFSET @Offset
         LIMIT @Limit
     </query>
 </queries>

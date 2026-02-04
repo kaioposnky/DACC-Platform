@@ -1,6 +1,7 @@
 ﻿using DaccApi.Data.Orm;
 using DaccApi.Infrastructure.Dapper;
 using DaccApi.Model;
+using Dapper;
 
 namespace DaccApi.Infrastructure.Repositories.Eventos
 {
@@ -22,7 +23,16 @@ namespace DaccApi.Infrastructure.Repositories.Eventos
                 DateTo = query.DateTo
             };
 
-            var result = (await _dapper.QueryAsync<Evento>(sql, queryParams)).ToList();
+            var result = (await _dapper.QueryAsync<Evento, Usuario, Evento>(
+                sql,
+                (evento, usuario) =>
+                {
+                    evento.Autor = usuario;
+                    return evento;
+                },
+                queryParams,
+                splitOn: "Usuario_Id"
+            )).ToList();
 
             var totalCount = 0;
             if (result.Any())
@@ -31,6 +41,25 @@ namespace DaccApi.Infrastructure.Repositories.Eventos
             }
 
             return (result, totalCount);
+        }
+
+        public new async Task<Evento?> GetByIdAsync(Guid id)
+        {
+            var sql = _dapper.GetQueryNamed("GetEventoById");
+            var param = new { Id = id };
+
+            var result = await _dapper.QueryAsync<Evento, Usuario, Evento>(
+                sql,
+                (evento, usuario) =>
+                {
+                    evento.Autor = usuario;
+                    return evento;
+                },
+                param,
+                splitOn: "Usuario_Id"
+            );
+
+            return result.FirstOrDefault();
         }
     }
 }
