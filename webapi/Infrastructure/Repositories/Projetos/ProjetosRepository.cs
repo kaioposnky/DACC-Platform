@@ -1,6 +1,8 @@
 ﻿using DaccApi.Data.Orm;
 using DaccApi.Infrastructure.Dapper;
 using DaccApi.Model;
+using DaccApi.Model.Objects;
+using Dapper;
 
 namespace DaccApi.Infrastructure.Repositories.Projetos
 {
@@ -23,7 +25,17 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
                 MaxProgress = query.MaxProgress
             };
 
-            var result = (await _dapper.QueryAsync<Projeto>(sql, queryParams)).ToList();
+
+            var result = (await _dapper.QueryAsync<Projeto, Diretoria, Projeto>(
+                sql,
+                (projeto, diretoria) =>
+                {
+                    projeto.Departamento = diretoria;
+                    return projeto;
+                },
+                queryParams,
+                splitOn: "Diretoria_Id"
+            )).ToList();
 
             var totalCount = 0;
             if (result.Any())
@@ -32,6 +44,25 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
             }
 
             return (result, totalCount);
+        }
+
+        public new async Task<Projeto?> GetByIdAsync(Guid id)
+        {
+            var sql = _dapper.GetQueryNamed("GetProjetoById");
+            var param = new { id = id };
+
+            var result = await _dapper.QueryAsync<Projeto, Diretoria, Projeto>(
+                sql,
+                (projeto, diretoria) =>
+                {
+                    projeto.Departamento = diretoria;
+                    return projeto;
+                },
+                param,
+                splitOn: "Diretoria_Id"
+            );
+
+            return result.FirstOrDefault();
         }
     }
 }

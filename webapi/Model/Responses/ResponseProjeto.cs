@@ -46,6 +46,11 @@ public class ResponseProjeto
     public string? CompletionText { get; set; }
 
     /// <summary>
+    /// Obtém ou define a diretoria responsável pelo projeto.
+    /// </summary>
+    public ResponseDiretoria? Department { get; set; }
+
+    /// <summary>
     /// Construtor para mapear de uma entidade Projeto.
     /// </summary>
     /// <param name="projeto">A entidade Projeto de origem.</param>
@@ -57,10 +62,9 @@ public class ResponseProjeto
         Icon = projeto.ImagemUrl; // Mapeado de ImagemUrl
         Technologies = projeto.Tags; // Mapeado de Tags
         Status = projeto.Status;
-
-        // Propriedades específicas do frontend sem correspondência direta
-        Progress = 0; // Valor padrão
-        CompletionText = string.Empty; // Valor padrão
+        Progress = projeto.Progresso;
+        CompletionText = projeto.TextoConclusao;
+        Department = projeto.Departamento != null ? new ResponseDiretoria(projeto.Departamento) : null;
     }
 
     /// <summary>

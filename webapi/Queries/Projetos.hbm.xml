@@ -15,14 +15,22 @@
 	
 	<query name="GetProjetoById">
 		SELECT
-			id as Id,
-			titulo as Titulo,
-			descricao as Descricao,
-			imagem_url as ImagemUrl,
-			status as Status,
-			diretoria as Diretoria,
-			tags as Tags
-		FROM projeto WHERE id=@id
+			p.id as Id,
+			p.titulo as Titulo,
+			p.descricao as Descricao,
+			p.imagem_url as ImagemUrl,
+			p.status as Status,
+			p.diretoria as Diretoria,
+			p.tags as Tags,
+			p.progresso as Progresso,
+			p.texto_conclusao as TextoConclusao,
+			d.id as Diretoria_Id,
+			d.id as Id,
+			d.nome as Nome,
+			d.descricao as Descricao
+		FROM projeto p
+		LEFT JOIN diretoria d ON p.diretoria = d.nome
+		WHERE p.id=@id
 		
 	</query>
 
@@ -57,26 +65,31 @@
 
     <query name="SearchProjetos">
         SELECT
-            id as Id,
-            titulo as Titulo,
-            descricao as Descricao,
-            imagem_url as ImagemUrl,
-            status as Status,
-            diretoria as Diretoria,
-            tags as Tags,
-            progresso as Progresso,
-            texto_conclusao as TextoConclusao,
-            data_criacao as DataCriacao,
-            data_atualizacao as DataAtualizacao,
-            COUNT(*) OVER() as TotalCount
-        FROM projeto
+            p.id as Id,
+            p.titulo as Titulo,
+            p.descricao as Descricao,
+            p.imagem_url as ImagemUrl,
+            p.status as Status,
+            p.diretoria as Diretoria,
+            p.tags as Tags,
+            p.progresso as Progresso,
+            p.texto_conclusao as TextoConclusao,
+            p.data_criacao as DataCriacao,
+            p.data_atualizacao as DataAtualizacao,
+            COUNT(*) OVER() as TotalCount,
+            d.id as Diretoria_Id,
+            d.id as Id,
+            d.nome as Nome,
+            d.descricao as Descricao
+        FROM projeto p
+        LEFT JOIN diretoria d ON p.diretoria = d.nome
         WHERE 1=1
-        AND (@SearchPattern IS NULL OR titulo ILIKE @SearchPattern OR descricao ILIKE @SearchPattern)
-        AND (@Status IS NULL OR status = @Status)
-        AND (@Directorate IS NULL OR diretoria = @Directorate)
-        AND (@MinProgress IS NULL OR progresso &gt;= @MinProgress)
-        AND (@MaxProgress IS NULL OR progresso &lt;= @MaxProgress)
-        ORDER BY titulo ASC
+        AND (@SearchPattern IS NULL OR p.titulo ILIKE @SearchPattern OR p.descricao ILIKE @SearchPattern)
+        AND (@Status IS NULL OR p.status = @Status)
+        AND (@Directorate IS NULL OR p.diretoria = @Directorate)
+        AND (@MinProgress IS NULL OR p.progresso &gt;= @MinProgress)
+        AND (@MaxProgress IS NULL OR p.progresso &lt;= @MaxProgress)
+        ORDER BY p.data_criacao DESC
         OFFSET (@Page - 1) * @Limit
         LIMIT @Limit
     </query>

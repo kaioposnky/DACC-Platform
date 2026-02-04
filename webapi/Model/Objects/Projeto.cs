@@ -77,5 +77,11 @@ namespace DaccApi.Model
 
         [NotMapped]
         public int TotalCount { get; set; }
+
+    /// <summary>
+    /// Obtém ou define a diretoria associada ao projeto.
+    /// </summary>
+    [NotMapped]
+    public Objects.Diretoria? Departamento { get; set; }
     }
 }
