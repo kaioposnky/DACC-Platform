@@ -71,6 +71,7 @@ export interface Event {
   actionText: string;
   actionLink: string;
   type: string;
+  author?: User;
 }
 
 export interface Project {
@@ -89,7 +90,7 @@ export interface News {
   title: string;
   description: string;
   content?: string;
-  author?: string;
+  author?: User;
   readTime?: number;
   image?: string;
   tags?: string[];

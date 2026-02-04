@@ -53,7 +53,7 @@ export interface ChangePasswordData {
   newPassword: string;
 }
 
-const API_BASE_URL = 'http://localhost:3001/v1/api';
+const API_BASE_URL = 'http://localhost:5000/v1/api';
 
 class ApiService {
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
@@ -184,6 +184,18 @@ class ApiService {
   async getUsers(): Promise<User[]> {
     const data = await this.request<{ users: User[] }>('/users');
     return data?.users || [];
+  }
+
+  async searchUsers(query?: string): Promise<{ users: User[]; totalCount: number }> {
+    const searchParams = new URLSearchParams();
+    if (query) searchParams.append('SearchQuery', query);
+
+    const endpoint = searchParams.toString() ? `/users/search?${searchParams.toString()}` : '/users/search';
+    const data = await this.request<{ users: User[]; totalCount: number }>(endpoint);
+    return {
+      users: data?.users || [],
+      totalCount: data?.totalCount || 0
+    };
   }
 
   async getUser(id: string): Promise<User> {
