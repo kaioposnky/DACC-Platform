@@ -124,12 +124,12 @@ namespace DaccApi.Services.Eventos
                         return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                     }
 
-                    eventoQuery.Titulo = request.Title;
-                    eventoQuery.TextoAcao = request.ActionText;
-                    eventoQuery.Descricao = request.Description;
-                    eventoQuery.LinkAcao = request.ActionLink;
-                    eventoQuery.TipoEvento = request.EventType;
-                    eventoQuery.Data = request.Date;
+                    eventoQuery.Titulo = request.Title ?? eventoQuery.Titulo;
+                    eventoQuery.TextoAcao = request.ActionText ?? eventoQuery.TextoAcao;
+                    eventoQuery.Descricao = request.Description ?? eventoQuery.Descricao;
+                    eventoQuery.LinkAcao = request.ActionLink ?? eventoQuery.LinkAcao;
+                    eventoQuery.TipoEvento = request.EventType ?? eventoQuery.TipoEvento;
+                    eventoQuery.Data = request.Date != default ? request.Date : eventoQuery.Data;
                     
                     await _eventosRepository.UpdateAsync(id, eventoQuery);
 

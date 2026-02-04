@@ -50,6 +50,10 @@ namespace DaccApi.Model.Responses.Order
             ProductVariationId = orderItem.ProdutoVariacaoId;
             UnitPrice = orderItem.PrecoUnitario;
             Quantity = orderItem.Quantidade;
+            ProductName = orderItem.ProductName;
+            ProductImage = orderItem.ProductImage;
+            VariationSize = orderItem.VariationSize;
+            VariationColor = orderItem.VariationColor;
         }
 
         public ResponseOrderItem() { }

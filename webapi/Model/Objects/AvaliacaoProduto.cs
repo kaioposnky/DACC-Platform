@@ -53,5 +53,17 @@ namespace DaccApi.Model
 
         [NotMapped]
         public int TotalCount { get; set; }
+
+        /// <summary>
+        /// Nome completo do usuário (vem da query JOIN).
+        /// </summary>
+        [NotMapped]
+        public string? UsuarioNome { get; set; }
+
+        /// <summary>
+        /// Avatar do usuário (vem da query JOIN).
+        /// </summary>
+        [NotMapped]
+        public string? UsuarioAvatar { get; set; }
     }
 }

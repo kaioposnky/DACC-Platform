@@ -54,5 +54,25 @@ namespace DaccApi.Model.Objects.Order
                 PrecoUnitario = precoUnitario
             };
         }
+
+        /// <summary>
+        /// Nome do produto (vem da query JOIN).
+        /// </summary>
+        public string? ProductName { get; set; }
+
+        /// <summary>
+        /// URL da imagem do produto (vem da query JOIN).
+        /// </summary>
+        public string? ProductImage { get; set; }
+
+        /// <summary>
+        /// Tamanho da variação (vem da query JOIN).
+        /// </summary>
+        public string? VariationSize { get; set; }
+
+        /// <summary>
+        /// Cor da variação (vem da query JOIN).
+        /// </summary>
+        public string? VariationColor { get; set; }
     }
 }

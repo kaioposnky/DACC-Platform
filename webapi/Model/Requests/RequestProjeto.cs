@@ -34,5 +34,15 @@ namespace DaccApi.Model
         /// Obtém ou define o texto de conclusão do projeto.
         /// </summary>
         public string? CompletionText { get; set; }
+
+        /// <summary>
+        /// Obtém ou define o progresso do projeto (0-100).
+        /// </summary>
+        public int? Progress { get; set; }
+
+        /// <summary>
+        /// Obtém ou define a URL da imagem do projeto.
+        /// </summary>
+        public string? ImageUrl { get; set; }
     }
 }

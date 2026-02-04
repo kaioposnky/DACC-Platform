@@ -34,5 +34,14 @@
         /// </summary>
         public string? ActionLink { get; set; }
 
+        /// <summary>
+        /// Obtém ou define o ID do autor do evento.
+        /// </summary>
+        public Guid? AutorId { get; set; }
+
+        /// <summary>
+        /// Obtém ou define o conteúdo detalhado do evento.
+        /// </summary>
+        public string? Content { get; set; }
     }
 }

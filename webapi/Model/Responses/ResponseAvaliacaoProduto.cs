@@ -63,10 +63,11 @@ public class ResponseAvaliacaoProduto
         Date = avaliacaoProduto.DataPostada;
         ProductId = avaliacaoProduto.ProdutoId;
 
+        // Propriedades vindas do JOIN com usuario
+        UserName = avaliacaoProduto.UsuarioNome;
+        UserAvatar = avaliacaoProduto.UsuarioAvatar;
+
         // Propriedades específicas do frontend sem correspondência direta em AvaliacaoProduto
-        // Devem ser preenchidas por um serviço que consulta detalhes do usuário
-        UserName = null;
-        UserAvatar = null;
         Title = null;
         Verified = false; // Valor padrão
         Helpful = 0; // Valor padrão

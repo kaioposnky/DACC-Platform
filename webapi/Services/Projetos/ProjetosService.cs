@@ -103,6 +103,8 @@ namespace DaccApi.Services.Projetos
                     Diretoria = request.Department,
                     Tags = request.Tags,
                     TextoConclusao = request.CompletionText ?? string.Empty,
+                    Progresso = request.Progress ?? 0,
+                    ImagemUrl = request.ImageUrl,
                     DataCriacao = DateTime.UtcNow,
                     DataAtualizacao = DateTime.UtcNow
                 };
@@ -185,23 +187,20 @@ namespace DaccApi.Services.Projetos
         {
             try
             {
-                var projetoQuery = await _projetosRepository.GetByIdAsync(id);
-                if (projetoQuery == null ||
-                    String.IsNullOrWhiteSpace(request.Title) ||
-                    String.IsNullOrWhiteSpace(request.Description) ||
-                    String.IsNullOrWhiteSpace(request.Status)||
-                    String.IsNullOrWhiteSpace(request.Department)||
-                    request.Tags == null)
+            var projetoQuery = await _projetosRepository.GetByIdAsync(id);
+                if (projetoQuery == null)
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                 }
                 
-                projetoQuery.Titulo = request.Title;
-                projetoQuery.Descricao = request.Description;
-                projetoQuery.Status = request.Status;
-                projetoQuery.Diretoria = request.Department;
-                projetoQuery.Tags = request.Tags;
+                projetoQuery.Titulo = request.Title ?? projetoQuery.Titulo;
+                projetoQuery.Descricao = request.Description ?? projetoQuery.Descricao;
+                projetoQuery.Status = request.Status ?? projetoQuery.Status;
+                projetoQuery.Diretoria = request.Department ?? projetoQuery.Diretoria;
+                projetoQuery.Tags = request.Tags ?? projetoQuery.Tags;
                 projetoQuery.TextoConclusao = request.CompletionText ?? projetoQuery.TextoConclusao;
+                projetoQuery.Progresso = request.Progress ?? projetoQuery.Progresso;
+                projetoQuery.ImagemUrl = request.ImageUrl ?? projetoQuery.ImagemUrl;
                 projetoQuery.DataAtualizacao = DateTime.UtcNow;
                 
                 await _projetosRepository.UpdateAsync(id, projetoQuery);

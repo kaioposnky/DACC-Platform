@@ -100,6 +100,7 @@
                 descricao = @Descricao,
                 categoria = @Categoria,
                 tempo_leitura = @TempoLeitura,
+                data_publicacao = @DataPublicacao,
                 data_atualizacao = CURRENT_TIMESTAMP
             WHERE id=@id
     </query>

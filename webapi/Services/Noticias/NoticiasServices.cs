@@ -48,7 +48,10 @@ public class NoticiasServices : INoticiasServices
                 Conteudo = request.Content,
                 Titulo = request.Title,
                 AutorId = autorId,
-                DataPublicacao = DateTime.UtcNow,
+                TempoLeitura = request.ReadTime,
+                ImagemUrl = request.ImageUrl,
+                ImagemAlt = request.ImageAlt,
+                DataPublicacao = request.PublishedAt ?? DateTime.UtcNow,
                 DataAtualizacao = DateTime.UtcNow
             };
             
@@ -138,9 +141,15 @@ public class NoticiasServices : INoticiasServices
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
             
-            noticiaQuery.Titulo = request.Title;
-            noticiaQuery.Descricao = request.Description;
-            noticiaQuery.Categoria = request.Category;
+            noticiaQuery.Titulo = request.Title ?? noticiaQuery.Titulo;
+            noticiaQuery.Descricao = request.Description ?? noticiaQuery.Descricao;
+            noticiaQuery.Categoria = request.Category ?? noticiaQuery.Categoria;
+            noticiaQuery.Conteudo = request.Content ?? noticiaQuery.Conteudo;
+            noticiaQuery.TempoLeitura = request.ReadTime ?? noticiaQuery.TempoLeitura;
+            noticiaQuery.ImagemUrl = request.ImageUrl ?? noticiaQuery.ImagemUrl;
+            noticiaQuery.ImagemAlt = request.ImageAlt ?? noticiaQuery.ImagemAlt;
+            noticiaQuery.DataPublicacao = request.PublishedAt ?? noticiaQuery.DataPublicacao;
+            noticiaQuery.DataAtualizacao = DateTime.UtcNow;
             
             await _noticiasRepository.UpdateAsync(id, noticiaQuery);
 

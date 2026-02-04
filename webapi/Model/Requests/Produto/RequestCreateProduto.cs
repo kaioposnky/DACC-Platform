@@ -54,5 +54,15 @@ namespace DaccApi.Model
         public List<SpecificationItem>? Specifications { get; set; }
         
         public ShippingInfo? ShippingInfo { get; set; }
+
+        /// <summary>
+        /// Obtém ou define o preço original do produto (preço antes de desconto).
+        /// </summary>
+        public double? OriginalPrice { get; set; }
+
+        /// <summary>
+        /// Obtém ou define se o produto está em estoque.
+        /// </summary>
+        public bool? InStock { get; set; }
     }
 }

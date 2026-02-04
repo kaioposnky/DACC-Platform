@@ -36,6 +36,26 @@ namespace DaccApi.Model
         /// Obtém ou define a data de publicação.
         /// </summary>
         public DateTime? PublishedAt { get; set; }
+
+        /// <summary>
+        /// Obtém ou define o tempo de leitura em minutos.
+        /// </summary>
+        public int? ReadTime { get; set; }
+
+        /// <summary>
+        /// Obtém ou define a URL da imagem.
+        /// </summary>
+        public string? ImageUrl { get; set; }
+
+        /// <summary>
+        /// Obtém ou define o texto alternativo da imagem.
+        /// </summary>
+        public string? ImageAlt { get; set; }
+
+        /// <summary>
+        /// Obtém ou define as tags da notícia.
+        /// </summary>
+        public string[]? Tags { get; set; }
         
         
     }
