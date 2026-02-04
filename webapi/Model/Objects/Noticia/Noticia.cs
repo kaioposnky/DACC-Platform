@@ -88,9 +88,15 @@ namespace DaccApi.Model
         public int TotalCount { get; set; }
 
         /// <summary>
+        /// JSON contendo as tags (usado no mapeamento).
+        /// </summary>
+        [NotMapped]
+        public string? TagsJson { get; set; }
+
+        /// <summary>
         /// Autor da notícia.
         /// </summary>
         [NotMapped]
-        public NoticiaAutor? Autor { get; set; }
+        public Usuario? Autor { get; set; }
     }
 }

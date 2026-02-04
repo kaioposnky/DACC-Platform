@@ -4,6 +4,7 @@ using DaccApi.Infrastructure.Dapper;
 using DaccApi.Model;
 using DaccApi.Model.Objects.Noticia;
 using DaccApi.Model.Requests;
+using Dapper;
 
 namespace DaccApi.Infrastructure.Repositories.Noticias
 {
@@ -11,47 +12,39 @@ namespace DaccApi.Infrastructure.Repositories.Noticias
     {
         public NoticiasRepository(IRepositoryDapper repositoryDapper) : base(repositoryDapper)
         {
-
         }
 
-        public async Task<(List<Noticia> Noticias, int TotalCount)> SearchNoticias(RequestQueryNoticia queryNoticia)
+        public async Task<(List<Noticia> Noticias, int TotalCount)> SearchNoticias(RequestQueryNoticia query)
         {
             var sql = _dapper.GetQueryNamed("SearchNoticias");
-
-            var page = queryNoticia.Page ?? 1;
-            var limit = queryNoticia.Limit ?? 16;
-            var offset = (page - 1) * limit;
-
-            var param = new
+            var queryParams = new
             {
-                SearchQuery = string.IsNullOrEmpty(queryNoticia.SearchQuery) ? null : $"%{queryNoticia.SearchQuery}%",
-                Limit = limit,
-                Offset = offset,
-                Category = queryNoticia.Category,
-                PublishDate = queryNoticia.PublishDate
+                SearchQuery = string.IsNullOrEmpty(query.SearchQuery) ? null : $"%{query.SearchQuery}%",
+                Category = query.Category,
+                PublishDate = query.PublishDate,
+                Offset = (query.Page - 1) * query.Limit,
+                Limit = query.Limit
             };
 
-            var result = (await _dapper.QueryAsync<dynamic>(sql, param)).ToList();
-            var noticias = MapNoticias(result);
-            
-            // Extrair TotalCount do primeiro item se existir
+            var result = (await _dapper.QueryAsync<Noticia, Usuario, Noticia>(
+                sql,
+                (noticia, usuario) =>
+                {
+                    noticia.Autor = usuario;
+                    MapTags(noticia);
+                    return noticia;
+                },
+                queryParams,
+                splitOn: "Usuario_Id"
+            )).ToList();
+
             var totalCount = 0;
             if (result.Any())
             {
-                var firstItem = result.First();
-                if (firstItem is IDictionary<string, object> dict && dict.ContainsKey("totalcount"))
-                {
-                    totalCount = Convert.ToInt32(dict["totalcount"]);
-                }
-                else 
-                {
-                     try {
-                        totalCount = (int)firstItem.totalcount;
-                     } catch {}
-                }
+                totalCount = result.First().TotalCount;
             }
 
-            return (noticias, totalCount);
+            return (result, totalCount);
         }
 
         public new async Task<Noticia?> GetByIdAsync(Guid id)
@@ -59,52 +52,35 @@ namespace DaccApi.Infrastructure.Repositories.Noticias
             var sql = _dapper.GetQueryNamed("GetNoticiaById");
             var param = new { id = id };
 
-            var result = await _dapper.QueryAsync<dynamic>(sql, param);
-            return MapNoticias(result).FirstOrDefault();
+            var result = await _dapper.QueryAsync<Noticia, Usuario, Noticia>(
+                sql,
+                (noticia, usuario) =>
+                {
+                    noticia.Autor = usuario;
+                    MapTags(noticia);
+                    return noticia;
+                },
+                param,
+                splitOn: "Usuario_Id"
+            );
+
+            return result.FirstOrDefault();
         }
 
-        public async Task<List<Noticia>> GetAllNoticias()
+        private void MapTags(Noticia noticia)
         {
-            var sql = _dapper.GetQueryNamed("GetAllNoticias");
-            var result = await _dapper.QueryAsync<dynamic>(sql);
-            return MapNoticias(result);
-        }
-
-        private List<Noticia> MapNoticias(IEnumerable<dynamic> rows)
-        {
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-
-            return rows.Select(row =>
+            if (!string.IsNullOrEmpty(noticia.TagsJson))
             {
-                var noticia = new Noticia
+                try
                 {
-                    Id = row.id,
-                    Titulo = row.titulo,
-                    Descricao = row.descricao,
-                    Conteudo = row.conteudo,
-                    ImagemUrl = row.imagem_url,
-                    ImagemAlt = row.imagem_alt,
-                    AutorId = row.autor_id,
-                    Categoria = row.categoria,
-                    DataAtualizacao = row.data_atualizacao,
-                    DataPublicacao = row.data_publicacao,
-                    TempoLeitura = row.tempo_leitura
-                };
-
-                if (row.autorjson != null)
-                {
-                    string autorJson = row.autorjson;
-                    noticia.Autor = JsonSerializer.Deserialize<NoticiaAutor>(autorJson, options)!;
+                    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                    noticia.Tags = JsonSerializer.Deserialize<List<NoticiaTag>>(noticia.TagsJson, options) ?? [];
                 }
-
-                if (row.tagsjson != null)
+                catch
                 {
-                    string tagsJson = row.tagsjson;
-                    noticia.Tags = JsonSerializer.Deserialize<List<NoticiaTag>>(tagsJson, options) ?? [];
+                    noticia.Tags = [];
                 }
-
-                return noticia;
-            }).ToList();
+            }
         }
     }
 }

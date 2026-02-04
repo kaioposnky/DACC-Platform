@@ -22,9 +22,9 @@ public class ResponseNoticia
     /// </summary>
     public string? Content { get; set; }
     /// <summary>
-    /// Obtém ou define o autor da notícia (frontend specific).
+    /// Obtém ou define o autor da notícia.
     /// </summary>
-    public string? Author { get; set; }
+    public ResponseUsuario? Author { get; set; }
     /// <summary>
     /// Obtém ou define o tempo de leitura da notícia (frontend specific).
     /// </summary>
@@ -76,7 +76,7 @@ public class ResponseNoticia
         Category = noticia.Categoria;
         Date = noticia.DataPublicacao;
         UpdatedAt = noticia.DataAtualizacao;
-        Author = noticia.Autor.Nome + noticia.Autor.Sobrenome;
+        Author = noticia.Autor != null ? new ResponseUsuario(noticia.Autor) : null;
         ReadTime = noticia.TempoLeitura;
         Tags = noticia.Tags.Select(tag => tag.Nome).ToArray();
     }

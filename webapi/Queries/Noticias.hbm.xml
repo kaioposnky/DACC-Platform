@@ -13,7 +13,19 @@
             n.data_atualizacao as DataAtualizacao,
             n.data_publicacao as DataPublicacao,
             n.tempo_leitura as TempoLeitura,
-            json_build_object('Id', u.id, 'Nome', u.nome, 'Sobrenome', u.sobrenome) as AutorJson,
+            u.id as Autor_Id,
+            u.nome as Autor_Nome,
+            u.sobrenome as Autor_Sobrenome,
+            u.email as Autor_Email,
+            u.ra as Autor_Ra,
+            u.curso as Autor_Curso,
+            u.telefone as Autor_Telefone,
+            u.imagem_url as Autor_ImagemUrl,
+            u.ativo as Autor_Ativo,
+            u.newsletter_subscriber as Autor_InscritoNoticia,
+            u.cargo as Autor_Cargo,
+            u.data_criacao as Autor_DataCriacao,
+            u.data_atualizacao as Autor_DataAtualizacao,
             (
                 SELECT json_agg(json_build_object('Id', nt.id, 'Nome', nt.nome))
                 FROM noticia_tag nt
@@ -48,13 +60,32 @@
             n.data_atualizacao as DataAtualizacao,
             n.data_publicacao as DataPublicacao,
             n.tempo_leitura as TempoLeitura,
-            json_build_object('Id', u.id, 'Nome', u.nome, 'Sobrenome', u.sobrenome) as AutorJson,
+            u.id as Autor_Id,
+            u.nome as Autor_Nome,
+            u.sobrenome as Autor_Sobrenome,
+            u.email as Autor_Email,
+            u.ra as Autor_Ra,
+            u.curso as Autor_Curso,
             (
                 SELECT json_agg(json_build_object('Id', nt.id, 'Nome', nt.nome))
                 FROM noticia_tag nt
                 JOIN noticia_tags_relacao ntr ON nt.id = ntr.tag_id
                 WHERE ntr.noticia_id = n.id
-            ) as TagsJson
+            ) as TagsJson,
+            u.id as Usuario_Id,
+            u.id as Id,
+            u.nome as Nome,
+            u.sobrenome as Sobrenome,
+            u.email as Email,
+            u.ra as Ra,
+            u.curso as Curso,
+            u.telefone as Telefone,
+            u.imagem_url as ImagemUrl,
+            u.ativo as Ativo,
+            u.newsletter_subscriber as InscritoNoticia,
+            u.cargo as Cargo,
+            u.data_criacao as DataCriacao,
+            u.data_atualizacao as DataAtualizacao
         FROM noticia n
         LEFT JOIN usuario u ON n.autor_id = u.id
         WHERE n.id = @id;
@@ -87,14 +118,27 @@
                 n.data_atualizacao as DataAtualizacao,
                 n.data_publicacao as DataPublicacao,
                 n.tempo_leitura as TempoLeitura,
-                COUNT(*) OVER() as TotalCount,
-                json_build_object('Id', u.id, 'Nome', u.nome, 'Sobrenome', u.sobrenome) as AutorJson,
                 (
                     SELECT json_agg(json_build_object('Id', nt.id, 'Nome', nt.nome))
                     FROM noticia_tag nt
                     JOIN noticia_tags_relacao ntr ON nt.id = ntr.tag_id
                     WHERE ntr.noticia_id = n.id
-                ) as TagsJson
+                ) as TagsJson,
+                COUNT(*) OVER() as TotalCount,
+                u.id as Usuario_Id,
+                u.id as Id,
+                u.nome as Nome,
+                u.sobrenome as Sobrenome,
+                u.email as Email,
+                u.ra as Ra,
+                u.curso as Curso,
+                u.telefone as Telefone,
+                u.imagem_url as ImagemUrl,
+                u.ativo as Ativo,
+                u.newsletter_subscriber as InscritoNoticia,
+                u.cargo as Cargo,
+                u.data_criacao as DataCriacao,
+                u.data_atualizacao as DataAtualizacao
             FROM
                 noticia n
             LEFT JOIN usuario u ON n.autor_id = u.id
