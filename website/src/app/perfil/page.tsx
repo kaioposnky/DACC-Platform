@@ -1,19 +1,21 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import { useAuth } from '@/context/AuthContext';
 import { Footer, Navigation } from "@/components";
 import { ProfileBanner, ProfileUser } from "@/components/organisms/ProfileBanner";
 import { ProfileSettingsSidebar, SettingsSection } from "@/components/organisms/ProfileSettingsSidebar";
 import { ProfileSettingsForm, UserFormData } from "@/components/organisms/ProfileSettingsForm";
-import {apiService} from "@/services/api";
-import {UserStats} from "@/types";
-import {ImageInputModal} from "@/components/organisms/ImageInput";
-import {toast} from "sonner";
-import {storageService} from "@/services/storage";
+import { apiService } from "@/services/api";
+import { UserStats } from "@/types";
+import { ImageInputModal } from "@/components/organisms/ImageInput";
+import { toast } from "sonner";
+import { storageService } from "@/services/storage";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   const { user, isLoading } = useAuth();
+  const router = useRouter();
   const [activeSection, setActiveSection] = useState<SettingsSection>('account');
   const [userStats, setUserStats] = useState<UserStats>({
     orders: 1,
@@ -43,27 +45,26 @@ export default function ProfilePage() {
 
   const handleSaveForm = (data: UserFormData) => {
     async function updateUserInfo() {
-      if(!user) return;
+      if (!user) return;
       const cleanAttributes = (string: string) => string.replace(/\D/g, "");
-      const cleanStudentId = cleanAttributes(data.studentId);
-      const cleanPhoneNumber= cleanAttributes(data.phone);
-      const formData = new FormData();
-      formData.append('name', data.firstName);
-      formData.append('lastName', data.lastName);
-      formData.append('email',  data.email);
-      formData.append('phone', cleanPhoneNumber);
-      formData.append('ra', cleanStudentId);
-      formData.append('course', data.course);
+      const payload = {
+        name: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: cleanAttributes(data.phone),
+        ra: cleanAttributes(data.studentId),
+        course: data.course,
+      };
 
-      return await apiService.updateUser(user.id, formData);
+      return await apiService.updateUser(user.id, payload);
     }
 
     updateUserInfo().then((userResponse) => {
-      if(userResponse === undefined) throw Error("Não foi possível atualizar as informações do usuário porque nenhuma informação foi retornada da API!");
+      if (userResponse === undefined) throw Error("Não foi possível atualizar as informações do usuário porque nenhuma informação foi retornada da API!");
       toast.info("Informações atualizadas com sucesso!");
       storageService.setUser(userResponse); // Atualiza as informações do usuário
-      if(user === null) return;
-      user.avatar = userResponse.avatar;
+      if (user === null) return;
+      window.location.reload();
     }).catch((e) => {
       console.log(e.message);
       toast.error("Erro ao atualizar informações!");
@@ -74,35 +75,37 @@ export default function ProfilePage() {
     console.log('Resetting form to initial values');
   };
 
-  const handleChangeAvatar = (file: File) => {
+  const handleChangeAvatar = async (file: File) => {
+    if (user === null) return;
 
-    async function updateUserAvatar(){
-      if(user === null) return;
-      const formData = new FormData();
-      formData.append('imageFile', file);
-      return await apiService.updateUser(user.id, formData);
+    try {
+      // 1. Upload image to get URL
+      const { url } = await apiService.uploadImage(file);
+
+      // 2. Update user with new avatar URL
+      const updatedUser = await apiService.updateUser(user.id, { avatar: url });
+
+      if (!updatedUser) throw Error("Não foi possível atualizar o avatar do usuário!");
+
+      toast.success("Avatar atualizado com sucesso!");
+      storageService.setUser(updatedUser);
+      window.location.reload();
+    } catch (e: any) {
+      console.error(e);
+      toast.error("Erro ao atualizar avatar: " + (e.message || "Erro desconhecido"));
     }
-
-    updateUserAvatar().then((user) => {
-      if(user === undefined) throw Error("Não foi possível atualizar o avatar do usuário porque nenhuma informação foi retornada da API!");
-      toast.info("Avatar atualizado com sucesso!");
-      storageService.setUser(user); // Atualiza as informações do usuário, incluindo o avatar
-    }).catch((e) => {
-      console.log(e.message);
-      toast.error("Erro ao atualizar avatar!");
-    });
   };
 
   // User loading, default template if user data loading
   if (isLoading || !user) {
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <Navigation />
-          <div className="text-center">
-            <p className="text-lg font-semibold">Carregando perfil...</p>
-          </div>
-          <Footer />
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Navigation />
+        <div className="text-center">
+          <p className="text-lg font-semibold">Carregando perfil...</p>
         </div>
+        <Footer />
+      </div>
     );
   }
 
@@ -128,32 +131,32 @@ export default function ProfilePage() {
     switch (activeSection) {
       case 'account':
         return (
-            <ProfileSettingsForm
-                initialData={formUserData}
-                onSave={handleSaveForm}
-                onReset={handleResetForm}
-            />
+          <ProfileSettingsForm
+            initialData={formUserData}
+            onSave={handleSaveForm}
+            onReset={handleResetForm}
+          />
         );
       case 'security':
         return (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Segurança</h2>
-              <p className="text-gray-600">Configurações de segurança em desenvolvimento...</p>
-            </div>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Segurança</h2>
+            <p className="text-gray-600">Configurações de segurança em desenvolvimento...</p>
+          </div>
         );
       case 'preferences':
         return (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Preferências</h2>
-              <p className="text-gray-600">Configurações de preferências em desenvolvimento...</p>
-            </div>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Preferências</h2>
+            <p className="text-gray-600">Configurações de preferências em desenvolvimento...</p>
+          </div>
         );
       case 'notifications':
         return (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Notificações</h2>
-              <p className="text-gray-600">Configurações de notificações em desenvolvimento...</p>
-            </div>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Notificações</h2>
+            <p className="text-gray-600">Configurações de notificações em desenvolvimento...</p>
+          </div>
         );
       default:
         return null;
@@ -161,40 +164,40 @@ export default function ProfilePage() {
   };
 
   return (
-      <>
-        <div className="min-h-screen bg-gray-50">
-          <Navigation />
+    <>
+      <div className="min-h-screen bg-gray-50">
+        <Navigation />
 
-          <ProfileBanner
-              user={profileUser}
-              onChangeAvatar={() => setIsAvatarModalOpen(true)}
-          />
+        <ProfileBanner
+          user={profileUser}
+          onChangeAvatar={() => setIsAvatarModalOpen(true)}
+        />
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-              {/* Sidebar */}
-              <div className="lg:col-span-1">
-                <ProfileSettingsSidebar
-                    activeSection={activeSection}
-                    onSectionChange={handleSectionChange}
-                />
-              </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Sidebar */}
+            <div className="lg:col-span-1">
+              <ProfileSettingsSidebar
+                activeSection={activeSection}
+                onSectionChange={handleSectionChange}
+              />
+            </div>
 
-              {/* Main Content */}
-              <div className="lg:col-span-3">
-                {renderContent()}
-              </div>
+            {/* Main Content */}
+            <div className="lg:col-span-3">
+              {renderContent()}
             </div>
           </div>
-
-          <Footer />
         </div>
-        <ImageInputModal
-            title={"Atualizar Foto de Perfil"}
-            isOpen={isAvatarModalOpen}
-            onClose={() => setIsAvatarModalOpen(false)}
-            onImageUpload={handleChangeAvatar}
-        />
-      </>
+
+        <Footer />
+      </div>
+      <ImageInputModal
+        title={"Atualizar Foto de Perfil"}
+        isOpen={isAvatarModalOpen}
+        onClose={() => setIsAvatarModalOpen(false)}
+        onImageUpload={handleChangeAvatar}
+      />
+    </>
   );
 }
