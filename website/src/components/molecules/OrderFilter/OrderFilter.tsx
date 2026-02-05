@@ -74,6 +74,7 @@ export const OrderFilter = ({
                 value={filters.status}
                 options={statusOptions}
                 onChange={(e) => handleFilterChange('status', e.target.value)}
+                className="h-11"
               />
             </div>
 
@@ -83,6 +84,7 @@ export const OrderFilter = ({
                 type="date"
                 value={filters.startDate}
                 onChange={(e) => handleFilterChange('startDate', e.target.value)}
+                className="h-11"
               />
             </div>
 
@@ -92,6 +94,7 @@ export const OrderFilter = ({
                 type="date"
                 value={filters.endDate}
                 onChange={(e) => handleFilterChange('endDate', e.target.value)}
+                className="h-11"
               />
             </div>
           </div>
@@ -104,6 +107,7 @@ export const OrderFilter = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="ID, Nome ou E-mail..."
+              className="h-11"
             />
           </div>
         </div>

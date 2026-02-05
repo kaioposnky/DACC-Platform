@@ -72,6 +72,7 @@ export const UserFilter = ({
                                 placeholder="Nome, email ou matrícula..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
+                                className="h-11"
                             />
                         </div>
 
@@ -86,6 +87,7 @@ export const UserFilter = ({
                                         { label: "Todos os cargos", value: "" },
                                         ...roles,
                                     ]}
+                                    className="h-11"
                                 />
                             </div>
 
@@ -99,6 +101,7 @@ export const UserFilter = ({
                                         { label: "Ativos", value: "true" },
                                         { label: "Inativos", value: "false" },
                                     ]}
+                                    className="h-11"
                                 />
                             </div>
                         </div>
@@ -112,6 +115,7 @@ export const UserFilter = ({
                                 label="Cadastrado a partir de"
                                 value={createdFrom}
                                 onChange={(e) => setCreatedFrom(e.target.value)}
+                                className="h-11"
                             />
                         </div>
                         <div className="w-full sm:w-auto">
@@ -120,6 +124,7 @@ export const UserFilter = ({
                                 label="Cadastrado até"
                                 value={createdTo}
                                 onChange={(e) => setCreatedTo(e.target.value)}
+                                className="h-11"
                             />
                         </div>
                     </div>

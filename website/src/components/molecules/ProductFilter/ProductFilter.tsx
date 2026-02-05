@@ -89,37 +89,41 @@ export const ProductFilter = ({
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-          {/* Filter Controls */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 lg:gap-6 flex-1">
-            <div className="min-w-[200px] w-full sm:w-auto">
-              <Select
-                label="Categoria"
-                value={filters.category}
-                options={categories}
-                onChange={(e) => handleFilterChange('category', e.target.value)}
-              />
-            </div>
-
-            <div className="min-w-[200px] w-full sm:w-auto">
-              <Select
-                label="Ordenar por"
-                value={filters.sortBy}
-                options={sortOptions}
-                onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-              />
-            </div>
-          </div>
-
           {/* Search Input */}
-          <div className="w-full lg:w-auto lg:min-w-[350px]">
+          <div className="w-full lg:w-auto lg:min-w-87.5">
             <Input
               label="Pesquisar"
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Pesquisar produtos..."
+              className="h-11"
             />
           </div>
+
+          {/* Filter Controls */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 lg:gap-6 flex-1">
+            <div className="min-w-50 w-full sm:w-auto">
+              <Select
+                label="Categoria"
+                value={filters.category}
+                options={categories}
+                onChange={(e) => handleFilterChange('category', e.target.value)}
+                className="h-11"
+              />
+            </div>
+
+            <div className="min-w-50 w-full sm:w-auto">
+              <Select
+                label="Ordenar por"
+                value={filters.sortBy}
+                options={sortOptions}
+                onChange={(e) => handleFilterChange('sortBy', e.target.value)}
+                className="h-11"
+              />
+            </div>
+          </div>
+
         </div>
       </div>
     </motion.div>

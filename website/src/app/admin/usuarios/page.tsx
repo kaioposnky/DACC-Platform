@@ -1,17 +1,14 @@
 "use client";
 
 import {
-  ProductFilterOptions,
-  AdminProductList,
-  ProductFilter,
   AdminListManager,
   UserFilter,
   UserFilterOptions,
-  ManageUserCard, // Added import
+  ManageUserCard,
 } from "@/components";
 import { apiService } from "@/services/api";
-import { Product, User } from "@/types";
-import { useState, useCallback, useEffect } from "react"; // Added useEffect
+import { User } from "@/types";
+import { useState, useCallback, useEffect } from "react";
 import { toast } from "sonner";
 
 export default function AdminUsuariosPage() {
