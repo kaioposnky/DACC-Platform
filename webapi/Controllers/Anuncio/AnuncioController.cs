@@ -79,7 +79,7 @@ namespace DaccApi.Controllers.Anuncio
         [HttpPost("{id:guid}")]
         [HasPermission(AppPermissions.Anuncios.Update)]
         [AuthenticatedDeleteResponses]
-        public async Task<IActionResult> AddAnuncioImage([FromRoute] Guid id, [FromForm] ImageRequest request)
+        public async Task<IActionResult> AddAnuncioImage([FromRoute] Guid id, [FromBody] ImageRequest request)
         {
             var response = await _anuncioService.AddAnuncioImage(id, request);
             return response;

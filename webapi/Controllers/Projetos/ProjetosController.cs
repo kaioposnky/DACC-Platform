@@ -78,7 +78,7 @@ namespace DaccApi.Controllers.Projetos
         /// </summary>
         [HttpPost("{id:guid}")]
         [HasPermission(AppPermissions.Projetos.Update)]
-        public async Task<IActionResult> AddProjetoImage([FromRoute] Guid id, [FromForm] ImageRequest request)
+        public async Task<IActionResult> AddProjetoImage([FromRoute] Guid id, [FromBody] ImageRequest request)
         {
             var response = await _projetosService.AddProjetoImage(id, request);
             return response;
