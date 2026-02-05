@@ -446,6 +446,130 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
       "registryDate": "08/08/2025"
     }
     ```
+## Cursos
+
+### **GET /api/cursos**
+
+* **Descrição:** Lista todos os cursos disponíveis no sistema
+* **Autorização:** Público
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X GET http://localhost:3001/v1/api/cursos
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": {
+            "cursos": [
+              {
+                "id": "uuid-123",
+                "nome": "Ciência da Computação"
+              },
+              {
+                "id": "uuid-456",
+                "nome": "Engenharia de Software"
+              }
+            ]
+          }
+        }
+        ```
+
+### **GET /api/cursos/{id}**
+
+* **Descrição:** Obtém informações de um curso específico
+* **Autorização:** Público
+
+* **Parâmetros da Requisição:**
+    * **Path**
+        | Nome | Tipo   | Descrição           |
+        |------|--------|---------------------|
+        | `id` | `uuid` | ID único do curso   |
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": {
+            "curso": {
+              "id": "uuid-123",
+              "nome": "Ciência da Computação"
+            }
+          }
+        }
+        ```
+
+### **POST /api/cursos**
+
+* **Descrição:** Cria um novo curso no sistema
+* **Autorização:** Requer permissão `cursos.create`
+
+* **Parâmetros da Requisição:**
+    * **Body (`application/json`)**
+        | Campo  | Tipo     | Obrigatório | Descrição                    |
+        |--------|----------|-------------|------------------------------|
+        | `nome` | `string` | Sim         | Nome do curso (max 200 ch) |
+
+* **Respostas:**
+    * **`201 Created` - Sucesso**
+    * **`400 Bad Request` - Já existe curso com este nome**
+
+### **PATCH /api/cursos/{id}**
+
+* **Descrição:** Atualiza o nome de um curso existente
+* **Autorização:** Requer permissão `cursos.update`
+
+* **Parâmetros da Requisição:**
+    * **Path**
+        | Nome | Tipo   | Descrição           |
+        |------|--------|---------------------|
+        | `id` | `uuid` | ID único do curso   |
+    * **Body (`application/json`)**
+        | Campo  | Tipo     | Obrigatório | Descrição                    |
+        |--------|----------|-------------|------------------------------|
+        | `nome` | `string` | Sim         | Novo nome do curso          |
+
+### **DELETE /api/cursos/{id}**
+
+* **Descrição:** Remove um curso do sistema
+* **Autorização:** Requer permissão `cursos.delete`
+
+---
+
+## Roles (Cargos)
+
+### **GET /api/roles**
+
+* **Descrição:** Lista todos os cargos (roles) disponíveis no sistema
+* **Autorização:** Público
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": {
+            "roles": [
+              { "id": "uuid", "nome": "aluno" },
+              { "id": "uuid", "nome": "diretor" },
+              { "id": "uuid", "nome": "administrador" }
+            ]
+          }
+        }
+        ```
+
+---
+
 ## Products
 
 ### **GET /api/products**
@@ -476,6 +600,20 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
               "inStock": true
             }
           ]
+        }
+        ```
+
+### **GET /api/products/subcategorias**
+
+* **Descrição:** Retorna a lista de todas as subcategorias de produtos cadastradas
+* **Autorização:** Público
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "data": [ "Camisetas", "Moletons", "Canecas", "Acessórios" ]
         }
         ```
 
@@ -649,47 +787,56 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
     * **Body (`multipart/form-data`)**
 
-        | Campo           | Tipo     | Obrigatório | Descrição               |
-        |-----------------|----------|-------------|-------------------------|
-        | `name`          | `string` | No          | Product name            |
-        | `description`   | `string` | No          | Product description     |
-        | `category`      | `string` | No          | Product category        |
-        | `subcategory`   | `string` | No          | Product subcategory     |
-        | `price`         | `number` | No          | Current price           |
-        | `originalPrice` | `number` | No          | Original price          |
+### **PATCH /api/products/{id}**
+
+* **Descrição:** Atualiza as informações básicas de um produto
+* **Autorização:** Requer permissão `produtos.update`
+
+* **Parâmetros da Requisição:**
+    * **Path**
+        | Nome | Tipo   | Descrição           |
+        |------|--------|---------------------|
+        | `id` | `uuid` | ID único do produto |
+
+    * **Body (`application/json`)**
+        | Campo          | Tipo     | Obrigatório | Descrição                            |
+        |----------------|----------|-------------|--------------------------------------|
+        | `name`         | `string` | Não         | Novo nome do produto                 |
+        | `description`  | `string` | Não         | Nova descrição                       |
+        | `price`        | `number` | Não         | Novo preço                           |
+        | `category`     | `string` | Não         | Nova categoria                       |
+        | `subcategory`  | `string` | Não         | Nova subcategoria                    |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
     curl -X PATCH http://localhost:3001/v1/api/products/12345678-1234-1234-1234-123456789012 \
     -H "Authorization: Bearer <seu_jwt_token>" \
-    -F "price=24.90"
+    -H "Content-Type: application/json" \
+    -d '{ "price": 24.90 }'
     ```
+
+### **PATCH /api/products/{id}/batch-update**
+
+* **Descrição:** Realiza uma atualização em massa de todas as propriedades do produto, incluindo especificações, informações de frete e variações (com imagens).
+* **Autorização:** Requer permissão `produtos.update`
+
+* **Parâmetros da Requisição:**
+    * **Body (`application/json`)**
+        | Campo | Tipo | Descrição |
+        |-------|------|-----------|
+        | `name` | `string` | Nome do produto |
+        | `variations` | `array` | Lista de variações com `id`, `color`, `size`, `stock` e `images` (com `url` e `order`) |
+        | `specifications` | `array` | Lista de `{ name, value }` |
+        | `shippingInfo` | `object` | `{ freeShipping, estimatedDays, returnPolicy }` |
 
 * **Respostas:**
     * **`200 OK` - Sucesso**
         ```json
         {
           "success": true,
-          "code": "OK",
-          "message": "Produto atualizado com sucesso",
-          "data": {
-            "id": "12345678-1234-1234-1234-123456789012",
-            "price": 24.90
-          }
+          "message": "Produto atualizado com sucesso"
         }
         ```
-
-### **PATCH /api/products/{id}/json**
-
-* **Descrição:** Atualiza um produto via JSON
-* **Autorização:** Requer permissão `produtos.update`
-
-* **Parâmetros da Requisição:**
-    * **Body (`application/json`)**
-        * `name`, `description`, `category`, `subcategory`, `price`, `originalPrice`
-
-* **Respostas:**
-    * **`200 OK` - Sucesso**
 
 ### **DELETE /api/products/{id}**
 
@@ -1638,12 +1785,23 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 ### **GET /api/news**
 
-* **Descrição:** Lista todas as notícias publicadas
+* **Descrição:** Lista todas as notícias publicadas com suporte a filtros e paginação.
 * **Autorização:** Público
+
+* **Parâmetros de Consulta (Query String):**
+    | Nome | Tipo | Descrição |
+    |------|------|-----------|
+    | `searchQuery` | `string` | Busca no título ou descrição |
+    | `category` | `string` | Filtra por categoria |
+    | `authorId` | `uuid` | Filtra por autor |
+    | `startDate`| `date` | Data mínima (yyyy-mm-dd) |
+    | `endDate`  | `date` | Data máxima (yyyy-mm-dd) |
+    | `page`     | `int`  | Número da página (padrão: 1) |
+    | `limit`    | `int`  | Itens por página (padrão: 16) |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
-    curl -X GET http://localhost:3001/v1/api/news
+    curl -X GET "http://localhost:3001/v1/api/news?category=acadêmico&limit=5"
     ```
 
 * **Respostas:**
@@ -1788,23 +1946,26 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         |------|--------|----------------------|
         | `id` | `uuid` | ID único da notícia  |
 
-    * **Body (`multipart/form-data`)**
+    * **Body (`application/json`)**
 
         | Campo             | Tipo       | Obrigatório | Descrição                        |
         |-------------------|------------|-------------|----------------------------------|
-        | `titulo`          | `string`   | Não         | Novo título da notícia           |
-        | `descricao`       | `string`   | Não         | Nova descrição                   |
-        | `conteudo`        | `string`   | Não         | Novo conteúdo                    |
-        | `categoria`       | `string`   | Não         | Nova categoria                   |
-        | `imageFile`       | `file`     | Não         | Nova imagem (máximo 5MB)         |
-        | `dataPublicacao`  | `datetime` | Não         | Nova data de publicação          |
-        | `dataAtualizacao` | `datetime` | Não         | Nova data de atualização         |
+        | `title`           | `string`   | Não         | Novo título da notícia           |
+        | `description`     | `string`   | Não         | Nova descrição                   |
+        | `content`         | `string`   | Não         | Novo conteúdo                    |
+        | `category`        | `string`   | Não         | Nova categoria                   |
+        | `imageUrl`        | `string`   | Não         | Nova imagem (Base64 data URL)    |
+        | `publishDate`     | `datetime` | Não         | Nova data de publicação          |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
     curl -X PATCH http://localhost:3001/v1/api/news/22222222-2222-2222-2222-222222222222 \
     -H "Authorization: Bearer <seu_jwt_token>" \
-    -F "titulo=Parceria DACC - Atualizada"
+    -H "Content-Type: application/json" \
+    -d '{
+      "title": "Parceria DACC - Atualizada",
+      "category": "parceria"
+    }'
     ```
 
 * **Respostas:**
@@ -1816,7 +1977,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "message": "Notícia atualizada com sucesso",
           "data": {
             "id": "22222222-2222-2222-2222-222222222222",
-            "titulo": "Parceria DACC - Atualizada"
+            "title": "Parceria DACC - Atualizada"
           }
         }
         ```
@@ -1881,6 +2042,23 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 * **Exemplo de Requisição (cURL):**
     ```shell
     curl -X GET http://localhost:3001/v1/api/events
+    ```
+
+### **GET /api/events/search**
+
+* **Descrição:** Busca avançada de eventos com filtros.
+* **Autorização:** Público
+
+* **Parâmetros de Consulta:**
+    | Nome | Tipo | Descrição |
+    |------|------|-----------|
+    | `searchQuery` | `string` | Busca no título |
+    | `eventType` | `string` | Filtra por tipo |
+    | `startDate` | `date` | Data inicial |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X GET "http://localhost:3001/v1/api/events/search?eventType=workshop"
     ```
 
 * **Respostas:**
@@ -1957,15 +2135,15 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Parâmetros da Requisição:**
     * **Body (`application/json`)**
-
-        | Campo        | Tipo       | Obrigatório | Descrição                                       |
-        |--------------|------------|-------------|-------------------------------------------------|
-        | `title`      | `string`   | No          | Event title                                     |
-        | `description`| `string`   | No          | Detailed description                            |
-        | `date`       | `datetime` | No          | Event date and time                             |
-        | `eventType`  | `string`   | No          | Event type (workshop/seminar/hackathon)         |
-        | `actionText` | `string`   | No          | Action button text                              |
-        | `actionLink` | `string`   | No          | Link for registration or more info              |
+        | Campo | Tipo | Obrigatório | Descrição |
+        |-------|------|-------------|-----------|
+        | `title` | `string` | Sim | Título do evento |
+        | `description` | `string` | Sim | Descrição detalhada |
+        | `date` | `datetime` | Sim | Data e hora |
+        | `eventType` | `string` | Não | Tipo (workshop/seminar/hackathon) |
+        | `actionText` | `string` | Não | Texto do botão |
+        | `actionLink` | `string` | Não | Link de ação |
+        | `imageUrl` | `string` | Não | URL ou Base64 da imagem |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
@@ -1973,29 +2151,12 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
     -H "Authorization: Bearer <seu_jwt_token>" \
     -H "Content-Type: application/json" \
     -d '{
-      "titulo": "Workshop de React",
-      "descricao": "Workshop sobre desenvolvimento com React",
-      "data": "2025-08-15T14:00:00Z",
-      "tipoEvento": "workshop",
-      "textoAcao": "Inscrever-se",
-      "linkAcao": "https://forms.google.com/workshop-react"
+      "title": "Workshop de React",
+      "description": "Explorando Hooks e Context API",
+      "date": "2025-08-15T14:00:00Z",
+      "eventType": "workshop"
     }'
     ```
-
-* **Respostas:**
-    * **`201 Created` - Sucesso**
-        ```json
-        {
-          "success": true,
-          "code": "CREATED",
-          "message": "Evento criado com sucesso",
-          "data": {
-            "id": "33333333-3333-3333-3333-333333333333",
-            "titulo": "Workshop de React",
-            "data": "2025-08-15T14:00:00Z"
-          }
-        }
-        ```
 
 ### **PATCH /api/events/{id}**
 
@@ -2127,25 +2288,22 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
     curl -X GET http://localhost:3001/v1/api/projects
     ```
 
-* **Respostas:**
-    * **`200 OK` - Sucesso**
-        ```json
-        {
-          "success": true,
-          "code": "OK",
-          "message": "Requisição bem-sucedida",
-          "data": [
-            {
-              "id": "44444444-4444-4444-4444-444444444444",
-              "title": "Academic Management System",
-              "description": "System to manage academic activities",
-              "status": "in progress",
-              "department": "Technology",
-              "tags": ["web", "backend", "frontend"]
-            }
-          ]
-        }
-        ```
+### **GET /api/projects/search**
+
+* **Descrição:** Busca avançada de projetos com filtros.
+* **Autorização:** Público
+
+* **Parâmetros de Consulta:**
+    | Nome | Tipo | Descrição |
+    |------|------|-----------|
+    | `searchQuery` | `string` | Busca no título |
+    | `status` | `string` | Filtra por status |
+    | `directorateId` | `uuid` | Filtra por diretoria |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X GET "http://localhost:2222/v1/api/projects/search?status=in%20progress"
+    ```
 
 ### **GET /api/projects/{id}**
 
@@ -2200,17 +2358,14 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Parâmetros da Requisição:**
     * **Body (`application/json`)**
-
-        | Campo       | Tipo     | Obrigatório | Descrição                                      |
-        |-------------|----------|-------------|------------------------------------------------|
-        | `title`     | `string` | No          | Project title                                  |
-        | `description`| `string` | No          | Detailed description                           |
-        | `status`    | `string` | No          | Status (planned/in progress/completed)         |
-        | `department`| `string` | No          | Responsible department                         |
-        | `tags`      | `array`  | Não         | Tags relacionadas ao projeto                   |
-
-> [!NOTE]
-> A imagem do projeto deve ser adicionada separadamente através de um `POST /api/projects/{id}` com `multipart/form-data`.
+        | Campo | Tipo | Obrigatório | Descrição |
+        |-------|------|-------------|-----------|
+        | `title` | `string` | Sim | Título do projeto |
+        | `description` | `string` | Sim | Descrição detalhada |
+        | `status` | `string` | Não | Status (planned/in progress/completed) |
+        | `directorateId` | `uuid` | Não | ID da diretoria responsável |
+        | `tags` | `array` | Não | Tags relacionadas |
+        | `imageUrl` | `string` | Não | URL ou Base64 da imagem |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
@@ -2218,28 +2373,12 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
     -H "Authorization: Bearer <seu_jwt_token>" \
     -H "Content-Type: application/json" \
     -d '{
-      "titulo": "Sistema de Gestão Acadêmica",
-      "descricao": "Sistema para gerenciar atividades acadêmicas",
-      "status": "planejado",
-      "diretoria": "Tecnologia",
-      "tags": ["web", "backend"]
+      "title": "Sistema de Gestão Acadêmica",
+      "description": "Sistema para gerenciar atividades acadêmicas",
+      "status": "planned",
+      "directorateId": "87654321-4321-4321-4321-210987654321"
     }'
     ```
-
-* **Respostas:**
-    * **`201 Created` - Sucesso**
-        ```json
-        {
-          "success": true,
-          "code": "CREATED",
-          "message": "Projeto criado com sucesso",
-          "data": {
-            "id": "44444444-4444-4444-4444-444444444444",
-            "titulo": "Sistema de Gestão Acadêmica",
-            "status": "planejado"
-          }
-        }
-        ```
 
 ### **PATCH /api/projects/{id}**
 
@@ -2248,42 +2387,40 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Parâmetros da Requisição:**
     * **Path**
-
         | Nome | Tipo   | Descrição            |
         |------|--------|----------------------|
         | `id` | `uuid` | ID único do projeto  |
 
-    * **Body (`multipart/form-data`)**
-
-        | Campo       | Tipo     | Obrigatório | Descrição                                      |
-        |-------------|----------|-------------|------------------------------------------------|
-        | `titulo`    | `string` | Não         | Novo título do projeto                         |
-        | `descricao` | `string` | Não         | Nova descrição                                 |
-        | `status`    | `string` | Não         | Novo status                                    |
-        | `diretoria` | `string` | Não         | Nova diretoria responsável                     |
-        | `tags`      | `array`  | Não         | Novas tags                                     |
-        | `imageFile` | `file`   | Não         | Nova imagem (máximo 5MB)                       |
+    * **Body (`application/json`)**
+        | Campo | Tipo | Obrigatório | Descrição |
+        |-------|------|-------------|-----------|
+        | `title` | `string` | Não | Novo título |
+        | `description` | `string` | Não | Nova descrição |
+        | `status` | `string` | Não | Novo status |
+        | `directorateId` | `uuid` | Não | Nova diretoria |
+        | `tags` | `array` | Não | Novas tags |
+        | `imageUrl` | `string` | Não | URL ou Base64 da imagem |
+        | `progress` | `int` | Não | Progresso (0-100) |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
     curl -X PATCH http://localhost:3001/v1/api/projects/44444444-4444-4444-4444-444444444444 \
     -H "Authorization: Bearer <seu_jwt_token>" \
-    -F "status=em progresso"
+    -H "Content-Type: application/json" \
+    -d '{ "status": "completed", "progress": 100 }'
     ```
 
-* **Respostas:**
-    * **`200 OK` - Sucesso**
-        ```json
-        {
-          "success": true,
-          "code": "OK",
-          "message": "Projeto atualizado com sucesso",
-          "data": {
-            "id": "44444444-4444-4444-4444-444444444444",
-            "status": "em progresso"
-          }
-        }
-        ```
+### **POST /api/projects/{id}**
+
+* **Descrição:** Adiciona ou atualiza a imagem de um projeto via JSON (Base64).
+* **Autorização:** Requer permissão `projetos.update`
+
+* **Parâmetros da Requisição:**
+    * **Body (`application/json`)**
+        | Campo | Tipo | Descrição |
+        |-------|------|-----------|
+        | `imageUrl` | `string` | String Base64 da imagem |
+        | `imageAlt` | `string` | Texto alternativo |
 
 ### **DELETE /api/projects/{id}**
 
@@ -2464,34 +2601,33 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 ### **PATCH /api/faculty/{id}**
 
-* **Descrição:** Atualiza informações de um diretor
-* **Autorização:** Requer autenticação JWT
+* **Descrição:** Atualiza as informações de um diretor
+* **Autorização:** Requer permissão `faculty.update`
 
 * **Parâmetros da Requisição:**
     * **Path**
-
         | Nome | Tipo   | Descrição            |
         |------|--------|----------------------|
         | `id` | `uuid` | ID único do diretor  |
 
-    * **Body (`multipart/form-data`)**
-
-        | Campo          | Tipo     | Obrigatório | Descrição                           |
-        |----------------|----------|-------------|-------------------------------------|
-        | `nome`         | `string` | Não         | Novo nome do diretor                |
-        | `descricao`    | `string` | Não         | Nova descrição                      |
-        | `email`        | `string` | Não         | Novo e-mail                         |
-        | `githubLink`   | `string` | Não         | Novo link do GitHub                 |
-        | `linkedinLink` | `string` | Não         | Novo link do LinkedIn               |
-        | `imageFile`    | `file`   | Não         | Nova foto (máximo 5MB)              |
-        | `usuarioId`    | `uuid`   | Não         | Novo ID do usuário associado        |
-        | `diretoriaId`  | `uuid`   | Não         | Novo ID da diretoria                |
+    * **Body (`application/json`)**
+        | Campo | Tipo | Obrigatório | Descrição |
+        |-------|------|-------------|-----------|
+        | `name` | `string` | Não | Nome do diretor |
+        | `title` | `string` | Não | Título (Ex: Dr, Ms) |
+        | `position` | `string` | Não | Cargo |
+        | `specialization` | `string` | Não | Especialização |
+        | `imageUrl` | `string` | Não | Image Base64 ou URL |
+        | `email` | `string` | Não | E-mail de contato |
+        | `linkedin` | `string` | Não | Link do LinkedIn |
+        | `github` | `string` | Não | Link do GitHub |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
     curl -X PATCH http://localhost:3001/v1/api/faculty/55555555-5555-5555-5555-555555555555 \
     -H "Authorization: Bearer <seu_jwt_token>" \
-    -F "descricao=Diretor de Tecnologia e Inovação"
+    -H "Content-Type: application/json" \
+    -d '{ "position": "Diretor Adjunto" }'
     ```
 
 * **Respostas:**
@@ -2500,25 +2636,9 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         {
           "success": true,
           "code": "OK",
-          "message": "Diretor atualizado com sucesso",
-          "data": {
-            "id": "55555555-5555-5555-5555-555555555555",
-            "descricao": "Diretor de Tecnologia e Inovação"
-          }
+          "message": "Diretor atualizado com sucesso"
         }
         ```
-
-### **PATCH /api/faculty/{id}/json**
-
-* **Descrição:** Atualiza um diretor via JSON
-* **Autorização:** Requer autenticação JWT
-
-* **Parâmetros da Requisição:**
-    * **Body (`application/json`)**
-        * `name`, `description`, `email`, `githubLink`, `linkedinLink`, `userId`, `boardId`
-
-* **Respostas:**
-    * **`200 OK` - Sucesso**
 
 ### **DELETE /api/faculty/{id}**
 
@@ -2557,6 +2677,24 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 * **Exemplo de Requisição (cURL):**
     ```shell
     curl -X GET http://localhost:3001/v1/api/announcements \
+    -H "Authorization: Bearer <seu_jwt_token>"
+    ```
+
+### **GET /api/announcements/search**
+
+* **Descrição:** Busca avançada de anúncios com filtros.
+* **Autorização:** Requer autenticação JWT
+
+* **Parâmetros de Consulta:**
+    | Nome | Tipo | Descrição |
+    |------|------|-----------|
+    | `searchQuery` | `string` | Busca no título |
+    | `type` | `string` | Filtra por tipo (evento/notícia/importante) |
+    | `isActive` | `bool` | Filtra por status |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X GET "http://localhost:3001/v1/api/announcements/search?type=importante" \
     -H "Authorization: Bearer <seu_jwt_token>"
     ```
 
@@ -2633,28 +2771,27 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 * **Autorização:** Requer autenticação JWT
 
 * **Parâmetros da Requisição:**
-    * **Body (`multipart/form-data`)**
-
-        | Campo         | Tipo      | Obrigatório | Descrição                                     |
-        |---------------|-----------|-------------|-----------------------------------------------|
-        | `titulo`      | `string`  | Não         | Título do anúncio                             |
-        | `conteudo`    | `string`  | Não         | Conteúdo do anúncio                           |
-        | `tipoAnuncio` | `string`  | Não         | Tipo (evento/notícia/importante)              |
-        | `ativo`       | `boolean` | Não         | Se o anúncio está ativo                       |
-        | `imageFile`   | `file`    | Não         | Arquivo de imagem (máximo 5MB)                |
-        | `imagemAlt`   | `string`  | Não         | Texto alternativo da imagem                   |
-        | `autorId`     | `uuid`    | Não         | ID do autor (preenchido automaticamente)      |
+    * **Body (`application/json`)**
+        | Campo | Tipo | Obrigatório | Descrição |
+        |-------|------|-------------|-----------|
+        | `title` | `string` | Sim | Título do anúncio |
+        | `content` | `string` | Sim | Conteúdo do anúncio |
+        | `type` | `string` | Não | Tipo (evento/notícia/importante) |
+        | `isActive` | `bool` | Não | Status de ativação |
+        | `imageUrl` | `string` | Não | URL ou Base64 da imagem |
+        | `imageAlt` | `string` | Não | Texto alternativo |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
     curl -X POST http://localhost:3001/v1/api/announcements \
     -H "Authorization: Bearer <seu_jwt_token>" \
-    -F "titulo=Manutenção do Sistema" \
-    -F "conteudo=Sistema ficará em manutenção no domingo" \
-    -F "tipoAnuncio=importante" \
-    -F "ativo=true" \
-    -F "imageFile=@manutencao.jpg" \
-    -F "imagemAlt=Ícone de manutenção"
+    -H "Content-Type: application/json" \
+    -d '{
+      "title": "Manutenção do Sistema",
+      "content": "Sistema ficará em manutenção no domingo",
+      "type": "importante",
+      "active": true
+    }'
     ```
 
 * **Respostas:**
@@ -2679,28 +2816,37 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 * **Parâmetros da Requisição:**
     * **Path**
-
         | Nome | Tipo   | Descrição            |
         |------|--------|----------------------|
         | `id` | `uuid` | ID único do anúncio  |
 
-    * **Body (`multipart/form-data`)**
-
-        | Campo         | Tipo      | Obrigatório | Descrição                        |
-        |---------------|-----------|-------------|----------------------------------|
-        | `titulo`      | `string`  | Não         | Novo título                      |
-        | `conteudo`    | `string`  | Não         | Novo conteúdo                    |
-        | `tipoAnuncio` | `string`  | Não         | Novo tipo                        |
-        | `ativo`       | `boolean` | Não         | Novo status de ativação          |
-        | `imageFile`   | `file`    | Não         | Nova imagem (máximo 5MB)         |
-        | `imagemAlt`   | `string`  | Não         | Novo texto alternativo           |
+    * **Body (`application/json`)**
+        | Campo | Tipo | Obrigatório | Descrição |
+        |-------|------|-------------|-----------|
+        | `title` | `string` | Não | Novo título |
+        | `content` | `string` | Não | Novo conteúdo |
+        | `type` | `string` | Não | Novo tipo |
+        | `isActive` | `bool` | Não | Novo status |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
     curl -X PATCH http://localhost:3001/v1/api/announcements/77777777-7777-7777-7777-777777777777 \
     -H "Authorization: Bearer <seu_jwt_token>" \
-    -F "ativo=false"
+    -H "Content-Type: application/json" \
+    -d '{ "active": false }'
     ```
+
+### **POST /api/announcements/{id}**
+
+* **Descrição:** Adiciona ou atualiza a imagem de um anúncio via JSON (Base64).
+* **Autorização:** Requer permissão `anuncios.update`
+
+* **Parâmetros da Requisição:**
+    * **Body (`application/json`)**
+        | Campo | Tipo | Descrição |
+        |-------|------|-----------|
+        | `imageUrl` | `string` | String Base64 da imagem |
+        | `imageAlt` | `string` | Texto alternativo |
 
 * **Respostas:**
     * **`200 OK` - Sucesso**
@@ -2748,22 +2894,23 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 ### **POST /api/filestorage/uploadImage**
 
-* **Descrição:** Faz upload de uma imagem para o servidor
+* **Descrição:** Faz upload de uma imagem via `multipart/form-data`
 * **Autorização:** Requer role `administrador`
 
 * **Parâmetros da Requisição:**
     * **Body (`multipart/form-data`)**
-
         | Campo  | Tipo   | Obrigatório | Descrição                      |
         |--------|--------|-------------|--------------------------------|
         | `file` | `file` | Sim         | Arquivo de imagem (máximo 5MB) |
 
-* **Exemplo de Requisição (cURL):**
-    ```shell
-    curl -X POST http://localhost:3001/v1/api/filestorage/uploadImage \
-    -H "Authorization: Bearer <seu_jwt_token>" \
-    -F "file=@imagem.jpg"
-    ```
+### **POST /api/filestorage/uploadBase64**
+
+* **Descrição:** Faz upload de uma imagem enviada como string Base64.
+* **Autorização:** Requer role `administrador`
+
+* **Parâmetros da Requisição:**
+    * **Body (`text/plain`)**
+        * String bruta contendo o conteúdo Base64 (com ou sem prefixo `data:image/...`).
 
 * **Respostas:**
     * **`200 OK` - Sucesso**
@@ -2773,7 +2920,7 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           "code": "OK",
           "message": "Upload realizado com sucesso",
           "data": {
-            "url": "/uploads/imagem_123456.jpg"
+            "url": "http://servidor/uploads/imagem_123.jpg"
           }
         }
         ```
