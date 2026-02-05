@@ -44,6 +44,17 @@
         }
 
         /// <summary>
+        /// Permissões relacionadas a diretorias (departamentos).
+        /// </summary>
+        public static class Diretorias
+        {
+            public const string View = "diretorias.view";
+            public const string Create = "diretorias.create";
+            public const string Update = "diretorias.update";
+            public const string Delete = "diretorias.delete";
+        }
+
+        /// <summary>
         /// Permissões relacionadas a produtos.
         /// </summary>
         public static class Produtos

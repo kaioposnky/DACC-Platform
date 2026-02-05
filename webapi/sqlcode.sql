@@ -616,6 +616,12 @@ VALUES
     ('projetos.members.add', 'Adicionar membros a um projeto'),
     ('projetos.members.remove', 'Remover membros de um projeto'),
 
+    -- Permissões de Diretorias
+    ('diretorias.view', 'Visualizar diretorias'),
+    ('diretorias.create', 'Criar novas diretorias'),
+    ('diretorias.update', 'Atualizar diretorias'),
+    ('diretorias.delete', 'Deletar diretorias'),
+
     -- Permissões de Produtos
     ('produtos.view', 'Visualizar produtos da loja'),
     ('produtos.create', 'Criar novos produtos na loja'),
@@ -732,6 +738,9 @@ $$
 
             -- Projetos
             'projetos.create', 'projetos.update', 'projetos.delete', 'projetos.members.add', 'projetos.members.remove',
+
+            -- Diretorias
+            'diretorias.create', 'diretorias.update', 'diretorias.delete',
 
             -- Produtos
             'produtos.create', 'produtos.update', 'produtos.delete',

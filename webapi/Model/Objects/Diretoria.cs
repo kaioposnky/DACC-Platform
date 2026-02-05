@@ -25,5 +25,11 @@ namespace DaccApi.Model.Objects
         /// </summary>
         [Column("descricao")]
         public string? Descricao { get; set; }
+
+        /// <summary>
+        /// Total de registros (usado apenas para paginação, não mapeado no banco).
+        /// </summary>
+        [NotMapped]
+        public int TotalCount { get; set; }
     }
 }

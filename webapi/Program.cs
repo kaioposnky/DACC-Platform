@@ -199,6 +199,8 @@ builder.Services.AddScoped<IDiretoresService, DiretoresService>();
 builder.Services.AddScoped<IDiretoresRepository, DiretoresRepository>();
 builder.Services.AddScoped<IProjetosService, ProjetosService>();
 builder.Services.AddScoped<IProjetosRepository, ProjetosRepository>();
+builder.Services.AddScoped<IDiretoriaService, DiretoriaService>();
+builder.Services.AddScoped<IDiretoriaRepository, DiretoriaRepository>();
 builder.Services.AddScoped<IAvaliacaoService, AvaliacaoService>();
 builder.Services.AddScoped<IEventosService, EventosService>();
 builder.Services.AddScoped<IEventosRepository, EventosRepository>();
