@@ -65,7 +65,8 @@
 				diretoria_id = @DiretoriaId,
 				tags = @Tags,
 				progresso = @Progresso,
-				texto_conclusao = @TextoConclusao
+				texto_conclusao = @TextoConclusao,
+				data_atualizacao = CURRENT_TIMESTAMP
 			WHERE id=@id
 	</query>
 

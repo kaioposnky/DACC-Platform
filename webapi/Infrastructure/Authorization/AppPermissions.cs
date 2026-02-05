@@ -165,5 +165,16 @@
         {
             public const string View = "dashboard.view";
         }
+
+        /// <summary>
+        /// Permissões relacionadas a anúncios.
+        /// </summary>
+        public static class Anuncios
+        {
+            public const string View = "anuncios.view";
+            public const string Create = "anuncios.create";
+            public const string Update = "anuncios.update";
+            public const string Delete = "anuncios.delete";
+        }
     }
 }

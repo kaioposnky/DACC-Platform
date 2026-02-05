@@ -248,6 +248,7 @@
             descricao = @Descricao,
             preco = @Preco,
             preco_original = @PrecoOriginal,
+            subcategoria_id = @SubcategoriaId,
             data_atualizacao = @DataAtualizacao,
             descricao_detalhada = @DescricaoDetalhada,
             destaque = @Destaque

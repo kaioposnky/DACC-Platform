@@ -64,6 +64,7 @@ namespace DaccApi.Controllers.Anuncio
         /// Cria um novo anúncio.
         /// </summary>
         [AuthenticatedPostResponses]
+        [HasPermission(AppPermissions.Anuncios.Create)]
         [HttpPost("")]
         public async Task<IActionResult> CreateAnuncio([FromBody] RequestAnuncio anuncio)
         {
@@ -76,6 +77,7 @@ namespace DaccApi.Controllers.Anuncio
         /// Adiciona uma imagem a um anúncio existente.
         /// </summary>
         [HttpPost("{id:guid}")]
+        [HasPermission(AppPermissions.Anuncios.Update)]
         [AuthenticatedDeleteResponses]
         public async Task<IActionResult> AddAnuncioImage([FromRoute] Guid id, [FromForm] ImageRequest request)
         {
@@ -87,6 +89,7 @@ namespace DaccApi.Controllers.Anuncio
         /// Deleta um anúncio existente.
         /// </summary>
         [AuthenticatedDeleteResponses]
+        [HasPermission(AppPermissions.Anuncios.Delete)]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteAnuncio([FromRoute] Guid id)
         {
@@ -98,10 +101,11 @@ namespace DaccApi.Controllers.Anuncio
         /// Atualiza um anúncio existente.
         /// </summary>
         [AuthenticatedPatchResponses]
-        [HttpPatch("{id:guid}")]
-        public async Task<IActionResult> UpdateAnuncio([FromRoute] Guid id, [FromForm] RequestAnuncio anuncio)
+        [HttpPatch("{id}")]
+        [HasPermission(AppPermissions.Anuncios.Update)]
+        public async Task<IActionResult> UpdateAnuncio(Guid id, [FromBody] RequestAnuncio request)
         {
-            var response = await _anuncioService.UpdateAnuncio(id, anuncio);
+            var response = await _anuncioService.UpdateAnuncio(id, request);
             return response;
         }
     }

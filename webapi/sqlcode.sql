@@ -194,6 +194,15 @@ CREATE TABLE diretoria
     descricao TEXT
 );
 
+-- Tabela: Cursos
+-- Armazena os cursos oferecidos pela instituição
+DROP TABLE IF EXISTS curso CASCADE;
+CREATE TABLE curso
+(
+    id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome VARCHAR(255) UNIQUE NOT NULL
+);
+
 INSERT INTO diretoria (nome, descricao) VALUES 
     ('E-Sports', 'Diretoria de E-Sports'),
     ('RH', 'Diretoria de RH'),
@@ -673,6 +682,18 @@ VALUES
     ('cart.items.remove', 'Remover itens do carrinho'),
     ('cart.clear', 'Limpar o carrinho'),
 
+    -- Permissões de Anúncios
+    ('anuncios.view', 'Visualizar anúncios'),
+    ('anuncios.create', 'Criar novos anúncios'),
+    ('anuncios.update', 'Atualizar anúncios'),
+    ('anuncios.delete', 'Deletar anúncios'),
+
+    -- Permissões de Cursos
+    ('cursos.view', 'Visualizar cursos'),
+    ('cursos.create', 'Criar novos cursos'),
+    ('cursos.update', 'Atualizar cursos'),
+    ('cursos.delete', 'Deletar cursos'),
+
     -- Permissões do Dashboard
     ('dashboard.view', 'Visualizar o dashboard de estatísticas');
 
@@ -715,7 +736,10 @@ $$
             'reviews.view', 'reviews.create',
 
             -- Carrinho
-            'cart.view', 'cart.items.add', 'cart.items.update', 'cart.items.remove', 'cart.clear'
+            'cart.view', 'cart.items.add', 'cart.items.update', 'cart.items.remove', 'cart.clear',
+
+            -- Anúncios e Cursos
+            'anuncios.view', 'cursos.view'
         );
 
         -- Permissões do Diretor
@@ -759,7 +783,11 @@ $$
             'reviews.update', 'reviews.delete',
 
             -- Arquivos
-            'filestorage.uploadimage'
+            'filestorage.uploadimage',
+
+            -- Anúncios e Cursos (Gestão)
+            'anuncios.create', 'anuncios.update', 'anuncios.delete',
+            'cursos.create', 'cursos.update', 'cursos.delete'
         )
         ON CONFLICT DO NOTHING;
 

@@ -65,7 +65,7 @@ namespace DaccApi.Controllers.Diretores
         /// </summary>
         [AuthenticatedPostResponses]
         [HttpPost("")]
-        public async Task<IActionResult> CreateDiretor([FromForm] RequestDiretor request)
+        public async Task<IActionResult> CreateDiretor([FromBody] RequestDiretor request)
         {
             var response = await _diretoresService.CreateDiretor(request);
             return response;
@@ -87,31 +87,10 @@ namespace DaccApi.Controllers.Diretores
         /// </summary>
         [AuthenticatedPatchResponses]
         [HttpPatch("{id:guid}")]
-        public async Task<IActionResult> UpdateDiretor([FromRoute] Guid id, [FromForm] RequestDiretor request)
+        [HasPermission(AppPermissions.Faculty.Update)]
+        public async Task<IActionResult> UpdateDiretor(Guid id, [FromBody] RequestDiretor request)
         {
             var response = await _diretoresService.UpdateDiretor(id, request);
-            return response;
-        }
-
-        /// <summary>
-        /// Cria um novo diretor via JSON (sem upload de imagem).
-        /// </summary>
-        [AuthenticatedPostResponses]
-        [HttpPost("json")]
-        public async Task<IActionResult> CreateDiretorJson([FromBody] RequestDiretorJson request)
-        {
-            var response = await _diretoresService.CreateDiretorJson(request);
-            return response;
-        }
-        
-        /// <summary>
-        /// Atualiza um diretor existente via JSON (sem upload de imagem).
-        /// </summary>
-        [AuthenticatedPatchResponses]
-        [HttpPatch("{id:guid}/json")]
-        public async Task<IActionResult> UpdateDiretorJson([FromRoute] Guid id, [FromBody] RequestDiretorJson request)
-        {
-            var response = await _diretoresService.UpdateDiretorJson(id, request);
             return response;
         }
     }

@@ -87,10 +87,14 @@
 		SET 
 			nome = @Nome, 
 			sobrenome = @Sobrenome,
+			email = @Email,
+			ra = @Ra,
 			curso = @Curso,
 			telefone = @Telefone,
 			imagem_url = @ImagemUrl,
-			newsletter_subscriber = @NewsLetterSubscriber,
+			ativo = @Ativo,
+			cargo = @Cargo,
+			newsletter_subscriber = @InscritoNoticia,
 			data_atualizacao = CURRENT_TIMESTAMP
 		WHERE id = @Id;
 	</query>

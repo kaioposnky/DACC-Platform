@@ -52,6 +52,7 @@
 				cargo = @Cargo,
 				especializacao = @Especializacao,
 				imagem_url = @ImagemUrl,
+				usuario_id = @UsuarioId,
 				email = @Email,
 				github = @Github,
 				linkedin = @Linkedin

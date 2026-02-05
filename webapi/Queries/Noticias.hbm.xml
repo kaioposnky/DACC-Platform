@@ -99,6 +99,7 @@
                 conteudo = @Conteudo,
                 descricao = @Descricao,
                 categoria = @Categoria,
+                autor_id = @AutorId,
                 tempo_leitura = @TempoLeitura,
                 data_publicacao = @DataPublicacao,
                 data_atualizacao = CURRENT_TIMESTAMP

@@ -90,7 +90,7 @@ namespace DaccApi.Controllers.Projetos
         [AuthenticatedPatchResponses]
         [HttpPatch("{id:guid}")]
         [HasPermission(AppPermissions.Projetos.Update)]
-        public async Task<IActionResult> UpdateProjeto([FromRoute] Guid id, [FromForm] RequestProjeto projeto)
+        public async Task<IActionResult> UpdateProjeto([FromRoute] Guid id, [FromBody] RequestProjeto projeto)
         {
             var response = await _projetosService.UpdateProjeto(id, projeto);
             return response;
