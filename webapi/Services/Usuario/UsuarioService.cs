@@ -115,7 +115,8 @@ namespace DaccApi.Services.User
 
                 await _usuarioRepository.UpdateAsync(id, userData);
                 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(userData.ToResponse()));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { user = userData.ToResponse() }), 
+                "Usuário atualizado com sucesso!");
             }
             catch (Exception ex)
             {
