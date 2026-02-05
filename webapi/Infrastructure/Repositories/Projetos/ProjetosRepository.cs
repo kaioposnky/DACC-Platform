@@ -16,17 +16,26 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
         {
             var sql = _dapper.GetQueryNamed("GetAllProjetos");
             
-            var result = await _dapper.QueryAsync<Projeto, Diretoria, Projeto>(
-                sql,
-                (projeto, diretoria) =>
+            var result = await _dapper.QueryAsync<dynamic>(sql);
+            var projetos = result.Select(row => new Projeto
+            {
+                Id = row.id,
+                Titulo = row.titulo,
+                Descricao = row.descricao,
+                ImagemUrl = row.imagemurl,
+                Status = row.status,
+                Tags = row.tags,
+                Progresso = row.progresso,
+                TextoConclusao = row.textoconclusao,
+                Departamento = ((object)row.dept_id) != null ? new Diretoria
                 {
-                    projeto.Departamento = diretoria;
-                    return projeto;
-                },
-                splitOn: "Diretoria_Id"
-            );
+                    Id = row.dept_id,
+                    Nome = row.dept_nome,
+                    Descricao = row.dept_descricao
+                } : null
+            }).ToList();
             
-            return result.ToList();
+            return projetos;
         }
         public async Task<(List<Projeto> Projetos, int TotalCount)> SearchProjetos(DaccApi.Model.Requests.RequestQueryProjeto query)
         {
@@ -43,24 +52,35 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
             };
 
 
-            var result = (await _dapper.QueryAsync<Projeto, Diretoria, Projeto>(
-                sql,
-                (projeto, diretoria) =>
+            var result = await _dapper.QueryAsync<dynamic>(sql, queryParams);
+            var projetos = result.Select(row => new Projeto
+            {
+                Id = row.id,
+                Titulo = row.titulo,
+                Descricao = row.descricao,
+                ImagemUrl = row.imagemurl,
+                Status = row.status,
+                Tags = row.tags,
+                Progresso = row.progresso,
+                TextoConclusao = row.textoconclusao,
+                DataCriacao = row.datacriacao,
+                DataAtualizacao = row.dataatualizacao,
+                TotalCount = (int)(row.totalcount ?? 0),
+                Departamento = ((object)row.dept_id) != null ? new Diretoria
                 {
-                    projeto.Departamento = diretoria;
-                    return projeto;
-                },
-                queryParams,
-                splitOn: "Diretoria_Id"
-            )).ToList();
+                    Id = row.dept_id,
+                    Nome = row.dept_nome,
+                    Descricao = row.dept_descricao
+                } : null
+            }).ToList();
 
             var totalCount = 0;
-            if (result.Any())
+            if (projetos.Any())
             {
-                totalCount = result.First().TotalCount;
+                totalCount = projetos.First().TotalCount;
             }
 
-            return (result, totalCount);
+            return (projetos, totalCount);
         }
 
         public new async Task<Projeto?> GetByIdAsync(Guid id)
@@ -68,18 +88,26 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
             var sql = _dapper.GetQueryNamed("GetProjetoById");
             var param = new { id = id };
 
-            var result = await _dapper.QueryAsync<Projeto, Diretoria, Projeto>(
-                sql,
-                (projeto, diretoria) =>
+            var result = await _dapper.QueryAsync<dynamic>(sql, param);
+            var projeto = result.Select(row => new Projeto
+            {
+                Id = row.id,
+                Titulo = row.titulo,
+                Descricao = row.descricao,
+                ImagemUrl = row.imagemurl,
+                Status = row.status,
+                Tags = row.tags,
+                Progresso = row.progresso,
+                TextoConclusao = row.textoconclusao,
+                Departamento = ((object)row.dept_id) != null ? new Diretoria
                 {
-                    projeto.Departamento = diretoria;
-                    return projeto;
-                },
-                param,
-                splitOn: "Diretoria_Id"
-            );
+                    Id = row.dept_id,
+                    Nome = row.dept_nome,
+                    Descricao = row.dept_descricao
+                } : null
+            }).FirstOrDefault();
 
-            return result.FirstOrDefault();
+            return projeto;
         }
     }
 }

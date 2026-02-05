@@ -11,9 +11,9 @@
 			p.tags as Tags,
 			p.progresso as Progresso,
 			p.texto_conclusao as TextoConclusao,
-			d.id as Diretoria_Id,
-			d.nome as Nome,
-			d.descricao as Descricao
+			d.id as dept_id,
+			d.nome as dept_nome,
+			d.descricao as dept_descricao
 		FROM projeto p
 		LEFT JOIN diretoria d ON p.diretoria_id = d.id
 	</query>
@@ -28,9 +28,9 @@
 			p.tags as Tags,
 			p.progresso as Progresso,
 			p.texto_conclusao as TextoConclusao,
-			d.id as Diretoria_Id,
-			d.nome as Nome,
-			d.descricao as Descricao
+			d.id as dept_id,
+			d.nome as dept_nome,
+			d.descricao as dept_descricao
 		FROM projeto p
 		LEFT JOIN diretoria d ON p.diretoria_id = d.id
 		WHERE p.id=@id
@@ -83,9 +83,9 @@
             p.data_criacao as DataCriacao,
             p.data_atualizacao as DataAtualizacao,
             COUNT(*) OVER() as TotalCount,
-            d.id as Diretoria_Id,
-            d.nome as Nome,
-            d.descricao as Descricao
+            d.id as dept_id,
+            d.nome as dept_nome,
+            d.descricao as dept_descricao
         FROM projeto p
         LEFT JOIN diretoria d ON p.diretoria_id = d.id
         WHERE 1=1
