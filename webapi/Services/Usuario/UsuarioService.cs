@@ -12,11 +12,13 @@ namespace DaccApi.Services.User
     {
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IFileStorageService _fileStorageService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UsuarioService(IUsuarioRepository usuarioRepository, IFileStorageService fileStorageService)
+        public UsuarioService(IUsuarioRepository usuarioRepository, IFileStorageService fileStorageService, IHttpContextAccessor httpContextAccessor)
         {
             _usuarioRepository = usuarioRepository;
             _fileStorageService = fileStorageService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<IActionResult> GetAllUsers()
@@ -50,10 +52,10 @@ namespace DaccApi.Services.User
                 }
 
                 // Checar se existe um usuário com esse Email para evitar UNIQUE KEY CONSTRAINT
-                if (newUserData.Email != null)
+                if (newUserData.Email != null && newUserData.Email != userData.Email)
                 {
                     var userWithEmail = await _usuarioRepository.GetUserByEmail(newUserData.Email);
-                    if (userWithEmail != null)
+                    if (userWithEmail != null && userWithEmail.Id != id)
                     {
                         return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST,
                             "Já existe um usuário com esse email!");
@@ -61,10 +63,10 @@ namespace DaccApi.Services.User
                 }
 
                 // Checar se existe um usuário com esse RA para evitar UNIQUE KEY CONSTRAINT
-                if (newUserData.Ra != null)
+                if (newUserData.Ra != null && newUserData.Ra != userData.Ra)
                 {
                     var userWithRa = await _usuarioRepository.GetUserByRa(newUserData.Ra);
-                    if (userWithRa != null)
+                    if (userWithRa != null && userWithRa.Id != id)
                     {
                         return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST,
                             "Já existe um usuário com esse RA!");
@@ -76,6 +78,27 @@ namespace DaccApi.Services.User
                 {
                     var imageUrl = await _fileStorageService.SaveImageFileAsync(newUserData.ImageFile);
                     userData.ImagemUrl = imageUrl;
+                }
+                else if (!string.IsNullOrEmpty(newUserData.Avatar))
+                {
+                    userData.ImagemUrl = newUserData.Avatar;
+                }
+
+                // Atualiza o cargo (apenas se o solicitante for administrador)
+                if (newUserData.Role != null)
+                {
+                    var currentUserRole = ClaimsHelper.GetUserRole(_httpContextAccessor.HttpContext?.User);
+                    
+                    if (currentUserRole == CargoUsuario.Administrador)
+                    {
+                        userData.Cargo = newUserData.Role;
+                    }
+                }
+
+                // Atualiza o status ativo
+                if (newUserData.IsActive.HasValue)
+                {
+                    userData.Ativo = newUserData.IsActive.Value;
                 }
 
                 // Para cada atributo, tenta pegar um valor, se for nulo, usa o valor já setado do usuário

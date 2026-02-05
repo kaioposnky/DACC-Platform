@@ -41,8 +41,22 @@ namespace DaccApi.Model
         /// </summary>
         public IFormFile? ImageFile { get; set; }
         /// <summary>
+        /// Obtém ou define a URL da imagem de perfil do usuário (usado em payloads JSON).
+        /// </summary>
+        public string? Avatar { get; set; }
+        /// <summary>
         /// Obtém ou define se o usuário está inscrito na newsletter.
         /// </summary>
         public bool? IsSubscribedToNews { get; set; }
+
+        /// <summary>
+        /// Obtém ou define o cargo do usuário. Apenas Admins podem alterar este campo.
+        /// </summary>
+        public string? Role { get; set; }
+
+        /// <summary>
+        /// Obtém ou define se o usuário está ativo.
+        /// </summary>
+        public bool? IsActive { get; set; }
     }
 }

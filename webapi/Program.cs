@@ -226,6 +226,10 @@ builder.Services.AddScoped<IStatisticsRepository, StatisticsRepository>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddScoped<IHomeRepository, HomeRepository>();
 builder.Services.AddScoped<IHomeService, HomeService>();
+builder.Services.AddScoped<ICursoRepository, CursoRepository>();
+builder.Services.AddScoped<ICursoService, CursoService>();
+builder.Services.AddScoped<ITipoUsuarioRepository, TipoUsuarioRepository>();
+builder.Services.AddScoped<ITipoUsuarioService, TipoUsuarioService>();
 
 builder.Services.AddHostedService<ReservationCleanupService>();
 

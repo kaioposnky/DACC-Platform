@@ -148,6 +148,17 @@
         }
 
         /// <summary>
+        /// Permissões relacionadas a cursos.
+        /// </summary>
+        public static class Cursos
+        {
+            public const string View = "cursos.view";
+            public const string Create = "cursos.create";
+            public const string Update = "cursos.update";
+            public const string Delete = "cursos.delete";
+        }
+
+        /// <summary>
         /// Permissões relacionadas ao Dashboard de Estatísticas.
         /// </summary>
         public static class Dashboard
