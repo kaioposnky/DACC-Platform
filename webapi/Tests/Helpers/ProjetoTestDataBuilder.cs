@@ -14,16 +14,22 @@ public static class ProjetoTestDataBuilder
         string? title = null,
         string? description = null,
         string? status = null,
-        string? department = null)
+        Guid? directorateId = null)
     {
+        // IDs de diretorias válidos (veja sqlcode.sql INSERT INTO diretoria)
+        // Como não temos UUIDs fixos, usaremos um valor padrão
+        // que deve ser substituído por um ID real nos testes de integração
+        var defaultDirectorateId = directorateId ?? Guid.Parse("00000000-0000-0000-0000-000000000001");
+        
         return new RequestProjeto
         {
             Title = title ?? "Projeto Inovador DACC",
             Description = description ?? "Um projeto focado em IA e automação para a comunidade.",
             Status = status ?? "planejado", // Valor válido do tipos_progresso
-            Department = department ?? "Inovação", // Atenção: deve existir na tabela diretoria
+            DirectorateId = defaultDirectorateId, // GUID da diretoria
             Tags = new[] { "IA", "Python", "DACC" },
-            CompletionText = "Projeto finalizado com sucesso."
+            CompletionText = "Projeto finalizado com sucesso.",
+            Progress = 0
         };
     }
 
@@ -37,8 +43,9 @@ public static class ProjetoTestDataBuilder
             Title = "Projeto Minimalista",
             Description = "Descrição essencial do projeto.",
             Status = "planejado",
-            Department = "Geral",
-            Tags = new[] { "Teste" }
+            DirectorateId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+            Tags = new[] { "Teste" },
+            Progress = 0
         };
     }
 
@@ -52,9 +59,10 @@ public static class ProjetoTestDataBuilder
             Title = title ?? "Projeto Atualizado",
             Description = "Nova descrição do projeto após atualização.",
             Status = "em progresso",
-            Department = "Inovação",
+            DirectorateId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
             Tags = new[] { "IA", "React" },
-            CompletionText = "Quase lá!"
+            CompletionText = "Quase lá!",
+            Progress = 50
         };
     }
 }

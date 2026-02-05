@@ -483,7 +483,7 @@ CREATE TABLE projeto
     status           VARCHAR(50) REFERENCES tipos_progresso (nome),
     progresso        INT DEFAULT 0,
     texto_conclusao  VARCHAR(100) NOT NULL,
-    diretoria        VARCHAR(100) REFERENCES diretoria (nome),
+    diretoria_id     UUID REFERENCES diretoria (id),
     tags             VARCHAR(20)[],
     data_criacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP

@@ -22,9 +22,9 @@ namespace DaccApi.Model
         public string? Status { get; set; }
         
         /// <summary>
-        /// Obtém ou define a diretoria responsável.
+        /// Obtém ou define o ID da diretoria responsável.
         /// </summary>
-        public string? Department { get; set; }
+        public Guid? DirectorateId { get; set; }
         /// <summary>
         /// Obtém ou define as tags do projeto.
         /// </summary>

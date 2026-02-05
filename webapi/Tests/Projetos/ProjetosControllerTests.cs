@@ -19,13 +19,10 @@ public class ProjetosControllerTests : IntegrationTestBase
     {
         await AuthenticateAsAdminAsync();
         
-        // Antes de criar, precisamos garantir que a diretoria exista no banco (se houver FK ativa)
-        // Como o sqlcode.sql parece não ter inserts para diretoria, este teste pode falhar com 500.
-        // Se falhar, documentaremos no Relatório de Bugs.
-        // Garante que a diretoria "Inovação" exista para não quebrar a FK
-        var projeto = ProjetoTestDataBuilder.CreateValidProjeto(title: "Projeto Teste Criação", department: "Marketing");
-        // Nota: O builder já retorna as chaves em inglês agora.
-        // Se quisermos acessar o valor no teste:
+        // Garante que a diretoria exista no banco
+        // NOTA: Os testes de integração devem garantir que existe pelo menos uma diretoria no banco
+        // E passar o ID real dessa diretoria aqui
+        var projeto = ProjetoTestDataBuilder.CreateValidProjeto(title: "Projeto Teste Criação");
         var titulo = projeto.Title;
 
         var response = await _client.PostAsJsonAsync(BaseUrl, projeto);
@@ -168,7 +165,11 @@ public class ProjetosControllerTests : IntegrationTestBase
         formData.Add(new StringContent(request.Title ?? ""), "Title");
         formData.Add(new StringContent(request.Description ?? ""), "Description");
         formData.Add(new StringContent(request.Status ?? ""), "Status");
-        formData.Add(new StringContent(request.Department ?? ""), "Department");
+        
+        if (request.DirectorateId.HasValue)
+        {
+            formData.Add(new StringContent(request.DirectorateId.Value.ToString()), "DirectorateId");
+        }
         
         if (request.Tags != null)
         {
@@ -181,6 +182,11 @@ public class ProjetosControllerTests : IntegrationTestBase
         if (request.CompletionText != null)
         {
             formData.Add(new StringContent(request.CompletionText), "CompletionText");
+        }
+        
+        if (request.Progress.HasValue)
+        {
+            formData.Add(new StringContent(request.Progress.Value.ToString()), "Progress");
         }
         
         return formData;

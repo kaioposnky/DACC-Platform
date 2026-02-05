@@ -3,14 +3,19 @@
 
 	<query name="GetAllProjetos">
 		SELECT 
-			id as Id,
-			titulo as Titulo,
-			descricao as Descricao,
-			imagem_url as ImagemUrl,
-			status as Status,
-			diretoria as Diretoria,
-			tags as Tags		
-		FROM projeto
+			p.id as Id,
+			p.titulo as Titulo,
+			p.descricao as Descricao,
+			p.imagem_url as ImagemUrl,
+			p.status as Status,
+			p.tags as Tags,
+			p.progresso as Progresso,
+			p.texto_conclusao as TextoConclusao,
+			d.id as Diretoria_Id,
+			d.nome as Nome,
+			d.descricao as Descricao
+		FROM projeto p
+		LEFT JOIN diretoria d ON p.diretoria_id = d.id
 	</query>
 	
 	<query name="GetProjetoById">
@@ -20,16 +25,14 @@
 			p.descricao as Descricao,
 			p.imagem_url as ImagemUrl,
 			p.status as Status,
-			p.diretoria as Diretoria,
 			p.tags as Tags,
 			p.progresso as Progresso,
 			p.texto_conclusao as TextoConclusao,
 			d.id as Diretoria_Id,
-			d.id as Id,
 			d.nome as Nome,
 			d.descricao as Descricao
 		FROM projeto p
-		LEFT JOIN diretoria d ON p.diretoria = d.nome
+		LEFT JOIN diretoria d ON p.diretoria_id = d.id
 		WHERE p.id=@id
 		
 	</query>
@@ -40,9 +43,11 @@
 			descricao,
 			imagem_url,
 			status,
-			diretoria,
-			tags)
-		VALUES (@Titulo, @Descricao, @ImagemUrl, @Status, @Diretoria, @Tags)
+			diretoria_id,
+			tags,
+			progresso,
+			texto_conclusao)
+		VALUES (@Titulo, @Descricao, @ImagemUrl, @Status, @DiretoriaId, @Tags, @Progresso, @TextoConclusao)
 	</query>
 
 
@@ -57,8 +62,10 @@
 				descricao = @Descricao,
 				imagem_url = @ImagemUrl,
 				status = @Status,
-				diretoria = @Diretoria,
-				tags = @Tags
+				diretoria_id = @DiretoriaId,
+				tags = @Tags,
+				progresso = @Progresso,
+				texto_conclusao = @TextoConclusao
 			WHERE id=@id
 	</query>
 
@@ -70,7 +77,6 @@
             p.descricao as Descricao,
             p.imagem_url as ImagemUrl,
             p.status as Status,
-            p.diretoria as Diretoria,
             p.tags as Tags,
             p.progresso as Progresso,
             p.texto_conclusao as TextoConclusao,
@@ -78,15 +84,14 @@
             p.data_atualizacao as DataAtualizacao,
             COUNT(*) OVER() as TotalCount,
             d.id as Diretoria_Id,
-            d.id as Id,
             d.nome as Nome,
             d.descricao as Descricao
         FROM projeto p
-        LEFT JOIN diretoria d ON p.diretoria = d.nome
+        LEFT JOIN diretoria d ON p.diretoria_id = d.id
         WHERE 1=1
         AND (@SearchPattern IS NULL OR p.titulo ILIKE @SearchPattern OR p.descricao ILIKE @SearchPattern)
         AND (@Status IS NULL OR p.status = @Status)
-        AND (@Directorate IS NULL OR p.diretoria = @Directorate)
+        AND (@DirectorateId IS NULL OR p.diretoria_id = @DirectorateId)
         AND (@MinProgress IS NULL OR p.progresso &gt;= @MinProgress)
         AND (@MaxProgress IS NULL OR p.progresso &lt;= @MaxProgress)
         ORDER BY p.data_criacao DESC

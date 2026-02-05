@@ -87,7 +87,7 @@ namespace DaccApi.Services.Projetos
                 if (String.IsNullOrWhiteSpace(request.Title) ||
                     String.IsNullOrWhiteSpace(request.Description) ||
                     String.IsNullOrWhiteSpace(request.Status)||
-                    String.IsNullOrWhiteSpace(request.Department)||
+                    request.DirectorateId == null ||
                     request.Tags == null)
                     
                 {
@@ -100,7 +100,7 @@ namespace DaccApi.Services.Projetos
                     Titulo = request.Title,
                     Descricao = request.Description,
                     Status = request.Status,
-                    Diretoria = request.Department,
+                    DiretoriaId = request.DirectorateId,
                     Tags = request.Tags,
                     TextoConclusao = request.CompletionText ?? string.Empty,
                     Progresso = request.Progress ?? 0,
@@ -196,7 +196,7 @@ namespace DaccApi.Services.Projetos
                 projetoQuery.Titulo = request.Title ?? projetoQuery.Titulo;
                 projetoQuery.Descricao = request.Description ?? projetoQuery.Descricao;
                 projetoQuery.Status = request.Status ?? projetoQuery.Status;
-                projetoQuery.Diretoria = request.Department ?? projetoQuery.Diretoria;
+                projetoQuery.DiretoriaId = request.DirectorateId ?? projetoQuery.DiretoriaId;
                 projetoQuery.Tags = request.Tags ?? projetoQuery.Tags;
                 projetoQuery.TextoConclusao = request.CompletionText ?? projetoQuery.TextoConclusao;
                 projetoQuery.Progresso = request.Progress ?? projetoQuery.Progresso;

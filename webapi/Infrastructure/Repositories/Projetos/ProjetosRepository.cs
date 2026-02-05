@@ -11,6 +11,23 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
         public ProjetosRepository(IRepositoryDapper repositoryDapper) : base(repositoryDapper)
         {
         }
+
+        public new async Task<List<Projeto>> GetAllAsync()
+        {
+            var sql = _dapper.GetQueryNamed("GetAllProjetos");
+            
+            var result = await _dapper.QueryAsync<Projeto, Diretoria, Projeto>(
+                sql,
+                (projeto, diretoria) =>
+                {
+                    projeto.Departamento = diretoria;
+                    return projeto;
+                },
+                splitOn: "Diretoria_Id"
+            );
+            
+            return result.ToList();
+        }
         public async Task<(List<Projeto> Projetos, int TotalCount)> SearchProjetos(DaccApi.Model.Requests.RequestQueryProjeto query)
         {
             var sql = _dapper.GetQueryNamed("SearchProjetos");
@@ -20,7 +37,7 @@ namespace DaccApi.Infrastructure.Repositories.Projetos
                 Page = query.Page,
                 Limit = query.Limit,
                 Status = query.Status,
-                Directorate = query.Directorate,
+                DirectorateId = query.DirectorateId,
                 MinProgress = query.MinProgress,
                 MaxProgress = query.MaxProgress
             };
