@@ -12,7 +12,7 @@ import {
   ProgressSlider,
 } from "@/components";
 import { apiService } from "@/services/api";
-import { Project } from "@/types";
+import { Project, Directorate } from "@/types";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -31,24 +31,29 @@ export default function AdminEditProjetoPage() {
   const params = useParams();
 
   const [project, setProject] = useState<Project | null>(null);
+  const [directorates, setDirectorates] = useState<Directorate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   useEffect(() => {
-    const fetchProject = async () => {
+    const fetchData = async () => {
       try {
-        const response = await apiService.getProject(params.id as string);
-        setProject(response);
+        const [projectData, directoratesData] = await Promise.all([
+          apiService.getProject(params.id as string),
+          apiService.getDirectorates(),
+        ]);
+        setProject(projectData);
+        setDirectorates(directoratesData);
       } catch (error) {
         console.error(error);
-        toast.error("Erro ao carregar projeto");
+        toast.error("Erro ao carregar dados");
       } finally {
         setIsLoading(false);
       }
     };
-    fetchProject();
+    fetchData();
   }, [params.id]);
 
   const handleSave = async () => {
@@ -134,6 +139,17 @@ export default function AdminEditProjetoPage() {
   const handleProgressChange = (value: number) => {
     if (!project) return;
     setProject({ ...project, progress: value });
+  };
+
+  const handleDirectorateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (!project) return;
+    const selectedId = e.target.value;
+    const selectedDirectorate = directorates.find(d => d.id === selectedId);
+    setProject({
+      ...project,
+      directorateId: selectedId,
+      department: selectedDirectorate
+    });
   };
 
   const handleSetIcon = (url: string) => {
@@ -257,6 +273,19 @@ export default function AdminEditProjetoPage() {
                     { label: "Em Andamento", value: "in_progress" },
                     { label: "Concluído", value: "completed" },
                     { label: "Planejado", value: "planned" },
+                  ]}
+                />
+
+                <Select
+                  label="Diretoria Responsável"
+                  value={project.department?.id || ""}
+                  onChange={handleDirectorateChange}
+                  options={[
+                    { label: "Selecione uma diretoria", value: "" },
+                    ...directorates.map(dir => ({
+                      label: dir.name,
+                      value: dir.id
+                    }))
                   ]}
                 />
 

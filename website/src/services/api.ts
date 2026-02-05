@@ -2,6 +2,7 @@ import {
   Announcement,
   ApiResponse,
   Comment,
+  Directorate,
   Event,
   Faculty,
   News,
@@ -409,6 +410,17 @@ class ApiService {
     return this.request<void>(`/projects/${id}`, {
       method: 'DELETE',
     });
+  }
+
+  // Directorates
+  async getDirectorates(): Promise<Directorate[]> {
+    const data = await this.request<{ directorates: Directorate[] }>('/directorates');
+    return data?.directorates || [];
+  }
+
+  async getDirectorate(id: string): Promise<Directorate> {
+    const data = await this.request<{ directorate: Directorate }>(`/directorates/${id}`);
+    return data.directorate;
   }
 
   // News
