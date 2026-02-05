@@ -200,8 +200,16 @@ DROP TABLE IF EXISTS curso CASCADE;
 CREATE TABLE curso
 (
     id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    nome VARCHAR(255) UNIQUE NOT NULL
+    nome VARCHAR(200) NOT NULL UNIQUE
 );
+
+-- Inserir cursos iniciais
+INSERT INTO curso (nome) VALUES 
+('Engenharia de Materiais'),
+('Engenharia de Mecânica'),
+('Engenharia de Robos'),
+('Engenharia Elétrica'),
+('Ciência da Computação');
 
 INSERT INTO diretoria (nome, descricao) VALUES 
     ('E-Sports', 'Diretoria de E-Sports'),
