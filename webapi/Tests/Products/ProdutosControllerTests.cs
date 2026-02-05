@@ -201,11 +201,10 @@ public class ProdutosControllerTests : IntegrationTestBase
         var createData = await createResponse.Content.ReadFromJsonAsync<CreateProductResponse>();
         var productId = createData!.Data.Id;
 
-        // 2. Atualiza o produto (PATCH + FormData)
+        // 2. Atualiza o produto (PATCH + JSON)
         var updateRequest = ProductTestDataBuilder.CreateUpdateProduct(name: "Produto Totalmente Novo", price: 150.00);
-        var formData = ToFormData(updateRequest);
         
-        var response = await _client.PatchAsync($"v1/api/products/{productId}", formData);
+        var response = await _client.PatchAsJsonAsync($"v1/api/products/{productId}", updateRequest);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -237,11 +236,10 @@ public class ProdutosControllerTests : IntegrationTestBase
         var createProdResp = await _client.PostAsJsonAsync("v1/api/products", productRequest);
         var productId = (await createProdResp.Content.ReadFromJsonAsync<CreateProductResponse>())!.Data.Id;
 
-        // 2. Cria uma variação (POST + FormData + URL Correta)
+        // 2. Cria uma variação (POST + JSON + URL Correta)
         var variationRequest = ProductTestDataBuilder.CreateVariationRequest(color: "Verde", size: "P", stock: 20);
-        var createFormData = ToFormData(variationRequest);
         
-        var createVarResp = await _client.PostAsync($"v1/api/products/{productId}/variations", createFormData);
+        var createVarResp = await _client.PostAsJsonAsync($"v1/api/products/{productId}/variations", variationRequest);
         
         if (!createVarResp.IsSuccessStatusCode)
         {
@@ -255,11 +253,10 @@ public class ProdutosControllerTests : IntegrationTestBase
         var variationData = await createVarResp.Content.ReadFromJsonAsync<GenericResponse<VariationResponse>>();
         var variationId = variationData!.Data.Id;
 
-        // 3. Atualiza a variação (PATCH + FormData + URL Correta com ProductId)
+        // 3. Atualiza a variação (PATCH + JSON + URL Correta com ProductId)
         var updateVarRequest = ProductTestDataBuilder.CreateUpdateVariation(stock: 100);
-        var updateFormData = ToFormData(updateVarRequest);
         
-        var updateVarResp = await _client.PatchAsync($"v1/api/products/{productId}/variations/{variationId}", updateFormData);
+        var updateVarResp = await _client.PatchAsJsonAsync($"v1/api/products/{productId}/variations/{variationId}", updateVarRequest);
         
         if (!updateVarResp.IsSuccessStatusCode)
         {
@@ -339,20 +336,13 @@ public class ProdutosControllerTests : IntegrationTestBase
         var prodId = (await createResp.Content.ReadFromJsonAsync<CreateProductResponse>())!.Data.Id;
 
         // 2. Atualiza muda para "Acessórios" usando NOME
-        var updateRequest = new Dictionary<string, string>
+        var updateRequest = new 
         {
-            { "Category", "Acessórios" }, // NOME
-            { "Subcategory", "Bonés" }    // NOME, assumindo que existe em Acessórios no seed ou similar
-             // Se 'Acessórios'/'Bonés' não existirem no seed padrão, isso pode falhar.
-             // Vamos usar 'Calçados'/'Tênis' se for mais garantido, ou reusar 'Roupas'/'Calças'.
-             // O seed padrão geralmente tem Roupas, Acessórios, Calçados. Vamos tentar Acessórios.
+            Category = "Acessórios", // NOME
+            Subcategory = "Bonés"    // NOME
         };
         
-        // Nota: ToFormData aceita objeto, dictionary precisa de adaptação ou criar manual.
-        var formData = new MultipartFormDataContent();
-        foreach (var kvp in updateRequest) formData.Add(new StringContent(kvp.Value), kvp.Key);
-
-        var response = await _client.PatchAsync($"v1/api/products/{prodId}", formData);
+        var response = await _client.PatchAsJsonAsync($"v1/api/products/{prodId}", updateRequest);
         
         if (!response.IsSuccessStatusCode)
         {
@@ -362,9 +352,8 @@ public class ProdutosControllerTests : IntegrationTestBase
              if (error.Contains("não encontrada"))
              {
                  // Fallback para Roupas novamente só para validar que aceita string
-                 formData = new MultipartFormDataContent();
-                 formData.Add(new StringContent("Roupas"), "Category");
-                 response = await _client.PatchAsync($"v1/api/products/{prodId}", formData);
+                 var fallbackRequest = new { Category = "Roupas" };
+                 response = await _client.PatchAsJsonAsync($"v1/api/products/{prodId}", fallbackRequest);
              }
              else 
              {
@@ -375,21 +364,8 @@ public class ProdutosControllerTests : IntegrationTestBase
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    private MultipartFormDataContent ToFormData<T>(T data)
-    {
-        var formData = new MultipartFormDataContent();
-        var properties = typeof(T).GetProperties();
-        
-        foreach (var prop in properties)
-        {
-            var value = prop.GetValue(data);
-            if (value != null)
-            {
-                formData.Add(new StringContent(value.ToString()!), prop.Name);
-            }
-        }
-        return formData;
-    }
+    // ToFormData removed
+
     
     // Classes auxiliares para deserialização. 
     // Classes auxiliares para deserialização. 

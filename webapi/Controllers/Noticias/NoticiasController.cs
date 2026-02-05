@@ -76,7 +76,7 @@ namespace DaccApi.Controllers.Noticias
         /// </summary>
         [HttpPatch("{id:guid}/image")]
         [HasPermission(AppPermissions.Noticias.Update)]
-        public async Task<IActionResult> UpdateNoticiaImage([FromRoute] Guid id, [FromForm] ImageRequest request)
+        public async Task<IActionResult> UpdateNoticiaImage([FromRoute] Guid id, [FromBody] ImageRequest request)
         {
             var response = await _noticiasServices.UpdateNoticiaImage(id, request);
             return response;

@@ -51,14 +51,9 @@ public class OrdersControllerTests : IntegrationTestBase
         }
         productId.Should().NotBeNull();
 
-        // Criar variação com estoque (usando FormData pois controller usa [FromForm])
+        // Criar variação com estoque (usando JSON)
         var variationRequest = ProductTestDataBuilder.CreateVariationRequest(stock: 100);
-        var formContent = new MultipartFormDataContent();
-        formContent.Add(new StringContent(variationRequest.Color ?? ""), "Color");
-        formContent.Add(new StringContent(variationRequest.Size ?? ""), "Size");
-        formContent.Add(new StringContent(variationRequest.Stock.ToString()), "Stock");
-        formContent.Add(new StringContent(variationRequest.DisplayOrder.ToString()), "DisplayOrder");
-        var variationResponse = await _client.PostAsync($"{ProductsUrl}/{productId}/variations", formContent);
+        var variationResponse = await _client.PostAsJsonAsync($"{ProductsUrl}/{productId}/variations", variationRequest);
         variationResponse.StatusCode.Should().Be(HttpStatusCode.Created); // Controller retorna 201 para criar variação
 
         // Obter ID da variação
@@ -179,14 +174,9 @@ public class OrdersControllerTests : IntegrationTestBase
             }
         }
 
-        // Criar variação com estoque ZERO (usando FormData, pois controller usa [FromForm])
+        // Criar variação com estoque ZERO (usando JSON)
         var variationRequest = ProductTestDataBuilder.CreateVariationRequest(stock: 0);
-        var formContent = new MultipartFormDataContent();
-        formContent.Add(new StringContent(variationRequest.Color ?? ""), "Color");
-        formContent.Add(new StringContent(variationRequest.Size ?? ""), "Size");
-        formContent.Add(new StringContent(variationRequest.Stock.ToString()), "Stock");
-        formContent.Add(new StringContent(variationRequest.DisplayOrder.ToString()), "DisplayOrder");
-        var varResponse = await _client.PostAsync($"{ProductsUrl}/{productId}/variations", formContent);
+        var varResponse = await _client.PostAsJsonAsync($"{ProductsUrl}/{productId}/variations", variationRequest);
         varResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         
         // Pegar ID Variação
@@ -231,14 +221,9 @@ public class OrdersControllerTests : IntegrationTestBase
                 if (name == product.Name) { productId = item.GetProperty("id").GetGuid(); break; }
             }
 
-            // Criar Variação
+            // Criar Variação (JSON)
             var variationRequest = ProductTestDataBuilder.CreateVariationRequest(stock: 10);
-            var formContent = new MultipartFormDataContent();
-            formContent.Add(new StringContent(variationRequest.Color ?? ""), "Color");
-            formContent.Add(new StringContent(variationRequest.Size ?? ""), "Size");
-            formContent.Add(new StringContent(variationRequest.Stock.ToString()), "Stock");
-            formContent.Add(new StringContent(variationRequest.DisplayOrder.ToString()), "DisplayOrder");
-            await _client.PostAsync($"{ProductsUrl}/{productId}/variations", formContent);
+            await _client.PostAsJsonAsync($"{ProductsUrl}/{productId}/variations", variationRequest);
             
             // Obter ID da Variação
             var varsResponse = await _client.GetAsync($"{ProductsUrl}/{productId}/variations");

@@ -231,6 +231,27 @@ public class IntegrationTestBase : IAsyncLifetime
     }
 
     /// <summary>
+    /// Busca o GUID de uma diretoria pelo nome.
+    /// </summary>
+    protected async Task<Guid> GetDiretoriaIdAsync(string nome)
+    {
+        var connectionString = _dbcontainer.GetConnectionString();
+        await using var connection = new NpgsqlConnection(connectionString);
+        await connection.OpenAsync();
+        
+        var sql = "SELECT id FROM diretoria WHERE nome = @nome";
+        await using var command = new NpgsqlCommand(sql, connection);
+        command.Parameters.AddWithValue("nome", nome);
+        
+        var result = await command.ExecuteScalarAsync();
+        if (result == null || result == DBNull.Value)
+        {
+             throw new Exception($"Diretoria '{nome}' não encontrada");
+        }
+        return (Guid)result;
+    }
+
+    /// <summary>
     /// Garante que uma diretoria com o nome especificado exista no banco de dados.
     /// </summary>
     protected async Task EnsureDiretoriaExistsAsync(string nome)

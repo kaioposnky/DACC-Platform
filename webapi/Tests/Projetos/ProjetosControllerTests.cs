@@ -19,10 +19,8 @@ public class ProjetosControllerTests : IntegrationTestBase
     {
         await AuthenticateAsAdminAsync();
         
-        // Garante que a diretoria exista no banco
-        // NOTA: Os testes de integração devem garantir que existe pelo menos uma diretoria no banco
-        // E passar o ID real dessa diretoria aqui
-        var projeto = ProjetoTestDataBuilder.CreateValidProjeto(title: "Projeto Teste Criação");
+        var diretoriaId = await GetDiretoriaIdAsync("Projetos");
+        var projeto = ProjetoTestDataBuilder.CreateValidProjeto(title: "Projeto Teste Criação", directorateId: diretoriaId);
         var titulo = projeto.Title;
 
         var response = await _client.PostAsJsonAsync(BaseUrl, projeto);
@@ -140,10 +138,11 @@ public class ProjetosControllerTests : IntegrationTestBase
                     {
                         var id = item.GetProperty("id").GetString();
                         
+                        var diretoriaId = await GetDiretoriaIdAsync("Projetos");
                         var updateData = ProjetoTestDataBuilder.CreateUpdateProjeto("Título Alterado");
-                        var formData = ToFormData(updateData);
+                        updateData.DirectorateId = diretoriaId;
                         
-                        var updateResponse = await _client.PatchAsync($"{BaseUrl}/{id}", formData);
+                        var updateResponse = await _client.PatchAsJsonAsync($"{BaseUrl}/{id}", updateData);
                         
                         if (!updateResponse.IsSuccessStatusCode)
                         {
@@ -159,36 +158,6 @@ public class ProjetosControllerTests : IntegrationTestBase
         }
     }
 
-    private MultipartFormDataContent ToFormData(RequestProjeto request)
-    {
-        var formData = new MultipartFormDataContent();
-        formData.Add(new StringContent(request.Title ?? ""), "Title");
-        formData.Add(new StringContent(request.Description ?? ""), "Description");
-        formData.Add(new StringContent(request.Status ?? ""), "Status");
-        
-        if (request.DirectorateId.HasValue)
-        {
-            formData.Add(new StringContent(request.DirectorateId.Value.ToString()), "DirectorateId");
-        }
-        
-        if (request.Tags != null)
-        {
-            foreach (var tag in request.Tags)
-            {
-                formData.Add(new StringContent(tag), "Tags");
-            }
-        }
-        
-        if (request.CompletionText != null)
-        {
-            formData.Add(new StringContent(request.CompletionText), "CompletionText");
-        }
-        
-        if (request.Progress.HasValue)
-        {
-            formData.Add(new StringContent(request.Progress.Value.ToString()), "Progress");
-        }
-        
-        return formData;
-    }
+    // ToFormData removed
+
 }

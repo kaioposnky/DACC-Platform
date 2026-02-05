@@ -16,7 +16,7 @@ public class AnunciosControllerTests : IntegrationTestBase
     [Fact]
     public async Task Create_Anuncio_Should_Return_201_When_Authenticated()
     {
-        await AuthenticateAsUserAsync();
+        await AuthenticateAsAdminAsync();
         var anuncio = AnuncioTestDataBuilder.CreateValidAnuncio();
 
         var response = await _client.PostAsJsonAsync("v1/api/announcements", anuncio);
@@ -30,7 +30,7 @@ public class AnunciosControllerTests : IntegrationTestBase
     [Fact]
     public async Task Create_Anuncio_With_Minimal_Data_Should_Return_201()
     {
-        await AuthenticateAsUserAsync();
+        await AuthenticateAsAdminAsync();
         var anuncio = AnuncioTestDataBuilder.CreateMinimalAnuncio();
 
         var response = await _client.PostAsJsonAsync("v1/api/announcements", anuncio);
@@ -68,7 +68,7 @@ public class AnunciosControllerTests : IntegrationTestBase
     [Fact]
     public async Task Get_Anuncio_By_Id_Should_Return_200_When_Exists()
     {
-        await AuthenticateAsUserAsync();
+        await AuthenticateAsAdminAsync();
         var anuncioRequest = AnuncioTestDataBuilder.CreateValidAnuncio(title: "AnuncioTesteGetById");
         
         // Cria o anúncio
@@ -104,7 +104,7 @@ public class AnunciosControllerTests : IntegrationTestBase
     [Fact]
     public async Task Delete_Anuncio_Should_Return_200_When_Authenticated()
     {
-        await AuthenticateAsUserAsync();
+        await AuthenticateAsAdminAsync();
         var anuncioRequest = AnuncioTestDataBuilder.CreateValidAnuncio(title: "AnuncioParaDeletar");
         
         // Cria o anúncio
@@ -121,7 +121,7 @@ public class AnunciosControllerTests : IntegrationTestBase
     [Fact]
     public async Task Update_Anuncio_Should_Return_200_When_Authenticated()
     {
-        await AuthenticateAsUserAsync();
+        await AuthenticateAsAdminAsync();
         
         // 1. Cria o anúncio
         var createResponse = await _client.PostAsJsonAsync("v1/api/announcements", 
@@ -138,7 +138,7 @@ public class AnunciosControllerTests : IntegrationTestBase
     [Fact]
     public async Task Update_Anuncio_Deactivate_Should_Return_200()
     {
-        await AuthenticateAsUserAsync();
+        await AuthenticateAsAdminAsync();
         
         var createResponse = await _client.PostAsJsonAsync("v1/api/announcements", 
             AnuncioTestDataBuilder.CreateValidAnuncio(title: "AnuncioParaDesativar"));
@@ -148,19 +148,6 @@ public class AnunciosControllerTests : IntegrationTestBase
         // A desativação funcionaria se tivéssemos o ID do recurso
     }
     
-    private MultipartFormDataContent ToFormData<T>(T data)
-    {
-        var formData = new MultipartFormDataContent();
-        var properties = typeof(T).GetProperties();
-        
-        foreach (var prop in properties)
-        {
-            var value = prop.GetValue(data);
-            if (value != null)
-            {
-                formData.Add(new StringContent(value.ToString()!), prop.Name);
-            }
-        }
-        return formData;
-    }
+    // ToFormData removed
+
 }
