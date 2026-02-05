@@ -74,6 +74,12 @@ export interface Event {
   author?: User;
 }
 
+export interface Directorate {
+  id: string;
+  name: string;
+  description?: string;
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -83,6 +89,7 @@ export interface Project {
   status: 'in_progress' | 'completed' | 'planned';
   progress: number;
   completionText: string;
+  department?: Directorate;
 }
 
 export interface News {
