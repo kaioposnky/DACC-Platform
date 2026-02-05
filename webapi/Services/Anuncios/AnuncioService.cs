@@ -103,7 +103,22 @@ namespace DaccApi.Services.Anuncios
         {
             try
             {
-                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
+                string imageUrl;
+                if (!string.IsNullOrEmpty(request.ImageUrl))
+                {
+                    if (request.ImageUrl.StartsWith("data:image") || request.ImageUrl.Length > 255)
+                    {
+                        imageUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageUrl);
+                    }
+                    else
+                    {
+                        imageUrl = request.ImageUrl;
+                    }
+                }
+                else
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "A imagem é obrigatória.");
+                }
 
                 var anuncio = await _anuncioRepository.GetByIdAsync(id);
 
@@ -169,7 +184,17 @@ namespace DaccApi.Services.Anuncios
                 anuncioQuery.BotaoPrimarioLink = request.PrimaryButtonLink ?? anuncioQuery.BotaoPrimarioLink;
                 anuncioQuery.BotaoSecundarioTexto = request.SecondaryButtonText ?? anuncioQuery.BotaoSecundarioTexto;
                 anuncioQuery.BotaoSecundarioLink = request.SecondaryButtonLink ?? anuncioQuery.BotaoSecundarioLink;
-                anuncioQuery.ImagemUrl = request.ImageUrl ?? anuncioQuery.ImagemUrl;
+                if (request.ImageUrl != null)
+                {
+                    if (request.ImageUrl.StartsWith("data:image") || request.ImageUrl.Length > 255)
+                    {
+                        anuncioQuery.ImagemUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageUrl);
+                    }
+                    else
+                    {
+                        anuncioQuery.ImagemUrl = request.ImageUrl;
+                    }
+                }
                 anuncioQuery.ImagemAlt = request.ImageAlt ?? anuncioQuery.ImagemAlt;
                 anuncioQuery.DataAtualizacao = DateTime.UtcNow;
                 

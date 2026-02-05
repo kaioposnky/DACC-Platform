@@ -9,10 +9,9 @@ namespace DaccApi.Model.Requests
     public class ImageRequest
     {
         /// <summary>
-        /// Obtém ou define o arquivo de imagem.
+        /// Obtém ou define a URL ou string Base64 da imagem.
         /// </summary>
-        [ImageValidation]
-        public IFormFile ImageFile { get; set; }
+        public string? ImageUrl { get; set; }
         /// <summary>
         /// Obtém ou define o texto alternativo da imagem.
         /// </summary>

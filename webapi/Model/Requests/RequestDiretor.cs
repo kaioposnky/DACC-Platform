@@ -32,11 +32,12 @@ namespace DaccApi.Model
         [Required(ErrorMessage = "A especialização é obrigatória")]
         public string Specialization { get; set; }
 
+
+        
         /// <summary>
-        /// Arquivo de imagem de perfil.
+        /// URL da imagem (caso já hospedada).
         /// </summary>
-        [ImageValidation]
-        public IFormFile? ImageFile { get; set; }
+        public string? ImageUrl { get; set; }
 
         /// <summary>
         /// Email de contato.

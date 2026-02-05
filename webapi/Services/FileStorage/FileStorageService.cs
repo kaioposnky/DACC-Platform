@@ -29,6 +29,76 @@ namespace DaccApi.Services.FileStorage
                 throw new ArgumentException("Arquivo excede o tamanho máximo de 5MB.");
             }
 
+            var (filePath, uniqueFileName) = GetUploadPath();
+
+            try
+            {
+                await using var stream = file.OpenReadStream();
+                using var image = await Image.LoadAsync(stream);
+                await image.SaveAsWebpAsync(filePath);
+            }
+            catch (UnknownImageFormatException)
+            {
+                 throw new ArgumentException("Formato de imagem inválido ou não suportado.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao processar imagem: {ex}");
+                throw new ArgumentException("Falha ao processar o arquivo de imagem.", ex);
+            }
+
+            return BuildUrl(uniqueFileName);
+        }
+
+        public async Task<string> SaveBase64ImageAsync(string base64Data)
+        {
+            if (string.IsNullOrWhiteSpace(base64Data))
+            {
+                throw new ArgumentException("Dados base64 inválidos ou vazios.");
+            }
+
+            // Remover prefixo data:image/...;base64, se existir
+            var base64Content = base64Data.Contains(",") 
+                ? base64Data.Split(',')[1] 
+                : base64Data;
+
+            byte[] imageBytes;
+            try
+            {
+                imageBytes = Convert.FromBase64String(base64Content);
+            }
+            catch (FormatException)
+            {
+                throw new ArgumentException("String Base64 inválida.");
+            }
+
+            if (imageBytes.Length > MaxFileSize)
+            {
+                throw new ArgumentException("Imagem excede o tamanho máximo de 5MB.");
+            }
+
+            var (filePath, uniqueFileName) = GetUploadPath();
+
+            try
+            {
+                using var image = Image.Load(imageBytes);
+                await image.SaveAsWebpAsync(filePath);
+            }
+            catch (UnknownImageFormatException)
+            {
+                throw new ArgumentException("Formato de imagem Base64 inválido ou não suportado.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao processar imagem Base64: {ex}");
+                throw new ArgumentException("Falha ao processar a imagem Base64.", ex);
+            }
+
+            return BuildUrl(uniqueFileName);
+        }
+
+        private (string filePath, string uniqueFileName) GetUploadPath()
+        {
             if (string.IsNullOrWhiteSpace(_environment.WebRootPath))
             {
                 _environment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
@@ -50,33 +120,20 @@ namespace DaccApi.Services.FileStorage
             var uniqueFileName = $"{Guid.NewGuid()}{extension}";
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-            try
-            {
-                await using var stream = file.OpenReadStream();
-                using var image = await Image.LoadAsync(stream);
-                await image.SaveAsWebpAsync(filePath);
-            }
-            catch (UnknownImageFormatException)
-            {
-                 throw new ArgumentException("Formato de imagem inválido ou não suportado.");
-            }
-            catch (Exception ex)
-            {
-                // Logar o erro real aqui seria ideal
-                Console.WriteLine($"Erro ao processar imagem: {ex}");
-                throw new ArgumentException("Falha ao processar o arquivo de imagem.", ex);
-            }
+            return (filePath, uniqueFileName);
+        }
 
-            // Construção segura da URL
+        private string BuildUrl(string uniqueFileName)
+        {
+            var subfolder = _configuration["UploadFilesSubfolder"] ?? "uploads";
             var request = _httpContextAccessor.HttpContext?.Request;
+            
             if (request == null)
             {
-                // Fallback para contextos sem HTTP (ex: testes, background jobs)
                 return $"/{subfolder}/{uniqueFileName}";
             }
 
-            var url = $"{request.Scheme}://{request.Host}/{subfolder}/{uniqueFileName}";
-            return url;
+            return $"{request.Scheme}://{request.Host}/{subfolder}/{uniqueFileName}";
         }
     }
 }

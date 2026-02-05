@@ -46,9 +46,20 @@ namespace DaccApi.Services.Diretores
                 var diretor = Diretor.FromRequest(request);
                 diretor.Id = Guid.NewGuid();
 
-                if (request.ImageFile != null)
+                if (!string.IsNullOrEmpty(request.ImageUrl))
                 {
-                    diretor.ImageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
+                    if (request.ImageUrl.StartsWith("data:image") || request.ImageUrl.Length > 255)
+                    {
+                        diretor.ImageUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageUrl);
+                    }
+                    else
+                    {
+                        diretor.ImageUrl = request.ImageUrl;
+                    }
+                }
+                else
+                {
+                    diretor.ImageUrl = string.Empty;
                 }
 
                 await _diretoresRepository.CreateAsync(diretor);
@@ -114,9 +125,16 @@ namespace DaccApi.Services.Diretores
 
                 var diretor = Diretor.FromRequest(request);
 
-                if (request.ImageFile != null)
+                if (!string.IsNullOrEmpty(request.ImageUrl))
                 {
-                    diretor.ImageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
+                    if (request.ImageUrl.StartsWith("data:image") || request.ImageUrl.Length > 255)
+                    {
+                        diretor.ImageUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageUrl);
+                    }
+                    else
+                    {
+                        diretor.ImageUrl = request.ImageUrl;
+                    }
                 }
                 
                 // Preserve original creation date and set correct Kind

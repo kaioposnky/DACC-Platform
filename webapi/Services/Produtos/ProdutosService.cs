@@ -393,7 +393,23 @@ namespace DaccApi.Services.Products
                         "Variação não encontrada para este produto!");
                 }
 
-                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.Image);
+                string imageUrl;
+                if (!string.IsNullOrEmpty(request.ImageUrl))
+                {
+                    if (request.ImageUrl.StartsWith("data:image") || request.ImageUrl.Length > 255)
+                    {
+                        imageUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageUrl);
+                    }
+                    else
+                    {
+                        imageUrl = request.ImageUrl;
+                    }
+                }
+                else
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "A imagem é obrigatória.");
+                }
+
                 var produtoImagem = new ProdutoImagem
                 {
                     Id = Guid.NewGuid(),
@@ -453,9 +469,16 @@ namespace DaccApi.Services.Products
                         "Imagem não encontrada!");
                 }
 
-                if (request.Image != null)
+                if (!string.IsNullOrEmpty(request.ImageUrl))
                 {
-                    existingImage.ImagemUrl = await _fileStorageService.SaveImageFileAsync(request.Image);
+                    if (request.ImageUrl.StartsWith("data:image") || request.ImageUrl.Length > 255)
+                    {
+                        existingImage.ImagemUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageUrl);
+                    }
+                    else
+                    {
+                        existingImage.ImagemUrl = request.ImageUrl;
+                    }
                 }
 
                 if (request.Order.HasValue)

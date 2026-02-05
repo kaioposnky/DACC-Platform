@@ -36,10 +36,7 @@ namespace DaccApi.Model
         /// </summary>
         [PhoneValidation(ErrorMessage = "Telefone inválido")]
         public string? Phone { get; set; }
-        /// <summary>
-        /// Obtém ou define o arquivo de imagem de perfil do usuário.
-        /// </summary>
-        public IFormFile? ImageFile { get; set; }
+
         /// <summary>
         /// Obtém ou define a URL da imagem de perfil do usuário (usado em payloads JSON).
         /// </summary>

@@ -8,10 +8,9 @@ namespace DaccApi.Model
     public class RequestCreateProdutoImagem
     {
         /// <summary>
-        /// Obtém ou define o arquivo de imagem.
+        /// Obtém ou define a URL ou string Base64 da imagem.
         /// </summary>
-        [Required(ErrorMessage = "Arquivo de imagem é obrigatório")]
-        public IFormFile Image { get; set; }
+        public string? ImageUrl { get; set; }
 
         /// <summary>
         /// Obtém ou define o texto alternativo da imagem.

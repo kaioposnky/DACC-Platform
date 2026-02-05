@@ -8,11 +8,12 @@ namespace DaccApi.Model
     /// </summary>
     public class RequestUpdateProdutoImagem
     {
+
+
         /// <summary>
-        /// Obtém ou define o novo arquivo de imagem.
+        /// Obtém ou define a nova URL da imagem (caso já hospedada).
         /// </summary>
-        [ImageValidation]
-        public IFormFile? Image { get; set; }
+        public string? ImageUrl { get; set; }
 
         /// <summary>
         /// Obtém ou define o novo texto alternativo da imagem.

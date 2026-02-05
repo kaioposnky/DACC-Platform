@@ -69,7 +69,22 @@ public class NoticiasServices : INoticiasServices
     {
         try
         {
-            var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
+            string imageUrl;
+            if (!string.IsNullOrEmpty(request.ImageUrl))
+            {
+                if (request.ImageUrl.StartsWith("data:image") || request.ImageUrl.Length > 255)
+                {
+                    imageUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageUrl);
+                }
+                else
+                {
+                    imageUrl = request.ImageUrl;
+                }
+            }
+            else
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "A imagem é obrigatória.");
+            }
 
             var noticia = await _noticiasRepository.GetByIdAsync(noticiaId);
 
@@ -146,7 +161,17 @@ public class NoticiasServices : INoticiasServices
             noticiaQuery.Categoria = request.Category ?? noticiaQuery.Categoria;
             noticiaQuery.Conteudo = request.Content ?? noticiaQuery.Conteudo;
             noticiaQuery.TempoLeitura = request.ReadTime ?? noticiaQuery.TempoLeitura;
-            noticiaQuery.ImagemUrl = request.ImageUrl ?? noticiaQuery.ImagemUrl;
+            if (request.ImageUrl != null)
+            {
+                if (request.ImageUrl.StartsWith("data:image") || request.ImageUrl.Length > 255)
+                {
+                    noticiaQuery.ImagemUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageUrl);
+                }
+                else
+                {
+                    noticiaQuery.ImagemUrl = request.ImageUrl;
+                }
+            }
             noticiaQuery.ImagemAlt = request.ImageAlt ?? noticiaQuery.ImagemAlt;
             noticiaQuery.DataPublicacao = request.PublishedAt ?? noticiaQuery.DataPublicacao;
             noticiaQuery.DataAtualizacao = DateTime.UtcNow;

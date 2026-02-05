@@ -129,7 +129,22 @@ namespace DaccApi.Services.Projetos
         {
             try
             {
-                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
+                string imageUrl;
+                if (!string.IsNullOrEmpty(request.ImageUrl))
+                {
+                    if (request.ImageUrl.StartsWith("data:image") || request.ImageUrl.Length > 255)
+                    {
+                        imageUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageUrl);
+                    }
+                    else
+                    {
+                        imageUrl = request.ImageUrl;
+                    }
+                }
+                else
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "A imagem é obrigatória.");
+                }
 
                 var projeto = await _projetosRepository.GetByIdAsync(id);
 
@@ -200,7 +215,17 @@ namespace DaccApi.Services.Projetos
                 projetoQuery.Tags = request.Tags ?? projetoQuery.Tags;
                 projetoQuery.TextoConclusao = request.CompletionText ?? projetoQuery.TextoConclusao;
                 projetoQuery.Progresso = request.Progress ?? projetoQuery.Progresso;
-                projetoQuery.ImagemUrl = request.ImageUrl ?? projetoQuery.ImagemUrl;
+                if (request.ImageUrl != null)
+                {
+                    if (request.ImageUrl.StartsWith("data:image") || request.ImageUrl.Length > 255)
+                    {
+                        projetoQuery.ImagemUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageUrl);
+                    }
+                    else
+                    {
+                        projetoQuery.ImagemUrl = request.ImageUrl;
+                    }
+                }
                 projetoQuery.DataAtualizacao = DateTime.UtcNow;
                 
                 await _projetosRepository.UpdateAsync(id, projetoQuery);

@@ -74,14 +74,16 @@ namespace DaccApi.Services.User
                 }
 
                 // Atualiza a imagem do usuário
-                if (newUserData.ImageFile != null)
+                if (!string.IsNullOrEmpty(newUserData.Avatar))
                 {
-                    var imageUrl = await _fileStorageService.SaveImageFileAsync(newUserData.ImageFile);
-                    userData.ImagemUrl = imageUrl;
-                }
-                else if (!string.IsNullOrEmpty(newUserData.Avatar))
-                {
-                    userData.ImagemUrl = newUserData.Avatar;
+                    if (newUserData.Avatar.StartsWith("data:image") || newUserData.Avatar.Length > 255)
+                    {
+                        userData.ImagemUrl = await _fileStorageService.SaveBase64ImageAsync(newUserData.Avatar);
+                    }
+                    else
+                    {
+                        userData.ImagemUrl = newUserData.Avatar;
+                    }
                 }
 
                 // Atualiza o cargo (apenas se o solicitante for administrador)
