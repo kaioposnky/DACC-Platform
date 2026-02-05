@@ -52,9 +52,7 @@ public class UsuarioControllerTests : IntegrationTestBase
         var adminId = await GetUserIdByEmail(TestAdminEmail);
         
         var updateRequest = UsuarioTestDataBuilder.CreateUpdateUsuario("Admin Updated");
-        var formData = ToFormData(updateRequest);
-        
-        var response = await _client.PatchAsync($"{BaseUrl}/{adminId}", formData);
+        var response = await _client.PatchAsJsonAsync($"{BaseUrl}/{adminId}", updateRequest);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         
         // Verifica se atualizou (novamente, depende do GetById funcionar ou do retorno do Update)
@@ -134,14 +132,5 @@ public class UsuarioControllerTests : IntegrationTestBase
         return null;
     }
 
-    private MultipartFormDataContent ToFormData(RequestUpdateUsuario request)
-    {
-        var formData = new MultipartFormDataContent();
-        if (request.Name != null) formData.Add(new StringContent(request.Name), "Name");
-        if (request.LastName != null) formData.Add(new StringContent(request.LastName), "LastName");
-        if (request.Phone != null) formData.Add(new StringContent(request.Phone), "Phone");
-        if (request.Course != null) formData.Add(new StringContent(request.Course), "Course");
-        
-        return formData;
-    }
+
 }

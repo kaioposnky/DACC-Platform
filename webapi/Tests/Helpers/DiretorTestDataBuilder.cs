@@ -24,8 +24,7 @@ public static class DiretorTestDataBuilder
             Specialization = specialization ?? "Ciência da Computação e Inteligência Artificial",
             Email = "joao.silva@fatec.sp.gov.br",
             Linkedin = "https://linkedin.com/in/joaosilva",
-            Github = "https://github.com/joaosilva",
-            ImageFile = null // Testes sem upload de arquivo por enquanto
+            Github = "https://github.com/joaosilva"
         };
     }
 
@@ -39,8 +38,7 @@ public static class DiretorTestDataBuilder
             Name = "Diretor Teste",
             Title = "Mestre",
             Position = "Coordenador",
-            Specialization = "Engenharia de Software",
-            ImageFile = null
+            Specialization = "Engenharia de Software"
         };
     }
 
@@ -56,8 +54,7 @@ public static class DiretorTestDataBuilder
                 Name = "",
                 Title = "Doutor",
                 Position = "Diretor",
-                Specialization = "Computação",
-                ImageFile = null
+                Specialization = "Computação"
             },
             "email_invalido" => new RequestDiretor
             {
@@ -65,8 +62,7 @@ public static class DiretorTestDataBuilder
                 Title = "Doutor",
                 Position = "Diretor",
                 Specialization = "Computação",
-                Email = "email-invalido",
-                ImageFile = null
+                Email = "email-invalido"
             },
             _ => CreateValidDiretor()
         };
@@ -86,8 +82,7 @@ public static class DiretorTestDataBuilder
             Position = position ?? "Diretor Geral",
             Specialization = "Inteligência Artificial e Machine Learning",
             Email = "joao.atualizado@fatec.sp.gov.br",
-            Linkedin = "https://linkedin.com/in/joaosilva-updated",
-            ImageFile = null
+            Linkedin = "https://linkedin.com/in/joaosilva-updated"
         };
     }
 

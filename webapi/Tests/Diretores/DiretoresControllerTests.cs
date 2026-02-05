@@ -16,10 +16,7 @@ public class DiretoresControllerTests : IntegrationTestBase
     public async Task Create_Diretor_Should_Return_201_When_Authenticated()
     {
         await AuthenticateAsUserAsync();
-        var diretor = DiretorTestDataBuilder.CreateValidDiretor();
-        var formData = ToFormData(diretor);
-
-        var response = await _client.PostAsync("v1/api/faculty", formData);
+        var response = await _client.PostAsJsonAsync("v1/api/faculty", DiretorTestDataBuilder.CreateValidDiretor());
 
         if (!response.IsSuccessStatusCode)
         {
@@ -37,10 +34,7 @@ public class DiretoresControllerTests : IntegrationTestBase
     public async Task Create_Diretor_With_Minimal_Data_Should_Return_201()
     {
         await AuthenticateAsUserAsync();
-        var diretor = DiretorTestDataBuilder.CreateMinimalDiretor();
-        var formData = ToFormData(diretor);
-
-        var response = await _client.PostAsync("v1/api/faculty", formData);
+        var response = await _client.PostAsJsonAsync("v1/api/faculty", DiretorTestDataBuilder.CreateMinimalDiretor());
 
         if (!response.IsSuccessStatusCode)
         {
@@ -57,10 +51,7 @@ public class DiretoresControllerTests : IntegrationTestBase
     [Fact]
     public async Task Create_Diretor_Without_Auth_Should_Return_401()
     {
-        var diretor = DiretorTestDataBuilder.CreateValidDiretor();
-        var formData = ToFormData(diretor);
-
-        var response = await _client.PostAsync("v1/api/faculty", formData);
+        var response = await _client.PostAsJsonAsync("v1/api/faculty", DiretorTestDataBuilder.CreateValidDiretor());
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
@@ -85,10 +76,7 @@ public class DiretoresControllerTests : IntegrationTestBase
     {
         await AuthenticateAsUserAsync();
         var diretorRequest = DiretorTestDataBuilder.CreateValidDiretor(name: "Dr. Teste GetById");
-        var formData = ToFormData(diretorRequest);
-        
-        // Cria o diretor
-        var createResponse = await _client.PostAsync("v1/api/faculty", formData);
+        var createResponse = await _client.PostAsJsonAsync("v1/api/faculty", diretorRequest);
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         
         // Busca por ID
@@ -158,10 +146,7 @@ public class DiretoresControllerTests : IntegrationTestBase
     {
         await AuthenticateAsUserAsync();
         var diretorRequest = DiretorTestDataBuilder.CreateValidDiretor(name: "Dr. Para Deletar");
-        var formData = ToFormData(diretorRequest);
-        
-        // Cria o diretor
-        var createResponse = await _client.PostAsync("v1/api/faculty", formData);
+        var createResponse = await _client.PostAsJsonAsync("v1/api/faculty", diretorRequest);
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         
         // Validação de criação bem-sucedida
@@ -176,8 +161,7 @@ public class DiretoresControllerTests : IntegrationTestBase
         await AuthenticateAsUserAsync();
         
         // 1. Cria o diretor
-        var createFormData = ToFormData(DiretorTestDataBuilder.CreateValidDiretor(name: "Dr. Para Atualizar"));
-        var createResponse = await _client.PostAsync("v1/api/faculty", createFormData);
+        var createResponse = await _client.PostAsJsonAsync("v1/api/faculty", DiretorTestDataBuilder.CreateValidDiretor(name: "Dr. Para Atualizar"));
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         
         // Como a API não retorna ID, validamos apenas a criação
@@ -190,10 +174,7 @@ public class DiretoresControllerTests : IntegrationTestBase
     public async Task Create_Diretor_With_Invalid_Email_Should_Return_400()
     {
         await AuthenticateAsUserAsync();
-        var diretor = DiretorTestDataBuilder.CreateInvalidDiretor("email_invalido");
-        var formData = ToFormData(diretor);
-
-        var response = await _client.PostAsync("v1/api/faculty", formData);
+        var response = await _client.PostAsJsonAsync("v1/api/faculty", DiretorTestDataBuilder.CreateInvalidDiretor("email_invalido"));
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
@@ -206,17 +187,7 @@ public class DiretoresControllerTests : IntegrationTestBase
         foreach (var prop in properties)
         {
             var value = prop.GetValue(data);
-            
-            // Cria um arquivo de imagem mock para IFormFile
-            if (prop.Name == "ImageFile")
-            {
-                // 1x1 transparent PNG
-                byte[] imageBytes = Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==");
-                var imageContent = new ByteArrayContent(imageBytes);
-                imageContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
-                formData.Add(imageContent, "ImageFile", "test-image.png");
-            }
-            else if (value != null)
+            if (value != null)
             {
                 formData.Add(new StringContent(value.ToString()!), prop.Name);
             }

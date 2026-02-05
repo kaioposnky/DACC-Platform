@@ -150,12 +150,10 @@ public class NoticiasControllerTests : IntegrationTestBase
         // Mock de teste: Tentar update num ID aleatório deve dar 204 (NoContent) ou 404/500 se não achar.
         var randomId = Guid.NewGuid();
         var updateNoticia = NoticiaTestDataBuilder.CreateUpdateNoticia();
-        var formData = ToFormData(updateNoticia);
-        
-        var updateResponse = await _client.PatchAsync($"{BaseUrl}/{randomId}", formData);
+        var response = await _client.PatchAsJsonAsync($"{BaseUrl}/{randomId}", updateNoticia);
         
         // Se não encontrar, qual o status? Baseado nos outros testes, pode ser 204, 404, 500 ou 400 (se validar algo antes).
-        updateResponse.StatusCode.Should().BeOneOf(HttpStatusCode.NoContent, HttpStatusCode.NotFound, HttpStatusCode.InternalServerError, HttpStatusCode.BadRequest);
+        response.StatusCode.Should().BeOneOf(HttpStatusCode.NoContent, HttpStatusCode.NotFound, HttpStatusCode.InternalServerError, HttpStatusCode.BadRequest);
     }
     
     /// <summary>
@@ -167,17 +165,14 @@ public class NoticiasControllerTests : IntegrationTestBase
         await AuthenticateAsAdminAsync();
         var randomId = Guid.NewGuid();
         
-        var imageRequest = new ImageRequest { ImageAlt = "Nova Imagem" };
-        var formData = ToFormData(imageRequest);
+        var imageRequest = new ImageRequest 
+        { 
+            ImageAlt = "Nova Imagem",
+            ImageUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+        };
         
-        // Adiciona a imagem manualmente no FormData pois o helper genérico image handling 
-        // foi feito pro RequestDiretor que tinha prop "ImageFile".
-        // O ImageRequest também tem "ImageFile". O helper deve lidar se usarmos o mesmo nome.
+        var response = await _client.PatchAsJsonAsync($"{BaseUrl}/{randomId}/image", imageRequest);
         
-        var response = await _client.PatchAsync($"{BaseUrl}/{randomId}/image", formData);
-        
-        // Novamente, sem ID real, esperamos falha de "não encontrado" ou sucesso se o mock
-        // do serviço apenas retornar algo sem validar ID no banco (improvável).
         response.StatusCode.Should().BeOneOf(HttpStatusCode.NoContent, HttpStatusCode.NotFound, HttpStatusCode.InternalServerError);
     }
 
@@ -189,17 +184,7 @@ public class NoticiasControllerTests : IntegrationTestBase
         foreach (var prop in properties)
         {
             var value = prop.GetValue(data);
-            
-            // Tratamento especial para ImageFile (IFormFile)
-            if (prop.Name == "ImageFile")
-            {
-                // 1x1 transparent PNG válido
-                byte[] imageBytes = Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==");
-                var imageContent = new ByteArrayContent(imageBytes);
-                imageContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
-                formData.Add(imageContent, "ImageFile", "test-image.png");
-            }
-            else if (value != null)
+            if (value != null)
             {
                 formData.Add(new StringContent(value.ToString()!), prop.Name);
             }
