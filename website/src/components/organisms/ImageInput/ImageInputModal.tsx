@@ -14,11 +14,11 @@ export interface ImageInputModalProps {
     onImageUpload: (image: File) => void;
 }
 
-export const ImageInputModal: React.FC<ImageInputModalProps> = ({ 
-    title = "Atualizar Foto de Perfil", 
-    isOpen, 
-    onClose, 
-    onImageUpload 
+export const ImageInputModal: React.FC<ImageInputModalProps> = ({
+    title = "Atualizar Foto de Perfil",
+    isOpen,
+    onClose,
+    onImageUpload
 }) => {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -60,7 +60,7 @@ export const ImageInputModal: React.FC<ImageInputModalProps> = ({
 
     const handleUpload = async () => {
         if (!imageFile) return;
-        
+
         setIsUploading(true);
         try {
             await onImageUpload(imageFile);
@@ -115,6 +115,7 @@ export const ImageInputModal: React.FC<ImageInputModalProps> = ({
                                     alt="Preview"
                                     fill
                                     className="object-cover rounded-full border-4 border-white shadow-md"
+                                    unoptimized={process.env.NODE_ENV === 'development'}
                                 />
                             </motion.div>
                         ) : (
@@ -127,18 +128,18 @@ export const ImageInputModal: React.FC<ImageInputModalProps> = ({
                                 <div className="bg-white p-4 rounded-full shadow-sm mb-4">
                                     <PhotoIcon className="w-10 h-10 text-gray-400" />
                                 </div>
-                                
+
                                 <Typography variant="body" className="text-gray-600">
                                     Arraste uma imagem ou
                                 </Typography>
-                                
+
                                 <button
                                     onClick={triggerFileInput}
                                     className="text-blue-600 font-semibold hover:text-blue-700 transition-colors mt-1"
                                 >
                                     escolha um arquivo
                                 </button>
-                                
+
                                 <Typography variant="subtitle" className="text-gray-400 mt-4 block">
                                     PNG, JPG ou GIF (Máx. 5MB)
                                 </Typography>
