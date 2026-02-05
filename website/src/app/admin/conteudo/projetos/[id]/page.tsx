@@ -147,7 +147,6 @@ export default function AdminEditProjetoPage() {
     const selectedDirectorate = directorates.find(d => d.id === selectedId);
     setProject({
       ...project,
-      directorateId: selectedId,
       department: selectedDirectorate
     });
   };
