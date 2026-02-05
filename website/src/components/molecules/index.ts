@@ -35,4 +35,6 @@ export { TagInput } from './TagInput';
 export { ImageGalleryEditor } from './ImageGalleryEditor';
 export * from './admin';
 export { PageLoader } from './PageLoader';
+export { UserFilter, type UserFilterOptions } from './UserFilter';
+
 

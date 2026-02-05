@@ -187,9 +187,28 @@ class ApiService {
     return data?.users || [];
   }
 
-  async searchUsers(query?: string): Promise<{ users: User[]; totalCount: number }> {
+  async searchUsers(params?: {
+    searchQuery?: string;
+    page?: number;
+    limit?: number;
+    createdFrom?: string;
+    createdTo?: string;
+    role?: string;
+    course?: string;
+    isActive?: boolean | null;
+  }): Promise<{ users: User[]; totalCount: number }> {
     const searchParams = new URLSearchParams();
-    if (query) searchParams.append('SearchQuery', query);
+
+    if (params?.searchQuery) searchParams.append('SearchQuery', params.searchQuery);
+    if (params?.page) searchParams.append('Page', params.page.toString());
+    if (params?.limit) searchParams.append('Limit', params.limit.toString());
+    if (params?.createdFrom) searchParams.append('CreatedFrom', params.createdFrom);
+    if (params?.createdTo) searchParams.append('CreatedTo', params.createdTo);
+    if (params?.role) searchParams.append('Role', params.role);
+    if (params?.course) searchParams.append('Course', params.course);
+    if (params?.isActive !== undefined && params?.isActive !== null) {
+      searchParams.append('IsActive', params.isActive.toString());
+    }
 
     const endpoint = searchParams.toString() ? `/users/search?${searchParams.toString()}` : '/users/search';
     const data = await this.request<{ users: User[]; totalCount: number }>(endpoint);
