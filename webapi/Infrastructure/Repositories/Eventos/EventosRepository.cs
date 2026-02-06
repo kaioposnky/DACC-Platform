@@ -19,8 +19,8 @@ namespace DaccApi.Infrastructure.Repositories.Eventos
                 Page = query.Page,
                 Limit = query.Limit,
                 Type = query.Type,
-                DateFrom = query.DateFrom,
-                DateTo = query.DateTo
+                DateFrom = query.DateFrom.HasValue ? DateTime.SpecifyKind(query.DateFrom.Value, DateTimeKind.Utc) : (DateTime?)null,
+                DateTo = query.DateTo.HasValue ? DateTime.SpecifyKind(query.DateTo.Value, DateTimeKind.Utc) : (DateTime?)null
             };
 
             var result = (await _dapper.QueryAsync<Evento, Usuario, Evento>(

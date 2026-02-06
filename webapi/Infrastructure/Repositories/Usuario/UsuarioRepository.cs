@@ -259,8 +259,8 @@ public class UsuarioRepository : BaseRepository<Usuario>, IUsuarioRepository
                 Role = query.Role,
                 Course = query.Course,
                 IsActive = query.IsActive,
-                CreatedFrom = query.CreatedFrom,
-                CreatedTo = query.CreatedTo
+                CreatedFrom = query.CreatedFrom.HasValue ? DateTime.SpecifyKind(query.CreatedFrom.Value, DateTimeKind.Utc) : (DateTime?)null,
+                CreatedTo = query.CreatedTo.HasValue ? DateTime.SpecifyKind(query.CreatedTo.Value, DateTimeKind.Utc) : (DateTime?)null
             };
 
             var result = (await _repositoryDapper.QueryAsync<Usuario>(sql, queryParams)).ToList();

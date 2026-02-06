@@ -21,7 +21,7 @@ namespace DaccApi.Infrastructure.Repositories.Noticias
             {
                 SearchQuery = string.IsNullOrEmpty(query.SearchQuery) ? null : $"%{query.SearchQuery}%",
                 Category = query.Category,
-                PublishDate = query.PublishDate,
+                PublishDate = query.PublishDate.HasValue ? DateTime.SpecifyKind(query.PublishDate.Value, DateTimeKind.Utc) : (DateTime?)null,
                 Offset = (query.Page - 1) * query.Limit,
                 Limit = query.Limit
             };

@@ -17,8 +17,8 @@ public class AnuncioRepository : BaseRepository<Model.Anuncio>, IAnuncioReposito
             Page = query.Page,
             Limit = query.Limit,
             Type = query.Type,
-            CreatedFrom = query.CreatedFrom,
-            CreatedTo = query.CreatedTo,
+            CreatedFrom = query.CreatedFrom.HasValue ? DateTime.SpecifyKind(query.CreatedFrom.Value, DateTimeKind.Utc) : (DateTime?)null,
+            CreatedTo = query.CreatedTo.HasValue ? DateTime.SpecifyKind(query.CreatedTo.Value, DateTimeKind.Utc) : (DateTime?)null,
             IsActive = query.IsActive
         };
 

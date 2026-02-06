@@ -210,8 +210,8 @@ namespace DaccApi.Infrastructure.Repositories.Orders
                 var param = new
                 {
                     Status = query.Status == "all" ? null : query.Status,
-                    StartDate = query.StartDate,
-                    EndDate = query.EndDate,
+                    StartDate = query.StartDate.HasValue ? DateTime.SpecifyKind(query.StartDate.Value, DateTimeKind.Utc) : (DateTime?)null,
+                    EndDate = query.EndDate.HasValue ? DateTime.SpecifyKind(query.EndDate.Value, DateTimeKind.Utc) : (DateTime?)null,
                     SearchQuery = string.IsNullOrEmpty(query.SearchQuery) ? null : $"%{query.SearchQuery}%",
                     Page = query.Page,
                     Limit = query.Limit
