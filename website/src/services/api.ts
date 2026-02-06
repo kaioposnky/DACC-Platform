@@ -58,7 +58,7 @@ const API_BASE_URL = 'http://localhost:3001/v1/api';
 
 class ApiService {
 
-  private refreshPromise: Promise<void>|null = null;
+  private refreshPromise: Promise<void> | null = null;
 
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
 
@@ -134,7 +134,7 @@ class ApiService {
   async refreshToken(refreshToken: string): Promise<{ accessToken: string; refreshToken: string; expiresIn: number; }> {
     const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
       method: 'POST',
-      body: JSON.stringify({ refreshToken }),
+      body: JSON.stringify(refreshToken),
       headers: {
         'Content-Type': 'application/json'
       }
