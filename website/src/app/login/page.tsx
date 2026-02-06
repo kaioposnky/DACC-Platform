@@ -20,7 +20,7 @@ export default function LoginPage() {
       if (["administrador", "diretor"].includes(user?.role || "")) {
         router.push('/admin');
       } else {
-        router.push('/dashboard');
+        router.push('/');
       }
     }
   }, [isAuthenticated, user?.role, router]);
