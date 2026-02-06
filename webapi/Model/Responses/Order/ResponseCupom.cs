@@ -1,36 +1,20 @@
-using System.Text.Json.Serialization;
+using DaccApi.Enum.Posts;
 using DaccApi.Model.Objects.Order;
 
 namespace DaccApi.Model.Responses.Order
 {
-    /// <summary>
-    /// Representa a resposta de um cupom de desconto.
-    /// </summary>
     public class ResponseCupom
     {
-        [JsonPropertyName("id")]
         public Guid Id { get; set; }
-
-        [JsonPropertyName("code")]
         public string Code { get; set; } = string.Empty;
-
-        [JsonPropertyName("discountType")]
         public string DiscountType { get; set; } = string.Empty;
-
-        [JsonPropertyName("value")]
         public decimal Value { get; set; }
-
-        [JsonPropertyName("expirationDate")]
         public DateTime? ExpirationDate { get; set; }
-
-        [JsonPropertyName("usageLimit")]
         public int? UsageLimit { get; set; }
-
-        [JsonPropertyName("currentUsage")]
         public int CurrentUsage { get; set; }
-
-        [JsonPropertyName("active")]
-        public bool Active { get; set; }
+        public bool IsActive { get; set; }
+        public bool IsValid { get; set; }
+        public DateTime CreatedAt { get; set; }
 
         public ResponseCupom(Cupom cupom)
         {
@@ -41,9 +25,13 @@ namespace DaccApi.Model.Responses.Order
             ExpirationDate = cupom.DataExpiracao;
             UsageLimit = cupom.LimiteUso;
             CurrentUsage = cupom.UsoAtual;
-            Active = cupom.Ativo;
-        }
+            IsActive = cupom.Ativo;
+            CreatedAt = cupom.DataCriacao;
 
-        public ResponseCupom() { }
+            // Calcula se é válido hoje
+            IsValid = IsActive && 
+                      (!ExpirationDate.HasValue || ExpirationDate.Value > DateTime.UtcNow) && 
+                      (!UsageLimit.HasValue || CurrentUsage < UsageLimit.Value);
+        }
     }
 }
