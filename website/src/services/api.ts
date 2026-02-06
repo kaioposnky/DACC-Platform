@@ -330,9 +330,36 @@ class ApiService {
   }
 
   // Announcements
-  async getAnnouncements(): Promise<Announcement[]> {
-    const data = await this.request<{ announcements: Announcement[] }>('/announcements');
-    return data?.announcements || [];
+  async getAnnouncements(params?: {
+    search?: string;
+    page?: number;
+    limit?: number;
+    type?: string;
+    isActive?: boolean | null;
+  }): Promise<{ announcements: Announcement[]; totalCount: number }> {
+    const searchParams = new URLSearchParams();
+
+    if (params?.search) searchParams.append('SearchQuery', params.search);
+    if (params?.page) searchParams.append('Page', params.page.toString());
+    if (params?.limit) searchParams.append('Limit', params.limit.toString());
+    if (params?.type) searchParams.append('Type', params.type);
+    if (params?.isActive !== undefined && params?.isActive !== null) {
+      searchParams.append('IsActive', params.isActive.toString());
+    }
+
+    const query = searchParams.toString();
+    const endpoint = query ? `/announcements/search?${query}` : '/announcements/search';
+
+    const data = await this.request<{ announcements: Announcement[]; totalCount: number }>(endpoint);
+
+    if (Array.isArray(data)) {
+      return { announcements: data, totalCount: data.length };
+    }
+
+    return {
+      announcements: data?.announcements || [],
+      totalCount: data?.totalCount || 0
+    };
   }
 
   async getAnnouncement(id: string): Promise<Announcement> {

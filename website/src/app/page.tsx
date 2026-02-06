@@ -20,7 +20,7 @@ export default function Home() {
 
   const fetchAnnouncements = useCallback(async () => {
     try {
-      const fetchedAnnouncements = await apiService.getAnnouncements();
+      const { announcements: fetchedAnnouncements } = await apiService.getAnnouncements();
       // Convert announcements to slides format
       const announcementSlides: Slide[] = fetchedAnnouncements.map((announcement: Announcement, index: number) => ({
         id: index + 1, // Ensure numeric ID
@@ -50,25 +50,25 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       {/* Header/Navigation */}
       <Navigation />
-      
+
       {/* Hero Section - Full width below header */}
       <HeroSlider slides={heroSlides} />
-      
+
       {/* Features Section */}
       <FeaturesSection />
-      
+
       {/* Event Calendar Section */}
       <EventCalendar />
-      
+
       {/* Support Section */}
       <SupportSection />
-      
+
       {/* Projects Section */}
       <ProjectsSection />
-      
+
       {/* News Section */}
       <NewsSection />
-      
+
       {/* Footer */}
       <Footer />
     </div>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { apiService } from "@/services/api";
-import { News, Event, Project } from "@/types";
+import { News, Event, Project, Announcement } from "@/types";
 import {
     AdminListManager,
     ManageNewsCard,
@@ -14,8 +14,9 @@ import {
 import { toast } from "sonner";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
+import { ManageAnnouncementCard } from "@/components/molecules/admin/ManageAnnouncementCard";
 
-type ContentTab = "news" | "events" | "projects";
+type ContentTab = "news" | "events" | "projects" | "announcements";
 
 export default function AdminConteudosPage() {
     const router = useRouter();
@@ -23,6 +24,7 @@ export default function AdminConteudosPage() {
     const [news, setNews] = useState<News[]>([]);
     const [events, setEvents] = useState<Event[]>([]);
     const [projects, setProjects] = useState<Project[]>([]);
+    const [announcements, setAnnouncements] = useState<Announcement[]>([]);
 
     const [isLoading, setIsLoading] = useState(true);
     const [totalItems, setTotalItems] = useState(0);
@@ -47,6 +49,10 @@ export default function AdminConteudosPage() {
             } else if (activeTab === "projects") {
                 const response = await apiService.getProjects({ page, limit: itemsPerPage });
                 setProjects(response.projects);
+                setTotalItems(response.totalCount);
+            } else if (activeTab === "announcements") {
+                const response = await apiService.getAnnouncements({ page, limit: itemsPerPage });
+                setAnnouncements(response.announcements);
                 setTotalItems(response.totalCount);
             }
         } catch (error) {
@@ -91,6 +97,7 @@ export default function AdminConteudosPage() {
         { id: "news", label: "Notícias", icon: "📰" },
         { id: "events", label: "Eventos", icon: "📅" },
         { id: "projects", label: "Projetos", icon: "🚀" },
+        { id: "announcements", label: "Anúncios", icon: "📢" },
     ];
 
     const handleCreateNew = () => {
@@ -98,6 +105,7 @@ export default function AdminConteudosPage() {
             news: "/admin/conteudo/noticias/nova",
             events: "/admin/conteudo/eventos/novo",
             projects: "/admin/conteudo/projetos/novo",
+            announcements: "/admin/conteudo/anuncios/novo",
         };
         router.push(routeMap[activeTab]);
     };
@@ -165,6 +173,13 @@ export default function AdminConteudosPage() {
                         key={item.id}
                         project={item}
                         onDelete={(p) => setItemToDelete({ id: p.id, title: p.title, type: "projects" })}
+                    />
+                ))}
+                {activeTab === "announcements" && announcements.map(item => (
+                    <ManageAnnouncementCard
+                        key={item.id}
+                        announcement={item}
+                        onDelete={(a) => setItemToDelete({ id: a.id, title: a.title, type: "announcements" })}
                     />
                 ))}
             </AdminListManager>
