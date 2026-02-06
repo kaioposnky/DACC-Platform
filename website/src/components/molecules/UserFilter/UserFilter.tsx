@@ -43,8 +43,8 @@ export const UserFilter = ({
     useEffect(() => {
         const filters: UserFilterOptions = {
             searchQuery: debouncedSearch || undefined,
-            createdFrom: debouncedCreatedFrom || undefined,
-            createdTo: debouncedCreatedTo || undefined,
+            createdFrom: debouncedCreatedFrom ? `${debouncedCreatedFrom}T00:00:00Z` : undefined,
+            createdTo: debouncedCreatedTo ? `${debouncedCreatedTo}T23:59:59Z` : undefined,
             role: role || undefined,
             course: course || undefined,
             isActive: isActive === "" ? null : isActive === "true",

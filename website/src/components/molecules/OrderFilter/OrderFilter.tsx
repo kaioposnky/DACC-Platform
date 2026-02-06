@@ -48,9 +48,11 @@ export const OrderFilter = ({
   useEffect(() => {
     onFilterChange({
       ...filters,
-      searchQuery: debouncedSearch
+      searchQuery: debouncedSearch,
+      startDate: filters.startDate ? `${filters.startDate}T00:00:00Z` : '',
+      endDate: filters.endDate ? `${filters.endDate}T23:59:59Z` : '',
     });
-  }, [debouncedSearch, filters]);
+  }, [debouncedSearch, filters, onFilterChange]);
 
   const handleFilterChange = (key: keyof Omit<OrderFilterOptions, 'searchQuery'>, value: string) => {
     const newFilters = { ...filters, [key]: value };
