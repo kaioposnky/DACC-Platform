@@ -54,9 +54,12 @@ export interface ChangePasswordData {
   newPassword: string;
 }
 
-const API_BASE_URL = 'http://localhost:5000/v1/api';
+const API_BASE_URL = 'http://localhost:3001/v1/api';
 
 class ApiService {
+
+  private refreshPromise: Promise<void>|null = null;
+
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
 
     // If the token expired we use refresh token to get a new token
@@ -65,18 +68,12 @@ class ApiService {
 
     // 30 seconds margin to the expiring token
     if (tokenExpirationUnix && timeNowUnix > (tokenExpirationUnix - 30)) {
-      try {
-        const refreshToken = storageService.getRefreshToken();
-        if (refreshToken) {
-          const tokens = await this.refreshToken(refreshToken);
-          storageService.setTokens(tokens.accessToken, tokens.refreshToken, tokens.expiresIn);
-        }
-      } catch (e) {
-        storageService.clear();
-        console.info("Could not refresh user token! Redirecting user to login.");
-        toast.message("Seu acesso expirou! Faça login novamente para continuar navegando.")
-        window.location.href = '/login'
+
+      if (!this.refreshPromise) {
+        this.refreshPromise = this.performRefreshUserInfo();
       }
+
+      await this.refreshPromise;
     }
 
     const accessToken = storageService.getAccessToken();
@@ -114,6 +111,24 @@ class ApiService {
       return apiResponse.data;
     }
     return data as T;
+  }
+
+  async performRefreshUserInfo(): Promise<void> {
+    try {
+      const refreshToken = storageService.getRefreshToken();
+      if (refreshToken) {
+        const tokens = await this.refreshToken(refreshToken);
+        storageService.setTokens(tokens.accessToken, tokens.refreshToken, tokens.expiresIn);
+      }
+    } catch (e) {
+      storageService.clear();
+      console.info("Could not refresh user token! Redirecting user to login.");
+      toast.message("Seu acesso expirou! Faça login novamente para continuar navegando.")
+      window.location.href = '/login'
+      throw e;
+    } finally {
+      this.refreshPromise = null;
+    }
   }
 
   async refreshToken(refreshToken: string): Promise<{ accessToken: string; refreshToken: string; expiresIn: number; }> {
