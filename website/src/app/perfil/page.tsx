@@ -12,6 +12,7 @@ import { ImageInputModal } from "@/components/organisms/ImageInput";
 import { toast } from "sonner";
 import { storageService } from "@/services/storage";
 import { useRouter } from "next/navigation";
+import { cleanNumeric } from "@/utils/formatters";
 
 export default function ProfilePage() {
   const { user, isLoading } = useAuth();
@@ -46,13 +47,12 @@ export default function ProfilePage() {
   const handleSaveForm = (data: UserFormData) => {
     async function updateUserInfo() {
       if (!user) return;
-      const cleanAttributes = (string: string) => string.replace(/\D/g, "");
       const payload = {
         name: data.firstName,
         lastName: data.lastName,
         email: data.email,
-        phone: cleanAttributes(data.phone),
-        ra: cleanAttributes(data.studentId),
+        phone: cleanNumeric(data.phone),
+        ra: cleanNumeric(data.studentId),
         course: data.course,
       };
 

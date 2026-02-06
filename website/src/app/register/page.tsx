@@ -12,6 +12,7 @@ import { EyeIcon, EyeSlashIcon, UserIcon, AcademicCapIcon } from '@heroicons/rea
 import Link from 'next/link';
 import { apiService } from '@/services/api';
 import { toast } from "sonner";
+import { cleanNumeric } from "@/utils/formatters";
 import { useAuth } from "@/context/AuthContext";
 
 interface FormData {
@@ -106,8 +107,8 @@ export default function Register() {
           lastName: formData.lastName,
           email: formData.email,
           password: formData.password,
-          ra: formData.studentId ?? '',
-          phone: formData.phoneNumber ?? '',
+          ra: cleanNumeric(formData.studentId),
+          phone: cleanNumeric(formData.phoneNumber),
           course: formData.course,
           isSubscribedToNews: formData.subscribeNewsletter
         });

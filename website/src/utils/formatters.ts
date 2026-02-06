@@ -45,3 +45,7 @@ export const formatRA = (value: string) => {
         return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}-${digits[8] || ''}`;
     }
 };
+
+export const cleanNumeric = (value?: string): string => {
+    return value ? value.replace(/\D/g, '') : '';
+};

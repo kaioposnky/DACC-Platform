@@ -1,6 +1,6 @@
 "use client"
 
-import { formatDate, formatPhone, formatRA } from "@/utils/formatters"; // Updated import to include new formatters
+import { formatDate, formatPhone, formatRA, cleanNumeric } from "@/utils/formatters"; // Updated import to include new formatters
 import { isValidEmail } from "@/utils/validators";
 import { AdminCard, ConfirmationModal, EditPageHeader, ImageUploadCard, Input, PageLoader, ProgressSlider, Select, TagInput } from "@/components";
 import { apiService } from "@/services/api";
@@ -63,7 +63,12 @@ export default function AdminEditUsuarioPage() {
 
     setIsSaving(true);
     try {
-      await apiService.updateUser(user.id, user);
+      const sanitizedUser = {
+        ...user,
+        ra: cleanNumeric(user.ra),
+        phone: cleanNumeric(user.phone)
+      };
+      await apiService.updateUser(user.id, sanitizedUser);
       toast.success("Usuário atualizado com sucesso");
     } catch (error) {
       toast.error("Erro ao atualizar usuário");
