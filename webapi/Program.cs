@@ -190,6 +190,17 @@ builder.Services.AddScoped<IArgon2Utility, Argon2Utility>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAnuncioService, AnuncioService>();
 builder.Services.AddScoped<IAnuncioRepository, AnuncioRepository>();
+builder.Services.AddScoped<ITipoAnuncioRepository, TipoAnuncioRepository>();
+builder.Services.AddScoped<ITipoAnuncioService, TipoAnuncioService>();
+
+builder.Services.AddScoped<ITipoEventoRepository, TipoEventoRepository>();
+builder.Services.AddScoped<ITipoEventoService, TipoEventoService>();
+
+builder.Services.AddScoped<ITipoProgressoRepository, TipoProgressoRepository>();
+builder.Services.AddScoped<ITipoProgressoService, TipoProgressoService>();
+
+builder.Services.AddScoped<ICategoriaNoticiaRepository, CategoriaNoticiaRepository>();
+builder.Services.AddScoped<ICategoriaNoticiaService, CategoriaNoticiaService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IProdutosService, ProdutosService>();
