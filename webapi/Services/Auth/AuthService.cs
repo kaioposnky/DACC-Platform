@@ -124,11 +124,21 @@ namespace DaccApi.Services.Auth
             var randomNumber = random.Next(0, _userStartImages.Length);
             var randomStartImageUrl = _userStartImages[randomNumber];
 
+            if(string.IsNullOrEmpty(requestCreate.Ra))
+            {
+                requestCreate.Ra = null;
+            }
+
+            if(string.IsNullOrEmpty(requestCreate.Phone))
+            {
+                requestCreate.Phone = null;
+            }
+
             var usuario = new Usuario
             {
                 Nome = requestCreate.FirstName!,
                 Sobrenome = requestCreate.LastName!,
-                Ra = requestCreate.Ra,
+                Ra = requestCreate.Ra!,
                 Curso = requestCreate.Course!,
                 Email = requestCreate.Email!,
                 ImagemUrl = randomStartImageUrl,
