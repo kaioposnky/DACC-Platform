@@ -1201,6 +1201,44 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 ## Orders
 
+---
+
+## Cupons (Descontos)
+
+### **GET /api/coupons**
+* **Descrição:** Lista todos os cupons cadastrados.
+* **Autorização:** Requer permissão `cupons.view`
+
+### **GET /api/coupons/{id}**
+* **Descrição:** Obtém detalhes de um cupom específico pelo ID.
+* **Autorização:** Requer permissão `cupons.view`
+
+### **POST /api/coupons**
+* **Descrição:** Cria um novo cupom de desconto.
+* **Autorização:** Requer permissão `cupons.create`
+* **Parâmetros da Requisição (Body):**
+    | Campo | Tipo | Obrigatório | Descrição |
+    |-------|------|-------------|-----------|
+    | `code` | `string` | Sim | Código único do cupom |
+    | `discountValue` | `decimal` | Sim | Valor do desconto |
+    | `type` | `int` | Sim | `0` (Fixo), `1` (Porcentagem) |
+    | `expirationDate` | `datetime` | Não | Data de expiração |
+    | `usageLimit` | `int` | Não | Limite máximo de utilizadores |
+
+### **PATCH /api/coupons/{id}**
+* **Descrição:** Atualiza as informações de um cupom existente.
+* **Autorização:** Requer permissão `cupons.update`
+
+### **DELETE /api/coupons/{id}**
+* **Descrição:** Remove um cupom do sistema.
+* **Autorização:** Requer permissão `cupons.delete`
+
+### **GET /api/orders/validate-coupon/{code}**
+* **Descrição:** Valida se um cupom é válido e retorna seus detalhes para aplicação no pedido.
+* **Autorização:** Autenticado
+
+---
+
 ### **POST /api/orders**
 
 * **Descrição:** Criação de pedido alinhada com o carrinho.
@@ -1783,6 +1821,29 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 ## Notícias
 
+### **Categorias de Notícia**
+
+Endpoints para gerenciar as categorias das notícias.
+
+#### **GET /api/news/categories**
+* **Descrição:** Lista todas as categorias de notícia cadastradas.
+* **Autorização:** Público (Autenticado)
+
+#### **POST /api/news/categories**
+* **Descrição:** Cria uma nova categoria de notícia.
+* **Autorização:** Requer permissão `noticias.categorias.create`
+* **Body:** `{ "nome": "string" }`
+
+#### **PATCH /api/news/categories/{id}**
+* **Descrição:** Atualiza o nome de uma categoria.
+* **Autorização:** Requer permissão `noticias.categorias.update`
+
+#### **DELETE /api/news/categories/{id}**
+* **Descrição:** Remove uma categoria.
+* **Autorização:** Requer permissão `noticias.categorias.delete`
+
+---
+
 ### **GET /api/news**
 
 * **Descrição:** Lista todas as notícias publicadas com suporte a filtros e paginação.
@@ -2032,7 +2093,29 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
-## Events
+## Eventos
+
+### **Tipos de Evento**
+
+Endpoints para gerenciar os tipos de eventos (ex: Workshop, Palestra, Competição).
+
+#### **GET /api/events/types**
+* **Descrição:** Lista todos os tipos de evento cadastrados.
+* **Autorização:** Público (Autenticado)
+
+#### **POST /api/events/types**
+* **Descrição:** Cria um novo tipo de evento.
+* **Autorização:** Requer permissão `eventos.tiposevento.create`
+
+#### **PATCH /api/events/types/{id}**
+* **Descrição:** Atualiza um tipo de evento.
+* **Autorização:** Requer permissão `eventos.tiposevento.update`
+
+#### **DELETE /api/events/types/{id}**
+* **Descrição:** Remove um tipo de evento do sistema.
+* **Autorização:** Requer permissão `eventos.tiposevento.delete`
+
+---
 
 ### **GET /api/events**
 
@@ -2277,6 +2360,28 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```#
 ## Projetos
+
+### **Tipos de Progresso**
+
+Endpoints para gerenciar os tipos de progresso de projetos (ex: Em Planejamento, Em Execução, Concluído).
+
+#### **GET /api/projects/progress-types**
+* **Descrição:** Lista todos os tipos de progresso cadastrados.
+* **Autorização:** Público (Autenticado)
+
+#### **POST /api/projects/progress-types**
+* **Descrição:** Cria um novo tipo de progresso.
+* **Autorização:** Requer permissão `projetos.tiposprogresso.create`
+
+#### **PATCH /api/projects/progress-types/{id}**
+* **Descrição:** Atualiza um tipo de progresso.
+* **Autorização:** Requer permissão `projetos.tiposprogresso.update`
+
+#### **DELETE /api/projects/progress-types/{id}**
+* **Descrição:** Remove um tipo de progresso.
+* **Autorização:** Requer permissão `projetos.tiposprogresso.delete`
+
+---
 
 ### **GET /api/projects**
 
@@ -2668,6 +2773,28 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```#
 # Anúncios
+
+### **Tipos de Anúncio**
+
+Endpoints para gerenciar os tipos de anúncios (ex: Venda, Doação, Troca).
+
+#### **GET /api/announcements/types**
+* **Descrição:** Lista todos os tipos de anúncio cadastrados.
+* **Autorização:** Público
+
+#### **POST /api/announcements/types**
+* **Descrição:** Cria um novo tipo de anúncio.
+* **Autorização:** Requer permissão `anuncios.tiposanuncio.create`
+
+#### **PATCH /api/announcements/types/{id}**
+* **Descrição:** Atualiza um tipo de anúncio.
+* **Autorização:** Requer permissão `anuncios.tiposanuncio.update`
+
+#### **DELETE /api/announcements/types/{id}**
+* **Descrição:** Remove um tipo de anúncio.
+* **Autorização:** Requer permissão `anuncios.tiposanuncio.delete`
+
+---
 
 ### **GET /api/announcements**
 
