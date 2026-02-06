@@ -66,7 +66,7 @@ public class ResponseNoticia
     /// Construtor para mapear de uma entidade Noticia.
     /// </summary>
     /// <param name="noticia">A entidade Noticia de origem.</param>
-    public ResponseNoticia(Noticia noticia)
+    public ResponseNoticia(global::DaccApi.Model.Noticia noticia)
     {
         Id = noticia.Id;
         Title = noticia.Titulo;

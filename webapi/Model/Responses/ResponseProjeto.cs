@@ -54,7 +54,7 @@ public class ResponseProjeto
     /// Construtor para mapear de uma entidade Projeto.
     /// </summary>
     /// <param name="projeto">A entidade Projeto de origem.</param>
-    public ResponseProjeto(Projeto projeto)
+    public ResponseProjeto(global::DaccApi.Model.Projeto projeto)
     {
         Id = projeto.Id;
         Title = projeto.Titulo;

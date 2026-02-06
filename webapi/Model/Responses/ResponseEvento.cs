@@ -47,7 +47,7 @@ public class ResponseEvento
     /// Construtor para mapear de uma entidade Evento.
     /// </summary>
     /// <param name="evento">A entidade Evento de origem.</param>
-    public ResponseEvento(Evento evento)
+    public ResponseEvento(global::DaccApi.Model.Evento evento)
     {
         Id = evento.Id;
         Title = evento.Titulo;

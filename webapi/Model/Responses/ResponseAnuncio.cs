@@ -1,3 +1,5 @@
+using DaccApi.Model;
+
 namespace DaccApi.Model.Responses;
 
 /// <summary>
@@ -62,7 +64,7 @@ public class ResponseAnuncio
     /// Construtor para mapear de uma entidade Anuncio.
     /// </summary>
     /// <param name="anuncio">A entidade Anuncio de origem.</param>
-    public ResponseAnuncio(Anuncio anuncio)
+    public ResponseAnuncio(global::DaccApi.Model.Anuncio anuncio)
     {
         Id = anuncio.Id;
         Title = anuncio.Titulo;
