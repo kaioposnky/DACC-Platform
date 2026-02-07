@@ -29,7 +29,7 @@ export default function AdminProfessoresPage() {
 
   const debouncedSearch = useDebounce(query, 600);
 
-  const fetchUsers = useCallback(async () => {
+  const fetchFaculty = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await apiService.getFaculty({
@@ -52,14 +52,14 @@ export default function AdminProfessoresPage() {
   }, [query, pagination.currentPage, pagination.itemsPerPage]);
 
   useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+    fetchFaculty();
+  }, [fetchFaculty]);
 
   const handleDelete = async (faculty: Faculty) => {
     try {
       await apiService.deleteFacultyMember(faculty.id);
       toast.success("Professor removido com sucesso");
-      fetchUsers();
+      fetchFaculty();
     } catch (error) {
       toast.error("Erro ao remover professor");
       console.error(error);
