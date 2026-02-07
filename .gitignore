@@ -49,3 +49,4 @@ website/package-lock.json
 GEMINI.md
 webapi/backend.md
 webapi/wwwroot
+webapi/seed_data.sql
