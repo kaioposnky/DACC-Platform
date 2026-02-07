@@ -78,28 +78,32 @@ export default function AdminPage() {
                     label="Total de Usuários"
                     value={stats.users.total.toLocaleString('pt-BR')}
                     trend={`+${stats.users.newThisMonth} este mês`}
-                    colorClass="bg-blue-500"
+                    colorClass="bg-blue-100"
+                    iconColorClass="text-blue-600"
                 />
                 <StatCard
                     icon={ShoppingCartIcon}
                     label="Pedidos"
                     value={stats.orders.total.toLocaleString('pt-BR')}
                     trend={formatCurrency(stats.orders.totalRevenue)}
-                    colorClass="bg-green-500"
+                    colorClass="bg-green-100"
+                    iconColorClass="text-green-600"
                 />
                 <StatCard
                     icon={CubeIcon}
                     label="Produtos Ativos"
                     value={stats.products.totalActive.toLocaleString('pt-BR')}
                     trend={`${stats.products.lowStockCount} em baixo estoque`}
-                    colorClass="bg-purple-500"
+                    colorClass="bg-gray-100"
+                    iconColorClass="text-gray-600"
                 />
                 <StatCard
                     icon={StarIcon}
                     label="Avaliação Média"
                     value={`${stats.reviews.averageRating} ⭐`}
                     trend={`${stats.reviews.total} avaliações`}
-                    colorClass="bg-yellow-500"
+                    colorClass="bg-yellow-100"
+                    iconColorClass="text-yellow-600"
                 />
             </div>
 
@@ -110,25 +114,29 @@ export default function AdminPage() {
                     label="Eventos"
                     value={stats.events.total.toLocaleString('pt-BR')}
                     trend={`${stats.events.upcoming} próximos`}
-                    colorClass="bg-orange-500"
+                    colorClass="bg-orange-100"
+                    iconColorClass="text-orange-600"
                 />
                 <StatCard
                     icon={NewspaperIcon}
                     label="Notícias"
                     value={stats.news.total.toLocaleString('pt-BR')}
-                    colorClass="bg-cyan-500"
+                    colorClass="bg-cyan-100"
+                    iconColorClass="text-cyan-600"
                 />
                 <StatCard
                     icon={MegaphoneIcon}
                     label="Anúncios Ativos"
                     value={stats.ads.totalActive.toLocaleString('pt-BR')}
-                    colorClass="bg-pink-500"
+                    colorClass="bg-pink-100"
+                    iconColorClass="text-pink-600"
                 />
                 <StatCard
                     icon={AcademicCapIcon}
                     label="Corpo Docente"
                     value={stats.faculty.total.toLocaleString('pt-BR')}
-                    colorClass="bg-indigo-500"
+                    colorClass="bg-indigo-100"
+                    iconColorClass="text-indigo-600"
                 />
             </div>
 

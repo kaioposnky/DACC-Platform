@@ -19,32 +19,31 @@ interface StatCardProps {
 
   // Admin Variant (Dashboard)
   value?: string | number;
-  icon?: React.ComponentType<{ className?: string }>;
+  icon?: any;
   trend?: string;
   colorClass?: string;
+  iconColorClass?: string;
 }
 
-export const StatCard = ({
-  // Common
-  label,
-  className = '',
+export const StatCard = (props: StatCardProps) => {
+  const {
+    label,
+    className = "",
+    number,
+    prefix = "",
+    suffix = "",
+    animateNumber = true,
+    delay = 0,
+    value,
+    icon: Icon,
+    trend,
+    colorClass = "bg-blue-600",
+    iconColorClass = "text-blue-600",
+  } = props;
 
-  // Animated
-  number,
-  prefix = '',
-  suffix = '',
-  animateNumber = true,
-  delay = 0,
-
-  // Admin
-  value,
-  icon: Icon,
-  trend,
-  colorClass = 'bg-blue-500'
-}: StatCardProps) => {
-
+  // Admin / Dashboard Variant
   if (Icon || value !== undefined) {
-    const displayValue = value ?? number; // Fallback to number if value not provided
+    const displayValue = value ?? number;
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -55,13 +54,11 @@ export const StatCard = ({
           <div className="flex-1">
             <p className="text-sm font-medium text-gray-500 mb-1">{label}</p>
             <p className="text-3xl font-bold text-gray-900">{displayValue}</p>
-            {trend && (
-              <p className="text-xs text-gray-500 mt-2">{trend}</p>
-            )}
+            {trend && <p className="text-xs text-gray-500 mt-2">{trend}</p>}
           </div>
           {Icon && (
-            <div className={`p-3 rounded-lg ${colorClass} bg-opacity-10`}>
-              <Icon className={`w-8 h-8 ${colorClass.replace('bg-', 'text-')}`} />
+            <div className={`p-3 rounded-lg ${colorClass} bg-opacity-10 flex items-center justify-center`}>
+              <Icon className={`w-8 h-8 ${iconColorClass}`} />
             </div>
           )}
         </div>
@@ -145,4 +142,4 @@ export const StatCard = ({
       </motion.div>
     </motion.div>
   );
-}; 
+};
