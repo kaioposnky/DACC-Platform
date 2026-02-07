@@ -22,7 +22,7 @@ const menuItems = [
   { name: "Dashboard", href: "/admin", icon: Squares2X2Icon },
   { name: "Avaliacoes", href: "/admin/avaliacoes", icon: StarIcon },
   { name: "Conteúdo", href: "/admin/conteudo", icon: NewspaperIcon },
-  { name: "Faculdade", href: "/admin/faculdade", icon: BuildingLibraryIcon },
+  { name: "Professores", href: "/admin/professores", icon: BuildingLibraryIcon },
   { name: "Pedidos", href: "/admin/pedidos", icon: ClipboardDocumentListIcon },
   { name: "Produtos", href: "/admin/produtos", icon: TagIcon },
   { name: "Usuários", href: "/admin/usuarios", icon: UsersIcon },

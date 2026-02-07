@@ -123,12 +123,14 @@ export interface Faculty {
   title: string;
   position: string;
   specialization: string;
-  image: string;
+  imageUrl: string;
   social: {
     linkedin?: string;
     github?: string;
     email?: string;
   };
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface ProductReview {

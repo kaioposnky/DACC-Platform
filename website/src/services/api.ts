@@ -542,14 +542,27 @@ class ApiService {
   }
 
   // Faculty
-  async getFaculty(): Promise<Faculty[]> {
-    const data = await this.request<{ faculty: Faculty[] }>('/faculty');
-    return data?.faculty || [];
+  async getFaculty(params?: {
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ faculty: Faculty[]; totalCount: number }> {
+    const searchParams = new URLSearchParams();
+
+    if (params?.search) searchParams.append('SearchQuery', params.search);
+    if (params?.page) searchParams.append('Page', params.page.toString());
+    if (params?.limit) searchParams.append('Limit', params.limit.toString());
+
+    const data = await this.request<{ faculty: Faculty[]; totalCount: number }>('/faculty/search');
+    return {
+      faculty: data.faculty || [],
+      totalCount: data.totalCount || 0
+    }
   }
 
   async getFacultyMember(id: string): Promise<Faculty> {
-    const data = await this.request<{ faculty: Faculty }>(`/faculty/${id}`);
-    return data.faculty;
+    const data = await this.request<{ facultyMember: Faculty }>(`/faculty/${id}`);
+    return data.facultyMember;
   }
 
   async createFacultyMember(faculty: Omit<Faculty, 'id'>): Promise<Faculty> {

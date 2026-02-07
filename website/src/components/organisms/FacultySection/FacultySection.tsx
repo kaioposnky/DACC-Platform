@@ -14,7 +14,7 @@ interface FacultySectionProps {
   backgroundColor?: 'white' | 'gray' | 'primary';
 }
 
-export const FacultySection = ({ 
+export const FacultySection = ({
   className = '',
   title = 'Diretores e Diretoras do DACC',
   subtitle = 'Conheça as pessoas que ajudam o DACC a ser o que é hoje.',
@@ -31,7 +31,7 @@ export const FacultySection = ({
     try {
       setLoading(true);
       const fetchedFaculty = await apiService.getFaculty();
-      setFaculty(fetchedFaculty);
+      setFaculty(fetchedFaculty.faculty || []);
     } catch (error) {
       console.error('Error fetching faculty:', error);
     } finally {
@@ -102,16 +102,16 @@ export const FacultySection = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <Typography 
-            variant="h2" 
+          <Typography
+            variant="h2"
             color={getTitleColor()}
             className="mb-4 font-bold"
             align="center"
           >
             {title}
           </Typography>
-          <Typography 
-            variant="subtitle" 
+          <Typography
+            variant="subtitle"
             color={getSubtitleColor()}
             className="max-w-2xl mx-auto"
             align="center"
@@ -149,4 +149,4 @@ export const FacultySection = ({
       </div>
     </section>
   );
-}; 
+};
