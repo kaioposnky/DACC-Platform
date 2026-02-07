@@ -1,21 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DaccApi.Model.Objects
 {
     /// <summary>
-    /// Representa um membro da diretoria do DACC.
+    /// Representa um professor ou membro do corpo docente (faculty).
     /// </summary>
-    [Table("diretores")]
-    public class Diretor
+    [Table("professores")]
+    public class Professor
     {
         /// <summary>
-        /// Obtém ou define o ID do diretor.
+        /// Obtém ou define o ID do professor.
         /// </summary>
         [Column("id")]
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Obtém ou define o nome do diretor.
+        /// Obtém ou define o nome do professor.
         /// </summary>
         [Column("nome")]
         public string Nome { get; set; }
@@ -27,25 +27,25 @@ namespace DaccApi.Model.Objects
         public string Titulo { get; set; }
 
         /// <summary>
-        /// Obtém ou define o cargo do diretor.
+        /// Obtém ou define o cargo do professor.
         /// </summary>
         [Column("cargo")]
         public string Cargo { get; set; }
 
         /// <summary>
-        /// Obtém ou define a especialização do diretor.
+        /// Obtém ou define a especialização do professor.
         /// </summary>
         [Column("especializacao")]
         public string Especializacao { get; set; }
 
         /// <summary>
-        /// Obtém ou define a URL da imagem do diretor.
+        /// Obtém ou define a URL da imagem do professor.
         /// </summary>
         [Column("imagem_url")]
         public string? ImageUrl { get; set; }
 
         /// <summary>
-        /// Obtém ou define o e-mail de contato do diretor.
+        /// Obtém ou define o e-mail de contato do professor.
         /// </summary>
         [Column("email")]
         public string? Email { get; set; }
@@ -78,11 +78,11 @@ namespace DaccApi.Model.Objects
         public int TotalCount { get; set; }
 
         /// <summary>
-        /// Cria uma instância de Diretor a partir de um RequestDiretor.
+        /// Cria uma instância de Professor a partir de um RequestProfessor.
         /// </summary>
-        public static Diretor FromRequest(RequestDiretor request)
+        public static Professor FromRequest(RequestProfessor request)
         {
-            return new Diretor
+            return new Professor
             {
                 Nome = request.Name,
                 Titulo = request.Title,

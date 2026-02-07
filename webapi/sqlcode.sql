@@ -217,10 +217,10 @@ INSERT INTO diretoria (nome, descricao) VALUES
     ('Projetos', 'Diretoria de Projetos'),
     ('Marketing', 'Diretoria de Marketing');
 
--- Tabela: Diretores
--- Armazena informações sobre os diretores (Faculty no frontend)
-DROP TABLE IF EXISTS diretores CASCADE;
-CREATE TABLE diretores
+-- Tabela: Professores
+-- Armazena informações sobre os professores/faculty (perfis acadêmicos)
+DROP TABLE IF EXISTS professores CASCADE;
+CREATE TABLE professores
 (
     id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome           VARCHAR(100) NOT NULL,

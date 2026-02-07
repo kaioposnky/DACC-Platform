@@ -3,17 +3,17 @@ using DaccApi.Model.Objects;
 namespace DaccApi.Model.Responses;
 
 /// <summary>
-/// Representa a resposta de um diretor.
+/// Representa a resposta de um professor (faculty).
 /// </summary>
-public class ResponseDiretor
+public class ResponseProfessor
 {
     /// <summary>
-    /// Obtém ou define o ID do diretor.
+    /// Obtém ou define o ID do professor.
     /// </summary>
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Obtém ou define o nome do diretor.
+    /// Obtém ou define o nome do professor.
     /// </summary>
     public string? Name { get; set; }
 
@@ -38,36 +38,36 @@ public class ResponseDiretor
     public string? Image { get; set; }
 
     /// <summary>
-    /// Obtém ou define os links sociais do diretor.
+    /// Obtém ou define os links sociais do professor.
     /// </summary>
     public SocialLinks Social { get; set; }
 
     /// <summary>
-    /// Construtor para mapear de uma entidade Diretor.
+    /// Construtor para mapear de uma entidade Professor.
     /// </summary>
-    /// <param name="diretor">A entidade Diretor de origem.</param>
-    public ResponseDiretor(Diretor diretor)
+    /// <param name="professor">A entidade Professor de origem.</param>
+    public ResponseProfessor(Professor professor)
     {
-        Id = diretor.Id;
-        Name = diretor.Nome;
-        Title = diretor.Titulo;
-        Position = diretor.Cargo;
-        Specialization = diretor.Especializacao;
-        Image = diretor.ImageUrl;
+        Id = professor.Id;
+        Name = professor.Nome;
+        Title = professor.Titulo;
+        Position = professor.Cargo;
+        Specialization = professor.Especializacao;
+        Image = professor.ImageUrl;
         Social = new SocialLinks
         {
-            Linkedin = diretor.Linkedin,
-            Github = diretor.Github,
-            Email = diretor.Email
+            Linkedin = professor.Linkedin,
+            Github = professor.Github,
+            Email = professor.Email
         };
     }
 
     /// <summary>
     /// Construtor sem parâmetros para deserialização
     /// </summary>
-    public ResponseDiretor()
+    public ResponseProfessor()
     {
-        Social = new SocialLinks(); // Initialize social links in default constructor
+        Social = new SocialLinks();
     }
 }
 

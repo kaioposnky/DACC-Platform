@@ -69,10 +69,10 @@
         SELECT tipo_anuncio as "Key", COUNT(*) as "Value" FROM anuncio WHERE ativo = true GROUP BY tipo_anuncio;
 
         -- 15. Faculty Basic
-        SELECT COUNT(*) AS "Total" FROM diretores;
+        SELECT COUNT(*) AS "Total" FROM professores;
 
         -- 16. Faculty By Title
-        SELECT titulo as "Key", COUNT(*) as "Value" FROM diretores GROUP BY titulo;
+        SELECT titulo as "Key", COUNT(*) as "Value" FROM professores GROUP BY titulo;
 
         -- 17. Permissions
         SELECT COUNT(*) AS "TotalDefinitions" FROM permissoes;

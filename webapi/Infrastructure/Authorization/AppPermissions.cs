@@ -130,7 +130,7 @@
         }
 
         /// <summary>
-        /// Permissões relacionadas a diretores (faculty).
+        /// Permissões relacionadas a professores (faculty).
         /// </summary>
         public static class Faculty
         {

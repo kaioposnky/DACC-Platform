@@ -2555,11 +2555,11 @@ Endpoints para gerenciar os tipos de progresso de projetos (ex: Em Planejamento,
         }
         ```
 
-## Faculty
+## Faculty (Corpo Docente)
 
 ### **GET /api/faculty**
 
-* **Descrição:** Lista todos os diretores e diretorias
+* **Descrição:** Lista todos os professores (faculty)
 * **Autorização:** Público
 
 * **Exemplo de Requisição (cURL):**
@@ -2581,7 +2581,7 @@ Endpoints para gerenciar os tipos de progresso de projetos (ex: Em Planejamento,
               "title": "Prof. Dr.",
               "position": "Diretor de Tecnologia",
               "specialization": "Desenvolvimento de Software",
-              "image": "/uploads/diretor_123.jpg",
+              "image": "/uploads/professor_123.jpg",
               "social": {
                 "linkedin": "https://linkedin.com/in/johnsilva",
                 "github": "https://github.com/johnsilva",
@@ -2610,7 +2610,7 @@ Endpoints para gerenciar os tipos de progresso de projetos (ex: Em Planejamento,
 
         | Nome | Tipo   | Descrição            |
         |------|--------|----------------------|
-        | `id` | `uuid` | ID único do diretor  |
+        | `id` | `uuid` | ID único do professor |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
@@ -2630,15 +2630,14 @@ Endpoints para gerenciar os tipos de progresso de projetos (ex: Em Planejamento,
             "name": "John Silva",
             "description": "Technology Director responsible for development projects",
             "email": "john.silva@dacc.com",
-            "githubLink": "https://github.com/johnsilva",
-            "linkedinLink": "https://linkedin.com/in/johnsilva",
-            "imageUrl": "/uploads/director_123.jpg",
-            "userId": "87654321-4321-4321-4321-210987654321",
-            "boardId": "66666666-6666-6666-6666-666666666666"
+            "github": "https://github.com/johnsilva",
+            "linkedin": "https://linkedin.com/in/johnsilva",
+            "image": "/uploads/professor_123.jpg",
+            "userId": "87654321-4321-4321-4321-210987654321"
           }
         }
         ```
-    * **`404 Not Found` - Diretor Não Encontrado**
+    * **`404 Not Found` - Professor Não Encontrado**
         ```json
         {
           "success": false,
@@ -2649,22 +2648,23 @@ Endpoints para gerenciar os tipos de progresso de projetos (ex: Em Planejamento,
 
 ### **POST /api/faculty**
 
-* **Descrição:** Cria um novo diretor
-* **Autorização:** Requer autenticação JWT
+* **Descrição:** Cria um novo professor
+* **Autorização:** Requer permissão `faculty.create`
 
 * **Parâmetros da Requisição:**
     * **Body (`multipart/form-data`)**
 
         | Campo          | Tipo     | Obrigatório | Descrição                           |
         |----------------|----------|-------------|-------------------------------------|
-        | `name`         | `string` | No          | Director name                       |
-        | `description`  | `string` | No          | Role/Responsibility description     |
-        | `email`        | `string` | No          | Director email                      |
-        | `githubLink`   | `string` | No          | GitHub profile link                 |
-        | `linkedinLink` | `string` | No          | LinkedIn profile link               |
-        | `imageFile`    | `file`   | No          | Director photo (max 5MB)            |
-        | `userId`       | `uuid`   | No          | Associated user ID                  |
-        | `boardId`      | `uuid`   | No          | Board ID                            |
+        | `name`         | `string` | Sim         | Nome do professor                   |
+        | `title`        | `string` | Sim         | Título (Ex: Dr, Ms)                 |
+        | `position`     | `string` | Sim         | Cargo                               |
+        | `specialization` | `string` | Sim         | Especialização                      |
+        | `email`        | `string` | Não         | Email de contato                    |
+        | `github`       | `string` | Não         | Link do GitHub                      |
+        | `linkedin`     | `string` | Não         | Link do LinkedIn                    |
+        | `imageUrl`     | `string` | Não         | URL ou Base64 da imagem             |
+        | `userId`       | `uuid`   | Não         | ID do usuário vinculado             |
 
 * **Exemplo de Requisição (cURL):**
     ```shell
@@ -2694,8 +2694,8 @@ Endpoints para gerenciar os tipos de progresso de projetos (ex: Em Planejamento,
 
 ### **POST /api/faculty/json**
 
-* **Descrição:** Cria um novo diretor via JSON
-* **Autorização:** Requer autenticação JWT
+* **Descrição:** Cria um novo professor via JSON
+* **Autorização:** Requer permissão `faculty.create`
 
 * **Parâmetros da Requisição:**
     * **Body (`application/json`)**
@@ -2718,7 +2718,7 @@ Endpoints para gerenciar os tipos de progresso de projetos (ex: Em Planejamento,
     * **Body (`application/json`)**
         | Campo | Tipo | Obrigatório | Descrição |
         |-------|------|-------------|-----------|
-        | `name` | `string` | Não | Nome do diretor |
+        | `name` | `string` | Não | Nome do professor |
         | `title` | `string` | Não | Título (Ex: Dr, Ms) |
         | `position` | `string` | Não | Cargo |
         | `specialization` | `string` | Não | Especialização |
@@ -2741,14 +2741,14 @@ Endpoints para gerenciar os tipos de progresso de projetos (ex: Em Planejamento,
         {
           "success": true,
           "code": "OK",
-          "message": "Diretor atualizado com sucesso"
+          "message": "Professor atualizado com sucesso"
         }
         ```
 
 ### **DELETE /api/faculty/{id}**
 
-* **Descrição:** Remove um diretor do sistema
-* **Autorização:** Requer autenticação JWT
+* **Descrição:** Remove um professor do sistema
+* **Autorização:** Requer permissão `faculty.delete`
 
 * **Parâmetros da Requisição:**
     * **Path**
@@ -2769,7 +2769,7 @@ Endpoints para gerenciar os tipos de progresso de projetos (ex: Em Planejamento,
         {
           "success": true,
           "code": "NO_CONTENT",
-          "message": "Diretor removido com sucesso"
+          "message": "Professor removido com sucesso"
         }
         ```#
 # Anúncios

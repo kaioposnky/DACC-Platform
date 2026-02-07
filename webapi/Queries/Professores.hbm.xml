@@ -1,6 +1,6 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <queries>
-	<query name="GetAllDiretores">
+	<query name="GetAllProfessores">
 		SELECT 
 			id as Id,
 			nome as Nome,
@@ -12,10 +12,10 @@
 			email as Email,
 			github as Github,
 			linkedin as Linkedin
-		FROM diretores
+		FROM professores
 	</query>
-	<query name="CreateDiretor">
-		INSERT INTO diretores
+	<query name="CreateProfessor">
+		INSERT INTO professores
 			(nome,
 			titulo,
 			cargo,
@@ -27,7 +27,7 @@
 			linkedin)
 		VALUES (@Nome, @Titulo, @Cargo, @Especializacao, @ImagemUrl, @UsuarioId, @Email, @Github, @Linkedin)
 	</query>
-	<query name="GetDiretorById">
+	<query name="GetProfessorById">
 		SELECT
 			id as Id,
 			nome as Nome,
@@ -39,14 +39,14 @@
 			email as Email,
 			github as Github,
 			linkedin as Linkedin
-		FROM diretores 
+		FROM professores 
 		WHERE id=@id
 	</query>
-	<query name="DeleteDiretor">
-		DELETE FROM diretores WHERE id=@id
+	<query name="DeleteProfessor">
+		DELETE FROM professores WHERE id=@id
 	</query>
-	<query name="UpdateDiretor">
-		UPDATE diretores
+	<query name="UpdateProfessor">
+		UPDATE professores
 			SET nome = @Nome,
 				titulo = @Titulo,
 				cargo = @Cargo,
@@ -60,7 +60,7 @@
 	</query>
 
 
-    <query name="SearchDiretores">
+    <query name="SearchProfessores">
         SELECT 
             id as Id,
             nome as Nome,
@@ -73,7 +73,7 @@
             github as Github,
             linkedin as Linkedin,
             COUNT(*) OVER() as TotalCount
-        FROM diretores
+        FROM professores
         WHERE 1=1
         AND (@SearchPattern IS NULL OR nome ILIKE @SearchPattern OR cargo ILIKE @SearchPattern OR especializacao ILIKE @SearchPattern)
         ORDER BY nome ASC

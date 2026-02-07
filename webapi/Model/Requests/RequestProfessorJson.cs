@@ -3,12 +3,12 @@ using System.ComponentModel.DataAnnotations;
 namespace DaccApi.Model
 {
     /// <summary>
-    /// Representa a requisição JSON para criar ou atualizar um diretor (sem upload de imagem).
+    /// Representa a requisição JSON para criar ou atualizar um professor (sem upload de imagem).
     /// </summary>
-    public class RequestDiretorJson
+    public class RequestProfessorJson
     {
         /// <summary>
-        /// Nome do diretor.
+        /// Nome do professor.
         /// </summary>
         [Required(ErrorMessage = "O nome é obrigatório")]
         public string Name { get; set; }

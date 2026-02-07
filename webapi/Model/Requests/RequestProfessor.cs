@@ -1,15 +1,15 @@
-﻿using DaccApi.Model.Validation;
+using DaccApi.Model.Validation;
 using System.ComponentModel.DataAnnotations;
 
 namespace DaccApi.Model
 {
     /// <summary>
-    /// Representa a requisição para criar ou atualizar um diretor.
+    /// Representa a requisição para criar ou atualizar um professor (faculty).
     /// </summary>
-    public class RequestDiretor
+    public class RequestProfessor
     {
         /// <summary>
-        /// Nome do diretor.
+        /// Nome do professor.
         /// </summary>
         [Required(ErrorMessage = "O nome é obrigatório")]
         public string Name { get; set; }
@@ -32,8 +32,6 @@ namespace DaccApi.Model
         [Required(ErrorMessage = "A especialização é obrigatória")]
         public string Specialization { get; set; }
 
-
-        
         /// <summary>
         /// URL da imagem (caso já hospedada).
         /// </summary>
