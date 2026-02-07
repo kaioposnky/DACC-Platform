@@ -1,6 +1,6 @@
 "use client"
 
-import { AdminProductList, ProductFilter, type ProductFilterOptions } from "@/components";
+import { AdminProductList, ProductFilter, type ProductFilterOptions, Button } from "@/components";
 import { apiService } from "@/services/api";
 import { Product } from "@/types";
 import { toast } from "sonner";
@@ -37,10 +37,10 @@ export default function AdminProdutosPage() {
                     <h1 className="text-2xl font-bold text-gray-900">Gerenciar Produtos</h1>
                     <p className="text-gray-500 text-sm">Adicione, edite ou remova produtos da sua loja.</p>
                 </div>
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-semibold transition-all">
+                <Button variant="primary" className="flex items-center gap-2">
                     <PlusIcon className="w-5 h-5" />
                     Novo Produto
-                </button>
+                </Button>
             </div>
 
             {/* 2. LISTA DE PRODUTOS INTEGRADA COM FILTROS */}
