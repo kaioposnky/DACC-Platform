@@ -12,7 +12,8 @@ import {
   ProductBatchUpdateRequest,
   User,
   UserStats,
-  Order
+  Order,
+  ProductReview
 } from '@/types';
 import { DashboardStats } from '@/types/dashboard';
 import { storageService } from "@/services/storage";
@@ -841,6 +842,35 @@ class ApiService {
     });
     return data.order;
   }
+  // Product Reviews
+
+  async getReviews(params?: {
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ reviews: ProductReview[]; totalCount: number }> {
+    const searchParams = new URLSearchParams();
+
+    if (params?.search) searchParams.append('SearchQuery', params.search);
+    if (params?.page) searchParams.append('Page', params.page.toString());
+    if (params?.limit) searchParams.append('Limit', params.limit.toString());
+
+    const data = await this.request<{ reviews: ProductReview[]; totalCount: number }>('/reviews/search');
+    return {
+      reviews: data.reviews || [],
+      totalCount: data.totalCount || 0
+    }
+  }
+
+  async getReview(id: string): Promise<ProductReview> {
+    const data = await this.request<{ review: ProductReview }>(`/reviews/${id}`, {
+      method: 'GET',
+    });
+    return data.review;
+  }
+
 }
+
+
 
 export const apiService = new ApiService();
