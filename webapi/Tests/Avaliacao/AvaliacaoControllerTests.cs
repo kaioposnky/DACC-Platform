@@ -10,7 +10,7 @@ namespace DaccApi.Tests.Avaliacao;
 
 public class AvaliacaoControllerTests : IntegrationTestBase
 {
-    private const string BaseUrl = "v1/api/ratings";
+    private const string BaseUrl = "v1/api/reviews";
     private const string ProductsUrl = "v1/api/products";
 
     /// <summary>
@@ -246,5 +246,82 @@ public class AvaliacaoControllerTests : IntegrationTestBase
         var response = await _client.GetAsync($"{BaseUrl}/users/{randomUserId}");
         
         response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.NoContent, HttpStatusCode.NotFound);
+    }
+
+    /// <summary>
+    /// Testa se uma avaliação vinculada a uma variação retorna os dados da variação e imagem.
+    /// </summary>
+    [Fact]
+    public async Task Avaliacao_With_Variation_Should_Return_Variation_Info()
+    {
+        await AuthenticateAsAdminAsync();
+
+        // 1. Criar Produto
+        var product = ProductTestDataBuilder.CreateValidProduct(name: $"Prod Var Test {Guid.NewGuid()}");
+        var prodResp = await _client.PostAsJsonAsync(ProductsUrl, product);
+        prodResp.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        // Obter ID do Produto
+        Guid? productId = null;
+        var listProdResp = await _client.GetAsync(ProductsUrl);
+        var prodListContent = await listProdResp.Content.ReadAsStringAsync();
+        using (var doc = JsonDocument.Parse(prodListContent))
+        {
+            var products = doc.RootElement.GetProperty("data").GetProperty("products");
+            foreach (var item in products.EnumerateArray())
+            {
+                if (item.GetProperty("name").GetString() == product.Name)
+                {
+                    productId = item.GetProperty("id").GetGuid();
+                    break;
+                }
+            }
+        }
+        productId.Should().NotBeNull();
+
+        // 2. Criar Variação
+        var variationRequest = ProductTestDataBuilder.CreateVariationRequest(color: "Verde", size: "M");
+        var varResp = await _client.PostAsJsonAsync($"{ProductsUrl}/{productId}/variations", variationRequest);
+        varResp.StatusCode.Should().Be(HttpStatusCode.Created);
+        
+        // Obter ID da Variação
+        Guid? variationId = null;
+        var listVarResp = await _client.GetAsync($"{ProductsUrl}/{productId}/variations");
+        var varListContent = await listVarResp.Content.ReadAsStringAsync();
+        using (var doc = JsonDocument.Parse(varListContent))
+        {
+            var data = doc.RootElement.GetProperty("data");
+            JsonElement varList = data;
+            if (data.ValueKind == JsonValueKind.Object && data.TryGetProperty("variations", out var inner))
+                varList = inner;
+            
+            variationId = varList[0].GetProperty("id").GetGuid();
+        }
+        variationId.Should().NotBeNull();
+
+        // 3. Criar Avaliação Vinculada à Variação
+        var avaliacaoRequest = new RequestCreateAvaliacao
+        {
+            ProductId = productId.Value,
+            ProductVariationId = variationId,
+            Rating = 5,
+            Title = "Variação Top",
+            Comment = "A cor verde é linda."
+        };
+        var reviewCreateResp = await _client.PostAsJsonAsync(BaseUrl, avaliacaoRequest);
+        reviewCreateResp.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        // 4. Verificar se retorna info da variação no GET
+        var getReviewResp = await _client.GetAsync($"{BaseUrl}/products/{productId}");
+        getReviewResp.StatusCode.Should().Be(HttpStatusCode.OK);
+        var getReviewContent = await getReviewResp.Content.ReadAsStringAsync();
+        
+        using (var doc = JsonDocument.Parse(getReviewContent))
+        {
+            var review = doc.RootElement.GetProperty("data").GetProperty("reviews")[0];
+            review.GetProperty("productVariationId").GetGuid().Should().Be(variationId.Value);
+            // ProductImage pode ser null se não adicionarmos imagem, mas o campo deve existir
+            review.TryGetProperty("productImage", out _).Should().BeTrue();
+        }
     }
 }
