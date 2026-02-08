@@ -41,6 +41,16 @@ public class ResponseAvaliacaoProduto
     public string? Comment { get; set; }
     
     /// <summary>
+    /// Obtém ou define o ID do produto avaliado.
+    /// </summary>
+    public Guid ProductId { get; set; }
+    
+    /// <summary>
+    /// Obtém ou define o nome do produto avaliado.
+    /// </summary>
+    public string? ProductName { get; set; }
+    
+    /// <summary>
     /// Obtém ou define a data em que a avaliação foi criada.
     /// </summary>
     public DateTime CreatedAt { get; set; }
@@ -63,6 +73,8 @@ public class ResponseAvaliacaoProduto
         Rating = avaliacaoProduto.Nota;
         Title = avaliacaoProduto.Titulo;
         Comment = avaliacaoProduto.Comentario;
+        ProductId = avaliacaoProduto.ProdutoId;
+        ProductName = avaliacaoProduto.ProdutoNome;
         CreatedAt = avaliacaoProduto.DataPostada;
         UpdatedAt = avaliacaoProduto.DataAtualizacao;
     }

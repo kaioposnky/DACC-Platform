@@ -71,5 +71,11 @@ namespace DaccApi.Model
         /// </summary>
         [NotMapped]
         public string? UsuarioAvatar { get; set; }
+
+        /// <summary>
+        /// Nome do produto (vem da query JOIN).
+        /// </summary>
+        [NotMapped]
+        public string? ProdutoNome { get; set; }
     }
 }
