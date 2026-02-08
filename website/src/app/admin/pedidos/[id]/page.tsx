@@ -1,8 +1,8 @@
 "use client"
 
-import { EditPageHeader, PageLoader, ConfirmationModal, AdminCard, Card, Select } from "@/components";
+import { EditPageHeader, PageLoader, ConfirmationModal, AdminCard, OrderForm } from "@/components";
 import { apiService } from "@/services/api";
-import { Order, OrderStatus, ValidStatus } from "@/types";
+import { Order, OrderStatus } from "@/types";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -147,7 +147,7 @@ export default function PedidoEditAdminPage() {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 pb-4">
                   <div className="flex flex-col gap-1">
                     <span className="text-xs font-bold text-gray-500 uppercase">Método de Pagamento</span>
                     <div className="h-10 flex items-center text-gray-900 font-medium bg-gray-50 px-3 rounded-lg border border-gray-100">
@@ -162,20 +162,11 @@ export default function PedidoEditAdminPage() {
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-                  <span className="font-semibold text-gray-600">Status do Pedido:</span>
-                  <div className="w-1/2">
-                    <Select
-                      value={order.status}
-                      onChange={(e) => updateOrderStatus(e.target.value)}
-                      options={ValidStatus.map(status => ({
-                        label: statusLabels[status as OrderStatus] || status,
-                        value: status
-                      }))}
-                      className="w-full"
-                    />
-                  </div>
-                </div>
+                <OrderForm
+                  order={order}
+                  onStatusChange={(status) => setOrder({ ...order, status })}
+                  mode="edit"
+                />
               </div>
             </AdminCard>
 

@@ -39,7 +39,7 @@ export default function NewsDetailPage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navigation />
-        
+
         {/* Loading Banner */}
         <div className="bg-gray-900 py-24">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -72,7 +72,7 @@ export default function NewsDetailPage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navigation />
-        
+
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="text-center">
             <div className="text-gray-400 mb-4">
@@ -103,23 +103,23 @@ export default function NewsDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
-      
+
       <NewsArticleBanner
         title={article.title}
         description={article.description}
         image={article.image || 'https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'}
-        author={article.author || 'Equipe de Redação'}
+        author={article.author?.name + " " + article.author?.lastName || 'Equipe de Redação'}
         date={formattedDate}
         readTime={article.readTime || 5}
         category={article.category}
         tags={article.tags || []}
       />
-      
-      <NewsArticleContent 
+
+      <NewsArticleContent
         content={article.content || article.description}
       />
-      
+
       <Footer />
     </div>
   )
-} 
+}

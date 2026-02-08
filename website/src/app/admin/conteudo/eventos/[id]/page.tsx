@@ -3,28 +3,15 @@
 import {
   ConfirmationModal,
   EditPageHeader,
-  ImageGalleryEditor,
   PageLoader,
-  AdminCard,
-  Input,
-  Select,
+  EventForm,
   Button,
-  DateTimeInputs,
 } from "@/components";
 import { apiService } from "@/services/api";
 import { Event, User } from "@/types";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import {
-  CalendarIcon,
-  ClockIcon,
-  MapPinIcon,
-  DocumentTextIcon,
-  InformationCircleIcon,
-  LinkIcon,
-  UserIcon,
-} from "@heroicons/react/24/outline";
 
 export default function AdminEditEventoPage() {
   const router = useRouter();
@@ -75,22 +62,17 @@ export default function AdminEditEventoPage() {
     setIsSaving(true);
     try {
       // Combine date and time to ensure backend receives full DateTime in UTC
-      // Input date is YYYY-MM-DD, input time is HH:mm
-      // We construct YYYY-MM-DDTHH:mm:00Z (Z = UTC) for PostgreSQL compatibility
       let formattedDate = event.date;
       if (event.date && event.time) {
-        // Se já não tiver T (formato ISO), combina
         if (!event.date.includes('T')) {
           formattedDate = `${event.date}T${event.time}:00Z`;
         } else if (!event.date.endsWith('Z')) {
-          // Já tem T mas não tem Z, adiciona
           formattedDate = event.date.endsWith('Z') ? event.date : `${event.date.split('.')[0]}Z`;
         }
       } else if (event.date && !event.date.endsWith('Z')) {
         formattedDate = `${event.date.split('T')[0]}T00:00:00Z`;
       }
 
-      // Create payload with only necessary fields (exclude author object to avoid nested date issues)
       const payload = {
         id: event.id,
         title: event.title,
@@ -133,63 +115,6 @@ export default function AdminEditEventoPage() {
   const handleOpenDeleteModal = () => setDeleteModalOpen(true);
   const handleCloseDeleteModal = () => setDeleteModalOpen(false);
 
-  const handleTitleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    if (!event) return;
-    setEvent({ ...event, title: e.target.value });
-  };
-
-  const handleDescriptionChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    if (!event) return;
-    setEvent({ ...event, description: e.target.value });
-  };
-
-  const handleActionTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event) return;
-    setEvent({ ...event, actionText: e.target.value });
-  };
-
-  const handleActionLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event) return;
-    setEvent({ ...event, actionLink: e.target.value });
-  };
-
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event) return;
-    setEvent({ ...event, date: e.target.value });
-  };
-
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event) return;
-    setEvent({ ...event, time: e.target.value });
-  };
-
-  const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (!event) return;
-    setEvent({ ...event, type: e.target.value });
-  };
-
-  const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event) return;
-    setEvent({ ...event, location: e.target.value } as any);
-  };
-
-  const handleAuthorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (!event) return;
-    const selectedAuthorId = e.target.value;
-    const selectedAuthor = users.find(u => u.id === selectedAuthorId);
-
-    if (selectedAuthor) {
-      setEvent({ ...event, author: selectedAuthor });
-    } else {
-      const { author, ...rest } = event;
-      setEvent(rest as Event);
-    }
-  };
-
   if (isLoading) return <PageLoader />;
   if (!event)
     return (
@@ -221,114 +146,14 @@ export default function AdminEditEventoPage() {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Coluna Principal */}
-          <div className="lg:col-span-2 space-y-6">
-            <AdminCard
-              icon={<DocumentTextIcon className="w-5 h-5 text-primary" />}
-              title="Informações Gerais"
-            >
-              <div className="space-y-6">
-                <Input
-                  label="Título do Evento"
-                  placeholder="Ex: Workshop de Robótica"
-                  value={event.title}
-                  onChange={handleTitleChange}
-                  className="text-lg font-bold"
-                />
-
-                <Input
-                  label="Descrição"
-                  placeholder="Detalhes sobre o evento, o que será abordado, etc..."
-                  value={event.description}
-                  onChange={handleDescriptionChange}
-                  multiline={true}
-                  rows={10}
-                />
-              </div>
-            </AdminCard>
-
-            <AdminCard
-              icon={<InformationCircleIcon className="w-5 h-5 text-primary" />}
-              title="Chamada para Ação (Botão)"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  label="Texto do Botão"
-                  placeholder="Ex: Inscrever-se"
-                  value={event.actionText}
-                  onChange={handleActionTextChange}
-                />
-                <Input
-                  label="Link do Botão"
-                  placeholder="Ex: https://forms.gle/..."
-                  value={event.actionLink}
-                  onChange={handleActionLinkChange}
-                />
-              </div>
-            </AdminCard>
-          </div>
-
-          {/* Coluna Lateral */}
-          <div className="space-y-6">
-            <AdminCard
-              icon={<CalendarIcon className="w-5 h-5 text-primary" />}
-              title="Data e Hora"
-            >
-              <div className="space-y-4">
-                <DateTimeInputs
-                  dateValue={event.date}
-                  timeValue={event.time}
-                  onDateChange={handleDateChange}
-                  onTimeChange={handleTimeChange}
-                />
-                <Select
-                  label="Tipo de Evento"
-                  value={event.type}
-                  onChange={handleTypeChange}
-                  options={[
-                    { label: "Workshop", value: "Workshop" },
-                    { label: "Palestra", value: "Palestra" },
-                    { label: "Hackathon", value: "Hackathon" },
-                    { label: "Social", value: "Social" },
-                    { label: "Outros", value: "Outros" },
-                  ]}
-                />
-              </div>
-            </AdminCard>
-
-            <AdminCard
-              icon={<MapPinIcon className="w-5 h-5 text-primary" />}
-              title="Localização"
-            >
-              <Input
-                label="Onde ocorrerá?"
-                placeholder="Ex: Auditório Central, Virtual, etc."
-                value={(event as any).location || ""}
-                onChange={handleLocationChange}
-              />
-            </AdminCard>
-
-            <AdminCard
-              icon={<UserIcon className="w-5 h-5 text-primary" />}
-              title="Responsável"
-            >
-              <Select
-                label="Autor/Responsável"
-                value={event.author?.id || ""}
-                onChange={handleAuthorChange}
-                options={[
-                  { label: "Selecione um responsável", value: "" },
-                  ...users.map((user) => ({
-                    label:
-                      `${user.name} ${user.lastName || ""} ${user.ra ? `(RA: ${user.ra})` : ""}`.trim(),
-                    value: user.id,
-                  })),
-                ]}
-              />
-            </AdminCard>
-          </div>
-        </div>
+        <EventForm
+          event={event}
+          onChange={(field, value) => {
+            if (!event) return;
+            setEvent({ ...event, [field]: value });
+          }}
+          mode="edit"
+        />
       </div>
 
       <ConfirmationModal
