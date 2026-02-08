@@ -200,7 +200,7 @@ export interface Product {
 
   shippingInfo?: {
     freeShipping: boolean;
-    estimatedDays: number | string;
+    estimatedDays: number;
     shippingCost?: number;
     returnPolicy: string;
     warranty?: string;
