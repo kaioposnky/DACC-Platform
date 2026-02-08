@@ -43,6 +43,16 @@ public class ResponseProfessor
     public SocialLinks Social { get; set; }
 
     /// <summary>
+    /// Obtêm ou define a data de criação do professor
+    /// </summary>
+    public DateTime CreatedAt { get; set; }
+
+    /// <summary>
+    /// Obtêm ou define a data de última atualização do professor
+    /// </summary>
+    public DateTime UpdatedAt { get; set; }
+
+    /// <summary>
     /// Construtor para mapear de uma entidade Professor.
     /// </summary>
     /// <param name="professor">A entidade Professor de origem.</param>
@@ -60,6 +70,8 @@ public class ResponseProfessor
             Github = professor.Github,
             Email = professor.Email
         };
+        CreatedAt = professor.DataCriacao;
+        UpdatedAt = professor.DataAtualizacao;
     }
 
     /// <summary>
