@@ -43,7 +43,7 @@ export default function ManageEventCard({
             className={`bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-all flex items-center gap-4 ${className}`}
         >
             {/* Date Box */}
-            <div className="bg-primary/5 rounded-lg p-2 min-w-[60px] flex flex-col items-center justify-center border border-primary/10">
+            <div className="bg-primary/5 rounded-lg p-2 min-w-15 flex flex-col items-center justify-center border border-primary/10">
                 <span className="text-xl font-bold text-primary">{day}</span>
                 <span className="text-[10px] font-bold text-primary/70">{month}</span>
             </div>

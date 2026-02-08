@@ -120,7 +120,7 @@ export const StatCard = (props: StatCardProps) => {
       >
         <Typography
           variant="h2"
-          className="!text-4xl md:text-5xl lg:text-6xl font-bold text-yellow-400"
+          className="text-4xl! md:text-5xl lg:text-6xl font-bold text-yellow-400"
           align="center"
         >
           {prefix}{displayNumber}{suffix}

@@ -22,7 +22,7 @@ export const FacultyCard = ({ faculty, className = '' }: FacultyCardProps) => {
     >
 
 
-      <Card className="text-center h-full  hover:shadow-xl transition-shadow duration-300 !p-0">
+      <Card className="text-center h-full  hover:shadow-xl transition-shadow duration-300 p-0">
         {/* Profile Image */}
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
