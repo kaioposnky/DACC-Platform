@@ -1199,6 +1199,367 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
         }
         ```
 
+## Reviews (Avaliações de Produtos)
+
+### **GET /api/reviews/products/{productId}**
+
+* **Descrição:** Obtém todas as avaliações de um produto específico
+* **Autorização:** Público (AllowAnonymous)
+
+* **Parâmetros da Requisição:**
+    * **Path**
+
+        | Nome        | Tipo   | Descrição           |
+        |-------------|--------|---------------------|
+        | `productId` | `uuid` | ID único do produto |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X GET http://localhost:3001/v1/api/reviews/products/12345678-1234-1234-1234-123456789012
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": {
+            "reviews": [
+              {
+                "id": "87654321-4321-4321-4321-210987654321",
+                "userId": "11111111-1111-1111-1111-111111111111",
+                "userName": "João Silva",
+                "userAvatar": "https://example.com/avatar.jpg",
+                "rating": 5.0,
+                "title": "Produto Excelente",
+                "comment": "Adorei o produto, qualidade impecável!",
+                "createdAt": "2026-02-07T18:30:00Z",
+                "updatedAt": "2026-02-07T18:30:00Z"
+              }
+            ]
+          }
+        }
+        ```
+    * **`204 No Content` - Nenhuma Avaliação Encontrada**
+
+### **GET /api/reviews**
+
+* **Descrição:** Lista todas as avaliações do sistema
+* **Autorização:** Requer permissão `reviews.view`
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X GET http://localhost:3001/v1/api/reviews \
+    -H "Authorization: Bearer <seu_jwt_token>"
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": {
+            "reviews": [
+              {
+                "id": "87654321-4321-4321-4321-210987654321",
+                "userId": "11111111-1111-1111-1111-111111111111",
+                "userName": "João Silva",
+                "userAvatar": "https://example.com/avatar.jpg",
+                "rating": 5.0,
+                "title": "Produto Excelente",
+                "comment": "Adorei o produto, qualidade impecável!",
+                "createdAt": "2026-02-07T18:30:00Z",
+                "updatedAt": "2026-02-07T18:30:00Z"
+              }
+            ]
+          }
+        }
+        ```
+
+### **GET /api/reviews/search**
+
+* **Descrição:** Busca avançada de avaliações com filtros
+* **Autorização:** Requer permissão `reviews.view`
+
+* **Parâmetros da Requisição:**
+    * **Query**
+
+        | Nome            | Tipo       | Padrão | Descrição                                      |
+        |-----------------|------------|--------|------------------------------------------------|
+        | `Page`          | `number`   | `1`    | Número da página (maior que 0)                 |
+        | `Limit`         | `number`   | `16`   | Itens por página (1-100)                       |
+        | `SearchPattern` | `string`   | -      | Termo de busca no comentário                   |
+        | `MinRating`     | `number`   | -      | Nota mínima (0.5-5.0)                          |
+        | `MaxRating`     | `number`   | -      | Nota máxima (0.5-5.0)                          |
+        | `DateFrom`      | `datetime` | -      | Data inicial de criação                        |
+        | `DateTo`        | `datetime` | -      | Data final de criação                          |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X GET "http://localhost:3001/v1/api/reviews/search?MinRating=4&Page=1&Limit=10" \
+    -H "Authorization: Bearer <seu_jwt_token>"
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": {
+            "reviews": [
+              {
+                "id": "87654321-4321-4321-4321-210987654321",
+                "userId": "11111111-1111-1111-1111-111111111111",
+                "userName": "João Silva",
+                "userAvatar": "https://example.com/avatar.jpg",
+                "rating": 5.0,
+                "title": "Produto Excelente",
+                "comment": "Adorei o produto, qualidade impecável!",
+                "createdAt": "2026-02-07T18:30:00Z",
+                "updatedAt": "2026-02-07T18:30:00Z"
+              }
+            ],
+            "totalCount": 1
+          }
+        }
+        ```
+
+### **GET /api/reviews/{id}**
+
+* **Descrição:** Obtém uma avaliação específica pelo ID
+* **Autorização:** Requer permissão `reviews.view`
+
+* **Parâmetros da Requisição:**
+    * **Path**
+
+        | Nome | Tipo   | Descrição              |
+        |------|--------|------------------------|
+        | `id` | `uuid` | ID único da avaliação  |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X GET http://localhost:3001/v1/api/reviews/87654321-4321-4321-4321-210987654321 \
+    -H "Authorization: Bearer <seu_jwt_token>"
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": {
+            "review": {
+              "id": "87654321-4321-4321-4321-210987654321",
+              "userId": "11111111-1111-1111-1111-111111111111",
+              "userName": "João Silva",
+              "userAvatar": "https://example.com/avatar.jpg",
+              "rating": 5.0,
+              "title": "Produto Excelente",
+              "comment": "Adorei o produto, qualidade impecável!",
+              "createdAt": "2026-02-07T18:30:00Z",
+              "updatedAt": "2026-02-07T18:30:00Z"
+            }
+          }
+        }
+        ```
+    * **`204 No Content` - Avaliação Não Encontrada**
+
+### **GET /api/reviews/users/{userId}**
+
+* **Descrição:** Obtém todas as avaliações de um usuário específico
+* **Autorização:** Requer permissão `reviews.view`
+
+* **Parâmetros da Requisição:**
+    * **Path**
+
+        | Nome     | Tipo   | Descrição            |
+        |----------|--------|----------------------|
+        | `userId` | `uuid` | ID único do usuário  |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X GET http://localhost:3001/v1/api/reviews/users/11111111-1111-1111-1111-111111111111 \
+    -H "Authorization: Bearer <seu_jwt_token>"
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Requisição bem-sucedida",
+          "data": {
+            "reviews": [
+              {
+                "id": "87654321-4321-4321-4321-210987654321",
+                "userId": "11111111-1111-1111-1111-111111111111",
+                "userName": "João Silva",
+                "userAvatar": "https://example.com/avatar.jpg",
+                "rating": 5.0,
+                "title": "Produto Excelente",
+                "comment": "Adorei o produto, qualidade impecável!",
+                "createdAt": "2026-02-07T18:30:00Z",
+                "updatedAt": "2026-02-07T18:30:00Z"
+              }
+            ]
+          }
+        }
+        ```
+
+### **POST /api/reviews**
+
+* **Descrição:** Cria uma nova avaliação para um produto
+* **Autorização:** Requer permissão `reviews.create`
+
+* **Parâmetros da Requisição:**
+    * **Body (`application/json`)**
+
+        | Campo       | Tipo     | Obrigatório | Descrição                                  |
+        |-------------|----------|-------------|--------------------------------------------|
+        | `productId` | `uuid`   | Sim         | ID do produto a ser avaliado               |
+        | `rating`    | `number` | Sim         | Nota de 1 a 5                              |
+        | `title`     | `string` | Não         | Título da avaliação (max 100 caracteres)   |
+        | `comment`   | `string` | Não         | Comentário da avaliação                    |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X POST http://localhost:3001/v1/api/reviews \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "productId": "12345678-1234-1234-1234-123456789012",
+      "rating": 5,
+      "title": "Produto Excelente",
+      "comment": "Adorei o produto, qualidade impecável!"
+    }'
+    ```
+
+* **Respostas:**
+    * **`201 Created` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "CREATED",
+          "message": "Avaliação criada com sucesso",
+          "data": {
+            "id": "87654321-4321-4321-4321-210987654321",
+            "userId": "11111111-1111-1111-1111-111111111111",
+            "userName": "João Silva",
+            "userAvatar": "https://example.com/avatar.jpg",
+            "rating": 5.0,
+            "title": "Produto Excelente",
+            "comment": "Adorei o produto, qualidade impecável!",
+            "createdAt": "2026-02-07T18:30:00Z",
+            "updatedAt": "2026-02-07T18:30:00Z"
+          }
+        }
+        ```
+    * **`400 Bad Request` - Erro de Validação**
+        ```json
+        {
+          "success": false,
+          "code": "VALIDATION_ERROR",
+          "message": "Erro de validação dos dados",
+          "details": [
+            {
+              "field": "rating",
+              "message": "A nota deve ser de 1 a 5!"
+            }
+          ]
+        }
+        ```
+
+### **PATCH /api/reviews/{id}**
+
+* **Descrição:** Atualiza uma avaliação existente
+* **Autorização:** Requer permissão `reviews.update`
+
+* **Parâmetros da Requisição:**
+    * **Path**
+
+        | Nome | Tipo   | Descrição              |
+        |------|--------|------------------------|
+        | `id` | `uuid` | ID único da avaliação  |
+
+    * **Body (`application/json`)**
+
+        | Campo    | Tipo     | Obrigatório | Descrição                                  |
+        |----------|----------|-------------|--------------------------------------------|
+        | `rating` | `number` | Sim         | Nova nota de 1 a 5                         |
+        | `title`  | `string` | Não         | Novo título (max 100 caracteres)           |
+        | `comment`| `string` | Não         | Novo comentário                            |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X PATCH http://localhost:3001/v1/api/reviews/87654321-4321-4321-4321-210987654321 \
+    -H "Authorization: Bearer <seu_jwt_token>" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "rating": 4,
+      "title": "Produto Bom",
+      "comment": "Atualizando minha opinião, ainda é bom."
+    }'
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Avaliação atualizada com sucesso"
+        }
+        ```
+    * **`400 Bad Request` - Avaliação Não Encontrada**
+    * **`403 Forbidden` - Permissões Insuficientes**
+
+### **DELETE /api/reviews/{id}**
+
+* **Descrição:** Remove uma avaliação do sistema
+* **Autorização:** Requer permissão `reviews.delete`
+
+* **Parâmetros da Requisição:**
+    * **Path**
+
+        | Nome | Tipo   | Descrição              |
+        |------|--------|------------------------|
+        | `id` | `uuid` | ID único da avaliação  |
+
+* **Exemplo de Requisição (cURL):**
+    ```shell
+    curl -X DELETE http://localhost:3001/v1/api/reviews/87654321-4321-4321-4321-210987654321 \
+    -H "Authorization: Bearer <seu_jwt_token>"
+    ```
+
+* **Respostas:**
+    * **`200 OK` - Sucesso**
+        ```json
+        {
+          "success": true,
+          "code": "OK",
+          "message": "Avaliação removida com sucesso"
+        }
+        ```
+    * **`404 Not Found` - Avaliação Não Encontrada**
+        ```json
+        {
+          "success": false,
+          "code": "RESOURCE_NOT_FOUND",
+          "message": "Recurso não encontrado"
+        }
+        ```
+
+---
+
 ## Orders
 
 ---
