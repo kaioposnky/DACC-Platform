@@ -24,8 +24,9 @@ public class AvaliacaoService : IAvaliacaoService
                 Id = Guid.NewGuid(),
                 ProdutoId = avaliacao.ProductId,
                 UsuarioId = userId,
-                Comentario = avaliacao.Comment,
                 Nota = avaliacao.Rating,
+                Titulo = avaliacao.Title,
+                Comentario = avaliacao.Comment,
                 DataPostada = DateTime.UtcNow,
                 DataAtualizacao = DateTime.UtcNow,
                 Ativo = true
@@ -152,6 +153,7 @@ public class AvaliacaoService : IAvaliacaoService
             }
             
             avaliacaoQuery.Nota = avaliacao.Rating;
+            avaliacaoQuery.Titulo = avaliacao.Title;
             avaliacaoQuery.Comentario = avaliacao.Comment;
             avaliacaoQuery.DataPostada = DateTime.SpecifyKind(avaliacaoQuery.DataPostada, DateTimeKind.Utc);
             avaliacaoQuery.DataAtualizacao = DateTime.UtcNow;

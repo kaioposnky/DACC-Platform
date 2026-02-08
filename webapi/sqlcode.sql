@@ -444,6 +444,7 @@ CREATE TABLE avaliacao
     usuario_id       UUID REFERENCES usuario (id),
     produto_id       UUID REFERENCES produto (id) ON DELETE CASCADE,
     nota             DECIMAL(2,1) CHECK (nota BETWEEN 0.5 AND 5.0),
+    titulo           VARCHAR(100),
     comentario       TEXT,
     ativo            BOOLEAN   DEFAULT TRUE,
     data_avaliacao   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

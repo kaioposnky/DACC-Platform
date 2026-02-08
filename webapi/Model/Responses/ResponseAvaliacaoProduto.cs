@@ -1,7 +1,7 @@
 namespace DaccApi.Model.Responses;
 
 /// <summary>
-/// Representa a resposta de uma avaliação de produto, adaptada para o frontend ProductReview.
+/// Representa a resposta de uma avaliação de produto, alinhada com a interface ProductReview do frontend.
 /// </summary>
 public class ResponseAvaliacaoProduto
 {
@@ -9,46 +9,46 @@ public class ResponseAvaliacaoProduto
     /// Obtém ou define o ID da avaliação.
     /// </summary>
     public Guid Id { get; set; }
+    
     /// <summary>
     /// Obtém ou define o ID do usuário que fez a avaliação.
     /// </summary>
     public Guid UserId { get; set; }
+    
     /// <summary>
-    /// Obtém ou define o nome do usuário (frontend specific, a ser preenchido por serviço).
+    /// Obtém ou define o nome do usuário.
     /// </summary>
     public string? UserName { get; set; }
+    
     /// <summary>
-    /// Obtém ou define o avatar do usuário (frontend specific, a ser preenchido por serviço).
+    /// Obtém ou define o avatar do usuário.
     /// </summary>
     public string? UserAvatar { get; set; }
+    
     /// <summary>
     /// Obtém ou define a nota da avaliação.
     /// </summary>
     public double Rating { get; set; }
+    
     /// <summary>
-    /// Obtém ou define o título da avaliação (frontend specific).
+    /// Obtém ou define o título da avaliação.
     /// </summary>
     public string? Title { get; set; }
+    
     /// <summary>
     /// Obtém ou define o comentário da avaliação.
     /// </summary>
     public string? Comment { get; set; }
+    
     /// <summary>
-    /// Obtém ou define a data em que a avaliação foi postada.
+    /// Obtém ou define a data em que a avaliação foi criada.
     /// </summary>
-    public DateTime Date { get; set; }
+    public DateTime CreatedAt { get; set; }
+    
     /// <summary>
-    /// Obtém ou define se a avaliação foi verificada (frontend specific).
+    /// Obtém ou define a data da última atualização da avaliação.
     /// </summary>
-    public bool Verified { get; set; }
-    /// <summary>
-    /// Obtém ou define a contagem de utilidade da avaliação (frontend specific).
-    /// </summary>
-    public int Helpful { get; set; }
-    /// <summary>
-    /// Obtém ou define o ID do produto avaliado.
-    /// </summary>
-    public Guid ProductId { get; set; }
+    public DateTime UpdatedAt { get; set; }
 
     /// <summary>
     /// Construtor para mapear de uma entidade AvaliacaoProduto.
@@ -58,21 +58,14 @@ public class ResponseAvaliacaoProduto
     {
         Id = avaliacaoProduto.Id;
         UserId = avaliacaoProduto.UsuarioId;
-        Rating = avaliacaoProduto.Nota;
-        Comment = avaliacaoProduto.Comentario;
-        Date = avaliacaoProduto.DataPostada;
-        ProductId = avaliacaoProduto.ProdutoId;
-
-        // Propriedades vindas do JOIN com usuario
         UserName = avaliacaoProduto.UsuarioNome;
         UserAvatar = avaliacaoProduto.UsuarioAvatar;
-
-        // Propriedades específicas do frontend sem correspondência direta em AvaliacaoProduto
-        Title = null;
-        Verified = false; // Valor padrão
-        Helpful = 0; // Valor padrão
+        Rating = avaliacaoProduto.Nota;
+        Title = avaliacaoProduto.Titulo;
+        Comment = avaliacaoProduto.Comentario;
+        CreatedAt = avaliacaoProduto.DataPostada;
+        UpdatedAt = avaliacaoProduto.DataAtualizacao;
     }
-
 
     /// <summary>
     /// Construtor sem parâmetros para deserialização

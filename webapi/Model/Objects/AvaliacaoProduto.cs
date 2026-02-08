@@ -22,6 +22,12 @@ namespace DaccApi.Model
         public double Nota { get; set; }
 
         /// <summary>
+        /// Obtém ou define o título da avaliação.
+        /// </summary>
+        [Column("titulo")]
+        public string? Titulo { get; set; }
+
+        /// <summary>
         /// Obtém ou define o ID do usuário que fez a avaliação.
         /// </summary>
         [Column("usuario_id")]
