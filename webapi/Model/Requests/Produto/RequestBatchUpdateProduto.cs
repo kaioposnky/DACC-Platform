@@ -93,7 +93,7 @@ namespace DaccApi.Model
     public class ShippingInfoRequest
     {
         public bool FreeShipping { get; set; }
-        public string EstimatedDays { get; set; } = string.Empty;
+        public int EstimatedDays { get; set; } = 0;
         public string ReturnPolicy { get; set; } = string.Empty;
         public string? Warranty { get; set; }
     }

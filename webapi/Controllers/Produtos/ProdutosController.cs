@@ -248,8 +248,9 @@ namespace DaccApi.Controllers.Produtos
         {
             try
             {
-                await _produtosService.BatchUpdateProductInfo(request);
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK, "Produto foi atualizado com sucesso!");
+                var updatedProductInfo = await _produtosService.BatchUpdateProductInfo(request);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData( new { product = updatedProductInfo }),
+                    "Produto foi atualizado com sucesso!");
             }
             catch (KeyNotFoundException)
             {

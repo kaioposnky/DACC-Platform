@@ -550,7 +550,7 @@ namespace DaccApi.Services.Products
                 ResponseSuccess.CREATED.WithData(new { subcategoria = subcategoria.ToResponse() }));
         }
 
-        public async Task BatchUpdateProductInfo(RequestBatchUpdateProduto request)
+        public async Task<ResponseProduto> BatchUpdateProductInfo(RequestBatchUpdateProduto request)
         {
             var product = await _produtosRepository.GetProductByIdAsync(request.Id);
 
@@ -570,6 +570,15 @@ namespace DaccApi.Services.Products
                     await _produtosRepository.BatchUpdateVariationsAsync(product.Id, variations, transaction);
                 }
                 transaction.Commit();
+
+                var updatedProduct = await _produtosRepository.GetProductByIdAsync(request.Id);
+
+                if (updatedProduct == null)
+                {
+                    throw new KeyNotFoundException("Produto não encontrado!");
+                }
+
+                return new ResponseProduto(updatedProduct);
             }
             catch (Exception)
             {
