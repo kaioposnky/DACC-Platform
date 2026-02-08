@@ -27,5 +27,10 @@ namespace DaccApi.Model
                 /// Obtém ou define o ID do produto a ser avaliado.
                 /// </summary>
                 public Guid ProductId { get; set; }
+
+                /// <summary>
+                /// Obtém ou define o ID da variação do produto a ser avaliada.
+                /// </summary>
+                public Guid? ProductVariationId { get; set; }
         }
 }

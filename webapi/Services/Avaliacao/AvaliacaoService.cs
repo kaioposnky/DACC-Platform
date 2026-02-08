@@ -23,6 +23,7 @@ public class AvaliacaoService : IAvaliacaoService
             {
                 Id = Guid.NewGuid(),
                 ProdutoId = avaliacao.ProductId,
+                ProdutoVariacaoId = avaliacao.ProductVariationId,
                 UsuarioId = userId,
                 Nota = avaliacao.Rating,
                 Titulo = avaliacao.Title,
@@ -166,9 +167,9 @@ public class AvaliacaoService : IAvaliacaoService
         {
             return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
         }
-        }
+    }
 
-        public async Task<IActionResult> SearchAvaliacoes(Model.Requests.RequestQueryAvaliacao query)
+    public async Task<IActionResult> SearchAvaliacoes(Model.Requests.RequestQueryAvaliacao query)
         {
             try
             {

@@ -49,6 +49,16 @@ public class ResponseAvaliacaoProduto
     /// Obtém ou define o nome do produto avaliado.
     /// </summary>
     public string? ProductName { get; set; }
+
+    /// <summary>
+    /// Obtém ou define o ID da variação do produto avaliada.
+    /// </summary>
+    public Guid? ProductVariationId { get; set; }
+
+    /// <summary>
+    /// Obtém ou define a URL da imagem da variação do produto.
+    /// </summary>
+    public string? ProductImage { get; set; }
     
     /// <summary>
     /// Obtém ou define a data em que a avaliação foi criada.
@@ -75,6 +85,8 @@ public class ResponseAvaliacaoProduto
         Comment = avaliacaoProduto.Comentario;
         ProductId = avaliacaoProduto.ProdutoId;
         ProductName = avaliacaoProduto.ProdutoNome;
+        ProductVariationId = avaliacaoProduto.ProdutoVariacaoId;
+        ProductImage = avaliacaoProduto.VariacaoImagemUrl;
         CreatedAt = avaliacaoProduto.DataPostada;
         UpdatedAt = avaliacaoProduto.DataAtualizacao;
     }

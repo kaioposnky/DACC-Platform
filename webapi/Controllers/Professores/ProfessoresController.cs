@@ -66,7 +66,7 @@ namespace DaccApi.Controllers.Professores
         /// Cria um novo professor.
         /// </summary>
         [AuthenticatedPostResponses]
-        [HasPermission(AppPermissions.Faculty.Create)] // Adicionado conforme o plano de refatoração
+        [HasPermission(AppPermissions.Faculty.Create)]
         [HttpPost("")]
         public async Task<IActionResult> CreateProfessor([FromBody] RequestProfessor request)
         {
@@ -78,7 +78,7 @@ namespace DaccApi.Controllers.Professores
         /// Deleta um professor existente.
         /// </summary>
         [AuthenticatedDeleteResponses]
-        [HasPermission(AppPermissions.Faculty.Delete)] // Adicionado conforme o plano de refatoração
+        [HasPermission(AppPermissions.Faculty.Delete)]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteProfessor([FromRoute] Guid id)
         {

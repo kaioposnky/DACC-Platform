@@ -441,9 +441,10 @@ DROP TABLE IF EXISTS avaliacao CASCADE;
 CREATE TABLE avaliacao
 (
     id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    usuario_id       UUID REFERENCES usuario (id),
-    produto_id       UUID REFERENCES produto (id) ON DELETE CASCADE,
-    nota             DECIMAL(2,1) CHECK (nota BETWEEN 0.5 AND 5.0),
+    usuario_id           UUID REFERENCES usuario (id),
+    produto_id           UUID REFERENCES produto (id) ON DELETE CASCADE,
+    produto_variacao_id  UUID REFERENCES produto_variacao (id) ON DELETE CASCADE,
+    nota                 DECIMAL(2,1) CHECK (nota BETWEEN 0.5 AND 5.0),
     titulo           VARCHAR(100),
     comentario       TEXT,
     ativo            BOOLEAN   DEFAULT TRUE,
