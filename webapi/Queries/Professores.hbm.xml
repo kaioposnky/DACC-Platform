@@ -8,7 +8,7 @@
 			cargo as Cargo,
 			especializacao as Especializacao,
 			imagem_url as ImagemUrl,
-			usuario_id as UsuarioId,
+			usuario_id as UserId,
 			email as Email,
 			github as Github,
 			linkedin as Linkedin
@@ -25,7 +25,7 @@
 			email,
 			github,
 			linkedin)
-		VALUES (@Nome, @Titulo, @Cargo, @Especializacao, @ImagemUrl, @UsuarioId, @Email, @Github, @Linkedin)
+		VALUES (@Nome, @Titulo, @Cargo, @Especializacao, @ImagemUrl, @UserId, @Email, @Github, @Linkedin)
 	</query>
 	<query name="GetProfessorById">
 		SELECT
@@ -35,7 +35,7 @@
 			cargo as Cargo,
 			especializacao as Especializacao,
 			imagem_url as ImagemUrl,
-			usuario_id as UsuarioId,
+			usuario_id as UserId,
 			email as Email,
 			github as Github,
 			linkedin as Linkedin
@@ -52,7 +52,7 @@
 				cargo = @Cargo,
 				especializacao = @Especializacao,
 				imagem_url = @ImagemUrl,
-				usuario_id = @UsuarioId,
+				usuario_id = @UserId,
 				email = @Email,
 				github = @Github,
 				linkedin = @Linkedin
@@ -68,7 +68,7 @@
             cargo as Cargo,
             especializacao as Especializacao,
             imagem_url as ImagemUrl,
-            usuario_id as UsuarioId,
+            usuario_id as UserId,
             email as Email,
             github as Github,
             linkedin as Linkedin,
