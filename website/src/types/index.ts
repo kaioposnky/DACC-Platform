@@ -124,6 +124,7 @@ export interface Faculty {
   position: string;
   specialization: string;
   imageUrl: string;
+  userId: string | null;
   social: {
     linkedin?: string;
     github?: string;

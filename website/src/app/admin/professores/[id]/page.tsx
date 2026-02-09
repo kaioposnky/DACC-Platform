@@ -7,7 +7,7 @@ import {
   FacultyForm,
 } from "@/components";
 import { apiService } from "@/services/api";
-import { Faculty } from "@/types";
+import { Faculty, User } from "@/types";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -16,6 +16,7 @@ export default function AdminEditFacultyPage() {
   const router = useRouter();
   const params = useParams();
 
+  const [users, setUsers] = useState<User[]>([]);
   const [faculty, setFaculty] = useState<Faculty | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -32,11 +33,22 @@ export default function AdminEditFacultyPage() {
       } catch (error) {
         console.error(error);
         toast.error("Erro ao carregar dados do professor");
-      } finally {
-        setIsLoading(false);
       }
     };
-    fetchData();
+
+    const fetchUsers = async () => {
+      try {
+        const response = await apiService.getUsers();
+        setUsers(response);
+      } catch (error) {
+        toast.error('Erro ao buscar usuários! ' + error);
+        console.error(error);
+      }
+    }
+
+    Promise.all([fetchData(), fetchUsers()]).then(() => {
+      setIsLoading(false);
+    });
   }, [params.id]);
 
   const handleSave = async () => {
@@ -129,6 +141,7 @@ export default function AdminEditFacultyPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <FacultyForm
           faculty={faculty}
+          users={users}
           onChange={handleFieldChange}
           onSocialChange={handleSocialChange}
           onImageChange={handleSetImage}
