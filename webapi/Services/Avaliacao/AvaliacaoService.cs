@@ -47,7 +47,7 @@ public class AvaliacaoService : IAvaliacaoService
     {
         try
         {
-            var avaliacoes = await _avaliacaoRepository.GetAllAsync();
+            var avaliacoes = await _avaliacaoRepository.GetAllWithDetails();
 
             if (avaliacoes.Count == 0)
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<AvaliacaoProduto>()));
@@ -67,7 +67,7 @@ public class AvaliacaoService : IAvaliacaoService
     {
         try
         {
-            var avaliacao = await _avaliacaoRepository.GetByIdAsync(id);
+            var avaliacao = await _avaliacaoRepository.GetByIdWithDetails(id);
 
                 
             if (avaliacao == null) 
