@@ -42,7 +42,7 @@ namespace DaccApi.Model.Objects
         /// Obtém ou define a URL da imagem do professor.
         /// </summary>
         [Column("imagem_url")]
-        public string? ImageUrl { get; set; }
+        public string? ImagemUrl { get; set; }
 
         /// <summary>
         /// Obtém ou define o e-mail de contato do professor.
@@ -88,6 +88,7 @@ namespace DaccApi.Model.Objects
                 Titulo = request.Title,
                 Cargo = request.Position,
                 Especializacao = request.Specialization,
+                ImagemUrl = request.ImageUrl,
                 Email = request.Social?.Email,
                 Linkedin = request.Social?.Linkedin,
                 Github = request.Social?.Github,

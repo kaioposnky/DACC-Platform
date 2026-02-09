@@ -63,7 +63,7 @@ public class ResponseProfessor
         Title = professor.Titulo;
         Position = professor.Cargo;
         Specialization = professor.Especializacao;
-        Image = professor.ImageUrl;
+        Image = professor.ImagemUrl;
         Social = new SocialLinks
         {
             Linkedin = professor.Linkedin,

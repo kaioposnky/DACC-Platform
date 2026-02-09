@@ -51,16 +51,16 @@ namespace DaccApi.Services.Professores
                 {
                     if (request.ImageUrl.StartsWith("data:image") || request.ImageUrl.Length > 255)
                     {
-                        professor.ImageUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageUrl);
+                        professor.ImagemUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageUrl);
                     }
                     else
                     {
-                        professor.ImageUrl = request.ImageUrl;
+                        professor.ImagemUrl = request.ImageUrl;
                     }
                 }
                 else
                 {
-                    professor.ImageUrl = string.Empty;
+                    professor.ImagemUrl = string.Empty;
                 }
 
                 await _professoresRepository.CreateAsync(professor);
@@ -130,11 +130,11 @@ namespace DaccApi.Services.Professores
                 {
                     if (request.ImageUrl.StartsWith("data:image") || request.ImageUrl.Length > 255)
                     {
-                        professor.ImageUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageUrl);
+                        professor.ImagemUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageUrl);
                     }
                     else
                     {
-                        professor.ImageUrl = request.ImageUrl;
+                        professor.ImagemUrl = request.ImageUrl;
                     }
                 }
                 
@@ -164,7 +164,7 @@ namespace DaccApi.Services.Professores
                     Titulo = request.Title,
                     Cargo = request.Position,
                     Especializacao = request.Specialization,
-                    ImageUrl = request.ImageUrl, // URL já fornecida ou null
+                    ImagemUrl = request.ImageUrl, // URL já fornecida ou null
                     Email = request.Social?.Email,
                     Linkedin = request.Social?.Linkedin,
                     Github = request.Social?.Github,
@@ -197,7 +197,7 @@ namespace DaccApi.Services.Professores
                     Titulo = request.Title,
                     Cargo = request.Position,
                     Especializacao = request.Specialization,
-                    ImageUrl = request.ImageUrl ?? professorQuery.ImageUrl, // Mantém a URL existente se não fornecida
+                    ImagemUrl = request.ImageUrl ?? professorQuery.ImagemUrl, // Mantém a URL existente se não fornecida
                     Email = request.Social?.Email,
                     Linkedin = request.Social?.Linkedin,
                     Github = request.Social?.Github,
