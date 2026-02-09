@@ -37,20 +37,9 @@ namespace DaccApi.Model
         public string? ImageUrl { get; set; }
 
         /// <summary>
-        /// Email de contato.
+        /// Links de redes sociais.
         /// </summary>
-        [EmailAddress(ErrorMessage = "Email inválido")]
-        public string? Email { get; set; }
-
-        /// <summary>
-        /// Link do LinkedIn.
-        /// </summary>
-        public string? Linkedin { get; set; }
-
-        /// <summary>
-        /// Link do GitHub.
-        /// </summary>
-        public string? Github { get; set; }
+        public SocialLinksRequest Social { get; set; } = new SocialLinksRequest();
 
         /// <summary>
         /// ID do usuário vinculado (opcional).

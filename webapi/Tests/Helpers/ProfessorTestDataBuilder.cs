@@ -22,9 +22,12 @@ public static class ProfessorTestDataBuilder
             Title = title ?? "Doutor",
             Position = position ?? "Professor Adjunto",
             Specialization = specialization ?? "Ciência da Computação e Engenharia de Software",
-            Email = "joao.silva@fatec.sp.gov.br",
-            Linkedin = "https://linkedin.com/in/joaosilva",
-            Github = "https://github.com/joaosilva"
+            Social = new SocialLinksRequest
+            {
+                Email = "joao.silva@fatec.sp.gov.br",
+                Linkedin = "https://linkedin.com/in/joaosilva",
+                Github = "https://github.com/joaosilva"
+            }
         };
     }
 
@@ -38,7 +41,8 @@ public static class ProfessorTestDataBuilder
             Name = "Professor Teste",
             Title = "Mestre",
             Position = "Docente",
-            Specialization = "Sistemas de Informação"
+            Specialization = "Sistemas de Informação",
+            Social = new SocialLinksRequest()
         };
     }
 
@@ -54,7 +58,8 @@ public static class ProfessorTestDataBuilder
                 Name = "",
                 Title = "Doutor",
                 Position = "Professor",
-                Specialization = "Computação"
+                Specialization = "Computação",
+                Social = new SocialLinksRequest()
             },
             "email_invalido" => new RequestProfessor
             {
@@ -62,7 +67,10 @@ public static class ProfessorTestDataBuilder
                 Title = "Doutor",
                 Position = "Professor",
                 Specialization = "Computação",
-                Email = "email-invalido"
+                Social = new SocialLinksRequest
+                {
+                    Email = "email-invalido"
+                }
             },
             _ => CreateValidProfessor()
         };
@@ -81,8 +89,11 @@ public static class ProfessorTestDataBuilder
             Title = "Doutor",
             Position = position ?? "Professor Titular",
             Specialization = "Inteligência Artificial aplicaca à Saúde",
-            Email = "joao.atualizado@fatec.sp.gov.br",
-            Linkedin = "https://linkedin.com/in/joaosilva-updated"
+            Social = new SocialLinksRequest
+            {
+                Email = "joao.atualizado@fatec.sp.gov.br",
+                Linkedin = "https://linkedin.com/in/joaosilva-updated"
+            }
         };
     }
 

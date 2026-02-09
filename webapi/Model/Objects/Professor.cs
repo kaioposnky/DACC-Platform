@@ -88,9 +88,9 @@ namespace DaccApi.Model.Objects
                 Titulo = request.Title,
                 Cargo = request.Position,
                 Especializacao = request.Specialization,
-                Email = request.Email,
-                Linkedin = request.Linkedin,
-                Github = request.Github,
+                Email = request.Social?.Email,
+                Linkedin = request.Social?.Linkedin,
+                Github = request.Social?.Github,
                 UserId = request.UserId
             };
         }

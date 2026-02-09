@@ -165,9 +165,9 @@ namespace DaccApi.Services.Professores
                     Cargo = request.Position,
                     Especializacao = request.Specialization,
                     ImageUrl = request.ImageUrl, // URL já fornecida ou null
-                    Email = request.Email,
-                    Linkedin = request.Linkedin,
-                    Github = request.Github,
+                    Email = request.Social?.Email,
+                    Linkedin = request.Social?.Linkedin,
+                    Github = request.Social?.Github,
                     UserId = request.UserId
                 };
 
@@ -198,9 +198,9 @@ namespace DaccApi.Services.Professores
                     Cargo = request.Position,
                     Especializacao = request.Specialization,
                     ImageUrl = request.ImageUrl ?? professorQuery.ImageUrl, // Mantém a URL existente se não fornecida
-                    Email = request.Email,
-                    Linkedin = request.Linkedin,
-                    Github = request.Github,
+                    Email = request.Social?.Email,
+                    Linkedin = request.Social?.Linkedin,
+                    Github = request.Social?.Github,
                     UserId = request.UserId
                 };
 
