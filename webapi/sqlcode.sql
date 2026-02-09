@@ -231,7 +231,7 @@ CREATE TABLE professores
     email          VARCHAR(150),
     linkedin       VARCHAR(255),
     github         VARCHAR(255),
-    usuario_id     UUID REFERENCES usuario (id),
+    usuario_id     UUID REFERENCES usuario (id), -- Este campo é opcional, pois um professor pode não ser um usuário
     data_criacao   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
