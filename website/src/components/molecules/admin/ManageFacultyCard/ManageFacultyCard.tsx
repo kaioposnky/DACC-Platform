@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { formatDate } from "@/utils/formatters";
 import { getSocialIcon } from "../../SocialIcons";
+import Image from "next/image";
 
 interface ManageFacultyCardProps {
   faculty: Faculty;
@@ -27,10 +28,13 @@ export const ManageFacultyCard = ({ faculty, onDelete }: ManageFacultyCardProps)
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
             {faculty.imageUrl ? (
-              <img
+              <Image
                 src={faculty.imageUrl}
                 alt={faculty.name}
+                width={'16'}
+                height={'16'}
                 className="w-12 h-12 rounded-full object-cover border border-gray-100"
+                unoptimized
               />
             ) : (
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">

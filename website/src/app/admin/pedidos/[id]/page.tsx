@@ -174,7 +174,7 @@ export default function PedidoEditAdminPage() {
               <div className="space-y-4">
                 {order.items?.map((item) => (
                   <div key={item.id} className="flex gap-4 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-gray-200 transition-colors">
-                    <div className="relative w-16 h-16 flex-shrink-0 bg-white rounded-md overflow-hidden border border-gray-200">
+                    <div className="relative w-16 h-16 shrink-0 bg-white rounded-md overflow-hidden border border-gray-200">
                       <Image
                         src={item.productImage || 'https://i.postimg.cc/WzRPmW3r/LOGO-DACC-OFICIAL.png'}
                         alt={item.productName || 'Produto'}

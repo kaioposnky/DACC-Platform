@@ -73,6 +73,7 @@ export default function ManageProductReviewCard({
                 alt={review.productName || "Product"}
                 fill
                 className="object-cover"
+                unoptimized
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400 font-bold text-[10px]">
