@@ -140,6 +140,7 @@ export interface ProductReview {
   userName: string;
   userAvatar: string;
   productId: string;
+  productVariationId: string;
   productName: string;
   productImage?: string;
   rating: number;

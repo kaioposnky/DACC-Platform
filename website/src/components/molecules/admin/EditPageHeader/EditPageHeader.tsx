@@ -12,7 +12,7 @@ interface EditPageHeaderProps {
         text: string;
         colorClass?: string;
     };
-    onSave: () => void;
+    onSave?: () => void;
     onBack: () => void;
     onDelete?: () => void;
     saveButtonText?: string;
