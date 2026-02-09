@@ -488,11 +488,12 @@
         <![CDATA[
         WITH input_rows AS (
             SELECT 
-                NULLIF(var->>'Id', '')::uuid as incoming_id,
+                COALESCE(NULLIF(var->>'Id', '')::uuid, gen_random_uuid()) as incoming_id,
                 var->>'Color' as color_name,
                 var->>'Size' as size_name,
                 (var->>'Stock')::int as stock,
-                var->>'SKU' as sku
+                var->>'SKU' as sku,
+                var->'Images' as images_json
             FROM jsonb_array_elements(@VariationsJson::jsonb) AS var
         ),
         existing_colors AS (
@@ -518,26 +519,52 @@
         ),
         all_sizes AS (
             SELECT * FROM existing_sizes UNION ALL SELECT * FROM new_sizes
+        ),
+        upserted_variations AS (
+            INSERT INTO produto_variacao (id, produto_id, cor_id, tamanho_id, estoque, sku, data_criacao, data_atualizacao)
+            SELECT
+                i.incoming_id,
+                @ProductId,
+                c.id,
+                s.id,
+                i.stock,
+                i.sku,
+                NOW(),
+                NOW()
+            FROM input_rows i
+            JOIN all_colors c ON c.nome = lower(i.color_name)
+            JOIN all_sizes s ON s.nome = upper(i.size_name)
+            ON CONFLICT (id) DO UPDATE SET
+                cor_id = EXCLUDED.cor_id,
+                tamanho_id = EXCLUDED.tamanho_id,
+                estoque = EXCLUDED.estoque,
+                sku = EXCLUDED.sku,
+                data_atualizacao = NOW()
+            RETURNING id
+        ),
+        input_images AS (
+            SELECT 
+                v.incoming_id as var_id,
+                COALESCE(NULLIF(img->>'Id', '')::uuid, gen_random_uuid()) as img_id,
+                img->>'Url' as url,
+                (img->>'Order')::int as order_val,
+                img->>'ImageAlt' as alt
+            FROM input_rows v,
+            jsonb_array_elements(v.images_json) as img
+            WHERE v.images_json IS NOT NULL AND jsonb_array_length(v.images_json) > 0
+        ),
+        upserted_images AS (
+            INSERT INTO produto_imagem (id, produto_variacao_id, imagem_url, imagem_alt, ordem)
+            SELECT img_id, var_id, url, alt, order_val FROM input_images
+            ON CONFLICT (id) DO UPDATE SET
+                imagem_url = EXCLUDED.imagem_url,
+                imagem_alt = EXCLUDED.imagem_alt,
+                ordem = EXCLUDED.ordem
+            RETURNING id
         )
-        INSERT INTO produto_variacao (id, produto_id, cor_id, tamanho_id, estoque, sku, data_criacao, data_atualizacao)
-        SELECT
-            COALESCE(i.incoming_id, gen_random_uuid()),
-            @ProductId,
-            c.id,
-            s.id,
-            i.stock,
-            i.sku,
-            NOW(),
-            NOW()
-        FROM input_rows i
-        JOIN all_colors c ON c.nome = lower(i.color_name)
-        JOIN all_sizes s ON s.nome = upper(i.size_name)
-        ON CONFLICT (id) DO UPDATE SET
-            cor_id = EXCLUDED.cor_id,
-            tamanho_id = EXCLUDED.tamanho_id,
-            estoque = EXCLUDED.estoque,
-            sku = EXCLUDED.sku,
-            data_atualizacao = NOW();
+        DELETE FROM produto_imagem 
+        WHERE produto_variacao_id IN (SELECT incoming_id FROM input_rows)
+        AND id NOT IN (SELECT img_id FROM input_images);
         ]]>
     </query>
 </queries>
