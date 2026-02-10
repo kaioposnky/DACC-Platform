@@ -887,5 +887,55 @@ namespace DaccApi.Infrastructure.Repositories.Products
                 throw new Exception($"Erro ao realizar atualização em lote das variações: {ex.Message}", ex);
             }
         }
+
+        public async Task BatchCreateProductAsync(Guid productId, RequestBatchCreateProduto request, IDbTransaction? transaction = null)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("BatchCreateProductGraph");
+                
+                var param = new
+                {
+                    Id = productId,
+                    Nome = request.Name,
+                    Descricao = request.Description,
+                    Preco = request.Price,
+                    PrecoOriginal = request.OriginalPrice,
+                    SubcategoriaNome = request.Subcategory,
+                    CategoriaNome = request.Category,
+                    DetailedDescription = request.DetailedDescription,
+                    Featured = request.Featured,
+                    SpecificationsJson = request.Specifications != null ? JsonSerializer.Serialize(request.Specifications) : null,
+                    PerfectForJson = request.PerfectFor != null ? JsonSerializer.Serialize(request.PerfectFor) : null,
+                    ShippingInfoJson = request.ShippingInfo != null ? JsonSerializer.Serialize(request.ShippingInfo) : null
+                };
+
+                await _repositoryDapper.ExecuteAsync(sql, param, transaction);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao criar produto em lote: {ex.Message}", ex);
+            }
+        }
+
+        public async Task BatchCreateVariationsAsync(Guid productId, List<VariationCreateRequest> variations, IDbTransaction? transaction = null)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("BatchCreateVariationsGraph");
+
+                var param = new
+                {
+                    ProductId = productId,
+                    VariationsJson = variations != null ? JsonSerializer.Serialize(variations) : null
+                };
+
+                await _repositoryDapper.ExecuteAsync(sql, param, transaction);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao criar variações em lote: {ex.Message}", ex);
+            }
+        }
     }
 }

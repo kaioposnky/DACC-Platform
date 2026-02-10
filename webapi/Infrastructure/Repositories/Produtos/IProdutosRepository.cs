@@ -125,5 +125,15 @@ namespace DaccApi.Infrastructure.Repositories.Products
         /// Atualiza em lote as variações (Cor, Tamanho, Estoque, Imagens).
         /// </summary>
         Task BatchUpdateVariationsAsync(Guid productId, List<VariationUpdateRequest> variations, IDbTransaction? transaction = null);
+
+        /// <summary>
+        /// Cria um produto completo com todas as informações em lote (Scalar, Specs, PerfectFor, Envio).
+        /// </summary>
+        Task BatchCreateProductAsync(Guid productId, RequestBatchCreateProduto request, IDbTransaction? transaction = null);
+
+        /// <summary>
+        /// Cria em lote as variações de um produto (Cor, Tamanho, Estoque, Imagens).
+        /// </summary>
+        Task BatchCreateVariationsAsync(Guid productId, List<VariationCreateRequest> variations, IDbTransaction? transaction = null);
     }
 }

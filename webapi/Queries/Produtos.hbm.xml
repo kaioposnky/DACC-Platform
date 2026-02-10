@@ -567,4 +567,118 @@
         AND id NOT IN (SELECT img_id FROM input_images);
         ]]>
     </query>
+
+    <query name="BatchCreateProductGraph">
+        <![CDATA[
+        INSERT INTO produto (id, nome, descricao, descricao_detalhada, categoria_id, subcategoria_id, 
+                             preco, preco_original, destaque, ativo, data_criacao, data_atualizacao)
+        VALUES (
+            @Id, 
+            @Nome, 
+            @Descricao, 
+            @DetailedDescription,
+            NULL, -- categoria_id handling skipped to keep it simple, aligning with BatchUpdate
+            NULL, -- subcategoria_id handling skipped to keep it simple, aligning with BatchUpdate
+            @Preco, 
+            @PrecoOriginal, 
+            COALESCE(@Featured, false), 
+            true, 
+            NOW(), 
+            NOW()
+        );
+
+        -- Insert Specifications
+        INSERT INTO produto_especificacao (id, produto_id, nome, valor)
+        SELECT gen_random_uuid(), @Id, s."Name", s."Value"
+        FROM jsonb_to_recordset(@SpecificationsJson::jsonb) AS s("Name" text, "Value" text)
+        WHERE @SpecificationsJson IS NOT NULL;
+
+        -- Insert Perfect For
+        INSERT INTO produto_perfeito_para (id, produto_id, ocasiao)
+        SELECT gen_random_uuid(), @Id, p.value
+        FROM jsonb_array_elements_text(@PerfectForJson::jsonb) AS p
+        WHERE @PerfectForJson IS NOT NULL;
+
+        -- Insert Shipping Info
+        INSERT INTO produto_informacao_envio (id, produto_id, frete_gratis, dias_estimados, custo_envio, politica_devolucao, garantia)
+        SELECT 
+            gen_random_uuid(),
+            @Id,
+            (s->>'FreeShipping')::boolean,
+            (s->>'EstimatedDays')::int,
+            (s->>'ShippingCost')::decimal,
+            s->>'ReturnPolicy', 
+            s->>'Warranty'
+        FROM (SELECT @ShippingInfoJson::jsonb as s) as data
+        WHERE @ShippingInfoJson IS NOT NULL;
+        ]]>
+    </query>
+
+    <query name="BatchCreateVariationsGraph">
+        <![CDATA[
+        WITH input_rows AS (
+            SELECT 
+                gen_random_uuid() as new_id,
+                var->>'Color' as color_name,
+                var->>'Size' as size_name,
+                (var->>'Stock')::int as stock,
+                var->>'SKU' as sku,
+                var->'Images' as images_json
+            FROM jsonb_array_elements(@VariationsJson::jsonb) AS var
+        ),
+        existing_colors AS (
+            SELECT id, nome FROM produto_cor WHERE nome IN (SELECT lower(color_name) FROM input_rows)
+        ),
+        new_colors AS (
+            INSERT INTO produto_cor (nome)
+            SELECT DISTINCT lower(color_name) FROM input_rows 
+            WHERE lower(color_name) NOT IN (SELECT nome FROM existing_colors)
+            RETURNING id, nome
+        ),
+        all_colors AS (
+            SELECT * FROM existing_colors UNION ALL SELECT * FROM new_colors
+        ),
+        existing_sizes AS (
+            SELECT id, nome FROM produto_tamanho WHERE nome IN (SELECT upper(size_name) FROM input_rows)
+        ),
+        new_sizes AS (
+            INSERT INTO produto_tamanho (nome)
+            SELECT DISTINCT upper(size_name) FROM input_rows 
+            WHERE upper(size_name) NOT IN (SELECT nome FROM existing_sizes)
+            RETURNING id, nome
+        ),
+        all_sizes AS (
+            SELECT * FROM existing_sizes UNION ALL SELECT * FROM new_sizes
+        ),
+        inserted_variations AS (
+            INSERT INTO produto_variacao (id, produto_id, cor_id, tamanho_id, estoque, sku, data_criacao, data_atualizacao)
+            SELECT
+                i.new_id,
+                @ProductId,
+                c.id,
+                s.id,
+                i.stock,
+                i.sku,
+                NOW(),
+                NOW()
+            FROM input_rows i
+            JOIN all_colors c ON c.nome = lower(i.color_name)
+            JOIN all_sizes s ON s.nome = upper(i.size_name)
+            RETURNING id
+        ),
+        input_images AS (
+            SELECT 
+                v.new_id as var_id,
+                gen_random_uuid() as img_id,
+                img->>'Url' as url,
+                (img->>'Order')::int as order_val,
+                img->>'ImageAlt' as alt
+            FROM input_rows v,
+            jsonb_array_elements(v.images_json) as img
+            WHERE v.images_json IS NOT NULL AND jsonb_array_length(v.images_json) > 0
+        )
+        INSERT INTO produto_imagem (id, produto_variacao_id, imagem_url, imagem_alt, ordem)
+        SELECT img_id, var_id, url, alt, order_val FROM input_images;
+        ]]>
+    </query>
 </queries>

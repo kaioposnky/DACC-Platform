@@ -29,7 +29,8 @@ public static class ProductTestDataBuilder
             Name = name ?? "Camiseta DACC Premium",
             Description = description ?? "Camiseta de alta qualidade com logo do DACC, perfeita para o dia a dia",
             Category = category ?? DefaultCategoriaId,
-            Subcategory = subcategory ?? DefaultSubcategoriaId,
+            // Subcategory field is disabled in RequestCreateProduto
+            // Subcategory = subcategory ?? DefaultSubcategoriaId,
             Price = price ?? 79.90,
             DetailedDescription = "Camiseta 100% algodão, com estampa de alta durabilidade. " +
                                  "Ideal para estudantes e profissionais de tecnologia.",
@@ -40,15 +41,16 @@ public static class ProductTestDataBuilder
                 new() { Name = "Material", Value = "100% Algodão" },
                 new() { Name = "Lavagem", Value = "Máquina até 40°C" },
                 new() { Name = "Origem", Value = "Nacional" }
-            },
-            ShippingInfo = new ShippingInfo
-            {
-                FreeShipping = true,
-                EstimatedDays = 0,
-                ShippingCost = 0,
-                ReturnPolicy = "30 dias para devolução",
-                Warranty = "Garantia de 90 dias contra defeitos de fabricação"
             }
+            // ShippingInfo field is disabled in RequestCreateProduto
+            // ShippingInfo = new ShippingInfo
+            // {
+            //     FreeShipping = true,
+            //     EstimatedDays = 0,
+            //     ShippingCost = 0,
+            //     ReturnPolicy = "30 dias para devolução",
+            //     Warranty = "Garantia de 90 dias contra defeitos de fabricação"
+            // }
         };
     }
 
@@ -64,7 +66,8 @@ public static class ProductTestDataBuilder
             Name = "Produto Teste",
             Description = "Descrição mínima do produto de teste",
             Category = category ?? "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12", // outros
-            Subcategory = subcategory ?? "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a25", // adesivos
+            // Subcategory field is disabled in RequestCreateProduto
+            // Subcategory = subcategory ?? "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a25", // adesivos
             Price = 9.90
         };
     }

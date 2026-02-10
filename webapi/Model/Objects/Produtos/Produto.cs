@@ -156,17 +156,18 @@ namespace DaccApi.Model
                 DescricaoDetalhada = request.DetailedDescription,
                 PerfeitoPara = request.PerfectFor,
                 Destaque = request.Featured,
-                Especificacoes = request.Specifications?.Select(e => new ProdutoEspecificacao { Id = Guid.NewGuid(), ProdutoId = productId, Nome = e.Name, Valor = e.Value }).ToList(),
-                InformacaoEnvio = request.ShippingInfo != null ? new ProdutoInformacaoEnvio
-                {
-                    Id = Guid.NewGuid(),
-                    ProdutoId = productId,
-                    FreteGratis = request.ShippingInfo.FreeShipping,
-                    DiasEstimados = request.ShippingInfo.EstimatedDays,
-                    CustoEnvio = request.ShippingInfo.ShippingCost,
-                    PoliticaDevolucao = request.ShippingInfo.ReturnPolicy,
-                    Garantia = request.ShippingInfo.Warranty
-                } : null
+                Especificacoes = request.Specifications?.Select(e => new ProdutoEspecificacao { Id = Guid.NewGuid(), ProdutoId = productId, Nome = e.Name, Valor = e.Value }).ToList()
+                // ShippingInfo field is disabled in RequestCreateProduto
+                // InformacaoEnvio = request.ShippingInfo != null ? new ProdutoInformacaoEnvio
+                // {
+                //     Id = Guid.NewGuid(),
+                //     ProdutoId = productId,
+                //     FreteGratis = request.ShippingInfo.FreeShipping,
+                //     DiasEstimados = request.ShippingInfo.EstimatedDays,
+                //     CustoEnvio = request.ShippingInfo.ShippingCost,
+                //     PoliticaDevolucao = request.ShippingInfo.ReturnPolicy,
+                //     Garantia = request.ShippingInfo.Warranty
+                // } : null
             };
         }
 

@@ -79,7 +79,9 @@ namespace DaccApi.Services.Products
             {
                 var productId = Guid.NewGuid();
                 var categoryId = await ResolveCategoryIdAsync(requestCreateProduto.Category);
-                var subcategoryId = await ResolveSubcategoryIdAsync(requestCreateProduto.Subcategory);
+                // Subcategory field is disabled in RequestCreateProduto
+                // var subcategoryId = await ResolveSubcategoryIdAsync(requestCreateProduto.Subcategory);
+                Guid? subcategoryId = null;
 
                 var product = await CreateProductEntityAsync(requestCreateProduto, productId, categoryId, subcategoryId);
 
@@ -579,6 +581,36 @@ namespace DaccApi.Services.Products
                 }
 
                 return new ResponseProduto(updatedProduct);
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
+            }
+        }
+
+        public async Task<ResponseProduto> BatchCreateProduct(RequestBatchCreateProduto request)
+        {
+            var productId = Guid.NewGuid();
+            var transaction = _repositoryDapper.BeginTransaction();
+            try
+            {
+                await _produtosRepository.BatchCreateProductAsync(productId, request, transaction);
+
+                if (request.Variations != null && request.Variations.Count != 0)
+                {
+                    await _produtosRepository.BatchCreateVariationsAsync(productId, request.Variations, transaction);
+                }
+
+                transaction.Commit();
+
+                var createdProduct = await _produtosRepository.GetProductByIdAsync(productId);
+                if (createdProduct == null)
+                {
+                    throw new Exception("Erro ao buscar produto criado");
+                }
+
+                return new ResponseProduto(createdProduct);
             }
             catch (Exception)
             {

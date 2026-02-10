@@ -31,12 +31,15 @@ namespace DaccApi.Model
         // Recebe o ID como string
         public string Category { get; set; }
 
-        /// <summary>
-        /// Obtém ou define a subcategoria do produto.
-        /// </summary>
-        [Required(ErrorMessage = "Subcategoria é obrigatória")]
-        // Recebe o ID como string
-        public string Subcategory { get; set; }
+        //////////////////////////////////////////////////////////////////////////
+        //// DESABILITADO ATÉ QUE A LÓGICA DE SUBCATEGORIA SEJA IMPLEMENTADA. ////
+        //////////////////////////////////////////////////////////////////////////
+        // /// <summary>
+        // /// Obtém ou define a subcategoria do produto.
+        // /// </summary>
+        // [Required(ErrorMessage = "Subcategoria é obrigatória")]
+        // // Recebe o ID como string
+        // public string Subcategory { get; set; }
 
         /// <summary>
         /// Obtém ou define o preço do produto.
@@ -52,8 +55,11 @@ namespace DaccApi.Model
         public bool Featured { get; set; }
         
         public List<SpecificationItem>? Specifications { get; set; }
-        
-        public ShippingInfo? ShippingInfo { get; set; }
+
+        //////////////////////////////////////////////////////////////////////
+        //// DESABILITADO ATÉ QUE A LÓGICA DE SHIPPING SEJA IMPLEMENTADA. ////
+        //////////////////////////////////////////////////////////////////////
+        // public ShippingInfo? ShippingInfo { get; set; }
 
         /// <summary>
         /// Obtém ou define o preço original do produto (preço antes de desconto).

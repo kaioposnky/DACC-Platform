@@ -241,6 +241,32 @@ namespace DaccApi.Controllers.Produtos
             return response;
         }
 
+        /// <summary>
+        /// Cria um novo produto com todas as informações de uma vez (variações, imagens, especificações).
+        /// </summary>
+        [AuthenticatedPostResponses]
+        [HttpPost("batch-create")]
+        [HasPermission(AppPermissions.Produtos.Create)]
+        public async Task<IActionResult> CreateFullProduct([FromBody] RequestBatchCreateProduto request)
+        {
+            try
+            {
+                var createdProduct = await _produtosService.BatchCreateProduct(request);
+                return ResponseHelper.CreateSuccessResponse(
+                    ResponseSuccess.CREATED.WithData(new { product = createdProduct }),
+                    "Produto criado com sucesso!"
+                );
+            }
+            catch (ArgumentException ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
+
         [AuthenticatedPatchResponses]
         [HttpPatch("{id:guid}/batch-update")]
         [HasPermission(AppPermissions.Produtos.Update)]
