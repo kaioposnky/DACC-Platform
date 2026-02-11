@@ -44,7 +44,7 @@ export default function ProductGrid({ filters = {}, className = '' }: ProductGri
       });
 
       if (isReset) {
-        setProducts(newProducts);
+        setProducts(newProducts.filter(product => product.active));
       } else {
         setProducts(prev => [...prev, ...newProducts]);
       }
@@ -232,4 +232,4 @@ export default function ProductGrid({ filters = {}, className = '' }: ProductGri
       )}
     </div>
   );
-} 
+}

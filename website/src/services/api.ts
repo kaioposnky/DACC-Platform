@@ -9,11 +9,15 @@ import {
   Post,
   Product,
   Project,
-  ProductBatchUpdateRequest,
+  ProductBatchRequest,
   User,
   UserStats,
   Order,
-  ProductReview
+  ProductReview,
+  ProductCategory,
+  ProductSubcategory,
+  ProductSize,
+  ProductColor
 } from '@/types';
 import { DashboardStats } from '@/types/dashboard';
 import { storageService } from "@/services/storage";
@@ -647,9 +651,56 @@ class ApiService {
     };
   }
 
-  async getSubcategories(): Promise<{ id: string; name: string; categoryId: string }[]> {
-    const response = await this.request<{ subcategories: { id: string; name: string; categoryId: string }[] }>('/products/subcategorias');
+  async getCategories(): Promise<ProductCategory[]> {
+    const response = await this.request<{ categories: ProductCategory[] }>('/products/categorias');
+    return response.categories;
+  }
+
+  async getSubcategories(): Promise<ProductSubcategory[]> {
+    const response = await this.request<{ subcategories: ProductSubcategory[] }>('/products/subcategorias');
     return response.subcategories;
+  }
+
+  async getSizes(): Promise<ProductSize[]> {
+    const response = await this.request<{ sizes: ProductSize[] }>('/products/tamanhos');
+    return response.sizes;
+  }
+
+  async getColors(): Promise<ProductColor[]> {
+    const response = await this.request<{ colors: ProductColor[] }>('/products/cores');
+    return response.colors;
+  }
+
+  async createCategory(name: string): Promise<ProductCategory> {
+    const response = await this.request<{ category: ProductCategory }>('/products/categorias', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    });
+    return response.category;
+  }
+
+  async createSubcategory(name: string, categoryId: string): Promise<ProductSubcategory> {
+    const response = await this.request<{ subcategory: ProductSubcategory }>('/products/subcategorias', {
+      method: 'POST',
+      body: JSON.stringify({ name, categoryId }),
+    });
+    return response.subcategory;
+  }
+
+  async createSize(name: string): Promise<ProductSize> {
+    const response = await this.request<{ size: ProductSize }>('/products/tamanhos', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    });
+    return response.size;
+  }
+
+  async createColor(name: string): Promise<ProductColor> {
+    const response = await this.request<{ color: ProductColor }>('/products/cores', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    });
+    return response.color;
   }
 
   async getProduct(id: string): Promise<Product> {
@@ -657,12 +708,12 @@ class ApiService {
     return data.product;
   }
 
-  async createProduct(product: Omit<Product, 'id'> | FormData): Promise<Product> {
+  async createProduct(product: ProductBatchRequest): Promise<Product> {
     const isFormData = product instanceof FormData;
 
-    const data = await this.request<{ product: Product }>('/products', {
+    const data = await this.request<{ product: Product }>('/products/batch-create', {
       method: 'POST',
-      body: isFormData ? product : JSON.stringify(product),
+      body: JSON.stringify(product),
     });
     return data.product;
   }
@@ -677,7 +728,7 @@ class ApiService {
     return data.product;
   }
 
-  async updateProductFull(id: string, product: ProductBatchUpdateRequest): Promise<Product> {
+  async updateProductFull(id: string, product: ProductBatchRequest): Promise<Product> {
     const data = await this.request<{ product: Product }>(`/products/${id}/batch-update`, {
       method: 'PATCH',
       body: JSON.stringify(product),

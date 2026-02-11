@@ -150,6 +150,27 @@ export interface ProductReview {
   updatedAt?: string;
 }
 
+export interface ProductCategory {
+  id: string;
+  name: string;
+}
+
+export interface ProductSubcategory {
+  id: string;
+  name: string;
+  categoryId: string;
+}
+
+export interface ProductSize {
+  id: string;
+  name: string;
+}
+
+export interface ProductColor {
+  id: string;
+  name: string;
+}
+
 export interface ProductSpecification {
   name: string;
   value: string;
@@ -180,6 +201,7 @@ export interface Product {
   price: number;
   originalPrice?: number | null;
   category: string;
+  active: boolean;
   subcategory?: string;
   inStock: boolean;
   featured?: boolean;
@@ -245,7 +267,7 @@ export interface UserStats {
   registryDate: string;
 }
 
-export interface ProductBatchUpdateRequest {
+export interface ProductBatchRequest {
   id: string;
   name: string;
   description?: string;
@@ -255,7 +277,7 @@ export interface ProductBatchUpdateRequest {
   price: number;
   originalPrice?: number | null;
   featured?: boolean;
-  inStock?: boolean;
+  active?: boolean;
   perfectFor?: string[];
   specifications?: SpecificationItemRequest[];
   shippingInfo?: ShippingInfoRequest;
