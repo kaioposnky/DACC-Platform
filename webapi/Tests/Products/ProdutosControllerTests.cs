@@ -398,7 +398,6 @@ public class ProdutosControllerTests : IntegrationTestBase
             Name = "Produto Atualizado em Lote",
             Description = "Nova descrição atualizada via batch",
             Price = 250.00,
-            Category = "Roupas",
             Subcategory = "Camisetas",
             Variations = new List<VariationUpdateRequest>
             {
