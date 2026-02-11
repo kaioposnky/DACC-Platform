@@ -570,15 +570,14 @@
 
     <query name="BatchCreateProductGraph">
         <![CDATA[
-        INSERT INTO produto (id, nome, descricao, descricao_detalhada, categoria_id, subcategoria_id, 
+        INSERT INTO produto (id, nome, descricao, descricao_detalhada, subcategoria_id, 
                              preco, preco_original, destaque, ativo, data_criacao, data_atualizacao)
         VALUES (
             @Id, 
             @Nome, 
             @Descricao, 
             @DetailedDescription,
-            NULL, -- categoria_id handling skipped to keep it simple, aligning with BatchUpdate
-            NULL, -- subcategoria_id handling skipped to keep it simple, aligning with BatchUpdate
+            (SELECT id FROM produto_subcategoria WHERE nome = @SubcategoriaNome LIMIT 1),
             @Preco, 
             @PrecoOriginal, 
             COALESCE(@Featured, false), 
@@ -681,4 +680,22 @@
         SELECT img_id, var_id, url, alt, order_val FROM input_images;
         ]]>
     </query>
+
+    <!-- Filter Options -->
+    <query name="GetAvailableSizes">
+        SELECT DISTINCT pt.nome
+        FROM produto_variacao pv
+        INNER JOIN produto_tamanho pt ON pv.tamanho_id = pt.id
+        WHERE pt.nome IS NOT NULL 
+        ORDER BY pt.nome
+    </query>
+
+    <query name="GetAvailableColors">
+        SELECT DISTINCT pc.nome
+        FROM produto_variacao pv
+        INNER JOIN produto_cor pc ON pv.cor_id = pc.id
+        WHERE pc.nome IS NOT NULL 
+        ORDER BY pc.nome
+    </query>
 </queries>
+

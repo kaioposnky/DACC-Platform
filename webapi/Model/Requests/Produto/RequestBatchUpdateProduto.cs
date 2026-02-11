@@ -18,8 +18,6 @@ namespace DaccApi.Model
 
         public string? DetailedDescription { get; set; }
 
-        public string? Category { get; set; }
-
         public string? Subcategory { get; set; }
 
         public double Price { get; set; }

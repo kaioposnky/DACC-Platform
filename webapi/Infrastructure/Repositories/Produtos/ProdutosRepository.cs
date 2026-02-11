@@ -937,5 +937,19 @@ namespace DaccApi.Infrastructure.Repositories.Products
                 throw new Exception($"Erro ao criar variações em lote: {ex.Message}", ex);
             }
         }
+
+        public async Task<List<string>> GetAvailableSizesAsync()
+        {
+            var sql = _dapper.GetQueryNamed("GetAvailableSizes");
+            var result = await _dapper.QueryAsync<string>(sql);
+            return result.ToList();
+        }
+
+        public async Task<List<string>> GetAvailableColorsAsync()
+        {
+            var sql = _dapper.GetQueryNamed("GetAvailableColors");
+            var result = await _dapper.QueryAsync<string>(sql);
+            return result.ToList();
+        }
     }
 }

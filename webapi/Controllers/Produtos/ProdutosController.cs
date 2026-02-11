@@ -270,22 +270,33 @@ namespace DaccApi.Controllers.Produtos
         [AuthenticatedPatchResponses]
         [HttpPatch("{id:guid}/batch-update")]
         [HasPermission(AppPermissions.Produtos.Update)]
-        public async Task<IActionResult> UpdateFullProduct(Guid id, [FromBody] RequestBatchUpdateProduto request)
+        public async Task<IActionResult> BatchUpdate([FromRoute] Guid id, [FromBody] RequestBatchUpdateProduto request)
         {
-            try
-            {
-                var updatedProductInfo = await _produtosService.BatchUpdateProductInfo(request);
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData( new { product = updatedProductInfo }),
-                    "Produto foi atualizado com sucesso!");
-            }
-            catch (KeyNotFoundException)
-            {
-                return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Produto não encontrado!");
-            }
-            catch (Exception ex)
-            {
-                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
-            }
+            request.Id = id;
+            var result = await _produtosService.BatchUpdateProductInfo(request);
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(result));
+        }
+
+        /// <summary>
+        /// Obtém lista de tamanhos disponíveis.
+        /// </summary>
+        [AllowAnonymous]
+        [PublicGetResponses]
+        [HttpGet("sizes")]
+        public async Task<IActionResult> GetAvailableSizes()
+        {
+            return await _produtosService.GetAvailableSizesAsync();
+        }
+
+        /// <summary>
+        /// Obtém lista de cores disponíveis.
+        /// </summary>
+        [AllowAnonymous]
+        [PublicGetResponses]
+        [HttpGet("colors")]
+        public async Task<IActionResult> GetAvailableColors()
+        {
+            return await _produtosService.GetAvailableColorsAsync();
         }
     }
 }

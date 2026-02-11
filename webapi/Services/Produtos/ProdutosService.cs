@@ -1,12 +1,15 @@
-using DaccApi.Data.Orm.Subcategoria;
+using DaccApi.Helpers;
+using DaccApi.Infrastructure.Repositories.Products;
 using DaccApi.Model;
 using DaccApi.Model.Responses;
-using DaccApi.Infrastructure.Repositories.Products;
+using DaccApi.Model.Responses.Produto;
+using DaccApi.Responses;
 using DaccApi.Services.FileStorage;
 using Microsoft.AspNetCore.Mvc;
-using DaccApi.Helpers;
+using Npgsql;
+using System.Data;
 using DaccApi.Infrastructure.Dapper;
-using DaccApi.Responses;
+using DaccApi.Data.Orm.Subcategoria;
 
 namespace DaccApi.Services.Products
 {
@@ -656,6 +659,34 @@ namespace DaccApi.Services.Products
             }
 
             return subcategoryId;
+        }
+
+        public async Task<IActionResult> GetAvailableSizesAsync()
+        {
+            try
+            {
+                var sizes = await _produtosRepository.GetAvailableSizesAsync();
+                var response = sizes.Select(s => new ResponseFilterOption(s)).ToList();
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { sizes = response }));
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> GetAvailableColorsAsync()
+        {
+            try
+            {
+                var colors = await _produtosRepository.GetAvailableColorsAsync();
+                var response = colors.Select(c => new ResponseFilterOption(c)).ToList();
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { colors = response }));
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
         }
     }
 }

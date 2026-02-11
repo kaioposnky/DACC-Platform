@@ -24,5 +24,7 @@ namespace DaccApi.Services.Products
         public Task<IActionResult> CreateSubcategory(ProdutoSubcategoria subcategoria);
         public Task<ResponseProduto> BatchUpdateProductInfo(RequestBatchUpdateProduto request);
         public Task<ResponseProduto> BatchCreateProduct(RequestBatchCreateProduto request);
+        public Task<IActionResult> GetAvailableSizesAsync();
+        public Task<IActionResult> GetAvailableColorsAsync();
     }
 }

@@ -16,8 +16,6 @@ namespace DaccApi.Model
 
         public string? DetailedDescription { get; set; }
 
-        public string? Category { get; set; }
-
         public string? Subcategory { get; set; }
 
         [Required(ErrorMessage = "O preço é obrigatório")]
