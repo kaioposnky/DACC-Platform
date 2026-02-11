@@ -445,6 +445,7 @@
             preco_original = COALESCE(@PrecoOriginal, preco_original),
             descricao_detalhada = COALESCE(@DetailedDescription, descricao_detalhada),
             destaque = COALESCE(@Featured, destaque),
+            ativo = COALESCE(@Ativo, ativo),
             -- subcategoria_id handling skipped for now to keep it simple, or requires name lookup subquery
             data_atualizacao = NOW()
         WHERE id = @Id;

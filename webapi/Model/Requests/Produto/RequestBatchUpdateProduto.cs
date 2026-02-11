@@ -26,7 +26,7 @@ namespace DaccApi.Model
 
         public bool? Featured { get; set; }
 
-        public bool? InStock { get; set; }
+        public bool? Active { get; set; }
 
         public List<string>? PerfectFor { get; set; }
 

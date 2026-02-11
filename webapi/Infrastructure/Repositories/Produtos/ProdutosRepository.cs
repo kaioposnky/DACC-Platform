@@ -851,10 +851,10 @@ namespace DaccApi.Infrastructure.Repositories.Products
                     Descricao = request.Description,
                     Preco = request.Price,
                     PrecoOriginal = request.OriginalPrice,
-                    SubcategoriaNome = request.Subcategory, // Procura por nome na query, se não existir é criado
-                    CategoriaNome = request.Category, // Atualmente não implementando, query tem fallback
+                    SubcategoriaNome = request.Subcategory,
                     DetailedDescription = request.DetailedDescription,
                     Featured = request.Featured,
+                    Ativo = request.Active,
                     SpecificationsJson = request.Specifications != null ? JsonSerializer.Serialize(request.Specifications) : null,
                     PerfectForJson = request.PerfectFor != null ? JsonSerializer.Serialize(request.PerfectFor) : null,
                     ShippingInfoJson = request.ShippingInfo != null ? JsonSerializer.Serialize(request.ShippingInfo) : null
@@ -902,9 +902,9 @@ namespace DaccApi.Infrastructure.Repositories.Products
                     Preco = request.Price,
                     PrecoOriginal = request.OriginalPrice,
                     SubcategoriaNome = request.Subcategory,
-                    CategoriaNome = request.Category,
                     DetailedDescription = request.DetailedDescription,
                     Featured = request.Featured,
+                    Ativo = request.Active,
                     SpecificationsJson = request.Specifications != null ? JsonSerializer.Serialize(request.Specifications) : null,
                     PerfectForJson = request.PerfectFor != null ? JsonSerializer.Serialize(request.PerfectFor) : null,
                     ShippingInfoJson = request.ShippingInfo != null ? JsonSerializer.Serialize(request.ShippingInfo) : null

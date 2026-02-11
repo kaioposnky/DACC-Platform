@@ -48,6 +48,11 @@ public class ResponseProduto
     public string Category { get; set; } = string.Empty;
 
     /// <summary>
+    /// Se o produto está ativo ou não
+    /// </summary>
+    public bool Active { get; set; }
+
+    /// <summary>
     /// Obtém ou define se o produto está em estoque (agregado das variações).
     /// </summary>
     public bool InStock { get; set; }
@@ -126,7 +131,7 @@ public class ResponseProduto
     /// Construtor para mapear de uma entidade Produto.
     /// </summary>
     /// <param name="produto">A entidade Produto de origem.</param>
-    public ResponseProduto(Produto produto)
+    public ResponseProduto(Model.Produto produto)
     {
         Id = produto.Id;
         Name = produto.Nome;
@@ -136,6 +141,7 @@ public class ResponseProduto
         Category = produto.SubcategoriaNome;
         CreatedAt = produto.DataCriacao;
         UpdatedAt = produto.DataAtualizacao;
+        Active = produto.Ativo;
 
         // Mapeia variações
         Variations = produto.Variacoes?.Select(v => new ResponseProdutoVariacao(v)).ToList() ?? [];
