@@ -489,6 +489,14 @@ class ApiService {
     return data.directorate;
   }
 
+  async createDirectorate(name: string, description?: string): Promise<Directorate> {
+    const response = await this.request<{ directorate: Directorate }>('/directorates', {
+      method: 'POST',
+      body: JSON.stringify({ name, description }),
+    });
+    return response.directorate;
+  }
+
   // News
   async getNews(params?: {
     category?: string;

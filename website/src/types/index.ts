@@ -89,7 +89,7 @@ export interface Project {
   status: 'in_progress' | 'completed' | 'planned';
   progress: number;
   completionText: string;
-  department?: Directorate;
+  directorate?: Directorate;
 }
 
 export interface News {

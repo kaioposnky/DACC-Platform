@@ -11,15 +11,17 @@ import {
     RocketLaunchIcon,
     CommandLineIcon,
     ChartBarIcon,
-    DocumentTextIcon
+    DocumentTextIcon,
+    ChevronDownIcon,
+    PlusIcon,
+    BuildingOfficeIcon
 } from "@heroicons/react/24/outline";
+import { useState, useEffect } from "react";
+import { apiService } from "@/services/api";
 
 interface ProjectFormProps {
     project: Partial<Project>;
-    directorates: Directorate[];
     onChange: (field: keyof Project, value: any) => void;
-    onImageChange: (url: string) => void;
-    onImageRemove: () => void;
     mode?: 'create' | 'edit' | 'view';
 }
 
@@ -31,13 +33,50 @@ const PROJECT_STATUS_OPTIONS = [
 
 export default function ProjectForm({
     project,
-    directorates,
     onChange,
-    onImageChange,
-    onImageRemove,
     mode = 'edit'
 }: ProjectFormProps) {
     const isReadonly = mode === 'view';
+
+    const [showDirectorateManager, setShowDirectorateManager] = useState(false);
+    const [localDirectorates, setLocalDirectorates] = useState<Directorate[]>([]);
+    const [newDirectorateName, setNewDirectorateName] = useState("");
+    const [newDirectorateDescription, setNewDirectorateDescription] = useState("");
+    const [isCreatingDirectorate, setIsCreatingDirectorate] = useState(false);
+    const [isLoadingDirectorates, setIsLoadingDirectorates] = useState(false);
+
+    useEffect(() => {
+        const fetchDirectorates = async () => {
+            try {
+                setIsLoadingDirectorates(true);
+                const data = await apiService.getDirectorates();
+                setLocalDirectorates(data);
+            } catch (error) {
+                console.error("Erro ao buscar diretorias:", error);
+            } finally {
+                setIsLoadingDirectorates(false);
+            }
+        };
+        fetchDirectorates();
+    }, []);
+
+    const handleCreateDirectorate = async () => {
+        if (!newDirectorateName.trim()) return;
+        try {
+            setIsCreatingDirectorate(true);
+            const newDirectorate = await apiService.createDirectorate(
+                newDirectorateName,
+                newDirectorateDescription || undefined
+            );
+            setLocalDirectorates([...localDirectorates, newDirectorate]);
+            setNewDirectorateName("");
+            setNewDirectorateDescription("");
+        } catch (error) {
+            console.error("Erro ao criar diretoria:", error);
+        } finally {
+            setIsCreatingDirectorate(false);
+        }
+    };
 
     const handleAddTech = (tech: string) => {
         const technologies = project.technologies || [];
@@ -52,14 +91,76 @@ export default function ProjectForm({
     };
 
     const handleDirectorateChange = (directorateId: string) => {
-        const selectedDirectorate = directorates.find(d => d.id === directorateId);
-        onChange('department', selectedDirectorate);
+        const selectedDirectorate = localDirectorates.find(d => d.id === directorateId);
+        onChange('directorate', selectedDirectorate);
+    };
+
+    const handleSetIcon = (url: string) => {
+        onChange('icon', url);
+    };
+
+    const handleRemoveIcon = () => {
+        onChange('icon', '');
     };
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Coluna Principal */}
             <div className="lg:col-span-2 space-y-6">
+                {/* Directorate Management Card */}
+                {!isReadonly && (
+                    <AdminCard
+                        icon={<BuildingOfficeIcon className="w-5 h-5 text-primary" />}
+                        title="Gerenciar Diretorias"
+                        actions={
+                            <button
+                                onClick={() => setShowDirectorateManager(!showDirectorateManager)}
+                                className="flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-800 uppercase"
+                            >
+                                {showDirectorateManager ? "Ocultar" : "Mostrar"}
+                                <ChevronDownIcon
+                                    className={`w-4 h-4 transition-transform ${showDirectorateManager ? "rotate-180" : ""}`}
+                                />
+                            </button>
+                        }
+                    >
+                        {showDirectorateManager && (
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <label className="block text-xs font-semibold text-gray-700 uppercase">
+                                        Nova Diretoria
+                                    </label>
+                                    <div className="flex flex-col gap-2">
+                                        <Input
+                                            value={newDirectorateName}
+                                            onChange={(e) => setNewDirectorateName(e.target.value)}
+                                            placeholder="Nome da diretoria (ex: Diretoria de Tecnologia)"
+                                            disabled={isCreatingDirectorate}
+                                            onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleCreateDirectorate()}
+                                        />
+                                        <Input
+                                            value={newDirectorateDescription}
+                                            onChange={(e) => setNewDirectorateDescription(e.target.value)}
+                                            placeholder="Descrição (opcional)"
+                                            disabled={isCreatingDirectorate}
+                                            multiline
+                                            rows={2}
+                                        />
+                                        <button
+                                            onClick={handleCreateDirectorate}
+                                            disabled={!newDirectorateName.trim() || isCreatingDirectorate}
+                                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 w-full"
+                                        >
+                                            <PlusIcon className="w-4 h-4" />
+                                            {isCreatingDirectorate ? "Criando..." : "Criar Diretoria"}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </AdminCard>
+                )}
+
                 <AdminCard
                     icon={<DocumentTextIcon className="w-5 h-5 text-primary" />}
                     title="Informações do Projeto"
@@ -134,14 +235,16 @@ export default function ProjectForm({
 
                         <Select
                             label="Diretoria Responsável"
-                            value={project.department?.id || ""}
+                            value={project.directorate?.id || ""}
                             onChange={(e) => handleDirectorateChange(e.target.value)}
                             options={[
                                 { label: "Selecione uma diretoria", value: "" },
-                                ...directorates.map(dir => ({
-                                    label: dir.name,
-                                    value: dir.id
-                                }))
+                                ...(localDirectorates || [])
+                                    .filter(dir => dir && dir.name)
+                                    .map(dir => ({
+                                        label: dir.name,
+                                        value: dir.id
+                                    }))
                             ]}
                             disabled={isReadonly}
                         />
@@ -162,8 +265,8 @@ export default function ProjectForm({
                     description={isReadonly ? "Imagem principal do projeto." : "Clique para alterar a imagem principal."}
                     icon={<RocketLaunchIcon className="w-10 h-10" />}
                     image={project.icon || ''}
-                    onSetImage={onImageChange}
-                    onRemoveImage={onImageRemove}
+                    onSetImage={handleSetIcon}
+                    onRemoveImage={handleRemoveIcon}
                     galleryTitle="Gerenciar Ícone do Projeto"
                     galleryDescription="Esta imagem será usada como o ícone principal nos cards e nos detalhes do projeto."
                     previewClassName="aspect-square w-32 h-32 mx-auto"
