@@ -17,7 +17,8 @@ import {
   ProductCategory,
   ProductSubcategory,
   ProductSize,
-  ProductColor
+  ProductColor,
+  ProjectRequest
 } from '@/types';
 import { DashboardStats } from '@/types/dashboard';
 import { storageService } from "@/services/storage";
@@ -147,9 +148,8 @@ class ApiService {
 
     const data = await response.json();
 
-    // Verifica se a resposta segue o padrão ApiResponse do backend
     if (data && typeof data === 'object' && 'success' in data) {
-      const apiResponse = data as ApiResponse<{userTokens: { accessToken: string; refreshToken: string; expiresIn: number; }}>;
+      const apiResponse = data as ApiResponse<{ userTokens: { accessToken: string; refreshToken: string; expiresIn: number; } }>;
 
       if (!apiResponse.success) {
         throw new Error(apiResponse.message || 'Erro desconhecido na API');
@@ -444,19 +444,30 @@ class ApiService {
     const query = searchParams.toString();
     const endpoint = query ? `/projects/search?${query}` : '/projects/search';
 
-    const data = await this.request<{ projects: Project[]; totalCount: number }>(endpoint);
+    const data = await this.request<{ projects: any[]; totalCount: number }>(endpoint);
+    const projects = (data?.projects || []).map((p: any) => ({
+      ...p,
+      directorate: p.directorate || p.department, // Handle both cases
+      icon: p.icon || p.imageUrl, // Handle both cases
+    })) as Project[];
+
     return {
-      projects: data?.projects || [],
+      projects,
       totalCount: data?.totalCount || 0
     };
   }
 
   async getProject(id: string): Promise<Project> {
-    const data = await this.request<{ project: Project }>(`/projects/${id}`);
-    return data.project;
+    const data = await this.request<{ project: any }>(`/projects/${id}`);
+    const project = data.project;
+    return {
+      ...project,
+      directorate: project.directorate || project.department,
+      icon: project.icon || project.imageUrl,
+    } as Project;
   }
 
-  async createProject(project: Omit<Project, 'id'>): Promise<Project> {
+  async createProject(project: ProjectRequest): Promise<Project> {
     const data = await this.request<{ project: Project }>('/projects', {
       method: 'POST',
       body: JSON.stringify(project),
@@ -464,7 +475,7 @@ class ApiService {
     return data.project;
   }
 
-  async updateProject(id: string, project: Partial<Project>): Promise<Project> {
+  async updateProject(id: string, project: Partial<ProjectRequest>): Promise<Project> {
     const data = await this.request<{ project: Project }>(`/projects/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(project),

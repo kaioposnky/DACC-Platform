@@ -8,7 +8,7 @@ import {
   Button,
 } from "@/components";
 import { apiService } from "@/services/api";
-import { Project, Directorate } from "@/types";
+import { Project } from "@/types";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -18,7 +18,6 @@ export default function AdminEditProjetoPage() {
   const params = useParams();
 
   const [project, setProject] = useState<Project | null>(null);
-  const [directorates, setDirectorates] = useState<Directorate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -27,12 +26,8 @@ export default function AdminEditProjetoPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [projectData, directoratesData] = await Promise.all([
-          apiService.getProject(params.id as string),
-          apiService.getDirectorates(),
-        ]);
+        const projectData = await apiService.getProject(params.id as string);
         setProject(projectData);
-        setDirectorates(directoratesData);
       } catch (error) {
         console.error(error);
         toast.error("Erro ao carregar dados");
@@ -46,8 +41,20 @@ export default function AdminEditProjetoPage() {
   const handleSave = async () => {
     if (!project) return;
     setIsSaving(true);
+
+    const payload = {
+      title: project.title,
+      description: project.description,
+      status: project.status,
+      technologies: project.technologies,
+      completionText: project.completionText,
+      progress: project.progress,
+      imageUrl: project.icon,
+      directorateId: project.directorate?.id,
+    };
+
     try {
-      await apiService.updateProject(project.id, project);
+      await apiService.updateProject(project.id, payload);
       toast.success("Projeto salvo com sucesso!");
     } catch (error) {
       console.error(error);
@@ -76,16 +83,6 @@ export default function AdminEditProjetoPage() {
   const handleGoBack = () => router.push("/admin/conteudo");
   const handleOpenDeleteModal = () => setDeleteModalOpen(true);
   const handleCloseDeleteModal = () => setDeleteModalOpen(false);
-
-  const handleSetIcon = (url: string) => {
-    if (!project) return;
-    setProject({ ...project, icon: url });
-  };
-
-  const handleRemoveIcon = () => {
-    if (!project) return;
-    setProject({ ...project, icon: "" });
-  };
 
   if (isLoading) return <PageLoader />;
   if (!project)
@@ -130,13 +127,10 @@ export default function AdminEditProjetoPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <ProjectForm
           project={project}
-          directorates={directorates}
           onChange={(field, value) => {
             if (!project) return;
             setProject({ ...project, [field]: value });
           }}
-          onImageChange={handleSetIcon}
-          onImageRemove={handleRemoveIcon}
           mode="edit"
         />
       </div>

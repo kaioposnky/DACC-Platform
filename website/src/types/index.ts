@@ -357,3 +357,15 @@ export interface Order {
   user: User; // Dados do usuário populados
   coupon?: Coupon;
 }
+
+export interface ProjectRequest {
+  id: string;
+  title: string;
+  description: string;
+  status: 'in_progress' | 'completed' | 'planned';
+  directorateId: string;
+  technologies: string[];
+  completionText: string;
+  progress: number;
+  imageUrl: string;
+}

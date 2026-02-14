@@ -102,10 +102,10 @@ export default function AdminConteudosPage() {
 
     const handleCreateNew = () => {
         const routeMap = {
-            news: "/admin/conteudo/noticias/nova",
-            events: "/admin/conteudo/eventos/novo",
-            projects: "/admin/conteudo/projetos/novo",
-            announcements: "/admin/conteudo/anuncios/novo",
+            news: "/admin/conteudo/noticias/new",
+            events: "/admin/conteudo/eventos/new",
+            projects: "/admin/conteudo/projetos/new",
+            announcements: "/admin/conteudo/anuncios/new",
         };
         router.push(routeMap[activeTab]);
     };
