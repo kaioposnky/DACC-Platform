@@ -28,7 +28,7 @@ namespace DaccApi.Model
         /// <summary>
         /// Obtém ou define as tags do projeto.
         /// </summary>
-        public string[]? Tags { get; set; }
+        public string[]? Technologies { get; set; }
 
         /// <summary>
         /// Obtém ou define o texto de conclusão do projeto.

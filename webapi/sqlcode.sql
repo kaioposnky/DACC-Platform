@@ -573,9 +573,9 @@ VALUES ('workshop'),
 
 -- Tipos de Progresso
 INSERT INTO tipos_progresso (nome)
-VALUES ('planejado'),
-       ('em progresso'),
-       ('concluido');
+VALUES ('planned'),
+       ('in_progress'),
+       ('completed');
 
 -- Categorias de Notícia
 INSERT INTO categorias_noticia (nome)

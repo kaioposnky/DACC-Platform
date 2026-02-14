@@ -27,7 +27,7 @@ public static class ProjetoTestDataBuilder
             Description = description ?? "Um projeto focado em IA e automação para a comunidade.",
             Status = status ?? "planejado", // Valor válido do tipos_progresso
             DirectorateId = defaultDirectorateId, // GUID da diretoria
-            Tags = new[] { "IA", "Python", "DACC" },
+            Technologies = new[] { "IA", "Python", "DACC" },
             CompletionText = "Projeto finalizado com sucesso.",
             Progress = 0
         };
@@ -44,7 +44,7 @@ public static class ProjetoTestDataBuilder
             Description = "Descrição essencial do projeto.",
             Status = "planejado",
             DirectorateId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
-            Tags = new[] { "Teste" },
+            Technologies = new[] { "Teste" },
             Progress = 0
         };
     }
@@ -60,7 +60,7 @@ public static class ProjetoTestDataBuilder
             Description = "Nova descrição do projeto após atualização.",
             Status = "em progresso",
             DirectorateId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
-            Tags = new[] { "IA", "React" },
+            Technologies = new[] { "IA", "React" },
             CompletionText = "Quase lá!",
             Progress = 50
         };

@@ -48,7 +48,7 @@ public class ResponseProjeto
     /// <summary>
     /// Obtém ou define a diretoria responsável pelo projeto.
     /// </summary>
-    public ResponseDiretoria? Department { get; set; }
+    public ResponseDiretoria? Directorate { get; set; }
 
     /// <summary>
     /// Construtor para mapear de uma entidade Projeto.
@@ -64,7 +64,7 @@ public class ResponseProjeto
         Status = projeto.Status;
         Progress = projeto.Progresso;
         CompletionText = projeto.TextoConclusao;
-        Department = projeto.Departamento != null ? new ResponseDiretoria(projeto.Departamento) : null;
+        Directorate = projeto.Departamento != null ? new ResponseDiretoria(projeto.Departamento) : null;
     }
 
     /// <summary>

@@ -88,7 +88,7 @@ namespace DaccApi.Services.Projetos
                     String.IsNullOrWhiteSpace(request.Description) ||
                     String.IsNullOrWhiteSpace(request.Status)||
                     request.DirectorateId == null ||
-                    request.Tags == null)
+                    request.Technologies == null)
                     
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
@@ -101,7 +101,7 @@ namespace DaccApi.Services.Projetos
                     Descricao = request.Description,
                     Status = request.Status,
                     DiretoriaId = request.DirectorateId,
-                    Tags = request.Tags,
+                    Tags = request.Technologies,
                     TextoConclusao = request.CompletionText ?? string.Empty,
                     Progresso = request.Progress ?? 0,
                     ImagemUrl = request.ImageUrl,
@@ -212,7 +212,7 @@ namespace DaccApi.Services.Projetos
                 projetoQuery.Descricao = request.Description ?? projetoQuery.Descricao;
                 projetoQuery.Status = request.Status ?? projetoQuery.Status;
                 projetoQuery.DiretoriaId = request.DirectorateId ?? projetoQuery.DiretoriaId;
-                projetoQuery.Tags = request.Tags ?? projetoQuery.Tags;
+                projetoQuery.Tags = request.Technologies ?? projetoQuery.Tags;
                 projetoQuery.TextoConclusao = request.CompletionText ?? projetoQuery.TextoConclusao;
                 projetoQuery.Progresso = request.Progress ?? projetoQuery.Progresso;
                 if (request.ImageUrl != null)
