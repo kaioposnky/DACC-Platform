@@ -44,7 +44,7 @@ export default function AdminProjetosNewPage() {
 
     setIsCreating(true);
     apiService.createProject(finalPayload).then(() => {
-      router.push('/admin/projetos');
+      router.push('/admin/conteudo');
       toast.success('Projeto criado com sucesso!');
     }).catch((error) => {
       console.error(error);
