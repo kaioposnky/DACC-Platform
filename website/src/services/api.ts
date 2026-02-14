@@ -149,13 +149,13 @@ class ApiService {
 
     // Verifica se a resposta segue o padrão ApiResponse do backend
     if (data && typeof data === 'object' && 'success' in data) {
-      const apiResponse = data as ApiResponse<{ accessToken: string; refreshToken: string; expiresIn: number; }>;
+      const apiResponse = data as ApiResponse<{userTokens: { accessToken: string; refreshToken: string; expiresIn: number; }}>;
 
       if (!apiResponse.success) {
         throw new Error(apiResponse.message || 'Erro desconhecido na API');
       }
 
-      return apiResponse.data;
+      return apiResponse.data.userTokens;
     }
 
     return data as { accessToken: string; refreshToken: string; expiresIn: number; };
