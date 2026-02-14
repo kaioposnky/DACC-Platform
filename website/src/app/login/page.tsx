@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { FormInput, SocialLoginButton } from '@/components/molecules';
@@ -9,14 +9,31 @@ import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Navigation } from '@/components/organisms/Navigation';
 import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (["administrador", "diretor"].includes(user?.role || "")) {
+        router.push('/admin');
+      } else {
+        router.push('/');
+      }
+    }
+  }, [isAuthenticated, user?.role, router]);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  if (isAuthenticated) {
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -198,7 +215,7 @@ export default function LoginPage() {
             </motion.div>
           </motion.div>
         </div>
-    
+
         <div className="lg:flex lg:flex-1 bg-blue-900 items-center justify-center px-8 rounded-xl shadow-xl p-8">
           <motion.div
             initial={{ opacity: 0, x: 20 }}
@@ -214,4 +231,4 @@ export default function LoginPage() {
       <Footer />
     </>
   );
-} 
+}

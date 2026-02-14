@@ -10,9 +10,10 @@ import { Footer } from '@/components/organisms/Footer';
 import RegisterBenefits from '@/components/organisms/RegisterBenefits';
 import { EyeIcon, EyeSlashIcon, UserIcon, AcademicCapIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import { apiService} from '@/services/api';
-import {toast} from "sonner";
-import {useAuth} from "@/context/AuthContext";
+import { apiService } from '@/services/api';
+import { toast } from "sonner";
+import { cleanNumeric } from "@/utils/formatters";
+import { useAuth } from "@/context/AuthContext";
 
 interface FormData {
   firstName: string;
@@ -59,7 +60,7 @@ export default function Register() {
 
   const getPasswordStrength = (password: string): { strength: number; label: string; color: string } => {
     if (!password) return { strength: 0, label: '', color: '' };
-    
+
     let strength = 0;
     if (password.length >= 8) strength++;
     if (/[a-z]/.test(password)) strength++;
@@ -69,7 +70,7 @@ export default function Register() {
 
     const labels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
     const colors = ['bg-red-500', 'bg-red-400', 'bg-yellow-400', 'bg-green-400', 'bg-green-500'];
-    
+
     return {
       strength: Math.min(strength, 5),
       label: labels[Math.min(strength - 1, 4)] || '',
@@ -102,14 +103,14 @@ export default function Register() {
     if (validateForm()) {
       try {
         await registerUser({
-          nome: formData.firstName,
-          sobrenome: formData.lastName,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
           email: formData.email,
-          senha: formData.password,
-          ra: formData.studentId ?? '',
-          telefone: formData.phoneNumber ?? '',
-          curso: formData.course,
-          inscritoNoticia: formData.subscribeNewsletter
+          password: formData.password,
+          ra: cleanNumeric(formData.studentId),
+          phone: cleanNumeric(formData.phoneNumber),
+          course: formData.course,
+          isSubscribedToNews: formData.subscribeNewsletter
         });
         toast.success("Cadastro realizado com sucesso!")
       } catch (err: any) {
@@ -126,19 +127,19 @@ export default function Register() {
   return (
     <>
       <Navigation />
-      
+
       <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row gap-12 items-center justify-center">
             {/* Left side - Registration Form */}
             <div className="w-full max-w-md space-y-8">
-             
+
 
               <Card variant="elevated" padding="lg" className="bg-white">
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-gray-900">Crie sua conta</h2>
-                <p className="mt-2 text-sm text-gray-600">Junte-se à comunidade Coruja Overflow hoje</p>
-              </div>
+                <div className="text-center mb-8">
+                  <h2 className="text-3xl font-bold text-gray-900">Crie sua conta</h2>
+                  <p className="mt-2 text-sm text-gray-600">Junte-se à comunidade Coruja Overflow hoje</p>
+                </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* First Name and Last Name */}
@@ -156,7 +157,7 @@ export default function Register() {
                           type="text"
                           placeholder="Digite seu nome"
                           value={formData.firstName}
-                          onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                          onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                           className="text-primary block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                         />
                       </div>
@@ -176,7 +177,7 @@ export default function Register() {
                           type="text"
                           placeholder="Digite seu sobrenome"
                           value={formData.lastName}
-                          onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                          onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                           className="text-primary block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                         />
                       </div>
@@ -191,7 +192,7 @@ export default function Register() {
                     label="Endereço de email"
                     placeholder="Digite seu email"
                     value={formData.email}
-                    onChange={(value) => setFormData({...formData, email: value})}
+                    onChange={(value) => setFormData({ ...formData, email: value })}
                     required
                   />
                   {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
@@ -210,7 +211,7 @@ export default function Register() {
                         type="text"
                         placeholder="Digite seu RA"
                         value={formData.studentId}
-                        onChange={(e) => setFormData({...formData, studentId: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
                         className="text-primary block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                       />
                     </div>
@@ -226,12 +227,12 @@ export default function Register() {
                         <AcademicCapIcon className="w-5 h-5 text-gray-400" />
                       </div>
                       <input
-                          id="phoneNumber"
-                          type="text"
-                          placeholder="Digite seu Telefone"
-                          value={formData.phoneNumber}
-                          onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
-                          className="text-primary block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                        id="phoneNumber"
+                        type="text"
+                        placeholder="Digite seu Telefone"
+                        value={formData.phoneNumber}
+                        onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                        className="text-primary block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                       />
                     </div>
                   </div>
@@ -248,7 +249,7 @@ export default function Register() {
                       <select
                         id="course"
                         value={formData.course}
-                        onChange={(e) => setFormData({...formData, course: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, course: e.target.value })}
                         className="text-primary block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 appearance-none bg-white placeholder-gray-400"
                       >
                         <option value="" disabled>Selecione seu curso</option>
@@ -279,7 +280,7 @@ export default function Register() {
                         type={showPassword ? 'text' : 'password'}
                         placeholder="Digite sua senha"
                         value={formData.password}
-                        onChange={(e) => setFormData({...formData, password: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                         className="text-primary block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                       />
                       <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -304,7 +305,7 @@ export default function Register() {
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2">
                         <div className="flex-1 bg-gray-200 rounded-full h-2">
-                          <div 
+                          <div
                             className={`h-2 rounded-full ${passwordStrength.color} transition-all duration-300`}
                             style={{ width: `${(passwordStrength.strength / 5) * 100}%` }}
                           />
@@ -330,7 +331,7 @@ export default function Register() {
                         type={showConfirmPassword ? 'text' : 'password'}
                         placeholder="Confirme sua senha"
                         value={formData.confirmPassword}
-                        onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                         className="text-primary block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                       />
                       <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -357,7 +358,7 @@ export default function Register() {
                         id="acceptTerms"
                         type="checkbox"
                         checked={formData.acceptTerms}
-                        onChange={(e) => setFormData({...formData, acceptTerms: e.target.checked})}
+                        onChange={(e) => setFormData({ ...formData, acceptTerms: e.target.checked })}
                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                       />
                       <label htmlFor="acceptTerms" className="ml-2 block text-sm text-gray-700">
@@ -378,7 +379,7 @@ export default function Register() {
                         id="subscribeNewsletter"
                         type="checkbox"
                         checked={formData.subscribeNewsletter}
-                        onChange={(e) => setFormData({...formData, subscribeNewsletter: e.target.checked})}
+                        onChange={(e) => setFormData({ ...formData, subscribeNewsletter: e.target.checked })}
                         className="h-4 w-4 text-primary focus:primary border-gray-300 rounded"
                       />
                       <label htmlFor="subscribeNewsletter" className="ml-2 block text-sm text-gray-700">

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Typography } from '@/components/atoms';
 import { CameraIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
+import { UserStats } from "@/types";
 
 export interface ProfileUser {
   id: string;
@@ -11,11 +12,7 @@ export interface ProfileUser {
   email: string;
   role: string;
   avatar: string;
-  stats: {
-    orders: number;
-    reviews: number;
-    yearsActive: number;
-  };
+  stats: UserStats
 }
 
 interface ProfileBannerProps {
@@ -24,27 +21,27 @@ interface ProfileBannerProps {
   className?: string;
 }
 
-export const ProfileBanner = ({ 
-  user, 
+export const ProfileBanner = ({
+  user,
   onChangeAvatar,
-  className = '' 
+  className = ''
 }: ProfileBannerProps) => {
-  
+
   const statItems = [
     {
-      value: user.stats.orders,
+      value: user.stats.orders ?? 0,
       label: 'Pedidos',
       id: 'orders'
     },
     {
-      value: user.stats.reviews,
+      value: user.stats.reviews ?? 0,
       label: 'Avaliações',
       id: 'reviews'
     },
     {
-      value: user.stats.yearsActive,
-      label: user.stats.yearsActive === 1 ? 'Ano' : 'Anos',
-      id: 'years'
+      value: user.stats.registryDate ?? "22/12/2025",
+      label: 'Membro desde',
+      id: 'registryDate'
     }
   ];
 
@@ -52,7 +49,7 @@ export const ProfileBanner = ({
     <section className={`relative py-16 bg-primary ${className}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8">
-          
+
           {/* Profile Image */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
@@ -67,8 +64,9 @@ export const ProfileBanner = ({
                 width={160}
                 height={160}
                 className="w-full h-full rounded-full object-cover border-4 border-white shadow-lg"
+                unoptimized={process.env.NODE_ENV === 'development'}
               />
-              
+
               {/* Camera Badge */}
               {onChangeAvatar && (
                 <motion.button
@@ -93,8 +91,8 @@ export const ProfileBanner = ({
             className="flex-1 text-center lg:text-left"
           >
             {/* Name */}
-            <Typography 
-              variant="h1" 
+            <Typography
+              variant="h1"
               color="white"
               className="font-bold text-3xl md:text-4xl lg:text-5xl mb-2"
             >
@@ -102,16 +100,16 @@ export const ProfileBanner = ({
             </Typography>
 
             {/* Role */}
-            <Typography 
-              variant="h5" 
+            <Typography
+              variant="h5"
               className="text-yellow-400 font-medium mb-3"
             >
-              {user.role}
+              {user.role[0].toUpperCase()}{user.role.slice(1)}
             </Typography>
 
             {/* Email */}
-            <Typography 
-              variant="body" 
+            <Typography
+              variant="body"
               color="white"
               className="opacity-90 mb-8"
             >
@@ -133,18 +131,18 @@ export const ProfileBanner = ({
                   transition={{ duration: 0.3, delay: 0.5 + index * 0.1 }}
                   className="text-center"
                 >
-                  <Typography 
-                    variant="h2" 
-                    className="text-yellow-400 font-bold text-3xl md:text-4xl"
-                  >
-                    {stat.value}
-                  </Typography>
-                  <Typography 
-                    variant="body" 
+                  <Typography
+                    variant="body"
                     color="white"
                     className="opacity-90 font-medium"
                   >
                     {stat.label}
+                  </Typography>
+                  <Typography
+                    variant="h2"
+                    className="text-yellow-400 font-bold text-3xl md:text-4xl"
+                  >
+                    {stat.value}
                   </Typography>
                 </motion.div>
               ))}

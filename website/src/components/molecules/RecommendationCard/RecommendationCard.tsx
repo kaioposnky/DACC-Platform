@@ -42,7 +42,7 @@ export default function RecommendationCard({ product, className = '' }: Recommen
       {/* Product Image */}
       <div className="relative aspect-square overflow-hidden">
         <Image
-          src={product.image}
+          src={product.image || product.variations?.[0]?.images?.[0]?.url || "https://gerenciador.fei.edu.br/Content/Arquivos/logo_fei_color-01.svg"}
           alt={product.name}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-300"

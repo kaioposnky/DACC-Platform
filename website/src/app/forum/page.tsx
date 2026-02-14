@@ -9,14 +9,17 @@ import {
   ActiveUsers,
   ForumRules
 } from "@/components/organisms"
+import {useRouter} from "next/navigation";
 
 export default function ForumPage() {
+  const router = useRouter();
+
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [currentPage, setCurrentPage] = useState(1)
   const [sortBy, setSortBy] = useState('latest')
 
   // Redirects to main page, disabling forum page
-  window.location.href = '/';
+  router.push('/');
 
   const handleCategorySelect = (categoryId: string) => {
     setSelectedCategory(categoryId)
@@ -37,8 +40,7 @@ export default function ForumPage() {
   }
 
   const handleNewThread = () => {
-    // Navigate to new thread creation page
-    window.location.href = '/forum/new-thread';
+    router.push('/forum/new-thread');
   }
 
   return (

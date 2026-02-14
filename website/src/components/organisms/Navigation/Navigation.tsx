@@ -4,34 +4,28 @@ import { NavItem } from "@/components/atoms/NavItem";
 import { UserProfile, CartButton, ShoppingCart } from "@/components/molecules";
 import { UserProfile as UserProfileType } from "@/types";
 import Link from "next/link";
-import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export const Navigation = () => {
-  const [isUserLoggedIn] = useState(false);
-  // Mock user data - in a real app, this would come from authentication context
-  const mockUser: UserProfileType = {
-    id: "1",
-    name: "John Doe",
-    email: "john@example.com",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
-    role: "student",
-    isLoggedIn: true,
-  };
+  const { user, logout, isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
 
   const handleProfileClick = () => {
-    console.log("Profile clicked");
+    router.push('/perfil');
   };
 
   const handleOrderHistoryClick = () => {
-    console.log("Order history clicked");
+    router.push('/perfil/pedidos');
   };
 
   const handleReviewsClick = () => {
-    console.log("Reviews clicked");
+    router.push('/perfil/avaliacoes');
   };
 
   const handleLogoutClick = () => {
-    console.log("Logout clicked");
+    logout();
+    router.push('/');
   };
 
   return (
@@ -50,23 +44,37 @@ export const Navigation = () => {
               <NavItem href="/">Inicio</NavItem>
               <NavItem href="/sobre">Sobre</NavItem>
               <NavItem href="/noticias">Noticias</NavItem>
-              {/*<NavItem href="/forum">Fórum</NavItem>*/}
               <NavItem href="/loja">Loja</NavItem>
               <NavItem href="/#apoie">Apoie o DACC</NavItem>
+              {!isLoading && user !== null && ["administrador", "diretor"].includes(user.role) &&
+                <NavItem href="/admin">Admin</NavItem>
+              }
             </nav>
 
             {/* User Actions */}
             <div className="flex items-center gap-4">
-              {isUserLoggedIn ? (
-              <UserProfile
-                user={mockUser}
-                onProfileClick={handleProfileClick}
-                onOrderHistoryClick={handleOrderHistoryClick}
-                onReviewsClick={handleReviewsClick}
-                onLogoutClick={handleLogoutClick}
-              />
-              ) : (
-                <Link href="/login" className="text-primary text-sm font-semibold hover:bg-gray-100 rounded-md px-4 py-2 transition-colors duration-300">Login</Link>
+              {(!isLoading && isAuthenticated && user !== null) ? (
+                <UserProfile
+                  user={{
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    avatar: user.avatar || '',
+                    role: (user.role as any) || 'student',
+                    isLoggedIn: true
+                  } as UserProfileType}
+                  onProfileClick={handleProfileClick}
+                  onOrderHistoryClick={handleOrderHistoryClick}
+                  onReviewsClick={handleReviewsClick}
+                  onLogoutClick={handleLogoutClick}
+                />
+              ) : !isLoading && (
+                <Link 
+                  href="/login" 
+                  className="text-primary text-sm font-semibold hover:bg-gray-100 rounded-md px-4 py-2 transition-colors duration-300"
+                >
+                  Login
+                </Link>
               )}
               <CartButton />
             </div>

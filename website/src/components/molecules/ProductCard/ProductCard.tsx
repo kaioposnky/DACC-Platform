@@ -15,16 +15,16 @@ interface ProductCardProps {
   className?: string;
 }
 
-export default function ProductCard({ 
-  product, 
-  onAddToCart, 
-  onToggleFavorite, 
+export default function ProductCard({
+  product,
+  onAddToCart,
+  onToggleFavorite,
   isFavorite = false,
-  className = '' 
+  className = ''
 }: ProductCardProps) {
   const router = useRouter();
   const hasDiscount = product.originalPrice && product.originalPrice > product.price;
-  const discountPercentage = hasDiscount 
+  const discountPercentage = hasDiscount
     ? Math.round(((product.originalPrice! - product.price) / product.originalPrice!) * 100)
     : 0;
 
@@ -43,13 +43,13 @@ export default function ProductCard({
     const stars = [];
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 !== 0;
-    
+
     for (let i = 0; i < fullStars; i++) {
       stars.push(
         <StarIcon key={i} className="w-4 h-4 text-yellow-400" />
       );
     }
-    
+
     if (hasHalfStar) {
       stars.push(
         <div key="half" className="relative">
@@ -58,14 +58,14 @@ export default function ProductCard({
         </div>
       );
     }
-    
+
     const remainingStars = 5 - Math.ceil(rating);
     for (let i = 0; i < remainingStars; i++) {
       stars.push(
         <StarOutlineIcon key={`outline-${i}`} className="w-4 h-4 text-gray-300" />
       );
     }
-    
+
     return stars;
   };
 
@@ -80,12 +80,12 @@ export default function ProductCard({
       {/* Product Image */}
       <div className="relative aspect-square overflow-hidden">
         <Image
-          src={product.image}
+          src={product.image || product.variations?.[0]?.images?.[0]?.url || "https://gerenciador.fei.edu.br/Content/Arquivos/logo_fei_color-01.svg"}
           alt={product.name}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-300"
         />
-        
+
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-2">
           {hasDiscount && (
@@ -105,20 +105,7 @@ export default function ProductCard({
           )}
         </div>
 
-        {/* Favorite Button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleFavorite?.(product);
-          }}
-          className="absolute top-3 right-3 p-2 rounded-full bg-white/80 hover:bg-white transition-colors duration-200"
-        >
-          {isFavorite ? (
-            <HeartIcon className="w-5 h-5 text-red-500" />
-          ) : (
-            <HeartOutlineIcon className="w-5 h-5 text-gray-600" />
-          )}
-        </button>
+
 
         {/* Quick Add Button (shows on hover) */}
         <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -142,11 +129,7 @@ export default function ProductCard({
       <div className="p-4">
         {/* Category */}
         <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">
-          {product.category === 'tshirts' && 'Camisetas'}
-          {product.category === 'hoodies' && 'Moletons'}
-          {product.category === 'cups' && 'Canecas'}
-          {product.category === 'stickers' && 'Adesivos'}
-          {product.category === 'accessories' && 'Acessórios'}
+          {product.category}
         </div>
 
         {/* Product Name */}
@@ -157,9 +140,9 @@ export default function ProductCard({
         {/* Rating */}
         <div className="flex items-center gap-1 mb-3">
           <div className="flex items-center">
-            {renderStars(product.rating)}
+            {renderStars(product.rating || 0)}
           </div>
-          <span className="text-sm text-gray-500">({product.reviews})</span>
+          <span className="text-sm text-gray-500">({product.reviews || 0})</span>
         </div>
 
         {/* Price */}
@@ -179,13 +162,19 @@ export default function ProductCard({
         {/* Stock Info */}
         <div className="flex items-center justify-between text-sm text-gray-500">
           <span>
-            {product.inStock 
-              ? `${product.stockCount} em estoque` 
+            {product.inStock
+              ? `${product.variations ? product.variations.reduce((acc, v) => acc + (v.stock || 0), 0) : 0} em estoque`
               : 'Fora de estoque'
             }
           </span>
           <span className="text-xs">
-            {product.sizes.length > 1 ? `${product.sizes.length} tamanhos` : product.sizes[0]}
+            {product.variations && product.variations.length > 0
+              ? (() => {
+                const uniqueSizes = Array.from(new Set(product.variations.map(v => v.size))).filter(Boolean);
+                return uniqueSizes.length > 1 ? `${uniqueSizes.length} tamanhos` : uniqueSizes[0];
+              })()
+              : 'Padrão'
+            }
           </span>
         </div>
       </div>

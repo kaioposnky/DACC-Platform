@@ -1,30 +1,30 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { User } from '@/types';
 import { apiService } from '@/services/api';
 import { storageService } from '@/services/storage';
 import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, senha: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
   register: (formData: RegisterData) => Promise<void>;
   logout: () => void;
 }
 
 export interface RegisterData {
-  nome: string;
-  sobrenome: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  senha: string;
+  password: string;
   ra: string;
-  telefone: string;
-  curso: string;
-  inscritoNoticia: boolean;
+  phone: string;
+  course: string;
+  isSubscribedToNews: boolean;
+  role?: string;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -45,13 +45,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, senha: string) => {
+  const login = async (email: string, password: string) => {
     try {
-      const response = await apiService.login({ email, senha });
-      
-      storageService.setTokens(response.accessToken, response.refreshToken);
+      const response = await apiService.login({ email, password });
+
+      storageService.setTokens(response.accessToken, response.refreshToken, response.expiresIn);
       storageService.setUser(response.user);
-      
+
       setUser(response.user);
       router.push('/');
     } catch (error: any) {
@@ -66,13 +66,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const registerUser = async (formData: RegisterData) => {
-    try{
+    try {
       await apiService.register(formData);
 
       setTimeout(() => {
         router.push('/login');
       }, 2000);
-    } catch (error: any){
+    } catch (error: any) {
       throw error;
     }
   }

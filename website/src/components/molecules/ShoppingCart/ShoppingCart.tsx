@@ -11,8 +11,11 @@ import {
   TrashIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import {useRouter} from "next/navigation";
 
 export default function ShoppingCart() {
+  const router = useRouter();
+
   const { cart, removeFromCart, updateQuantity, closeCart } = useCart();
 
   const formatPrice = (price: number) => {
@@ -25,7 +28,7 @@ export default function ShoppingCart() {
   const handleCheckout = () => {
     // Navigate to checkout page if cart has items
     if (cart.items.length > 0) {
-      window.location.href = '/checkout';
+      router.push('/checkout');
     }
     closeCart();
   };
@@ -83,9 +86,9 @@ export default function ShoppingCart() {
                     className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
                   >
                     {/* Product Image */}
-                    <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0">
                       <Image
-                        src={item.image}
+                        src={item.image || 'https://i.postimg.cc/WzRPmW3r/LOGO-DACC-OFICIAL.png'}
                         alt={item.name}
                         width={64}
                         height={64}
@@ -183,4 +186,4 @@ export default function ShoppingCart() {
       </motion.div>
     </AnimatePresence>
   );
-} 
+}

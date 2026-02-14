@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Navigation, Footer } from "@/components";
 import { NewsArticles, PageBanner, NewsletterWidget } from "@/components/organisms";
 import { NewsFilter, type FilterOptions } from "@/components/molecules";
@@ -29,9 +29,9 @@ export default function Noticias() {
     setSearchQuery(query);
   };
 
-  const handleFilterChange = (newFilters: FilterOptions) => {
+  const handleFilterChange = useCallback((newFilters: FilterOptions) => {
     setFilters(newFilters);
-  };
+  }, []);
 
   const handleWidgetClose = () => {
     setShowWidget(false);
@@ -40,7 +40,7 @@ export default function Noticias() {
   const handleNewsletterSubmit = async (email: string) => {
     // Here you would typically send the email to your newsletter service
     console.log('Newsletter subscription:', email);
-    
+
     // You could also send this to an API endpoint
     // await fetch('/api/newsletter', {
     //   method: 'POST',
@@ -52,7 +52,7 @@ export default function Noticias() {
   return (
     <>
       <Navigation />
-      
+
       <PageBanner
         title="Notícias"
         subtitle="Fique por dentro das últimas notícias do DACC"
@@ -62,14 +62,14 @@ export default function Noticias() {
         backgroundColor="primary"
         showDecorations={true}
       />
-      
+
       <NewsFilter onFilterChange={handleFilterChange} />
-      
-      <NewsArticles 
+
+      <NewsArticles
         filters={filters}
         searchQuery={searchQuery}
       />
-      
+
       <Footer />
 
       {/* Newsletter Widget */}

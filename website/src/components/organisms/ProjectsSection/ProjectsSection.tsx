@@ -22,8 +22,8 @@ export const ProjectsSection = ({ className = '' }: ProjectsSectionProps) => {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const fetchedProjects = await apiService.getProjects();
-      setProjects(fetchedProjects);
+      const { projects } = await apiService.getProjects({ limit: 3 });
+      setProjects(projects);
     } catch (error) {
       console.error('Error fetching projects:', error);
     } finally {

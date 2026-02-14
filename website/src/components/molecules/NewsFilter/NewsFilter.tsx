@@ -28,21 +28,13 @@ export const NewsFilter = ({
 
   const categoryOptions = [
     { value: 'all', label: 'Todas as Categorias' },
-    { value: 'technology', label: 'Tecnologia' },
-    { value: 'education', label: 'Educação' },
-    { value: 'research', label: 'Pesquisa' },
-    { value: 'events', label: 'Eventos' },
-    { value: 'announcements', label: 'Comunicados' }
+    { value: 'Achievement', label: 'Conquistas' },
+    { value: 'Alumni', label: 'Alumni' },
+    { value: 'Infrastructure', label: 'Infraestrutura' },
+    { value: 'Research', label: 'Pesquisa' },
+    { value: 'Events', label: 'Eventos' },
+    { value: 'Announcements', label: 'Comunicados' }
   ];
-
-  const dateOptions = [
-    { value: 'all', label: 'Todos os Tempos' },
-    { value: 'today', label: 'Hoje' },
-    { value: 'week', label: 'Esta Semana' },
-    { value: 'month', label: 'Este Mês' },
-    { value: 'year', label: 'Este Ano' }
-  ];
-
   const sortOptions = [
     { value: 'latest', label: 'Mais Recentes' },
     { value: 'oldest', label: 'Mais Antigas' },
@@ -135,13 +127,6 @@ export const NewsFilter = ({
               value={filters.category}
               options={categoryOptions}
               onChange={(value) => handleFilterChange('category', value)}
-            />
-            
-            <SelectDropdown
-              label="Data"
-              value={filters.date}
-              options={dateOptions}
-              onChange={(value) => handleFilterChange('date', value)}
             />
             
             <SelectDropdown

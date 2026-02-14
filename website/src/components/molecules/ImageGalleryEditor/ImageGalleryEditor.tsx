@@ -1,0 +1,181 @@
+"use client";
+
+import { TrashIcon } from "@heroicons/react/24/outline";
+import { useEffect, useState } from "react";
+import { Input } from "../../atoms/Input";
+
+import { ProductVariationImage } from "@/types";
+import { apiService } from "@/services/api";
+import { toast } from "sonner";
+
+interface ImageGalleryEditorProps {
+    title?: string;
+    description?: string;
+    images: (string | ProductVariationImage)[];
+    onAddImage: (imageUrl: string) => void;
+    onRemoveImage: (index: number) => void;
+    multiple?: boolean;
+}
+
+export const ImageGalleryEditor = ({
+    title,
+    description,
+    images = [],
+    onAddImage,
+    onRemoveImage,
+    multiple = true
+}: ImageGalleryEditorProps) => {
+    const [tempImageUrl, setTempImageUrl] = useState("");
+
+    const getImageUrl = (img: string | ProductVariationImage) => {
+        return typeof img === 'string' ? img : img.url;
+    };
+
+    // Efeito para capturar colar imagem (Paste)
+    useEffect(() => {
+        const handlePaste = async (e: ClipboardEvent) => {
+            // Só ativa se o foco estiver na janela/documento geral, ou no input dentro deste componente
+            // Como é um componente reutilizável, o ideal é que ele capture eventos globais APENAS se estiver visível/montado.
+            // O componente pai deve controlar se este componente está sendo exibido (ex: dentro de um modal).
+
+            const items = e.clipboardData?.items;
+            if (!items) return;
+
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    e.preventDefault();
+                    const blob = items[i].getAsFile();
+                    if (blob) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            if (event.target?.result) {
+                                setTempImageUrl(event.target.result as string);
+                            }
+                        };
+                        reader.readAsDataURL(blob);
+                    }
+                    break;
+                }
+            }
+        };
+
+        window.addEventListener('paste', handlePaste);
+        return () => window.removeEventListener('paste', handlePaste);
+    }, []);
+
+    const handleConfirmAdd = () => {
+        if (tempImageUrl.trim()) {
+            // Se não for múltiplo, remove a anterior antes de adicionar a nova
+            if (!multiple && images.length > 0) {
+                onRemoveImage(0);
+            }
+            onAddImage(tempImageUrl);
+            setTempImageUrl("");
+        }
+    };
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            try {
+                const response = await apiService.uploadImage(file);
+
+                // Se não for múltiplo, remove a anterior antes de adicionar a nova
+                if (!multiple && images.length > 0) {
+                    onRemoveImage(0);
+                }
+
+                onAddImage(response.url);
+                toast.success("Imagem adicionada com sucesso!");
+            } catch (error) {
+                console.error("Erro ao fazer upload da imagem:", error);
+                toast.error("Erro ao fazer upload da imagem.");
+            }
+        }
+    };
+
+    return (
+        <div className="space-y-6">
+            {(title || description) && (
+                <div className="border-b pb-4">
+                    {title && <h3 className="text-lg font-bold text-gray-900">{title}</h3>}
+                    {description && <p className="text-sm text-gray-500">{description}</p>}
+                </div>
+            )}
+
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
+                {images.map((img, idx) => (
+                    <div key={idx} className="group relative aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                        <img src={getImageUrl(img)} alt={`Foto ${idx}`} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                            <button
+                                onClick={() => onRemoveImage(idx)}
+                                className="p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                                title="Remover imagem"
+                            >
+                                <TrashIcon className="w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
+                ))}
+
+                {(multiple || images.length === 0) && (
+                    <label className="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 bg-gray-50 hover:bg-gray-100 hover:border-blue-400 hover:text-blue-500 cursor-pointer transition-all group">
+                        <span className="text-2xl mb-1 font-light group-hover:scale-110 transition-transform">+</span>
+                        <span className="text-[10px] text-center px-1 leading-tight">
+                            {multiple ? 'Adicionar' : 'Alterar'}<br /><strong className="text-inherit">Foto</strong>
+                        </span>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                                handleImageUpload(e);
+                            }}
+                        />
+                    </label>
+                )}
+            </div>
+
+            {tempImageUrl && (
+                <div className="p-4 border rounded-lg bg-blue-50 flex items-center justify-between animate-in fade-in slide-in-from-top-2">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-white rounded border overflow-hidden flex-shrink-0">
+                            <img src={tempImageUrl} className="w-full h-full object-cover" alt="Preview a adicionar" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-semibold text-blue-900">
+                                {multiple ? 'Imagem pronta para adicionar' : 'Imagem pronta para substituição'}
+                            </p>
+                            <p className="text-xs text-blue-700">Clique em "{multiple ? 'Adicionar' : 'Confirmar'}" para salvar.</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={() => setTempImageUrl("")}
+                        className="text-xs text-red-600 hover:text-red-800 font-medium px-2 py-1 hover:bg-red-50 rounded"
+                    >
+                        Cancelar
+                    </button>
+                </div>
+            )}
+
+            <div className="flex gap-2 pt-4 border-t items-end">
+                <div className="flex-1">
+                    <Input
+                        label={multiple ? "Ou adicione URL da Imagem" : "Ou cole a URL da nova imagem"}
+                        placeholder="https://..."
+                        value={tempImageUrl}
+                        onChange={(e) => setTempImageUrl(e.target.value)}
+                    />
+                </div>
+                <button
+                    onClick={handleConfirmAdd}
+                    disabled={!tempImageUrl}
+                    className="px-6 py-2.5 bg-blue-600 text-white rounded-md font-semibold text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed mb-0.5 shadow-sm transition-all active:scale-95"
+                >
+                    {multiple ? 'Adicionar' : 'Confirmar'}
+                </button>
+            </div>
+        </div>
+    );
+};

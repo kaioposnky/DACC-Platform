@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { ShareIcon, HeartIcon, BookmarkIcon } from '@heroicons/react/24/outline'
 import { HeartIcon as HeartSolidIcon, BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 export interface NewsArticleContentProps {
   content: string
@@ -14,9 +15,6 @@ export const NewsArticleContent: React.FC<NewsArticleContentProps> = ({
   content,
   className = ''
 }) => {
-  const [isLiked, setIsLiked] = useState(false)
-  const [isBookmarked, setIsBookmarked] = useState(false)
-
   const handleShare = async () => {
     if (navigator.share) {
       try {
@@ -30,7 +28,7 @@ export const NewsArticleContent: React.FC<NewsArticleContentProps> = ({
     } else {
       // Fallback: copy to clipboard
       navigator.clipboard.writeText(window.location.href)
-      alert('Link copiado para a área de transferência!')
+      toast.success('Link copiado para a área de transferência!')
     }
   }
 
@@ -41,50 +39,8 @@ export const NewsArticleContent: React.FC<NewsArticleContentProps> = ({
     <div className={`max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 ${className}`}>
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         {/* Article Actions */}
-        <div className="border-b border-gray-200 px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setIsLiked(!isLiked)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                  isLiked
-                    ? 'bg-red-50 text-red-600'
-                    : 'text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                {isLiked ? (
-                  <HeartSolidIcon className="h-5 w-5" />
-                ) : (
-                  <HeartIcon className="h-5 w-5" />
-                )}
-                <span className="text-sm font-medium">
-                  {isLiked ? 'Curtido' : 'Curtir'}
-                </span>
-              </motion.button>
-
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setIsBookmarked(!isBookmarked)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                  isBookmarked
-                    ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                {isBookmarked ? (
-                  <BookmarkSolidIcon className="h-5 w-5" />
-                ) : (
-                  <BookmarkIcon className="h-5 w-5" />
-                )}
-                <span className="text-sm font-medium">
-                  {isBookmarked ? 'Salvo' : 'Salvar'}
-                </span>
-              </motion.button>
-            </div>
-
+          <div className="border-b border-gray-200 px-8 py-4">
+          <div className="flex items-center justify-end">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -150,24 +106,6 @@ export const NewsArticleContent: React.FC<NewsArticleContentProps> = ({
         {/* Article Footer */}
         <div className="border-t border-gray-200 px-8 py-6 bg-gray-50">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">Gostou desta notícia?</span>
-              <div className="flex items-center space-x-2">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setIsLiked(!isLiked)}
-                  className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                    isLiked
-                      ? 'bg-red-100 text-red-700'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  👍 {isLiked ? 'Curtido' : 'Curtir'}
-                </motion.button>
-              </div>
-            </div>
-
             <div className="text-xs text-gray-500">
               Última atualização: {new Date().toLocaleDateString('pt-BR')}
             </div>

@@ -1,6 +1,29 @@
-import { User, Post, Comment, Announcement, Event, Project, News, Faculty, Product, ApiResponse } from '@/types';
-import {storageService} from "@/services/storage";
-import {RegisterData} from "@/context/AuthContext";
+import {
+  Announcement,
+  ApiResponse,
+  Comment,
+  Directorate,
+  Event,
+  Faculty,
+  News,
+  Post,
+  Product,
+  Project,
+  ProductBatchRequest,
+  User,
+  UserStats,
+  Order,
+  ProductReview,
+  ProductCategory,
+  ProductSubcategory,
+  ProductSize,
+  ProductColor,
+  ProjectRequest
+} from '@/types';
+import { DashboardStats } from '@/types/dashboard';
+import { storageService } from "@/services/storage";
+import { RegisterData } from "@/context/AuthContext";
+import { toast } from "sonner";
 
 // Forum types
 export interface ForumCategory {
@@ -27,20 +50,59 @@ export interface ForumThread {
   tags: string[];
 }
 
+export interface ResetPasswordData {
+  token: string;
+  newPassword: string;
+}
+
+export interface ChangePasswordData {
+  currentPassword: string;
+  newPassword: string;
+}
+
 const API_BASE_URL = 'http://localhost:3001/v1/api';
 
 class ApiService {
+
+  private refreshPromise: Promise<void> | null = null;
+
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
+
+    // If the token expired we use refresh token to get a new token
+    const timeNowUnix = Math.floor(Date.now() / 1000);
+    const tokenExpirationUnix = storageService.getTokenExpiration();
+
+    // 30 seconds margin to the expiring token
+    if (tokenExpirationUnix && timeNowUnix > (tokenExpirationUnix - 30)) {
+
+      if (!this.refreshPromise) {
+        this.refreshPromise = this.performRefreshUserInfo();
+      }
+
+      await this.refreshPromise;
+    }
+
     const accessToken = storageService.getAccessToken();
-    const headers : Record<string, string> = {
-      'Content-Type': 'application/json',
+
+    const headers: Record<string, string> = {
       ...options?.headers as Record<string, string>,
     }
+
+    // Se o corpo não for FormData, adicionamos Content-Type application/json
+    if (!(options?.body instanceof FormData)) {
+      headers['Content-Type'] = 'application/json';
+    }
+
     if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      headers: headers,
       ...options,
+      headers: headers,
     });
+
+    if (response.status === 204) {
+      return null as T;
+    }
 
     const data = await response.json();
 
@@ -54,11 +116,52 @@ class ApiService {
 
       return apiResponse.data;
     }
-
     return data as T;
   }
 
-  async login(credentials: { email: string; senha: string }): Promise<{ accessToken: string; refreshToken: string; expiresIn: number; user: User }> {
+  async performRefreshUserInfo(): Promise<void> {
+    try {
+      const refreshToken = storageService.getRefreshToken();
+      if (refreshToken) {
+        const tokens = await this.refreshToken(refreshToken);
+        storageService.setTokens(tokens.accessToken, tokens.refreshToken, tokens.expiresIn);
+      }
+    } catch (e) {
+      storageService.clear();
+      console.info("Could not refresh user token! Redirecting user to login.");
+      toast.message("Seu acesso expirou! Faça login novamente para continuar navegando.")
+      window.location.href = '/login'
+      throw e;
+    } finally {
+      this.refreshPromise = null;
+    }
+  }
+
+  async refreshToken(refreshToken: string): Promise<{ accessToken: string; refreshToken: string; expiresIn: number; }> {
+    const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+      method: 'POST',
+      body: JSON.stringify(refreshToken),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const data = await response.json();
+
+    if (data && typeof data === 'object' && 'success' in data) {
+      const apiResponse = data as ApiResponse<{ userTokens: { accessToken: string; refreshToken: string; expiresIn: number; } }>;
+
+      if (!apiResponse.success) {
+        throw new Error(apiResponse.message || 'Erro desconhecido na API');
+      }
+
+      return apiResponse.data.userTokens;
+    }
+
+    return data as { accessToken: string; refreshToken: string; expiresIn: number; };
+  }
+
+  async login(credentials: { email: string; password: string }): Promise<{ accessToken: string; refreshToken: string; expiresIn: number; user: User }> {
     return this.request<{ accessToken: string; refreshToken: string; expiresIn: number; user: User }>('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
@@ -72,20 +175,86 @@ class ApiService {
     });
   }
 
+  // Auth - Password Management
+  async forgotPassword(email: string): Promise<void> {
+    return this.request<void>('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  }
+
+  async validateResetToken(token: string): Promise<void> {
+    return this.request<void>(`/auth/validate-reset-token?token=${token}`);
+  }
+
+  async resetPassword(data: ResetPasswordData): Promise<void> {
+    return this.request<void>('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async changePassword(data: ChangePasswordData): Promise<void> {
+    return this.request<void>('/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
   // Users
   async getUsers(): Promise<User[]> {
-    return this.request<User[]>('/users');
+    const data = await this.request<{ users: User[] }>('/users');
+    return data?.users || [];
+  }
+
+  async searchUsers(params?: {
+    searchQuery?: string;
+    page?: number;
+    limit?: number;
+    createdFrom?: string;
+    createdTo?: string;
+    role?: string;
+    course?: string;
+    isActive?: boolean | null;
+  }): Promise<{ users: User[]; totalCount: number }> {
+    const searchParams = new URLSearchParams();
+
+    if (params?.searchQuery) searchParams.append('SearchQuery', params.searchQuery);
+    if (params?.page) searchParams.append('Page', params.page.toString());
+    if (params?.limit) searchParams.append('Limit', params.limit.toString());
+    if (params?.createdFrom) searchParams.append('CreatedFrom', params.createdFrom);
+    if (params?.createdTo) searchParams.append('CreatedTo', params.createdTo);
+    if (params?.role) searchParams.append('Role', params.role);
+    if (params?.course) searchParams.append('Course', params.course);
+    if (params?.isActive !== undefined && params?.isActive !== null) {
+      searchParams.append('IsActive', params.isActive.toString());
+    }
+
+    const endpoint = searchParams.toString() ? `/users/search?${searchParams.toString()}` : '/users/search';
+    const data = await this.request<{ users: User[]; totalCount: number }>(endpoint);
+    return {
+      users: data?.users || [],
+      totalCount: data?.totalCount || 0
+    };
   }
 
   async getUser(id: string): Promise<User> {
-    return this.request<User>(`/users/${id}`);
+    const data = await this.request<{ user: User }>(`/users/${id}`);
+    return data.user;
   }
 
-  async updateUser(id: string, user: Partial<User>): Promise<User> {
-    return this.request<User>(`/users/${id}`, {
+  async getUserStats(id: string): Promise<UserStats> {
+    return this.request<UserStats>(`/users/${id}/stats`);
+  }
+
+  async updateUser(id: string, user: Partial<User> | FormData): Promise<User> {
+    const isFormData = user instanceof FormData;
+
+    const data = await this.request<{ user: User }>(`/users/${id}`, {
       method: 'PATCH',
-      body: JSON.stringify(user),
+      body: isFormData ? user : JSON.stringify(user),
     });
+    return data.user;
   }
 
   async deleteUser(id: string): Promise<void> {
@@ -96,25 +265,29 @@ class ApiService {
 
   // Posts
   async getPosts(): Promise<Post[]> {
-    return this.request<Post[]>('/posts');
+    const data = await this.request<{ posts: Post[] }>('/posts');
+    return data?.posts || [];
   }
 
   async getPost(id: string): Promise<Post> {
-    return this.request<Post>(`/posts/${id}`);
+    const data = await this.request<{ post: Post }>(`/posts/${id}`);
+    return data.post;
   }
 
   async createPost(post: Omit<Post, 'id'>): Promise<Post> {
-    return this.request<Post>('/posts', {
+    const data = await this.request<{ post: Post }>('/posts', {
       method: 'POST',
       body: JSON.stringify(post),
     });
+    return data.post;
   }
 
   async updatePost(id: string, post: Partial<Post>): Promise<Post> {
-    return this.request<Post>(`/posts/${id}`, {
+    const data = await this.request<{ post: Post }>(`/posts/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(post),
     });
+    return data.post;
   }
 
   async deletePost(id: string): Promise<void> {
@@ -125,29 +298,34 @@ class ApiService {
 
   // Comments
   async getComments(): Promise<Comment[]> {
-    return this.request<Comment[]>('/comments');
+    const data = await this.request<{ comments: Comment[] }>('/comments');
+    return data?.comments || [];
   }
 
   async getComment(id: string): Promise<Comment> {
-    return this.request<Comment>(`/comments/${id}`);
+    const data = await this.request<{ comment: Comment }>(`/comments/${id}`);
+    return data.comment;
   }
 
   async getCommentsByPost(postId: string): Promise<Comment[]> {
-    return this.request<Comment[]>(`/comments?postId=${postId}`);
+    const data = await this.request<{ comments: Comment[] }>(`/comments?postId=${postId}`);
+    return data?.comments || [];
   }
 
   async createComment(comment: Omit<Comment, 'id'>): Promise<Comment> {
-    return this.request<Comment>('/comments', {
+    const data = await this.request<{ comment: Comment }>('/comments', {
       method: 'POST',
       body: JSON.stringify(comment),
     });
+    return data.comment;
   }
 
   async updateComment(id: string, comment: Partial<Comment>): Promise<Comment> {
-    return this.request<Comment>(`/comments/${id}`, {
+    const data = await this.request<{ comment: Comment }>(`/comments/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(comment),
     });
+    return data.comment;
   }
 
   async deleteComment(id: string): Promise<void> {
@@ -157,44 +335,280 @@ class ApiService {
   }
 
   // Announcements
-  async getAnnouncements(): Promise<Announcement[]> {
-    return this.request<Announcement[]>('/announcements');
+  async getAnnouncements(params?: {
+    search?: string;
+    page?: number;
+    limit?: number;
+    type?: string;
+    isActive?: boolean | null;
+  }): Promise<{ announcements: Announcement[]; totalCount: number }> {
+    const searchParams = new URLSearchParams();
+
+    if (params?.search) searchParams.append('SearchQuery', params.search);
+    if (params?.page) searchParams.append('Page', params.page.toString());
+    if (params?.limit) searchParams.append('Limit', params.limit.toString());
+    if (params?.type) searchParams.append('Type', params.type);
+    if (params?.isActive !== undefined && params?.isActive !== null) {
+      searchParams.append('IsActive', params.isActive.toString());
+    }
+
+    const query = searchParams.toString();
+    const endpoint = query ? `/announcements/search?${query}` : '/announcements/search';
+
+    const data = await this.request<{ announcements: Announcement[]; totalCount: number }>(endpoint);
+
+    if (Array.isArray(data)) {
+      return { announcements: data, totalCount: data.length };
+    }
+
+    return {
+      announcements: data?.announcements || [],
+      totalCount: data?.totalCount || 0
+    };
+  }
+
+  async getAnnouncement(id: string): Promise<Announcement> {
+    const data = await this.request<{ announcement: Announcement }>(`/announcements/${id}`);
+    return data.announcement;
+  }
+
+  async createAnnouncement(announcement: Omit<Announcement, 'id'>): Promise<Announcement> {
+    const data = await this.request<{ announcement: Announcement }>('/announcements', {
+      method: 'POST',
+      body: JSON.stringify(announcement),
+    });
+    return data.announcement;
+  }
+
+  async updateAnnouncement(id: string, announcement: Partial<Announcement>): Promise<Announcement> {
+    const data = await this.request<{ announcement: Announcement }>(`/announcements/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(announcement),
+    });
+    return data.announcement;
+  }
+
+  async deleteAnnouncement(id: string): Promise<void> {
+    return this.request<void>(`/announcements/${id}`, {
+      method: 'DELETE',
+    });
   }
 
   // Events
   async getEvents(): Promise<Event[]> {
-    return this.request<Event[]>('/eventos');
+    const data = await this.request<{ events: Event[] }>('/events');
+    return data?.events || [];
   }
 
   async getEvent(id: string): Promise<Event> {
-    return this.request<Event>(`/eventos/${id}`);
+    const data = await this.request<{ event: Event }>(`/events/${id}`);
+    return data.event;
+  }
+
+  async createEvent(event: Omit<Event, 'id'>): Promise<Event> {
+    const data = await this.request<{ event: Event }>('/events', {
+      method: 'POST',
+      body: JSON.stringify(event),
+    });
+    return data.event;
+  }
+
+  async updateEvent(id: string, event: Partial<Event>): Promise<Event> {
+    const data = await this.request<{ event: Event }>(`/events/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(event),
+    });
+    return data.event;
+  }
+
+  async deleteEvent(id: string): Promise<void> {
+    return this.request<void>(`/events/${id}`, {
+      method: 'DELETE',
+    });
   }
 
   // Projects
-  async getProjects(): Promise<Project[]> {
-    return this.request<Project[]>('/projects');
+  async getProjects(params?: {
+    search?: string;
+    page?: number;
+    limit?: number;
+    status?: string;
+  }): Promise<{ projects: Project[]; totalCount: number }> {
+    const searchParams = new URLSearchParams();
+
+    if (params?.search) searchParams.append('SearchQuery', params.search);
+    if (params?.page) searchParams.append('Page', params.page.toString());
+    if (params?.limit) searchParams.append('Limit', params.limit.toString());
+    if (params?.status) searchParams.append('Status', params.status);
+
+    const query = searchParams.toString();
+    const endpoint = query ? `/projects/search?${query}` : '/projects/search';
+
+    const data = await this.request<{ projects: any[]; totalCount: number }>(endpoint);
+    const projects = (data?.projects || []).map((p: any) => ({
+      ...p,
+      directorate: p.directorate || p.department, // Handle both cases
+      icon: p.icon || p.imageUrl, // Handle both cases
+    })) as Project[];
+
+    return {
+      projects,
+      totalCount: data?.totalCount || 0
+    };
   }
 
   async getProject(id: string): Promise<Project> {
-    return this.request<Project>(`/projects/${id}`);
+    const data = await this.request<{ project: any }>(`/projects/${id}`);
+    const project = data.project;
+    return {
+      ...project,
+      directorate: project.directorate || project.department,
+      icon: project.icon || project.imageUrl,
+    } as Project;
+  }
+
+  async createProject(project: ProjectRequest): Promise<Project> {
+    const data = await this.request<{ project: Project }>('/projects', {
+      method: 'POST',
+      body: JSON.stringify(project),
+    });
+    return data.project;
+  }
+
+  async updateProject(id: string, project: Partial<ProjectRequest>): Promise<Project> {
+    const data = await this.request<{ project: Project }>(`/projects/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(project),
+    });
+    return data.project;
+  }
+
+  async deleteProject(id: string): Promise<void> {
+    return this.request<void>(`/projects/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Directorates
+  async getDirectorates(): Promise<Directorate[]> {
+    const data = await this.request<{ directorates: Directorate[] }>('/directorates');
+    return data?.directorates || [];
+  }
+
+  async getDirectorate(id: string): Promise<Directorate> {
+    const data = await this.request<{ directorate: Directorate }>(`/directorates/${id}`);
+    return data.directorate;
+  }
+
+  async createDirectorate(name: string, description?: string): Promise<Directorate> {
+    const response = await this.request<{ directorate: Directorate }>('/directorates', {
+      method: 'POST',
+      body: JSON.stringify({ name, description }),
+    });
+    return response.directorate;
   }
 
   // News
-  async getNews(): Promise<News[]> {
-    return this.request<News[]>('/news');
+  async getNews(params?: {
+    category?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ news: News[]; totalCount: number }> {
+    const searchParams = new URLSearchParams();
+
+    if (params?.category && params.category !== 'all') searchParams.append('Category', params.category);
+    if (params?.search) searchParams.append('SearchQuery', params.search);
+    if (params?.page) searchParams.append('Page', params.page.toString());
+    if (params?.limit) searchParams.append('Limit', params.limit.toString());
+
+    const query = searchParams.toString();
+    const endpoint = `/news?${query}`;
+
+    const data = await this.request<{ news: News[]; totalCount: number }>(endpoint);
+
+    // Fallback for non-paginated old endpoint if something goes wrong, or handle structure
+    if (Array.isArray(data)) {
+      return { news: data, totalCount: data.length };
+    }
+
+    return {
+      news: data?.news || [],
+      totalCount: data?.totalCount || 0
+    };
   }
 
   async getNewsItem(id: string): Promise<News> {
-    return this.request<News>(`/news/${id}`);
+    const data = await this.request<{ news: News }>(`/news/${id}`);
+    return data.news;
+  }
+
+  async createNews(news: Omit<News, 'id'>): Promise<News> {
+    const data = await this.request<{ news: News }>('/news', {
+      method: 'POST',
+      body: JSON.stringify(news),
+    });
+    return data.news;
+  }
+
+  async updateNews(id: string, news: Partial<News>): Promise<News> {
+    const data = await this.request<{ news: News }>(`/news/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(news),
+    });
+    return data.news;
+  }
+
+  async deleteNews(id: string): Promise<void> {
+    return this.request<void>(`/news/${id}`, {
+      method: 'DELETE',
+    });
   }
 
   // Faculty
-  async getFaculty(): Promise<Faculty[]> {
-    return this.request<Faculty[]>('/diretores');
+  async getFaculty(params?: {
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ faculty: Faculty[]; totalCount: number }> {
+    const searchParams = new URLSearchParams();
+
+    if (params?.search) searchParams.append('SearchQuery', params.search);
+    if (params?.page) searchParams.append('Page', params.page.toString());
+    if (params?.limit) searchParams.append('Limit', params.limit.toString());
+
+    const data = await this.request<{ faculty: Faculty[]; totalCount: number }>('/faculty/search');
+    return {
+      faculty: data.faculty || [],
+      totalCount: data.totalCount || 0
+    }
   }
 
   async getFacultyMember(id: string): Promise<Faculty> {
-    return this.request<Faculty>(`/diretores/${id}`);
+    const data = await this.request<{ facultyMember: Faculty }>(`/faculty/${id}`);
+    return data.facultyMember;
+  }
+
+  async createFacultyMember(faculty: Omit<Faculty, 'id'>): Promise<Faculty> {
+    const data = await this.request<{ faculty: Faculty }>('/faculty', {
+      method: 'POST',
+      body: JSON.stringify(faculty),
+    });
+    return data.faculty;
+  }
+
+  async updateFacultyMember(id: string, faculty: Partial<Faculty>): Promise<Faculty> {
+    const data = await this.request<{ faculty: Faculty }>(`/faculty/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(faculty),
+    });
+    return data.faculty;
+  }
+
+  async deleteFacultyMember(id: string): Promise<void> {
+    return this.request<void>(`/faculty/${id}`, {
+      method: 'DELETE',
+    });
   }
 
   // Products
@@ -204,66 +618,162 @@ class ApiService {
     search?: string;
     page?: number;
     limit?: number;
-  }): Promise<Product[]> {
+  }): Promise<{ products: Product[]; totalCount: number }> {
     const searchParams = new URLSearchParams();
-    
+
     if (params?.category && params.category !== 'all') {
-      searchParams.append('category', params.category);
+      searchParams.append('category', params.category); // Case insensitive on backend
     }
-    
+
     if (params?.search) {
-      searchParams.append('name_like', params.search);
+      searchParams.append('SearchQuery', params.search);
     }
-    
+
     if (params?.page && params?.limit) {
-      searchParams.append('_page', params.page.toString());
-      searchParams.append('_limit', params.limit.toString());
+      searchParams.append('Page', params.page.toString());
+      searchParams.append('Limit', params.limit.toString());
     }
-    
+
     // Handle sorting
     if (params?.sortBy) {
       switch (params.sortBy) {
         case 'price-low':
-          searchParams.append('_sort', 'price');
-          searchParams.append('_order', 'asc');
+          searchParams.append('OrderBy', 'price-low');
           break;
         case 'price-high':
-          searchParams.append('_sort', 'price');
-          searchParams.append('_order', 'desc');
+          searchParams.append('OrderBy', 'price-high');
           break;
         case 'newest':
-          searchParams.append('_sort', 'createdAt');
-          searchParams.append('_order', 'desc');
+          searchParams.append('OrderBy', 'newest');
           break;
-        case 'name-az':
-          searchParams.append('_sort', 'name');
-          searchParams.append('_order', 'asc');
+        case 'name':
+          searchParams.append('OrderBy', 'name');
           break;
         case 'popular':
-          searchParams.append('_sort', 'reviews');
-          searchParams.append('_order', 'desc');
+          // Backend might not support popular yet, mapping to newest or keeping logic if custom
+          searchParams.append('OrderBy', 'newest');
           break;
         case 'featured':
         default:
-          searchParams.append('_sort', 'featured,createdAt');
-          searchParams.append('_order', 'desc,desc');
+          searchParams.append('OrderBy', 'newest');
           break;
       }
     }
-    
+
     const query = searchParams.toString();
-    const endpoint = query ? `/products?${query}` : '/products';
-    
-    return this.request<Product[]>(endpoint);
+    const endpoint = query ? `/products/search?${query}` : '/products';
+
+    const data = await this.request<{ products: Product[]; totalCount: number }>(endpoint);
+    return {
+      products: data?.products || [],
+      totalCount: data?.totalCount || 0
+    };
+  }
+
+  async getCategories(): Promise<ProductCategory[]> {
+    const response = await this.request<{ categories: ProductCategory[] }>('/products/categorias');
+    return response.categories;
+  }
+
+  async getSubcategories(): Promise<ProductSubcategory[]> {
+    const response = await this.request<{ subcategories: ProductSubcategory[] }>('/products/subcategorias');
+    return response.subcategories;
+  }
+
+  async getSizes(): Promise<ProductSize[]> {
+    const response = await this.request<{ sizes: ProductSize[] }>('/products/tamanhos');
+    return response.sizes;
+  }
+
+  async getColors(): Promise<ProductColor[]> {
+    const response = await this.request<{ colors: ProductColor[] }>('/products/cores');
+    return response.colors;
+  }
+
+  async createCategory(name: string): Promise<ProductCategory> {
+    const response = await this.request<{ category: ProductCategory }>('/products/categorias', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    });
+    return response.category;
+  }
+
+  async createSubcategory(name: string, categoryId: string): Promise<ProductSubcategory> {
+    const response = await this.request<{ subcategory: ProductSubcategory }>('/products/subcategorias', {
+      method: 'POST',
+      body: JSON.stringify({ name, categoryId }),
+    });
+    return response.subcategory;
+  }
+
+  async createSize(name: string): Promise<ProductSize> {
+    const response = await this.request<{ size: ProductSize }>('/products/tamanhos', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    });
+    return response.size;
+  }
+
+  async createColor(name: string): Promise<ProductColor> {
+    const response = await this.request<{ color: ProductColor }>('/products/cores', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    });
+    return response.color;
   }
 
   async getProduct(id: string): Promise<Product> {
-    return this.request<Product>(`/products/${id}`);
+    const data = await this.request<{ product: Product }>(`/products/${id}`);
+    return data.product;
+  }
+
+  async createProduct(product: ProductBatchRequest): Promise<Product> {
+    const isFormData = product instanceof FormData;
+
+    const data = await this.request<{ product: Product }>('/products/batch-create', {
+      method: 'POST',
+      body: JSON.stringify(product),
+    });
+    return data.product;
+  }
+
+  async updateProduct(id: string, product: Partial<Product> | FormData): Promise<Product> {
+    const isFormData = product instanceof FormData;
+
+    const data = await this.request<{ product: Product }>(`/products/${id}`, {
+      method: 'PATCH',
+      body: isFormData ? product : JSON.stringify(product),
+    });
+    return data.product;
+  }
+
+  async updateProductFull(id: string, product: ProductBatchRequest): Promise<Product> {
+    const data = await this.request<{ product: Product }>(`/products/${id}/batch-update`, {
+      method: 'PATCH',
+      body: JSON.stringify(product),
+    });
+    return data.product;
+  }
+
+  async deleteProduct(id: string): Promise<void> {
+    return this.request<void>(`/products/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async uploadImage(file: File): Promise<{ url: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.request<{ url: string }>('/filestorage/uploadImage', {
+      method: 'POST',
+      body: formData,
+    });
   }
 
   // Forum Categories
   async getForumCategories(): Promise<ForumCategory[]> {
-    return this.request<ForumCategory[]>('/forumCategories');
+    return (await this.request<ForumCategory[]>('/forumCategories')) || [];
   }
 
   async getForumCategory(id: string): Promise<ForumCategory> {
@@ -279,20 +789,20 @@ class ApiService {
     limit?: number;
   }): Promise<ForumThread[]> {
     const searchParams = new URLSearchParams();
-    
+
     if (params?.categoryId && params.categoryId !== 'all') {
       searchParams.append('categoryId', params.categoryId);
     }
-    
+
     if (params?.search) {
       searchParams.append('title_like', params.search);
     }
-    
+
     if (params?.page && params?.limit) {
       searchParams.append('_page', params.page.toString());
       searchParams.append('_limit', params.limit.toString());
     }
-    
+
     // Handle sorting
     if (params?.sortBy) {
       switch (params.sortBy) {
@@ -326,11 +836,11 @@ class ApiService {
       searchParams.append('_sort', 'isPinned,lastActivity');
       searchParams.append('_order', 'desc,desc');
     }
-    
+
     const query = searchParams.toString();
     const endpoint = query ? `/forumThreads?${query}` : '/forumThreads';
-    
-    return this.request<ForumThread[]>(endpoint);
+
+    return (await this.request<ForumThread[]>(endpoint)) || [];
   }
 
   async getForumThread(id: string): Promise<ForumThread> {
@@ -345,7 +855,7 @@ class ApiService {
       lastActivity: new Date().toISOString(),
       createdAt: new Date().toISOString(),
     };
-    
+
     return this.request<ForumThread>('/forumThreads', {
       method: 'POST',
       body: JSON.stringify(newThread),
@@ -364,6 +874,73 @@ class ApiService {
       method: 'DELETE',
     });
   }
+
+  // Statistics
+  async getDashboardStats(): Promise<DashboardStats> {
+    return this.request<DashboardStats>('/statistics/dashboard');
+  }
+
+  // Orders
+  async searchOrders(params?: any): Promise<{ orders: Order[]; totalCount: number }> {
+    const query = new URLSearchParams(params).toString();
+    const data = await this.request<{ orders: Order[]; totalCount: number }>(`/orders/search${query ? `?${query}` : ''}`, {
+      method: 'GET',
+    });
+    return {
+      orders: data?.orders || [],
+      totalCount: data?.totalCount || 0
+    };
+  }
+
+  async getOrder(id: string): Promise<Order> {
+    const data = await this.request<{ order: Order }>(`/orders/${id}`, {
+      method: 'GET',
+    });
+    return data.order;
+  }
+
+  async deleteOrder(id: string): Promise<void> {
+    return this.request<void>(`/orders/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async updateOrderStatus(id: string, status: string): Promise<Order> {
+    const data = await this.request<{ order: Order }>(`/orders/${id}/status`, {
+      method: 'PUT',
+      body: JSON.stringify(status),
+    });
+    return data.order;
+  }
+  // Product Reviews
+
+  async getReviews(params?: {
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ reviews: ProductReview[]; totalCount: number }> {
+    const searchParams = new URLSearchParams();
+
+    if (params?.search) searchParams.append('SearchQuery', params.search);
+    if (params?.page) searchParams.append('Page', params.page.toString());
+    if (params?.limit) searchParams.append('Limit', params.limit.toString());
+
+    const data = await this.request<{ reviews: ProductReview[]; totalCount: number }>('/reviews/search');
+    return {
+      reviews: data.reviews || [],
+      totalCount: data.totalCount || 0
+    }
+  }
+
+  async getReview(id: string): Promise<ProductReview> {
+    const data = await this.request<{ review: ProductReview }>(`/reviews/${id}`, {
+      method: 'GET',
+    });
+    return data.review;
+  }
+
 }
+
+
 
 export const apiService = new ApiService();

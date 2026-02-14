@@ -23,6 +23,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useCart } from '@/context/CartContext';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 export default function ProductDetailPage() {
     const params = useParams();
@@ -43,8 +44,12 @@ export default function ProductDetailPage() {
                 setLoading(true);
                 const productData = await apiService.getProduct(params.id as string);
                 setProduct(productData);
-                setSelectedSize(productData.sizes[0] || '');
-                setSelectedColor(productData.colors[0] || '');
+
+                const firstVar = productData.variations?.[0];
+                if (firstVar) {
+                    setSelectedSize(firstVar.size);
+                    setSelectedColor(firstVar.color);
+                }
             } catch (err) {
                 setError('Produto não encontrado');
                 console.error('Error fetching product:', err);
@@ -57,6 +62,21 @@ export default function ProductDetailPage() {
             fetchProduct();
         }
     }, [params.id]);
+
+    const selectedVariation = product?.variations?.find(
+        v => v.size === selectedSize && v.color === selectedColor
+    );
+
+    const currentStock = selectedVariation?.stock || 0;
+
+    // Fallback: If variation has no images, try first variation's images, or empty array
+    const currentImages = selectedVariation?.images?.length
+        ? selectedVariation.images
+        : (product?.variations?.[0]?.images || []);
+
+    // Unique Options
+    const uniqueSizes = Array.from(new Set(product?.variations?.map(v => v.size))).filter(Boolean);
+    const uniqueColors = Array.from(new Set(product?.variations?.map(v => v.color))).filter(Boolean);
 
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat('pt-BR', {
@@ -98,7 +118,6 @@ export default function ProductDetailPage() {
     const handleAddToCart = () => {
         if (product) {
             addToCart(product, quantity, selectedSize, selectedColor);
-            // You could add a toast notification here
         }
     };
 
@@ -173,30 +192,36 @@ export default function ProductDetailPage() {
                         {/* Product Images */}
                         <div className="space-y-4">
                             {/* Main Image */}
-                            <div className="aspect-square rounded-xl overflow-hidden">
-                                <Image
-                                    src={product.images[selectedImageIndex]}
-                                    alt={product.name}
-                                    width={600}
-                                    height={600}
-                                    className="w-full h-full object-cover"
-                                />
+                            <div className="aspect-square rounded-xl overflow-hidden bg-gray-100 relative">
+                                {currentImages.length > 0 ? (
+                                    <Image
+                                        src={currentImages[selectedImageIndex]?.url || currentImages[0]?.url}
+                                        alt={product.name}
+                                        width={600}
+                                        height={600}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="flex items-center justify-center h-full text-gray-400">
+                                        Sem imagem
+                                    </div>
+                                )}
                             </div>
 
                             {/* Image Thumbnails */}
-                            {product.images.length > 1 && (
-                                <div className="flex gap-2 overflow-x-auto">
-                                    {product.images.map((image, index) => (
+                            {currentImages.length > 1 && (
+                                <div className="flex gap-2 overflow-x-auto pb-2">
+                                    {currentImages.map((image, index) => (
                                         <button
                                             key={index}
                                             onClick={() => setSelectedImageIndex(index)}
-                                            className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 ${selectedImageIndex === index
-                                                    ? 'border-blue-500'
-                                                    : 'border-gray-200 hover:border-gray-300'
+                                            className={`shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 ${selectedImageIndex === index
+                                                ? 'border-blue-500'
+                                                : 'border-gray-200 hover:border-gray-300'
                                                 }`}
                                         >
                                             <Image
-                                                src={image}
+                                                src={image.url}
                                                 alt={`${product.name} ${index + 1}`}
                                                 width={64}
                                                 height={64}
@@ -225,7 +250,7 @@ export default function ProductDetailPage() {
                             {/* Rating */}
                             <div className="flex items-center gap-2">
                                 <div className="flex items-center">
-                                    {renderStars(product.rating)}
+                                    {renderStars(product.rating || 0)}
                                 </div>
                                 <span className="text-sm text-gray-500">
                                     {product.rating} ({product.reviews} avaliações)
@@ -255,43 +280,56 @@ export default function ProductDetailPage() {
                             </p>
 
                             {/* Size Selection */}
-                            {product.sizes.length > 1 && (
+                            {uniqueSizes.length > 0 && (
                                 <div>
                                     <h3 className="text-sm font-semibold text-gray-900 mb-3">Tamanho:</h3>
-                                    <div className="flex gap-2">
-                                        {product.sizes.map((size) => (
-                                            <button
-                                                key={size}
-                                                onClick={() => setSelectedSize(size)}
-                                                className={`text-gray-600 px-4 py-2 border rounded-lg font-medium transition-colors duration-200 ${selectedSize === size
+                                    <div className="flex gap-2 flex-wrap">
+                                        {uniqueSizes.map((size) => {
+                                            // Check if this size + selectedColor exists
+                                            const isAvailable = product.variations.some(
+                                                v => v.size === size && v.color === selectedColor && v.stock > 0
+                                            );
+
+                                            return (
+                                                <button
+                                                    key={size}
+                                                    onClick={() => setSelectedSize(size)}
+                                                    className={`px-4 py-2 border rounded-lg font-medium transition-colors duration-200 ${selectedSize === size
                                                         ? 'border-blue-500 bg-blue-50 text-blue-600'
-                                                        : 'border-gray-300 hover:border-gray-400'
-                                                    }`}
-                                            >
-                                                {size}
-                                            </button>
-                                        ))}
+                                                        : 'border-gray-300 hover:border-gray-400 text-gray-600'
+                                                        } ${!isAvailable ? 'opacity-50 cursor-not-allowed bg-gray-100' : ''}`}
+                                                >
+                                                    {size}
+                                                </button>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             )}
 
                             {/* Color Selection */}
-                            {product.colors.length > 1 && (
+                            {uniqueColors.length > 0 && (
                                 <div>
                                     <h3 className="text-sm font-semibold text-gray-900 mb-3">Cor:</h3>
-                                    <div className="flex gap-2">
-                                        {product.colors.map((color) => (
-                                            <button
-                                                key={color}
-                                                onClick={() => setSelectedColor(color)}
-                                                className={`px-4 py-2 border rounded-lg font-medium transition-colors duration-200 ${selectedColor === color
+                                    <div className="flex gap-2 flex-wrap">
+                                        {uniqueColors.map((color) => {
+                                            const isAvailable = product.variations.some(
+                                                v => v.color === color && v.size === selectedSize && v.stock > 0
+                                            );
+
+                                            return (
+                                                <button
+                                                    key={color}
+                                                    onClick={() => setSelectedColor(color)}
+                                                    className={`px-4 py-2 border rounded-lg font-medium transition-colors duration-200 ${selectedColor === color
                                                         ? 'border-blue-500 bg-blue-50 text-blue-600'
                                                         : 'border-gray-300 hover:border-gray-400'
-                                                    }`}
-                                            >
-                                                {color}
-                                            </button>
-                                        ))}
+                                                        } ${!isAvailable ? 'opacity-50' : ''}`}
+                                                >
+                                                    {color.charAt(0).toUpperCase() + color.slice(1)}
+                                                </button>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             )}
@@ -310,27 +348,29 @@ export default function ProductDetailPage() {
                                         {quantity}
                                     </span>
                                     <button
-                                        onClick={() => setQuantity(Math.min(product.stockCount, quantity + 1))}
+                                        onClick={() => setQuantity(Math.min(currentStock, quantity + 1))}
                                         className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                                        disabled={quantity >= currentStock}
                                     >
                                         <PlusIcon className="w-4 h-4 text-gray-600" />
                                     </button>
                                 </div>
                             </div>
 
-                            {/* Stock Status */}
                             <div className="flex items-center gap-2">
-                                {product.inStock ? (
+                                {currentStock > 0 ? (
                                     <>
                                         <CheckIcon className="w-5 h-5 text-green-500" />
                                         <span className="text-green-600 font-medium">
-                                            {product.stockCount} em estoque
+                                            {currentStock} disponíveis ({selectedColor.charAt(0).toUpperCase() + selectedColor.slice(1)} - {selectedSize})
                                         </span>
                                     </>
                                 ) : (
                                     <>
                                         <XMarkIcon className="w-5 h-5 text-red-500" />
-                                        <span className="text-red-600 font-medium">Fora de estoque</span>
+                                        <span className="text-red-600 font-medium">
+                                            Indisponível nesta combinação
+                                        </span>
                                     </>
                                 )}
                             </div>
@@ -345,19 +385,8 @@ export default function ProductDetailPage() {
                                     className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
                                 >
                                     <ShoppingCartIcon className="w-5 h-5" />
-                                    {product.inStock ? 'Adicionar ao Carrinho' : 'Indisponível'}
+                                    {product.inStock && currentStock > 0 ? 'Adicionar ao Carrinho' : 'Indisponível'}
                                 </motion.button>
-
-                                <button
-                                    onClick={() => setIsFavorite(!isFavorite)}
-                                    className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-                                >
-                                    {isFavorite ? (
-                                        <HeartIcon className="w-6 h-6 text-red-500" />
-                                    ) : (
-                                        <HeartOutlineIcon className="w-6 h-6 text-gray-600" />
-                                    )}
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -378,4 +407,4 @@ export default function ProductDetailPage() {
             <ShoppingCart />
         </div>
     );
-} 
+}

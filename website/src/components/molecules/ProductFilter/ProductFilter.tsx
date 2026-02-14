@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { apiService } from '@/services/api';
+import { Input, Select } from '@/components';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export interface ProductFilterOptions {
   category: string;
@@ -14,24 +17,54 @@ interface ProductFilterProps {
   className?: string;
 }
 
-export const ProductFilter = ({ 
+export const ProductFilter = ({
   onFilterChange,
-  className = '' 
+  className = ''
 }: ProductFilterProps) => {
-  const [filters, setFilters] = useState<ProductFilterOptions>({
+  const [categories, setCategories] = useState<{ value: string; label: string }[]>([
+    { value: 'all', label: 'Todos os Produtos' }
+  ]);
+
+  // Estado local para busca
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Debounce da busca
+  const debouncedSearch = useDebounce(searchQuery, 600);
+
+  const [filters, setFilters] = useState<Omit<ProductFilterOptions, 'searchQuery'>>({
     category: 'all',
     sortBy: 'featured',
-    searchQuery: ''
   });
 
-  const categoryOptions = [
-    { value: 'all', label: 'Todos os Produtos' },
-    { value: 'tshirts', label: 'Camisetas' },
-    { value: 'hoodies', label: 'Moletons' },
-    { value: 'cups', label: 'Canecas' },
-    { value: 'stickers', label: 'Adesivos' },
-    { value: 'accessories', label: 'Acessórios' }
-  ];
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const subcategories = await apiService.getSubcategories();
+        const options = [
+          { value: 'all', label: 'Todos os Produtos' },
+          ...subcategories.map(sub => ({
+            value: sub.name,
+            label: sub.name
+          }))
+        ];
+        setCategories(options);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Propagar mudança na busca quando debounce terminar
+  useEffect(() => {
+    if (onFilterChange) {
+      onFilterChange({
+        ...filters,
+        searchQuery: debouncedSearch
+      });
+    }
+  }, [debouncedSearch, filters]);
 
   const sortOptions = [
     { value: 'featured', label: 'Destaque' },
@@ -42,74 +75,10 @@ export const ProductFilter = ({
     { value: 'name', label: 'Nome A-Z' }
   ];
 
-  const handleFilterChange = (key: keyof ProductFilterOptions, value: string) => {
+  const handleFilterChange = (key: keyof Omit<ProductFilterOptions, 'searchQuery'>, value: string) => {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
-    if (onFilterChange) {
-      onFilterChange(newFilters);
-    }
   };
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Search is handled by the onChange, but we can add additional logic here if needed
-  };
-
-  const SelectDropdown = ({ 
-    label, 
-    value, 
-    options, 
-    onChange 
-  }: { 
-    label: string; 
-    value: string; 
-    options: { value: string; label: string }[]; 
-    onChange: (value: string) => void; 
-  }) => (
-    <div className="flex flex-col gap-2">
-      <label className="text-sm font-bold text-primary min-w-fit">
-        {label}:
-      </label>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-gray-700 min-w-[140px]"
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-
-  const SearchInput = () => (
-    <div className="flex flex-col gap-2">
-      <label className="text-sm font-bold text-primary min-w-fit">
-        Pesquisar:
-      </label>
-      <form onSubmit={handleSearchSubmit} className="relative">
-        <div className="relative flex items-center">
-          <input
-            type="text"
-            value={filters.searchQuery}
-            onChange={(e) => handleFilterChange('searchQuery', e.target.value)}
-            placeholder="Pesquisar produtos..."
-            className="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-700"
-          />
-          <button
-            type="submit"
-            className="px-4 py-3 bg-primary hover:bg-blue-700 text-white rounded-r-lg transition-colors duration-200 flex items-center justify-center border-l border-gray-300"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </button>
-        </div>
-      </form>
-    </div>
-  );
 
   return (
     <motion.div
@@ -119,30 +88,44 @@ export const ProductFilter = ({
       transition={{ duration: 0.6 }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
-          {/* Filter Controls */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 lg:gap-6">
-            <SelectDropdown
-              label="Categoria"
-              value={filters.category}
-              options={categoryOptions}
-              onChange={(value) => handleFilterChange('category', value)}
-            />
-            
-            <SelectDropdown
-              label="Ordenar por"
-              value={filters.sortBy}
-              options={sortOptions}
-              onChange={(value) => handleFilterChange('sortBy', value)}
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+          {/* Search Input */}
+          <div className="w-full lg:w-auto lg:min-w-87.5">
+            <Input
+              label="Pesquisar"
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Pesquisar produtos..."
+              className="h-11"
             />
           </div>
 
-          {/* Search Input */}
-          <div className="w-full lg:w-auto lg:min-w-[300px]">
-            <SearchInput />
+          {/* Filter Controls */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 lg:gap-6 flex-1">
+            <div className="min-w-50 w-full sm:w-auto">
+              <Select
+                label="Categoria"
+                value={filters.category}
+                options={categories}
+                onChange={(e) => handleFilterChange('category', e.target.value)}
+                className="h-11"
+              />
+            </div>
+
+            <div className="min-w-50 w-full sm:w-auto">
+              <Select
+                label="Ordenar por"
+                value={filters.sortBy}
+                options={sortOptions}
+                onChange={(e) => handleFilterChange('sortBy', e.target.value)}
+                className="h-11"
+              />
+            </div>
           </div>
+
         </div>
       </div>
     </motion.div>
   );
-}; 
+};

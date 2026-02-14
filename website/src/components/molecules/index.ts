@@ -18,7 +18,6 @@ export { FacultyCard } from './FacultyCard';
 export { SearchInput } from './SearchInput';
 export { NewsFilter, type FilterOptions } from './NewsFilter';
 export { Pagination } from './Pagination';
-export { Modal } from './Modal';
 export { NewsletterSignup } from './NewsletterSignup';
 export { ShopFeatures } from './ShopFeatures';
 export { ProductFilter, type ProductFilterOptions } from './ProductFilter';
@@ -28,6 +27,14 @@ export { default as ShoppingCart } from './ShoppingCart';
 export { default as CartButton } from './CartButton';
 export { default as ProductTabs } from './ProductTabs';
 export { default as RecommendationCard } from './RecommendationCard';
+export { Modal } from './Modal';
 export { default as FormInput } from './FormInput';
 export { default as SocialLoginButton } from './SocialLoginButton';
-export { StepIndicator } from './StepIndicator'; 
+export { StepIndicator } from './StepIndicator';
+export { TagInput } from './TagInput';
+export { ImageGalleryEditor } from './ImageGalleryEditor';
+export * from './admin';
+export { PageLoader } from './PageLoader';
+export { UserFilter, type UserFilterOptions } from './UserFilter';
+
+

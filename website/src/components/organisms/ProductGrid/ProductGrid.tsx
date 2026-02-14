@@ -37,20 +37,20 @@ export default function ProductGrid({ filters = {}, className = '' }: ProductGri
         setLoadingMore(true);
       }
 
-      const response = await apiService.getProducts({
+      const { products: newProducts } = await apiService.getProducts({
         ...filters,
         page: currentPage,
         limit: PRODUCTS_PER_PAGE,
       });
 
       if (isReset) {
-        setProducts(response);
+        setProducts(newProducts.filter(product => product.active));
       } else {
-        setProducts(prev => [...prev, ...response]);
+        setProducts(prev => [...prev, ...newProducts]);
       }
 
       // Check if we have more products
-      setHasMore(response.length === PRODUCTS_PER_PAGE);
+      setHasMore(newProducts.length === PRODUCTS_PER_PAGE);
       setError(null);
     } catch (err) {
       setError('Erro ao carregar produtos. Tente novamente.');
@@ -59,7 +59,7 @@ export default function ProductGrid({ filters = {}, className = '' }: ProductGri
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [filters]);
+  }, [filters.category, filters.sortBy, filters.search]);
 
   // Reset when filters change
   useEffect(() => {
@@ -170,7 +170,7 @@ export default function ProductGrid({ filters = {}, className = '' }: ProductGri
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Nenhum produto encontrado</h3>
           <p className="text-gray-600">
-            Não encontramos produtos que correspondam aos seus critérios de pesquisa. 
+            Não encontramos produtos que correspondam aos seus critérios de pesquisa.
             Tente ajustar os filtros ou fazer uma nova busca.
           </p>
         </div>
@@ -232,4 +232,4 @@ export default function ProductGrid({ filters = {}, className = '' }: ProductGri
       )}
     </div>
   );
-} 
+}

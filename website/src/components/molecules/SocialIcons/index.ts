@@ -1,1 +1,1 @@
-export { SocialIcons } from './SocialIcons'; 
+export { SocialIcons, getSocialIcon } from './SocialIcons';

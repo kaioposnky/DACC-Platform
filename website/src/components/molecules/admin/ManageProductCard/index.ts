@@ -1,0 +1,1 @@
+export { default as ManageProductCard } from './ManageProductCard';

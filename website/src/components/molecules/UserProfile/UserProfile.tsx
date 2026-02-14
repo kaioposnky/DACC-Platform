@@ -8,9 +8,10 @@ import {
   UserIcon, 
   ClipboardDocumentListIcon, 
   StarIcon, 
-  ArrowRightOnRectangleIcon,
-  ChevronDownIcon 
+  ChevronDownIcon
 } from '@heroicons/react/24/outline';
+import {ArrowRightEndOnRectangleIcon} from "@heroicons/react/16/solid";
+import {useRouter} from "next/navigation";
 
 interface UserProfileProps {
   user: UserProfileType;
@@ -29,6 +30,8 @@ export default function UserProfile({
   onLogoutClick,
   className = '' 
 }: UserProfileProps) {
+  const router = useRouter();
+
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -52,28 +55,28 @@ export default function UserProfile({
   };
 
   const handleLogin = () => {
-    window.location.href = '/login';
+    router.push('/login');
   };
 
   const menuItems = [
     {
       icon: UserIcon,
-      label: 'Profile',
+      label: 'Perfil',
       onClick: onProfileClick,
     },
     {
       icon: ClipboardDocumentListIcon,
-      label: 'Order History',
+      label: 'Histórico de Pedidos',
       onClick: onOrderHistoryClick,
     },
     {
       icon: StarIcon,
-      label: 'My Reviews',
+      label: 'Minhas Avaliações',
       onClick: onReviewsClick,
     },
     {
-      icon: ArrowRightOnRectangleIcon,
-      label: 'Logout',
+      icon: ArrowRightEndOnRectangleIcon,
+      label: 'Deslogar',
       onClick: onLogoutClick,
       className: 'text-red-600 hover:text-red-700',
     },

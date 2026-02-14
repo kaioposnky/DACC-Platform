@@ -20,9 +20,9 @@ export default function ProductRecommendations({ currentProduct, className = '' 
     const fetchRecommendations = async () => {
       try {
         setLoading(true);
-        
+
         // First try to get products from the same category
-        let products = await apiService.getProducts({
+        let { products } = await apiService.getProducts({
           category: currentProduct.category,
           sortBy: 'featured'
         });
@@ -32,16 +32,16 @@ export default function ProductRecommendations({ currentProduct, className = '' 
 
         // If we don't have enough products from the same category, get more from other categories
         if (products.length < 4) {
-          const additionalProducts = await apiService.getProducts({
+          const { products: additionalProducts } = await apiService.getProducts({
             sortBy: 'featured'
           });
-          
+
           const filteredAdditional = additionalProducts
-            .filter(product => 
-              product.id !== currentProduct.id && 
+            .filter(product =>
+              product.id !== currentProduct.id &&
               !products.some(p => p.id === product.id)
             );
-          
+
           products = [...products, ...filteredAdditional];
         }
 
@@ -106,7 +106,7 @@ export default function ProductRecommendations({ currentProduct, className = '' 
   return (
     <div className={`bg-gray-50 rounded-xl p-8 ${className}`}>
       <Typography variant="h3" className="text-2xl font-bold text-primary mb-8 !text-center">Você também pode gostar</Typography>
-      
+
       <motion.div
         variants={containerVariants}
         initial="hidden"

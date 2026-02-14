@@ -4,7 +4,7 @@ import { Post } from '@/types';
 interface PostListProps {
   posts: Post[];
   onEditPost?: (post: Post) => void;
-  onDeletePost?: (postId: number) => void;
+  onDeletePost?: (postId: string) => void;
   onPostClick?: (post: Post) => void;
   loading?: boolean;
   emptyMessage?: string;
@@ -52,4 +52,4 @@ export const PostList = ({
       ))}
     </div>
   );
-}; 
+};
