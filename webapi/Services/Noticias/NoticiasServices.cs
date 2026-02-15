@@ -98,7 +98,7 @@ public class NoticiasServices : INoticiasServices
             
             await _noticiasRepository.UpdateAsync(noticiaId, noticia);
 
-            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { news = new ResponseNoticia(noticia) }));
         }
         catch (Exception ex)
         {
@@ -178,7 +178,7 @@ public class NoticiasServices : INoticiasServices
             
             await _noticiasRepository.UpdateAsync(id, noticiaQuery);
 
-            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { news = noticiaQuery }));
         }
         catch (Exception ex)
         {
