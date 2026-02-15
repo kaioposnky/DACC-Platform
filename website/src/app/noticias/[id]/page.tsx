@@ -7,7 +7,7 @@ import { NewsArticleBanner, NewsArticleContent } from "@/components/organisms"
 import { apiService } from '@/services/api'
 import { News } from '@/types'
 import Link from 'next/link'
-import {formatDate} from "@/utils";
+import { formatDate } from "@/utils";
 
 export default function NewsDetailPage() {
   const params = useParams()
@@ -84,7 +84,7 @@ export default function NewsDetailPage() {
             <p className="text-gray-600 mb-8">
               O artigo que você está procurando não existe ou foi removido.
             </p>
-              <Link
+            <Link
               href="/noticias"
               className="bg-primary text-white px-6 py-3 rounded-md hover:bg-primary-dark transition-colors"
             >
@@ -108,10 +108,11 @@ export default function NewsDetailPage() {
         title={article.title}
         description={article.description}
         image={article.image || 'https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'}
+        imageAlt={article.imageAlt}
         author={article.author?.name + " " + article.author?.lastName || 'Equipe de Redação'}
         date={formattedDate}
         readTime={article.readTime || 5}
-        category={article.category}
+        category={article.category?.name || article.categoryName || 'Sem Categoria'}
         tags={article.tags || []}
       />
 

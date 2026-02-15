@@ -8,6 +8,7 @@ export interface NewsArticleBannerProps {
   title: string
   description: string
   image: string
+  imageAlt?: string
   author: string
   date: string
   readTime: number
@@ -20,6 +21,7 @@ export const NewsArticleBanner: React.FC<NewsArticleBannerProps> = ({
   title,
   description,
   image,
+  imageAlt,
   author,
   date,
   readTime,
@@ -33,7 +35,7 @@ export const NewsArticleBanner: React.FC<NewsArticleBannerProps> = ({
       <div className="absolute inset-0">
         <img
           src={image}
-          alt={title}
+          alt={imageAlt || title}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gray-900/70"></div>
@@ -48,15 +50,15 @@ export const NewsArticleBanner: React.FC<NewsArticleBannerProps> = ({
           transition={{ duration: 0.5 }}
           className="flex items-center space-x-2 text-sm mb-8"
         >
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="text-gray-300 hover:text-white transition-colors"
           >
             Início
           </Link>
           <ChevronRightIcon className="h-4 w-4 text-gray-400" />
-          <Link 
-            href="/noticias" 
+          <Link
+            href="/noticias"
             className="text-gray-300 hover:text-white transition-colors"
           >
             Notícias

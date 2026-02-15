@@ -92,6 +92,11 @@ export interface Project {
   directorate?: Directorate;
 }
 
+export interface NewsCategory {
+  id: string;
+  name: string;
+}
+
 export interface News {
   id: string;
   title: string;
@@ -100,9 +105,12 @@ export interface News {
   author?: User;
   readTime?: number;
   image?: string;
+  imageAlt?: string;
   tags?: string[];
   date: string;
-  category: string;
+  categoryId?: string;
+  category?: NewsCategory;
+  categoryName?: string;
   icon: string;
   gradient: string;
   readMoreLink: string;

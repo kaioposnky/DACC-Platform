@@ -6,6 +6,7 @@ import {
   Event,
   Faculty,
   News,
+  NewsCategory,
   Post,
   Product,
   Project,
@@ -508,7 +509,35 @@ class ApiService {
     return response.directorate;
   }
 
-  // News
+  // News Categories
+  async getNewsCategories(): Promise<NewsCategory[]> {
+    const data = await this.request<{ categories: NewsCategory[] }>('/news/categories');
+    return data?.categories || [];
+  }
+
+  async createNewsCategory(name: string): Promise<NewsCategory> {
+    const response = await this.request<{ category: NewsCategory }>('/news/categories', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    });
+    return response.category;
+  }
+
+  async updateNewsCategory(id: string, name: string): Promise<NewsCategory> {
+    const response = await this.request<{ category: NewsCategory }>(`/news/categories/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ name }),
+    });
+    return response.category;
+  }
+
+  async deleteNewsCategory(id: string): Promise<void> {
+    return this.request<void>(`/news/categories/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // News Items
   async getNews(params?: {
     category?: string;
     search?: string;

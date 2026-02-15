@@ -72,7 +72,7 @@ export default function AdminEditNoticiaPage() {
         image: news.image,
         tags: news.tags,
         date: formattedDate,
-        category: news.category,
+        categoryId: news.categoryId || news.category?.id,
         icon: news.icon,
         gradient: news.gradient,
         readMoreLink: news.readMoreLink,
@@ -151,7 +151,7 @@ export default function AdminEditNoticiaPage() {
         loadingSave={isSaving}
         loadingDelete={isDeleting}
         status={{
-          text: news.category,
+          text: news.category?.name || news.categoryName || "Sem categoria",
           colorClass: "bg-blue-100 text-blue-700 font-bold",
         }}
       />
@@ -161,8 +161,6 @@ export default function AdminEditNoticiaPage() {
           news={news}
           users={users}
           onChange={handleChange}
-          onImageChange={handleSetImage}
-          onImageRemove={handleRemoveImage}
           mode="edit"
         />
       </div>
