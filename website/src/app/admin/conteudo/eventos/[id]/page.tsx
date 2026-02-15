@@ -18,7 +18,6 @@ export default function AdminEditEventoPage() {
   const params = useParams();
 
   const [event, setEvent] = useState<Event | null>(null);
-  const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -27,26 +26,21 @@ export default function AdminEditEventoPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [eventResponse, usersResponse] = await Promise.all([
-          apiService.getEvent(params.id as string),
-          apiService.getUsers(),
-        ]);
+        const eventResponse = await apiService.getEvent(params.id as string);
 
-        // Map backend 'autor' (Portuguese) to 'author' (English/User interface)
         const eventData = eventResponse as any;
         if (eventData.autor) {
           eventResponse.author = {
             id: eventData.autor.id,
             name: eventData.autor.nome,
             lastName: eventData.autor.sobrenome,
-            email: "", // Placeholder
-            avatar: "", // Placeholder
-            role: "administrador" // Placeholder
+            email: "",
+            avatar: "",
+            role: "administrador"
           } as User;
         }
 
         setEvent(eventResponse);
-        setUsers(usersResponse);
       } catch (error) {
         console.error(error);
         toast.error("Erro ao carregar dados");
@@ -61,7 +55,6 @@ export default function AdminEditEventoPage() {
     if (!event) return;
     setIsSaving(true);
     try {
-      // Combine date and time to ensure backend receives full DateTime in UTC
       let formattedDate = event.date;
       if (event.date && event.time) {
         if (!event.date.includes('T')) {
@@ -78,10 +71,9 @@ export default function AdminEditEventoPage() {
         title: event.title,
         description: event.description,
         date: formattedDate,
-        time: event.time,
         actionText: event.actionText,
         actionLink: event.actionLink,
-        type: event.type,
+        eventType: event.type,
         authorId: event.author?.id
       };
 

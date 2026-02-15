@@ -62,6 +62,11 @@ export interface Announcement {
   createdAt: string;
 }
 
+export interface EventType {
+  id: string;
+  name: string;
+}
+
 export interface Event {
   id: string;
   title: string;
@@ -376,4 +381,16 @@ export interface ProjectRequest {
   completionText: string;
   progress: number;
   imageUrl: string;
+}
+
+export interface EventRequest {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  actionText: string;
+  actionLink: string;
+  eventType: string;
+  authorId: string;
 }

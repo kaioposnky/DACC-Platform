@@ -4,6 +4,7 @@ import {
   Comment,
   Directorate,
   Event,
+  EventType,
   Faculty,
   News,
   NewsCategory,
@@ -19,7 +20,8 @@ import {
   ProductSubcategory,
   ProductSize,
   ProductColor,
-  ProjectRequest
+  ProjectRequest,
+  EventRequest
 } from '@/types';
 import { DashboardStats } from '@/types/dashboard';
 import { storageService } from "@/services/storage";
@@ -401,12 +403,25 @@ class ApiService {
     return data?.events || [];
   }
 
+  async getEventTypes(): Promise<EventType[]> {
+    const data = await this.request<{ types: EventType[] }>('/events/types');
+    return data?.types || [];
+  }
+
+  async createEventType(name: string): Promise<EventType> {
+    const data = await this.request<{ type: EventType }>('/events/types', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    });
+    return data.type;
+  }
+
   async getEvent(id: string): Promise<Event> {
     const data = await this.request<{ event: Event }>(`/events/${id}`);
     return data.event;
   }
 
-  async createEvent(event: Omit<Event, 'id'>): Promise<Event> {
+  async createEvent(event: EventRequest): Promise<Event> {
     const data = await this.request<{ event: Event }>('/events', {
       method: 'POST',
       body: JSON.stringify(event),
