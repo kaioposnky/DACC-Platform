@@ -8,7 +8,7 @@
         /// <summary>
         /// Obtém ou define o ID do evento.
         /// </summary>
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
         /// <summary>
         /// Obtém ou define o título do evento.
         /// </summary>
@@ -20,7 +20,7 @@
         /// <summary>
         /// Obtém ou define a data do evento.
         /// </summary>
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
         /// <summary>
         /// Obtém ou define o tipo do evento.
         /// </summary>
@@ -37,11 +37,6 @@
         /// <summary>
         /// Obtém ou define o ID do autor do evento.
         /// </summary>
-        public Guid? AutorId { get; set; }
-
-        /// <summary>
-        /// Obtém ou define o conteúdo detalhado do evento.
-        /// </summary>
-        public string? Content { get; set; }
+        public Guid? AuthorId { get; set; }
     }
 }

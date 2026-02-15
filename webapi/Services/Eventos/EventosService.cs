@@ -44,7 +44,8 @@ namespace DaccApi.Services.Eventos
                         String.IsNullOrWhiteSpace(request.Description) ||
                         String.IsNullOrWhiteSpace(request.EventType) ||
                         String.IsNullOrWhiteSpace(request.ActionText)||
-                        String.IsNullOrWhiteSpace(request.ActionLink)
+                        String.IsNullOrWhiteSpace(request.ActionLink) ||
+                        !request.Date.HasValue
                         )
                     {
                         return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
@@ -54,12 +55,12 @@ namespace DaccApi.Services.Eventos
                     {
                         Id = Guid.NewGuid(),
                         Titulo = request.Title,
-                        AutorId = autorId,
+                        AutorId = request.AuthorId ?? autorId,
                         Descricao = request.Description,
                         LinkAcao = request.ActionLink,
                         TextoAcao = request.ActionText,
                         TipoEvento = request.EventType,
-                        Data = request.Date
+                        Data = request.Date.Value
                     };
 
                     await _eventosRepository.CreateAsync(evento);
@@ -129,7 +130,7 @@ namespace DaccApi.Services.Eventos
                     eventoQuery.Descricao = request.Description ?? eventoQuery.Descricao;
                     eventoQuery.LinkAcao = request.ActionLink ?? eventoQuery.LinkAcao;
                     eventoQuery.TipoEvento = request.EventType ?? eventoQuery.TipoEvento;
-                    eventoQuery.Data = request.Date != default ? request.Date : eventoQuery.Data;
+                    eventoQuery.Data = request.Date.HasValue ? request.Date.Value : eventoQuery.Data;
                     
                     await _eventosRepository.UpdateAsync(id, eventoQuery);
 
