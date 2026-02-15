@@ -13,6 +13,8 @@
             n.data_atualizacao as DataAtualizacao,
             n.data_publicacao as DataPublicacao,
             n.tempo_leitura as TempoLeitura,
+            cn.icon as CategoriaIcon,
+            cn.gradient as CategoriaGradient,
             u.id as Autor_Id,
             u.nome as Autor_Nome,
             u.sobrenome as Autor_Sobrenome,
@@ -34,6 +36,7 @@
             ) as TagsJson
         FROM noticia n
         LEFT JOIN usuario u ON n.autor_id = u.id
+        LEFT JOIN categorias_noticia cn ON n.categoria = cn.nome
         ORDER BY n.data_publicacao DESC;
     </query>
 
@@ -60,6 +63,8 @@
             n.data_atualizacao as DataAtualizacao,
             n.data_publicacao as DataPublicacao,
             n.tempo_leitura as TempoLeitura,
+            cn.icon as CategoriaIcon,
+            cn.gradient as CategoriaGradient,
             u.id as Autor_Id,
             u.nome as Autor_Nome,
             u.sobrenome as Autor_Sobrenome,
@@ -88,6 +93,7 @@
             u.data_atualizacao as DataAtualizacao
         FROM noticia n
         LEFT JOIN usuario u ON n.autor_id = u.id
+        LEFT JOIN categorias_noticia cn ON n.categoria = cn.nome
         WHERE n.id = @id;
     </query>
 
@@ -120,6 +126,8 @@
                 n.data_atualizacao as DataAtualizacao,
                 n.data_publicacao as DataPublicacao,
                 n.tempo_leitura as TempoLeitura,
+                cn.icon as CategoriaIcon,
+                cn.gradient as CategoriaGradient,
                 (
                     SELECT json_agg(json_build_object('Id', nt.id, 'Nome', nt.nome))
                     FROM noticia_tag nt
@@ -144,6 +152,7 @@
             FROM
                 noticia n
             LEFT JOIN usuario u ON n.autor_id = u.id
+            LEFT JOIN categorias_noticia cn ON n.categoria = cn.nome
             WHERE
                 (@SearchQuery IS NULL OR n.titulo ILIKE @SearchQuery OR n.descricao ILIKE @SearchQuery OR n.conteudo ILIKE @SearchQuery)
                 AND (@Category IS NULL OR n.categoria = @Category)

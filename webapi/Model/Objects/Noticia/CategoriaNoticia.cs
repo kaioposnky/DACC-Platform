@@ -14,6 +14,12 @@ namespace DaccApi.Model
         [Column("nome")]
         public string Nome { get; set; }
 
+        [Column("icon")]
+        public string? Icon { get; set; }
+
+        [Column("gradient")]
+        public string? Gradient { get; set; }
+
         [NotMapped]
         public int TotalCount { get; set; }
     }

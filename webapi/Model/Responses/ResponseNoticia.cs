@@ -79,6 +79,9 @@ public class ResponseNoticia
         Author = noticia.Autor != null ? new ResponseUsuario(noticia.Autor) : null;
         ReadTime = noticia.TempoLeitura;
         Tags = noticia.Tags.Select(tag => tag.Nome).ToArray();
+        Icon = noticia.CategoriaIcon;
+        Gradient = noticia.CategoriaGradient;
+        ReadMoreLink = $"/news/{Id}";
     }
 
     /// <summary>

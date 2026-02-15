@@ -39,8 +39,10 @@ CREATE TABLE tipos_progresso
 DROP TABLE IF EXISTS categorias_noticia CASCADE;
 CREATE TABLE categorias_noticia
 (
-    id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    nome VARCHAR(50) NOT NULL UNIQUE
+    id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome     VARCHAR(50) NOT NULL UNIQUE,
+    icon     VARCHAR(50),
+    gradient VARCHAR(50)
 );
 
 -- -- Tabela: Usuários
@@ -48,20 +50,20 @@ CREATE TABLE categorias_noticia
 DROP TABLE IF EXISTS usuario CASCADE;
 CREATE TABLE usuario
 (
-    id                   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    nome                 VARCHAR(100)        NOT NULL,
-    sobrenome            VARCHAR(100)        NOT NULL,
-    email                VARCHAR(150) UNIQUE NOT NULL,
-    ra                   VARCHAR(15) UNIQUE,
-    curso                VARCHAR(200)        NOT NULL,
-    telefone             VARCHAR(15),
-    senha_hash           VARCHAR(200)        NOT NULL,
-    imagem_url           VARCHAR(255),
-    ativo                BOOLEAN   DEFAULT TRUE,
-    newsletter_subscriber BOOLEAN   DEFAULT FALSE,
-    cargo                VARCHAR(50) REFERENCES tipos_usuario (nome),
-    data_criacao         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_atualizacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id                    UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome                  VARCHAR(100)        NOT NULL,
+    sobrenome             VARCHAR(100)        NOT NULL,
+    email                 VARCHAR(150) UNIQUE NOT NULL,
+    ra                    VARCHAR(15) UNIQUE,
+    curso                 VARCHAR(200)        NOT NULL,
+    telefone              VARCHAR(15),
+    senha_hash            VARCHAR(200)        NOT NULL,
+    imagem_url            VARCHAR(255),
+    ativo                 BOOLEAN          DEFAULT TRUE,
+    newsletter_subscriber BOOLEAN          DEFAULT FALSE,
+    cargo                 VARCHAR(50) REFERENCES tipos_usuario (nome),
+    data_criacao          TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao      TIMESTAMP        DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabela: Tokens de Reset de Senha
@@ -69,13 +71,13 @@ CREATE TABLE usuario
 DROP TABLE IF EXISTS usuario_reset_tokens CASCADE;
 CREATE TABLE usuario_reset_tokens
 (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    usuario_id      UUID REFERENCES usuario (id) ON DELETE CASCADE,
-    token           VARCHAR(255) NOT NULL UNIQUE,
-    data_expiracao  TIMESTAMP NOT NULL,
-    usado           BOOLEAN DEFAULT FALSE,
-    data_usada      TIMESTAMP,
-    data_criacao    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    usuario_id     UUID REFERENCES usuario (id) ON DELETE CASCADE,
+    token          VARCHAR(255) NOT NULL UNIQUE,
+    data_expiracao TIMESTAMP    NOT NULL,
+    usado          BOOLEAN          DEFAULT FALSE,
+    data_usada     TIMESTAMP,
+    data_criacao   TIMESTAMP        DEFAULT CURRENT_TIMESTAMP
 );
 
 
@@ -138,19 +140,19 @@ DROP TABLE IF EXISTS anuncio CASCADE;
 CREATE TABLE anuncio
 (
     id                     UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    titulo                 VARCHAR(200) NOT NULL,
-    conteudo               TEXT        NOT NULL,
-    tipo_anuncio           VARCHAR(50) REFERENCES tipos_anuncio (nome) NOT NULL,
-    botao_primario_texto   VARCHAR(20) NOT NULL,
-    botao_primario_link    VARCHAR(255) NOT NULL,
-    botao_secundario_texto VARCHAR(20) NOT NULL,
-    botao_secundario_link  VARCHAR(255) NOT NULL,
-    imagem_url             VARCHAR(255) NOT NULL,
-    imagem_alt             VARCHAR(100) NOT NULL,
-    ativo                  BOOLEAN     NOT NULL DEFAULT FALSE,
+    titulo                 VARCHAR(200)                                 NOT NULL,
+    conteudo               TEXT                                         NOT NULL,
+    tipo_anuncio           VARCHAR(50) REFERENCES tipos_anuncio (nome)  NOT NULL,
+    botao_primario_texto   VARCHAR(20)                                  NOT NULL,
+    botao_primario_link    VARCHAR(255)                                 NOT NULL,
+    botao_secundario_texto VARCHAR(20)                                  NOT NULL,
+    botao_secundario_link  VARCHAR(255)                                 NOT NULL,
+    imagem_url             VARCHAR(255)                                 NOT NULL,
+    imagem_alt             VARCHAR(100)                                 NOT NULL,
+    ativo                  BOOLEAN                                      NOT NULL DEFAULT FALSE,
     autor_id               UUID REFERENCES usuario (id),
-    data_criacao           TIMESTAMP DEFAULT  CURRENT_TIMESTAMP NOT NULL,
-    data_atualizacao       TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+    data_criacao           TIMESTAMP                                             DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    data_atualizacao       TIMESTAMP                                             DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 -- Tabela: Detalhes de Anúncios
@@ -160,7 +162,7 @@ CREATE TABLE anuncio_detalhe
 (
     id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     anuncio_id UUID REFERENCES anuncio (id),
-    ordem      INT DEFAULT 0,
+    ordem      INT              DEFAULT 0,
     imagem_url VARCHAR(255),
     conteudo   VARCHAR(255),
     UNIQUE (anuncio_id, ordem)
@@ -172,13 +174,13 @@ DROP TABLE IF EXISTS evento CASCADE;
 CREATE TABLE evento
 (
     id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    titulo           VARCHAR(200) NOT NULL,
-    descricao        TEXT        NOT NULL,
-    data             TIMESTAMP   NOT NULL,
+    titulo           VARCHAR(200)                       NOT NULL,
+    descricao        TEXT                               NOT NULL,
+    data             TIMESTAMP                          NOT NULL,
     tipo_evento      VARCHAR(50) REFERENCES tipos_evento (nome),
     autor_id         UUID REFERENCES usuario (id),
-    texto_acao       VARCHAR(20) NOT NULL,
-    link_acao        VARCHAR(255) NOT NULL,
+    texto_acao       VARCHAR(20)                        NOT NULL,
+    link_acao        VARCHAR(255)                       NOT NULL,
     data_criacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -204,36 +206,36 @@ CREATE TABLE curso
 );
 
 -- Inserir cursos iniciais
-INSERT INTO curso (nome) VALUES 
-('Engenharia de Materiais'),
-('Engenharia de Mecânica'),
-('Engenharia de Robos'),
-('Engenharia Elétrica'),
-('Ciência da Computação');
+INSERT INTO curso (nome)
+VALUES ('Engenharia de Materiais'),
+       ('Engenharia de Mecânica'),
+       ('Engenharia de Robos'),
+       ('Engenharia Elétrica'),
+       ('Ciência da Computação');
 
-INSERT INTO diretoria (nome, descricao) VALUES 
-    ('E-Sports', 'Diretoria de E-Sports'),
-    ('RH', 'Diretoria de RH'),
-    ('Projetos', 'Diretoria de Projetos'),
-    ('Marketing', 'Diretoria de Marketing');
+INSERT INTO diretoria (nome, descricao)
+VALUES ('E-Sports', 'Diretoria de E-Sports'),
+       ('RH', 'Diretoria de RH'),
+       ('Projetos', 'Diretoria de Projetos'),
+       ('Marketing', 'Diretoria de Marketing');
 
 -- Tabela: Professores
 -- Armazena informações sobre os professores/faculty (perfis acadêmicos)
 DROP TABLE IF EXISTS professores CASCADE;
 CREATE TABLE professores
 (
-    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    nome           VARCHAR(100) NOT NULL,
-    titulo         VARCHAR(50) NOT NULL,
-    cargo          VARCHAR(100) NOT NULL,
-    especializacao VARCHAR(200) NOT NULL,
-    imagem_url     VARCHAR(255) NOT NULL,
-    email          VARCHAR(150),
-    linkedin       VARCHAR(255),
-    github         VARCHAR(255),
-    usuario_id     UUID REFERENCES usuario (id), -- Este campo é opcional, pois um professor pode não ser um usuário
-    data_criacao   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome             VARCHAR(100) NOT NULL,
+    titulo           VARCHAR(50)  NOT NULL,
+    cargo            VARCHAR(100) NOT NULL,
+    especializacao   VARCHAR(200) NOT NULL,
+    imagem_url       VARCHAR(255) NOT NULL,
+    email            VARCHAR(150),
+    linkedin         VARCHAR(255),
+    github           VARCHAR(255),
+    usuario_id       UUID REFERENCES usuario (id), -- Este campo é opcional, pois um professor pode não ser um usuário
+    data_criacao     TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao TIMESTAMP        DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabela: Cores
@@ -260,17 +262,18 @@ CREATE TABLE produto_tamanho
 DROP TABLE IF EXISTS produto_categoria CASCADE;
 CREATE TABLE produto_categoria
 (
-    id      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    nome    VARCHAR(100) UNIQUE NOT NULL
+    id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome VARCHAR(100) UNIQUE NOT NULL
 );
 
 -- Tabela: Subcategoria
 -- Armazena as subcategorias de produtos
 DROP TABLE IF EXISTS produto_subcategoria CASCADE;
-CREATE TABLE produto_subcategoria(
-                                     id      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                                     nome    VARCHAR(100) UNIQUE NOT NULL,
-                                     categoria_id UUID REFERENCES produto_categoria (id)
+CREATE TABLE produto_subcategoria
+(
+    id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome         VARCHAR(100) UNIQUE NOT NULL,
+    categoria_id UUID REFERENCES produto_categoria (id)
 );
 
 -- Tabela: Produtos
@@ -279,16 +282,16 @@ DROP TABLE IF EXISTS produto CASCADE;
 CREATE TABLE produto
 (
     id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    nome                VARCHAR(150) NOT NULL,
-    descricao           TEXT         NOT NULL,
+    nome                VARCHAR(150)   NOT NULL,
+    descricao           TEXT           NOT NULL,
     descricao_detalhada TEXT,
-    destaque            BOOLEAN      DEFAULT FALSE,
+    destaque            BOOLEAN                 DEFAULT FALSE,
     preco               NUMERIC(10, 2) NOT NULL,
     preco_original      NUMERIC(10, 2),
     subcategoria_id     UUID REFERENCES produto_subcategoria (id),
-    ativo               BOOLEAN      NOT NULL DEFAULT TRUE,
-    data_criacao        TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
-    data_atualizacao    TIMESTAMP             DEFAULT CURRENT_TIMESTAMP
+    ativo               BOOLEAN        NOT NULL DEFAULT TRUE,
+    data_criacao        TIMESTAMP               DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao    TIMESTAMP               DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabela: Especificações de Produto
@@ -296,10 +299,10 @@ CREATE TABLE produto
 DROP TABLE IF EXISTS produto_especificacao CASCADE;
 CREATE TABLE produto_especificacao
 (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    produto_id  UUID REFERENCES produto (id) ON DELETE CASCADE,
-    nome        VARCHAR(100) NOT NULL,
-    valor       VARCHAR(255) NOT NULL,
+    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    produto_id UUID REFERENCES produto (id) ON DELETE CASCADE,
+    nome       VARCHAR(100) NOT NULL,
+    valor      VARCHAR(255) NOT NULL,
     UNIQUE (produto_id, nome)
 );
 
@@ -311,7 +314,7 @@ CREATE TABLE produto_informacao_envio
     id                 UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     produto_id         UUID REFERENCES produto (id) ON DELETE CASCADE UNIQUE,
     frete_gratis       BOOLEAN DEFAULT FALSE,
-    dias_estimados     INTEGER NOT NULL DEFAULT 0,
+    dias_estimados     INTEGER      NOT NULL DEFAULT 0,
     custo_envio        NUMERIC(10, 2),
     politica_devolucao VARCHAR(255) NOT NULL,
     garantia           VARCHAR(100)
@@ -322,9 +325,9 @@ CREATE TABLE produto_informacao_envio
 DROP TABLE IF EXISTS produto_perfeito_para CASCADE;
 CREATE TABLE produto_perfeito_para
 (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    produto_id  UUID REFERENCES produto (id) ON DELETE CASCADE,
-    ocasiao     VARCHAR(100) NOT NULL,
+    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    produto_id UUID REFERENCES produto (id) ON DELETE CASCADE,
+    ocasiao    VARCHAR(100) NOT NULL,
     UNIQUE (produto_id, ocasiao)
 );
 
@@ -333,15 +336,15 @@ CREATE TABLE produto_perfeito_para
 DROP TABLE IF EXISTS produto_variacao CASCADE;
 CREATE TABLE produto_variacao
 (
-    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    produto_id          UUID REFERENCES produto (id) ON DELETE CASCADE,
-    cor_id              UUID REFERENCES produto_cor (id),
-    tamanho_id          UUID REFERENCES produto_tamanho (id),
-    estoque             INT            NOT NULL DEFAULT 0,
-    sku                 VARCHAR(100) UNIQUE,
-    ordem               INT          NOT NULL DEFAULT 0,
-    data_criacao        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_atualizacao    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    produto_id       UUID REFERENCES produto (id) ON DELETE CASCADE,
+    cor_id           UUID REFERENCES produto_cor (id),
+    tamanho_id       UUID REFERENCES produto_tamanho (id),
+    estoque          INT              NOT NULL DEFAULT 0,
+    sku              VARCHAR(100) UNIQUE,
+    ordem            INT              NOT NULL DEFAULT 0,
+    data_criacao     TIMESTAMP                 DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao TIMESTAMP                 DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (produto_id, cor_id, tamanho_id)
 );
 
@@ -382,15 +385,15 @@ CREATE TABLE metodo_pagamento
 DROP TABLE IF EXISTS cupom CASCADE;
 CREATE TABLE cupom
 (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    codigo          VARCHAR(50) NOT NULL UNIQUE,
-    tipo_desconto   VARCHAR(20) NOT NULL, -- 'porcentagem' ou 'valor_fixo'
-    valor           NUMERIC(10, 2) NOT NULL,
-    data_expiracao  TIMESTAMP,
-    limite_uso      INT,
-    uso_atual       INT DEFAULT 0,
-    ativo           BOOLEAN DEFAULT TRUE,
-    data_criacao    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    codigo         VARCHAR(50)    NOT NULL UNIQUE,
+    tipo_desconto  VARCHAR(20)    NOT NULL, -- 'porcentagem' ou 'valor_fixo'
+    valor          NUMERIC(10, 2) NOT NULL,
+    data_expiracao TIMESTAMP,
+    limite_uso     INT,
+    uso_atual      INT     DEFAULT 0,
+    ativo          BOOLEAN DEFAULT TRUE,
+    data_criacao   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabela: Pedidos
@@ -402,8 +405,8 @@ CREATE TABLE pedido
     usuario_id               UUID REFERENCES usuario (id),
     data_pedido              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status_pedido            VARCHAR(50) REFERENCES status_pedido (nome),
-    mercadopago_pagamento_id BIGINT NULL,
-    preference_id            VARCHAR(100) NULL,
+    mercadopago_pagamento_id BIGINT         NULL,
+    preference_id            VARCHAR(100)   NULL,
     metodo_pagamento         VARCHAR(50) REFERENCES metodo_pagamento (nome) NULL,
     total_pedido             NUMERIC(10, 2) NOT NULL,
     cupom_id                 UUID REFERENCES cupom (id)
@@ -412,14 +415,15 @@ CREATE TABLE pedido
 -- Tabela: Reservas de produto
 -- Cria uma reserva de quantidade de produto para ser alterado no pedido
 DROP TABLE IF EXISTS reserva_produto CASCADE;
-CREATE TABLE reserva_produto (
-                                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                                 produto_variacao_id UUID REFERENCES produto_variacao(id),
-                                 pedido_id UUID REFERENCES pedido(id),
-                                 quantidade INT NOT NULL,
-                                 ativo BOOLEAN DEFAULT true,
-                                 data_expira TIMESTAMP NOT NULL,
-                                 data_criacao TIMESTAMP DEFAULT NOW()
+CREATE TABLE reserva_produto
+(
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    produto_variacao_id UUID REFERENCES produto_variacao (id),
+    pedido_id           UUID REFERENCES pedido (id),
+    quantidade          INT NOT NULL,
+    ativo               BOOLEAN          DEFAULT true,
+    data_expira         TIMESTAMP NOT NULL,
+    data_criacao        TIMESTAMP        DEFAULT NOW()
 );
 
 -- Tabela: Itens do Pedido
@@ -440,16 +444,16 @@ CREATE TABLE item_pedido
 DROP TABLE IF EXISTS avaliacao CASCADE;
 CREATE TABLE avaliacao
 (
-    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    usuario_id           UUID REFERENCES usuario (id),
-    produto_id           UUID REFERENCES produto (id) ON DELETE CASCADE,
-    produto_variacao_id  UUID REFERENCES produto_variacao (id) ON DELETE CASCADE,
-    nota                 DECIMAL(2,1) CHECK (nota BETWEEN 0.5 AND 5.0),
-    titulo           VARCHAR(100),
-    comentario       TEXT,
-    ativo            BOOLEAN   DEFAULT TRUE,
-    data_avaliacao   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    usuario_id          UUID REFERENCES usuario (id),
+    produto_id          UUID REFERENCES produto (id) ON DELETE CASCADE,
+    produto_variacao_id UUID REFERENCES produto_variacao (id) ON DELETE CASCADE,
+    nota                DECIMAL(2, 1) CHECK (nota BETWEEN 0.5 AND 5.0),
+    titulo              VARCHAR(100),
+    comentario          TEXT,
+    ativo               BOOLEAN          DEFAULT TRUE,
+    data_avaliacao      TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao    TIMESTAMP        DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabela: Notícias
@@ -467,8 +471,8 @@ CREATE TABLE noticia
     categoria        VARCHAR(50) REFERENCES categorias_noticia (nome),
     tags             VARCHAR(255)[],
     tempo_leitura    INT,
-    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_publicacao  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    data_atualizacao TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
+    data_publicacao  TIMESTAMP        DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabela: Tags de Notícia
@@ -500,12 +504,12 @@ CREATE TABLE projeto
     descricao        TEXT         NOT NULL,
     imagem_url       VARCHAR(255),
     status           VARCHAR(50) REFERENCES tipos_progresso (nome),
-    progresso        INT DEFAULT 0,
+    progresso        INT              DEFAULT 0,
     texto_conclusao  VARCHAR(100) NOT NULL,
     diretoria_id     UUID REFERENCES diretoria (id),
     tags             VARCHAR(20)[],
-    data_criacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    data_criacao     TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao TIMESTAMP        DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabela: UsuarioTokens
@@ -578,11 +582,11 @@ VALUES ('planned'),
        ('completed');
 
 -- Categorias de Notícia
-INSERT INTO categorias_noticia (nome)
-VALUES ('geral'),
-       ('tecnologia'),
-       ('carreira'),
-       ('academico');
+INSERT INTO categorias_noticia (nome, icon, gradient)
+VALUES ('geral', 'Globe', 'from-blue-500 to-cyan-500'),
+       ('tecnologia', 'Cpu', 'from-purple-500 to-pink-500'),
+       ('carreira', 'Briefcase', 'from-green-500 to-emerald-500'),
+       ('academico', 'GraduationCap', 'from-orange-500 to-red-500');
 
 -- Status de Pedido
 INSERT INTO status_pedido (nome)

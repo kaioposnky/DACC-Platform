@@ -98,5 +98,17 @@ namespace DaccApi.Model
         /// </summary>
         [NotMapped]
         public Usuario? Autor { get; set; }
+
+        /// <summary>
+        /// Ícone da categoria (mapeado via join).
+        /// </summary>
+        [NotMapped]
+        public string? CategoriaIcon { get; set; }
+
+        /// <summary>
+        /// Gradiente da categoria (mapeado via join).
+        /// </summary>
+        [NotMapped]
+        public string? CategoriaGradient { get; set; }
     }
 }
