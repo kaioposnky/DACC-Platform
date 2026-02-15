@@ -206,7 +206,38 @@ export default function NewsForm({
 							disabled={isReadonly}
 						/>
 					</div>
-				</AdminCard>
+        </AdminCard>
+
+        <AdminCard
+					icon={<Square3Stack3DIcon className="w-5 h-5 text-primary" />}
+					title="Estilo e Links"
+				>
+					<div className="space-y-4">
+						<Input
+							label="Gradiente CSS (Opcional)"
+							placeholder="Ex: from-blue-500 to-cyan-500"
+							value={news.gradient || ""}
+							onChange={(e) => onChange("gradient", e.target.value)}
+							disabled={isReadonly}
+						/>
+
+						<Input
+							label="Ícone (URL ou Classe)"
+							placeholder="URL de ícone ou classe..."
+							value={news.icon || ""}
+							onChange={(e) => onChange("icon", e.target.value)}
+							disabled={isReadonly}
+						/>
+
+						<Input
+							label="Link 'Ler Mais' (Externo)"
+							placeholder="https://..."
+							value={news.readMoreLink || ""}
+							onChange={(e) => onChange("readMoreLink", e.target.value)}
+							disabled={isReadonly}
+						/>
+					</div>
+        </AdminCard>
 			</div>
 
 			<div className="space-y-6">
@@ -284,6 +315,15 @@ export default function NewsForm({
 					</div>
 				</AdminCard>
 
+				{!isReadonly && (
+					<Input
+						label="Texto Alternativo da Imagem (Acessibilidade)"
+						placeholder="Descreva a imagem para leitores de tela..."
+						value={news.imageAlt || ""}
+						onChange={(e) => onChange("imageAlt", e.target.value)}
+					/>
+        )}
+
 				<ImageUploadCard
 					title="Imagem de Capa"
 					description={
@@ -299,46 +339,6 @@ export default function NewsForm({
 					galleryDescription="Esta imagem aparecerá no topo da notícia e nos cards da listagem."
 					showModal={!isReadonly}
 				/>
-
-				{!isReadonly && (
-					<Input
-						label="Texto Alternativo da Imagem (Acessibilidade)"
-						placeholder="Descreva a imagem para leitores de tela..."
-						value={news.imageAlt || ""}
-						onChange={(e) => onChange("imageAlt", e.target.value)}
-					/>
-				)}
-
-				<AdminCard
-					icon={<Square3Stack3DIcon className="w-5 h-5 text-primary" />}
-					title="Estilo e Links"
-				>
-					<div className="space-y-4">
-						<Input
-							label="Gradiente CSS (Opcional)"
-							placeholder="Ex: from-blue-500 to-cyan-500"
-							value={news.gradient || ""}
-							onChange={(e) => onChange("gradient", e.target.value)}
-							disabled={isReadonly}
-						/>
-
-						<Input
-							label="Ícone (URL ou Classe)"
-							placeholder="URL de ícone ou classe..."
-							value={news.icon || ""}
-							onChange={(e) => onChange("icon", e.target.value)}
-							disabled={isReadonly}
-						/>
-
-						<Input
-							label="Link 'Ler Mais' (Externo)"
-							placeholder="https://..."
-							value={news.readMoreLink || ""}
-							onChange={(e) => onChange("readMoreLink", e.target.value)}
-							disabled={isReadonly}
-						/>
-					</div>
-				</AdminCard>
 			</div>
 		</div>
 	);
