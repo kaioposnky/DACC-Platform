@@ -23,11 +23,11 @@ namespace DaccApi.Model
         /// <summary>
         /// Obtém ou define o ID do autor da notícia.
         /// </summary>
-        public Guid? AutorId { get; set; }
+        public Guid? AuthorId { get; set; }
         /// <summary>
         /// Obtém ou define a categoria da notícia.
         /// </summary>
-        public string? Category { get; set; }
+        public string? CategoryName { get; set; }
         /// <summary>
         /// Obtém ou define a data da última atualização.
         /// </summary>
@@ -35,7 +35,7 @@ namespace DaccApi.Model
         /// <summary>
         /// Obtém ou define a data de publicação.
         /// </summary>
-        public DateTime? PublishedAt { get; set; }
+        public DateTime? Date { get; set; }
 
         /// <summary>
         /// Obtém ou define o tempo de leitura em minutos.
@@ -45,7 +45,11 @@ namespace DaccApi.Model
         /// <summary>
         /// Obtém ou define a URL da imagem.
         /// </summary>
-        public string? ImageUrl { get; set; }
+        public string? Image { get; set; }
+
+        public string? Gradient { get; set; }
+        public string? Icon { get; set; }
+        public string? ReadMoreLink { get; set; }
 
         /// <summary>
         /// Obtém ou define o texto alternativo da imagem.

@@ -34,7 +34,7 @@ public class NoticiasServices : INoticiasServices
         try
         {
             if (String.IsNullOrWhiteSpace(request.Title) ||
-                String.IsNullOrWhiteSpace(request.Category) ||
+                String.IsNullOrWhiteSpace(request.CategoryName) ||
                 String.IsNullOrWhiteSpace(request.Description))
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
@@ -43,21 +43,21 @@ public class NoticiasServices : INoticiasServices
             var noticia = new Noticia()
             {
                 Id = Guid.NewGuid(),
-                Categoria = request.Category?.ToLower() ?? string.Empty,
+                Categoria = request.CategoryName?.ToLower() ?? string.Empty,
                 Descricao = request.Description,
                 Conteudo = request.Content,
                 Titulo = request.Title,
-                AutorId = autorId,
+                AutorId = request.AuthorId ?? autorId,
                 TempoLeitura = request.ReadTime,
-                ImagemUrl = request.ImageUrl,
+                ImagemUrl = request.Image,
                 ImagemAlt = request.ImageAlt,
-                DataPublicacao = request.PublishedAt ?? DateTime.UtcNow,
+                DataPublicacao = request.Date ?? DateTime.UtcNow,
                 DataAtualizacao = DateTime.UtcNow
             };
             
             await _noticiasRepository.CreateAsync(noticia);
 
-            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED.WithData(new { news = new ResponseNoticia(noticia)}));
         }
         catch (Exception ex)
         {
@@ -158,22 +158,22 @@ public class NoticiasServices : INoticiasServices
             
             noticiaQuery.Titulo = request.Title ?? noticiaQuery.Titulo;
             noticiaQuery.Descricao = request.Description ?? noticiaQuery.Descricao;
-            noticiaQuery.Categoria = request.Category ?? noticiaQuery.Categoria;
+            noticiaQuery.Categoria = request.CategoryName ?? noticiaQuery.Categoria;
             noticiaQuery.Conteudo = request.Content ?? noticiaQuery.Conteudo;
             noticiaQuery.TempoLeitura = request.ReadTime ?? noticiaQuery.TempoLeitura;
-            if (request.ImageUrl != null)
+            if (request.Image != null)
             {
-                if (request.ImageUrl.StartsWith("data:image") || request.ImageUrl.Length > 255)
+                if (request.Image.StartsWith("data:image") || request.Image.Length > 255)
                 {
-                    noticiaQuery.ImagemUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageUrl);
+                    noticiaQuery.ImagemUrl = await _fileStorageService.SaveBase64ImageAsync(request.Image);
                 }
                 else
                 {
-                    noticiaQuery.ImagemUrl = request.ImageUrl;
+                    noticiaQuery.ImagemUrl = request.Image;
                 }
             }
             noticiaQuery.ImagemAlt = request.ImageAlt ?? noticiaQuery.ImagemAlt;
-            noticiaQuery.DataPublicacao = request.PublishedAt ?? noticiaQuery.DataPublicacao;
+            noticiaQuery.DataPublicacao = request.Date ?? noticiaQuery.DataPublicacao;
             noticiaQuery.DataAtualizacao = DateTime.UtcNow;
             
             await _noticiasRepository.UpdateAsync(id, noticiaQuery);

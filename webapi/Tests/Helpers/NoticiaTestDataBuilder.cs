@@ -20,8 +20,8 @@ public static class NoticiaTestDataBuilder
             Title = title ?? "Notícia de Teste Exclusiva",
             Description = description ?? "Descrição curta da notícia para listagem.",
             Content = content ?? "Conteúdo completo da notícia com detalhes importantes.",
-            Category = "tecnologia", // minúsculo
-            PublishedAt = DateTime.UtcNow
+            CategoryName = "tecnologia", // minúsculo
+            Date = DateTime.UtcNow
         };
     }
 
@@ -35,7 +35,7 @@ public static class NoticiaTestDataBuilder
             Title = "Notícia Mínima",
             Description = "Apenas descrição.",
             Content = null, 
-            Category = "geral" // minúsculo
+            CategoryName = "geral" // minúsculo
         };
     }
 
@@ -52,7 +52,7 @@ public static class NoticiaTestDataBuilder
             Title = title ?? "Título da Notícia Atualizado",
             Description = "Descrição atualizada.",
             Content = "Conteúdo atualizado.",
-            Category = "academico", // minúsculo e existente
+            CategoryName = "academico", // minúsculo e existente
             UpdatedAt = DateTime.UtcNow
         };
     }
