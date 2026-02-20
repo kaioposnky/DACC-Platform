@@ -25,9 +25,9 @@ public static class AnuncioTestDataBuilder
             PrimaryButtonText = "Inscreva-se Agora",
             PrimaryButtonLink = "https://fatec.sp.gov.br/eventos/inscricao",
             SecondaryButtonText = "Saber Mais",
-            SecondaryButtonLink = "https://fatec.sp.gov.br/eventos/detalhes",
-            ImageUrl = "https://fatec.sp.gov.br/imagens/evento-tech.jpg",
-            ImageAlt = "Banner do evento de tecnologia"
+            SecondaryButtonLink = "https://example.com/secundario",
+            ImageSrc = "https://example.com/imagem.png",
+            ImageAlt = "Imagem de Teste"
         };
     }
 

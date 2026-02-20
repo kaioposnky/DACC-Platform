@@ -149,6 +149,7 @@ CREATE TABLE anuncio
     botao_secundario_link  VARCHAR(255)                                 NOT NULL,
     imagem_url             VARCHAR(255)                                 NOT NULL,
     imagem_alt             VARCHAR(100)                                 NOT NULL,
+    icone                  VARCHAR(255),
     ativo                  BOOLEAN                                      NOT NULL DEFAULT FALSE,
     autor_id               UUID REFERENCES usuario (id),
     data_criacao           TIMESTAMP                                             DEFAULT CURRENT_TIMESTAMP NOT NULL,

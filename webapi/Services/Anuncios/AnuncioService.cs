@@ -84,8 +84,10 @@ namespace DaccApi.Services.Anuncios
                     BotaoPrimarioLink = anuncio.PrimaryButtonLink ?? string.Empty,
                     BotaoSecundarioTexto = anuncio.SecondaryButtonText ?? string.Empty,
                     BotaoSecundarioLink = anuncio.SecondaryButtonLink ?? string.Empty,
-                    ImagemUrl = anuncio.ImageUrl ?? string.Empty,
+                    ImagemUrl = anuncio.ImageSrc ?? string.Empty,
                     ImagemAlt = anuncio.ImageAlt ?? string.Empty,
+                    Icone = anuncio.Icon ?? string.Empty,
+                    Detalhes = anuncio.Details,
                     DataCriacao = DateTime.UtcNow,
                     DataAtualizacao = DateTime.UtcNow
                 };
@@ -184,18 +186,20 @@ namespace DaccApi.Services.Anuncios
                 anuncioQuery.BotaoPrimarioLink = request.PrimaryButtonLink ?? anuncioQuery.BotaoPrimarioLink;
                 anuncioQuery.BotaoSecundarioTexto = request.SecondaryButtonText ?? anuncioQuery.BotaoSecundarioTexto;
                 anuncioQuery.BotaoSecundarioLink = request.SecondaryButtonLink ?? anuncioQuery.BotaoSecundarioLink;
-                if (request.ImageUrl != null)
+                if (request.ImageSrc != null)
                 {
-                    if (request.ImageUrl.StartsWith("data:image") || request.ImageUrl.Length > 255)
+                    if (request.ImageSrc.StartsWith("data:image") || request.ImageSrc.Length > 255)
                     {
-                        anuncioQuery.ImagemUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageUrl);
+                        anuncioQuery.ImagemUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageSrc);
                     }
                     else
                     {
-                        anuncioQuery.ImagemUrl = request.ImageUrl;
+                        anuncioQuery.ImagemUrl = request.ImageSrc;
                     }
                 }
                 anuncioQuery.ImagemAlt = request.ImageAlt ?? anuncioQuery.ImagemAlt;
+                anuncioQuery.Icone = request.Icon ?? anuncioQuery.Icone;
+                anuncioQuery.Detalhes = request.Details ?? anuncioQuery.Detalhes;
                 anuncioQuery.DataAtualizacao = DateTime.UtcNow;
                 
                 await _anuncioRepository.UpdateAsync(id, anuncioQuery);

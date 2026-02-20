@@ -59,6 +59,10 @@ public class ResponseAnuncio
     /// Obtém ou define a data de criação do anúncio.
     /// </summary>
     public DateTime? CreatedAt { get; set; }
+    /// <summary>
+    /// Obtém ou define o autor do anúncio.
+    /// </summary>
+    public ResponseUsuario? Author { get; set; }
 
     /// <summary>
     /// Construtor para mapear de uma entidade Anuncio.
@@ -75,12 +79,14 @@ public class ResponseAnuncio
         CreatedAt = anuncio.DataCriacao;
 
         // Propriedades específicas do frontend sem correspondência direta na entidade Anuncio
-        Icon = string.Empty; // Valor padrão
-        Details = new List<DetailsItem>(); // Lista vazia padrão
-        PrimaryButtonText = string.Empty;
-        SecondaryButtonText = string.Empty;
-        PrimaryButtonLink = string.Empty;
-        SecondaryButtonLink = string.Empty;
+        Icon = anuncio.Icone ?? string.Empty;
+        Details = anuncio.Detalhes ?? new List<DetailsItem>();
+        PrimaryButtonText = anuncio.BotaoPrimarioTexto ?? string.Empty;
+        SecondaryButtonText = anuncio.BotaoSecundarioTexto ?? string.Empty;
+        PrimaryButtonLink = anuncio.BotaoPrimarioLink ?? string.Empty;
+        SecondaryButtonLink = anuncio.BotaoSecundarioLink ?? string.Empty;
+
+        Author = anuncio.Autor != null ? new ResponseUsuario(anuncio.Autor) : null;
     }
 }
 

@@ -49,11 +49,21 @@ namespace DaccApi.Model
         /// <summary>
         /// Obtém ou define a URL da imagem (caso já hospedada).
         /// </summary>
-        public string? ImageUrl { get; set; }
+        public string? ImageSrc { get; set; }
 
         /// <summary>
         /// Obtém ou define o texto alternativo da imagem.
         /// </summary>
         public string? ImageAlt { get; set; }
+
+        /// <summary>
+        /// Obtém ou define o ícone do anúncio.
+        /// </summary>
+        public string? Icon { get; set; }
+
+        /// <summary>
+        /// Obtém ou define a lista de detalhes do anúncio.
+        /// </summary>
+        public List<Responses.DetailsItem>? Details { get; set; }
     }
 }

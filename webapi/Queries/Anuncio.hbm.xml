@@ -3,45 +3,90 @@
 <queries>
     <query name="GetAllAnuncio">
         SELECT
-            id,
-            titulo as Titulo,
-            conteudo as Conteudo,
-            tipo_anuncio as TipoAnuncio,
-            botao_primario_texto as BotaoPrimarioTexto,
-            botao_primario_link as BotaoPrimarioLink,
-            botao_secundario_texto as BotaoSecundarioTexto,
-            botao_secundario_link as BotaoSecundarioLink,
-            imagem_url as ImagemUrl,
-            imagem_alt as ImagemAlt,
-            ativo as Ativo,
-            autor_id as AutorId,
-            data_criacao as DataCriacao,
-            data_atualizacao as DataAtualizacao
-        FROM anuncio;
+            a.id,
+            a.titulo as Titulo,
+            a.conteudo as Conteudo,
+            a.tipo_anuncio as TipoAnuncio,
+            a.botao_primario_texto as BotaoPrimarioTexto,
+            a.botao_primario_link as BotaoPrimarioLink,
+            a.botao_secundario_texto as BotaoSecundarioTexto,
+            a.botao_secundario_link as BotaoSecundarioLink,
+            a.imagem_url as ImagemUrl,
+            a.imagem_alt as ImagemAlt,
+            a.icone as Icone,
+            a.ativo as Ativo,
+            a.autor_id as AutorId,
+            a.data_criacao as DataCriacao,
+            a.data_atualizacao as DataAtualizacao,
+            (
+                SELECT json_agg(json_build_object('id', ad.id, 'icon', ad.imagem_url, 'text', ad.conteudo))
+                FROM anuncio_detalhe ad
+                WHERE ad.anuncio_id = a.id
+            ) as DetalhesJson,
+            u.id as Usuario_Id,
+            u.id as Id,
+            u.nome as Nome,
+            u.sobrenome as Sobrenome,
+            u.email as Email,
+            u.ra as Ra,
+            u.curso as Curso,
+            u.telefone as Telefone,
+            u.imagem_url as ImagemUrl,
+            u.ativo as Ativo,
+            u.newsletter_subscriber as InscritoNoticia,
+            u.cargo as Cargo,
+            u.data_criacao as DataCriacao,
+            u.data_atualizacao as DataAtualizacao
+        FROM anuncio a
+        LEFT JOIN usuario u ON a.autor_id = u.id
+        ORDER BY a.data_criacao DESC;
     </query>
 
     <query name="GetAnuncioById">
         SELECT
-            id,
-            titulo as Titulo,
-            conteudo as Conteudo,
-            tipo_anuncio as TipoAnuncio,
-            botao_primario_texto as BotaoPrimarioTexto,
-            botao_primario_link as BotaoPrimarioLink,
-            botao_secundario_texto as BotaoSecundarioTexto,
-            botao_secundario_link as BotaoSecundarioLink,
-            imagem_url as ImagemUrl,
-            imagem_alt as ImagemAlt,
-            ativo as Ativo,
-            autor_id as AutorId,
-            data_criacao as DataCriacao,
-            data_atualizacao as DataAtualizacao
-        FROM anuncio WHERE id = @id;
+            a.id,
+            a.titulo as Titulo,
+            a.conteudo as Conteudo,
+            a.tipo_anuncio as TipoAnuncio,
+            a.botao_primario_texto as BotaoPrimarioTexto,
+            a.botao_primario_link as BotaoPrimarioLink,
+            a.botao_secundario_texto as BotaoSecundarioTexto,
+            a.botao_secundario_link as BotaoSecundarioLink,
+            a.imagem_url as ImagemUrl,
+            a.imagem_alt as ImagemAlt,
+            a.icone as Icone,
+            a.ativo as Ativo,
+            a.autor_id as AutorId,
+            a.data_criacao as DataCriacao,
+            a.data_atualizacao as DataAtualizacao,
+            (
+                SELECT json_agg(json_build_object('id', ad.id, 'icon', ad.imagem_url, 'text', ad.conteudo))
+                FROM anuncio_detalhe ad
+                WHERE ad.anuncio_id = a.id
+            ) as DetalhesJson,
+            u.id as Usuario_Id,
+            u.id as Id,
+            u.nome as Nome,
+            u.sobrenome as Sobrenome,
+            u.email as Email,
+            u.ra as Ra,
+            u.curso as Curso,
+            u.telefone as Telefone,
+            u.imagem_url as ImagemUrl,
+            u.ativo as Ativo,
+            u.newsletter_subscriber as InscritoNoticia,
+            u.cargo as Cargo,
+            u.data_criacao as DataCriacao,
+            u.data_atualizacao as DataAtualizacao
+        FROM anuncio a
+        LEFT JOIN usuario u ON a.autor_id = u.id
+        WHERE a.id = @id;
     </query>
 
     <query name="CreateAnuncio">
-        INSERT INTO anuncio( titulo, conteudo, tipo_anuncio, botao_primario_texto, botao_primario_link, botao_secundario_texto, botao_secundario_link, imagem_url, imagem_alt, ativo, autor_id)
-        VALUES( @Titulo, @Conteudo, @TipoAnuncio, @BotaoPrimarioTexto, @BotaoPrimarioLink, @BotaoSecundarioTexto, @BotaoSecundarioLink, @ImagemUrl, @ImagemAlt, @Ativo, @AutorId)
+        INSERT INTO anuncio( titulo, conteudo, tipo_anuncio, botao_primario_texto, botao_primario_link, botao_secundario_texto, botao_secundario_link, imagem_url, imagem_alt, icone, ativo, autor_id)
+        VALUES( @Titulo, @Conteudo, @TipoAnuncio, @BotaoPrimarioTexto, @BotaoPrimarioLink, @BotaoSecundarioTexto, @BotaoSecundarioLink, @ImagemUrl, @ImagemAlt, @Icone, @Ativo, @AutorId)
+        RETURNING id;
     </query>
     <query name="DeleteAnuncio">
         DELETE FROM anuncio WHERE id = @id
@@ -57,39 +102,70 @@
             botao_secundario_link = @BotaoSecundarioLink,
             imagem_url = @ImagemUrl,
             imagem_alt = @ImagemAlt,
+            icone = @Icone,
             ativo = @Ativo,
             autor_id = @AutorId,
             data_atualizacao = CURRENT_TIMESTAMP
         WHERE id = @id
     </query>
     
+    <query name="InsertAnuncioDetalhe">
+        INSERT INTO anuncio_detalhe (anuncio_id, ordem, imagem_url, conteudo)
+        VALUES (@AnuncioId, @Ordem, @ImagemUrl, @Conteudo)
+    </query>
+
+    <query name="DeleteAnuncioDetalhes">
+        DELETE FROM anuncio_detalhe WHERE anuncio_id = @AnuncioId
+    </query>
+    
 
 
     <query name="SearchAnuncio">
         SELECT
-            id,
-            titulo as Titulo,
-            conteudo as Conteudo,
-            tipo_anuncio as TipoAnuncio,
-            botao_primario_texto as BotaoPrimarioTexto,
-            botao_primario_link as BotaoPrimarioLink,
-            botao_secundario_texto as BotaoSecundarioTexto,
-            botao_secundario_link as BotaoSecundarioLink,
-            imagem_url as ImagemUrl,
-            imagem_alt as ImagemAlt,
-            ativo as Ativo,
-            autor_id as AutorId,
-            data_criacao as DataCriacao,
-            data_atualizacao as DataAtualizacao,
-            COUNT(*) OVER() as TotalCount
-        FROM anuncio
+            a.id,
+            a.titulo as Titulo,
+            a.conteudo as Conteudo,
+            a.tipo_anuncio as TipoAnuncio,
+            a.botao_primario_texto as BotaoPrimarioTexto,
+            a.botao_primario_link as BotaoPrimarioLink,
+            a.botao_secundario_texto as BotaoSecundarioTexto,
+            a.botao_secundario_link as BotaoSecundarioLink,
+            a.imagem_url as ImagemUrl,
+            a.imagem_alt as ImagemAlt,
+            a.icone as Icone,
+            a.ativo as Ativo,
+            a.autor_id as AutorId,
+            a.data_criacao as DataCriacao,
+            a.data_atualizacao as DataAtualizacao,
+            (
+                SELECT json_agg(json_build_object('id', ad.id, 'icon', ad.imagem_url, 'text', ad.conteudo))
+                FROM anuncio_detalhe ad
+                WHERE ad.anuncio_id = a.id
+            ) as DetalhesJson,
+            COUNT(*) OVER() as TotalCount,
+            u.id as Usuario_Id,
+            u.id as Id,
+            u.nome as Nome,
+            u.sobrenome as Sobrenome,
+            u.email as Email,
+            u.ra as Ra,
+            u.curso as Curso,
+            u.telefone as Telefone,
+            u.imagem_url as ImagemUrl,
+            u.ativo as Ativo,
+            u.newsletter_subscriber as InscritoNoticia,
+            u.cargo as Cargo,
+            u.data_criacao as DataCriacao,
+            u.data_atualizacao as DataAtualizacao
+        FROM anuncio a
+        LEFT JOIN usuario u ON a.autor_id = u.id
         WHERE 1=1
-        AND (@SearchPattern IS NULL OR titulo ILIKE @SearchPattern OR conteudo ILIKE @SearchPattern)
-        AND (@Type IS NULL OR tipo_anuncio = @Type)
-        AND (@CreatedFrom IS NULL OR data_criacao &gt;= @CreatedFrom)
-        AND (@CreatedTo IS NULL OR data_criacao &lt;= @CreatedTo)
-        AND (@IsActive IS NULL OR ativo = @IsActive)
-        ORDER BY data_criacao DESC
+        AND (@SearchPattern IS NULL OR a.titulo ILIKE @SearchPattern OR a.conteudo ILIKE @SearchPattern)
+        AND (@Type IS NULL OR a.tipo_anuncio = @Type)
+        AND (@CreatedFrom IS NULL OR a.data_criacao &gt;= @CreatedFrom)
+        AND (@CreatedTo IS NULL OR a.data_criacao &lt;= @CreatedTo)
+        AND (@IsActive IS NULL OR a.ativo = @IsActive)
+        ORDER BY a.data_criacao DESC
         OFFSET (@Page - 1) * @Limit
         LIMIT @Limit
     </query>

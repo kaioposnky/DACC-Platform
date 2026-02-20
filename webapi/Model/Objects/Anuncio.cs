@@ -92,6 +92,18 @@ namespace DaccApi.Model
         [Column("data_atualizacao")]
         public DateTime DataAtualizacao { get; set; }
 
+        [Column("icone")]
+        public string? Icone { get; set; }
+
+        [NotMapped]
+        public string? DetalhesJson { get; set; }
+
+        [NotMapped]
+        public List<Responses.DetailsItem>? Detalhes { get; set; }
+
+        [NotMapped]
+        public Usuario? Autor { get; set; }
+
         [NotMapped]
         public int TotalCount { get; set; }
     }
