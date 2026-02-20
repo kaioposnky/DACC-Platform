@@ -56,7 +56,7 @@ export default function ManageNewsCard({
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                     <span className="text-[10px] font-bold uppercase tracking-wider bg-secondary/10 text-secondary px-2 py-0.5 rounded">
-                        {news.category || "Notícia"}
+                        {news.categoryName || news.category?.name || "Notícia"}
                     </span>
                     {news.tags?.[0] && (
                         <span className="text-[10px] font-medium text-gray-400">

@@ -56,7 +56,7 @@ export const NewsArticles = ({
 
     // Apply category filter
     if (filters.category !== 'all') {
-      filtered = filtered.filter(news => news.category === filters.category);
+      filtered = filtered.filter(news => (news.categoryName || news.category?.name) === filters.category);
     }
 
     // Apply date filter
@@ -90,7 +90,7 @@ export const NewsArticles = ({
       filtered = filtered.filter(news =>
         news.title.toLowerCase().includes(query) ||
         (news.content?.toLowerCase().includes(query)) ||
-        news.category.toLowerCase().includes(query)
+        (news.categoryName || news.category?.name || "").toLowerCase().includes(query)
       );
     }
 

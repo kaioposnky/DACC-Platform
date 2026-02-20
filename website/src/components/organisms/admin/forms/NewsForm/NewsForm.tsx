@@ -1,3 +1,5 @@
+'use client';
+
 import {
 	ChevronDownIcon,
 	DocumentTextIcon,
@@ -206,9 +208,9 @@ export default function NewsForm({
 							disabled={isReadonly}
 						/>
 					</div>
-        </AdminCard>
+				</AdminCard>
 
-        <AdminCard
+				<AdminCard
 					icon={<Square3Stack3DIcon className="w-5 h-5 text-primary" />}
 					title="Estilo e Links"
 				>
@@ -237,7 +239,7 @@ export default function NewsForm({
 							disabled={isReadonly}
 						/>
 					</div>
-        </AdminCard>
+				</AdminCard>
 			</div>
 
 			<div className="space-y-6">
@@ -322,7 +324,7 @@ export default function NewsForm({
 						value={news.imageAlt || ""}
 						onChange={(e) => onChange("imageAlt", e.target.value)}
 					/>
-        )}
+				)}
 
 				<ImageUploadCard
 					title="Imagem de Capa"

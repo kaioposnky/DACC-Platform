@@ -1,3 +1,5 @@
+'use client';
+
 import { AdminCard, Input, Select, DateTimeInputs } from "@/components";
 import { Event, User, EventType } from "@/types";
 import {
