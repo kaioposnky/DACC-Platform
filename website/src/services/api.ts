@@ -936,6 +936,18 @@ class ApiService {
     };
   }
 
+  async getOrdersByUserId(userId: string): Promise<Order[]> {
+    try {
+      const data = await this.request<any>(`/orders/user/${userId}`);
+      return data?.orders ? data.orders : (Array.isArray(data) ? data : []);
+    } catch (error: any) {
+      if (error.message?.includes('Nenhum pedido encontrado') || error.message?.includes('not found')) {
+        return [];
+      }
+      throw error;
+    }
+  }
+
   async getOrder(id: string): Promise<Order> {
     const data = await this.request<{ order: Order }>(`/orders/${id}`, {
       method: 'GET',
@@ -969,10 +981,25 @@ class ApiService {
     if (params?.page) searchParams.append('Page', params.page.toString());
     if (params?.limit) searchParams.append('Limit', params.limit.toString());
 
-    const data = await this.request<{ reviews: ProductReview[]; totalCount: number }>('/reviews/search');
+    const query = searchParams.toString();
+    const endpoint = query ? `/reviews/search?${query}` : '/reviews/search';
+
+    const data = await this.request<{ reviews: ProductReview[]; totalCount: number }>(endpoint);
     return {
       reviews: data.reviews || [],
       totalCount: data.totalCount || 0
+    }
+  }
+
+  async getReviewsByUserId(userId: string): Promise<ProductReview[]> {
+    try {
+      const data = await this.request<any>(`/reviews/users/${userId}`);
+      return data?.reviews ? data.reviews : (Array.isArray(data) ? data : []);
+    } catch (error: any) {
+      if (error.message?.includes('Nenhuma avaliação encontrada') || error.message?.includes('not found') || error.message?.includes('Nenhum')) {
+        return [];
+      }
+      throw error;
     }
   }
 
