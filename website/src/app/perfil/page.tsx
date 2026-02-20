@@ -6,6 +6,7 @@ import { Footer, Navigation } from "@/components";
 import { ProfileBanner, ProfileUser } from "@/components/organisms/ProfileBanner";
 import { ProfileSettingsSidebar, SettingsSection } from "@/components/organisms/ProfileSettingsSidebar";
 import { ProfileSettingsForm, UserFormData } from "@/components/organisms/ProfileSettingsForm";
+import { ProfileSecurityForm } from "@/components/organisms/ProfileSecurityForm";
 import { apiService } from "@/services/api";
 import { UserStats } from "@/types";
 import { ImageInputModal } from "@/components/organisms/ImageInput";
@@ -76,6 +77,10 @@ export default function ProfilePage() {
     console.log('Resetting form to initial values');
   };
 
+  const handleSaveSecurity = async (currentPassword: string, newPassword: string) => {
+    await apiService.updatePassword(currentPassword, newPassword);
+  };
+
   const handleChangeAvatar = async (file: File) => {
     if (user === null) return;
 
@@ -141,10 +146,9 @@ export default function ProfilePage() {
         );
       case 'security':
         return (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Segurança</h2>
-            <p className="text-gray-600">Configurações de segurança em desenvolvimento...</p>
-          </div>
+          <ProfileSecurityForm
+            onSave={handleSaveSecurity}
+          />
         );
       case 'preferences':
         return (

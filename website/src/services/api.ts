@@ -210,6 +210,13 @@ class ApiService {
     return data?.users || [];
   }
 
+  async updatePassword(currentPassword: string, newPassword: string): Promise<void> {
+    await this.request<void>('/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+  }
+
   async searchUsers(params?: {
     searchQuery?: string;
     page?: number;
