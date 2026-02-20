@@ -54,6 +54,7 @@ export default function ProfilePage() {
         phone: cleanNumeric(data.phone),
         ra: cleanNumeric(data.studentId),
         course: data.course,
+        isSubscribedToNews: data.isSubscribedToNews,
       };
 
       return await apiService.updateUser(user.id, payload);
@@ -125,6 +126,7 @@ export default function ProfilePage() {
     phone: user.phone,
     studentId: user.ra,
     course: user.course,
+    isSubscribedToNews: user.isSubscribedToNews,
   };
 
   const renderContent = () => {
@@ -149,13 +151,6 @@ export default function ProfilePage() {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Preferências</h2>
             <p className="text-gray-600">Configurações de preferências em desenvolvimento...</p>
-          </div>
-        );
-      case 'notifications':
-        return (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Notificações</h2>
-            <p className="text-gray-600">Configurações de notificações em desenvolvimento...</p>
           </div>
         );
       default:

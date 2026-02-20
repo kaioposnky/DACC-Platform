@@ -13,7 +13,7 @@ import {
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
-export type SettingsSection = 'account' | 'security' | 'preferences' | 'notifications';
+export type SettingsSection = 'account' | 'security' | 'preferences';
 
 export interface QuickAction {
   id: string;
@@ -37,7 +37,7 @@ export const ProfileSettingsSidebar = ({
   quickActions,
   className = ''
 }: ProfileSettingsSidebarProps) => {
-  
+
   const navigationItems = [
     {
       id: 'account' as const,
@@ -52,12 +52,8 @@ export const ProfileSettingsSidebar = ({
     {
       id: 'preferences' as const,
       title: 'Preferências',
-      icon: <CogIcon className="w-5 h-5" />
-    },
-    {
-      id: 'notifications' as const,
-      title: 'Notificações',
-      icon: <BellIcon className="w-5 h-5" />
+      icon: <CogIcon className="w-5 h-5" />,
+      disabled: true
     }
   ];
 
@@ -99,32 +95,38 @@ export const ProfileSettingsSidebar = ({
     >
       {/* Navigation Items */}
       <div className="space-y-2 mb-8">
-        {navigationItems.map((item, index) => (
-          <motion.button
-            key={item.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.1 }}
-            onClick={() => onSectionChange(item.id)}
-            className={`
+        {navigationItems.map((item, index) => {
+          const isDisabled = item.id === 'preferences';
+          if (isDisabled) return null;
+          return (
+            <motion.button
+              key={item.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
+              onClick={() => !isDisabled && onSectionChange(item.id)}
+              disabled={isDisabled}
+              className={`
               w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all duration-200
-              ${activeSection === item.id 
-                ? 'bg-blue-900 text-white shadow-sm' 
-                : 'text-gray-700 hover:bg-gray-50'
-              }
+              ${isDisabled ? 'opacity-50 cursor-not-allowed text-gray-400' :
+                  activeSection === item.id
+                    ? 'bg-blue-900 text-white shadow-sm'
+                    : 'text-gray-700 hover:bg-gray-50'
+                }
             `}
-          >
-            <div className={activeSection === item.id ? 'text-white' : 'text-gray-500'}>
-              {item.icon}
-            </div>
-            <Typography 
-              variant="body" 
-              className={`font-medium ${activeSection === item.id ? 'text-white' : 'text-gray-700'}`}
             >
-              {item.title}
-            </Typography>
-          </motion.button>
-        ))}
+              <div className={isDisabled ? 'text-gray-400' : activeSection === item.id ? 'text-white' : 'text-gray-500'}>
+                {item.icon}
+              </div>
+              <Typography
+                variant="body"
+                className={`font-medium ${isDisabled ? 'text-gray-400' : activeSection === item.id ? 'text-white' : 'text-gray-700'}`}
+              >
+                {item.title}
+              </Typography>
+            </motion.button>
+          )
+        })}
       </div>
 
       {/* Quick Actions */}
@@ -142,7 +144,7 @@ export const ProfileSettingsSidebar = ({
               onClick={action.onClick}
               className="w-full p-4 border border-gray-200 rounded-lg hover:border-gray-300 hover:shadow-sm transition-all duration-200 text-left"
             >
-              <Link href={action.link} className="flex items-start gap-3"> 
+              <Link href={action.link} className="flex items-start gap-3">
                 <div className="flex-shrink-0 mt-1">
                   {action.icon}
                 </div>

@@ -12,6 +12,7 @@ export interface UserFormData {
   phone: string;
   studentId: string;
   course: string;
+  isSubscribedToNews: boolean;
   // academicYear: string;
   // expectedGraduation: string;
 }
@@ -37,6 +38,7 @@ export const ProfileSettingsForm = ({
     phone: initialData.phone || '',
     studentId: initialData.studentId || '',
     course: initialData.course || '',
+    isSubscribedToNews: initialData.isSubscribedToNews ?? false,
     // academicYear: initialData.academicYear || '',
     // expectedGraduation: initialData.expectedGraduation || ''
   });
@@ -70,10 +72,15 @@ export const ProfileSettingsForm = ({
     }
   };
 
+  const handleCheckboxChange = (field: keyof UserFormData, checked: boolean) => {
+    setFormData(prev => ({ ...prev, [field]: checked }));
+    setIsDirty(true);
+  };
+
   const formatPhone = (value: string) => {
     const digits = value.replace(/\D/g, '');
 
-    if (digits.length === 0){
+    if (digits.length === 0) {
       return "";
     } else if (digits.length <= 2) {
       return `(${digits.slice(0, 2)}`;
@@ -88,15 +95,15 @@ export const ProfileSettingsForm = ({
     const digits = value.replace(/\D/g, '');
 
     // 12.345.678-9
-    if (digits.length === 0){
+    if (digits.length === 0) {
       return "";
     } else if (digits.length <= 2) {
       return `${digits.slice(0, 2)}`;
     } else if (digits.length <= 5) {
       return `${digits.slice(0, 2)}.${digits.slice(2)}`;
-    } else if (digits.length <= 8){
+    } else if (digits.length <= 8) {
       return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}`;
-    } else{
+    } else {
       return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}-${digits[8]}`;
     }
   };
@@ -141,6 +148,7 @@ export const ProfileSettingsForm = ({
       phone: initialData.phone || '',
       studentId: initialData.studentId || '',
       course: initialData.course || '',
+      isSubscribedToNews: initialData.isSubscribedToNews ?? false,
       // academicYear: initialData.academicYear || '',
       // expectedGraduation: initialData.expectedGraduation || ''
     });
@@ -298,6 +306,26 @@ export const ProfileSettingsForm = ({
           {/*    required*/}
           {/*  />*/}
           {/*</div>*/}
+        </div>
+      </div>
+
+      {/* Notifications Section */}
+      <div className="mb-8">
+        <Typography variant="h4" className="text-gray-900 font-semibold mb-6">
+          Notificações
+        </Typography>
+
+        <div className="flex items-center gap-3">
+          <input
+            type="checkbox"
+            id="isSubscribedToNews"
+            checked={formData.isSubscribedToNews}
+            onChange={(e) => handleCheckboxChange('isSubscribedToNews', e.target.checked)}
+            className="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary focus:ring-2"
+          />
+          <label htmlFor="isSubscribedToNews" className="text-gray-700 font-medium cursor-pointer">
+            Desejo receber novidades, atualizações e avisos importantes sobre o DACC por e-mail.
+          </label>
         </div>
       </div>
 
