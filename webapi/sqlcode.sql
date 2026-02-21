@@ -39,8 +39,10 @@ CREATE TABLE tipos_progresso
 DROP TABLE IF EXISTS categorias_noticia CASCADE;
 CREATE TABLE categorias_noticia
 (
-    id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    nome VARCHAR(50) NOT NULL UNIQUE
+    id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome     VARCHAR(50) NOT NULL UNIQUE,
+    icon     VARCHAR(50),
+    gradient VARCHAR(50)
 );
 
 -- -- Tabela: Usuários
@@ -48,21 +50,36 @@ CREATE TABLE categorias_noticia
 DROP TABLE IF EXISTS usuario CASCADE;
 CREATE TABLE usuario
 (
-    id                   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    nome                 VARCHAR(100)        NOT NULL,
-    sobrenome            VARCHAR(100)        NOT NULL,
-    email                VARCHAR(150) UNIQUE NOT NULL,
-    ra                   VARCHAR(15) UNIQUE,
-    curso                VARCHAR(200)        NOT NULL,
-    telefone             VARCHAR(15),
-    senha_hash           VARCHAR(200)        NOT NULL,
-    imagem_url           VARCHAR(255),
-    ativo                BOOLEAN   DEFAULT TRUE,
-    newsletter_subscriber BOOLEAN   DEFAULT FALSE,
-    cargo                VARCHAR(50) REFERENCES tipos_usuario (nome),
-    data_criacao         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_atualizacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id                    UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome                  VARCHAR(100)        NOT NULL,
+    sobrenome             VARCHAR(100)        NOT NULL,
+    email                 VARCHAR(150) UNIQUE NOT NULL,
+    ra                    VARCHAR(15) UNIQUE,
+    curso                 VARCHAR(200)        NOT NULL,
+    telefone              VARCHAR(15),
+    senha_hash            VARCHAR(200)        NOT NULL,
+    imagem_url            VARCHAR(255),
+    ativo                 BOOLEAN          DEFAULT TRUE,
+    newsletter_subscriber BOOLEAN          DEFAULT FALSE,
+    cargo                 VARCHAR(50) REFERENCES tipos_usuario (nome),
+    data_criacao          TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao      TIMESTAMP        DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Tabela: Tokens de Reset de Senha
+-- Armazena tokens temporários para recuperação de senha
+DROP TABLE IF EXISTS usuario_reset_tokens CASCADE;
+CREATE TABLE usuario_reset_tokens
+(
+    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    usuario_id     UUID REFERENCES usuario (id) ON DELETE CASCADE,
+    token          VARCHAR(255) NOT NULL UNIQUE,
+    data_expiracao TIMESTAMP    NOT NULL,
+    usado          BOOLEAN          DEFAULT FALSE,
+    data_usada     TIMESTAMP,
+    data_criacao   TIMESTAMP        DEFAULT CURRENT_TIMESTAMP
+);
+
 
 -- Tabela: Posts
 -- Armazena posts do fórum
@@ -123,19 +140,20 @@ DROP TABLE IF EXISTS anuncio CASCADE;
 CREATE TABLE anuncio
 (
     id                     UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    titulo                 VARCHAR(50) NOT NULL,
-    conteudo               TEXT        NOT NULL,
-    tipo_anuncio           VARCHAR(50) REFERENCES tipos_anuncio (nome) NOT NULL,
-    botao_primario_texto   VARCHAR(20) NOT NULL,
-    botao_primario_link    VARCHAR(255) NOT NULL,
-    botao_secundario_texto VARCHAR(20) NOT NULL,
-    botao_secundario_link  VARCHAR(255) NOT NULL,
-    imagem_url             VARCHAR(255) NOT NULL,
-    imagem_alt             VARCHAR(100) NOT NULL,
-    ativo                  BOOLEAN     NOT NULL DEFAULT FALSE,
+    titulo                 VARCHAR(200)                                 NOT NULL,
+    conteudo               TEXT                                         NOT NULL,
+    tipo_anuncio           VARCHAR(50) REFERENCES tipos_anuncio (nome)  NOT NULL,
+    botao_primario_texto   VARCHAR(20)                                  NOT NULL,
+    botao_primario_link    VARCHAR(255)                                 NOT NULL,
+    botao_secundario_texto VARCHAR(20)                                  NOT NULL,
+    botao_secundario_link  VARCHAR(255)                                 NOT NULL,
+    imagem_url             VARCHAR(255)                                 NOT NULL,
+    imagem_alt             VARCHAR(100)                                 NOT NULL,
+    icone                  VARCHAR(255),
+    ativo                  BOOLEAN                                      NOT NULL DEFAULT FALSE,
     autor_id               UUID REFERENCES usuario (id),
-    data_criacao           TIMESTAMP DEFAULT  CURRENT_TIMESTAMP NOT NULL,
-    data_atualizacao       TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+    data_criacao           TIMESTAMP                                             DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    data_atualizacao       TIMESTAMP                                             DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 -- Tabela: Detalhes de Anúncios
@@ -145,7 +163,7 @@ CREATE TABLE anuncio_detalhe
 (
     id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     anuncio_id UUID REFERENCES anuncio (id),
-    ordem      INT DEFAULT 0,
+    ordem      INT              DEFAULT 0,
     imagem_url VARCHAR(255),
     conteudo   VARCHAR(255),
     UNIQUE (anuncio_id, ordem)
@@ -157,13 +175,13 @@ DROP TABLE IF EXISTS evento CASCADE;
 CREATE TABLE evento
 (
     id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    titulo           VARCHAR(50) NOT NULL,
-    descricao        TEXT        NOT NULL,
-    data             TIMESTAMP   NOT NULL,
+    titulo           VARCHAR(200)                       NOT NULL,
+    descricao        TEXT                               NOT NULL,
+    data             TIMESTAMP                          NOT NULL,
     tipo_evento      VARCHAR(50) REFERENCES tipos_evento (nome),
     autor_id         UUID REFERENCES usuario (id),
-    texto_acao       VARCHAR(20) NOT NULL,
-    link_acao        VARCHAR(255) NOT NULL,
+    texto_acao       VARCHAR(20)                        NOT NULL,
+    link_acao        VARCHAR(255)                       NOT NULL,
     data_criacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -179,23 +197,46 @@ CREATE TABLE diretoria
     descricao TEXT
 );
 
--- Tabela: Diretores
--- Armazena informações sobre os diretores (Faculty no frontend)
-DROP TABLE IF EXISTS diretores CASCADE;
-CREATE TABLE diretores
+-- Tabela: Cursos
+-- Armazena os cursos oferecidos pela instituição
+DROP TABLE IF EXISTS curso CASCADE;
+CREATE TABLE curso
 (
-    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    nome           VARCHAR(100) NOT NULL,
-    titulo         VARCHAR(50) NOT NULL,
-    cargo          VARCHAR(100) NOT NULL,
-    especializacao VARCHAR(200) NOT NULL,
-    imagem_url     VARCHAR(255) NOT NULL,
-    email          VARCHAR(150),
-    linkedin       VARCHAR(255),
-    github         VARCHAR(255),
-    usuario_id     UUID REFERENCES usuario (id),
-    data_criacao   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome VARCHAR(200) NOT NULL UNIQUE
+);
+
+-- Inserir cursos iniciais
+INSERT INTO curso (nome)
+VALUES ('Engenharia de Materiais'),
+       ('Engenharia de Mecânica'),
+       ('Engenharia de Robos'),
+       ('Engenharia Elétrica'),
+       ('Ciência da Computação');
+
+INSERT INTO diretoria (nome, descricao)
+VALUES ('E-Sports', 'Diretoria de E-Sports'),
+       ('RH', 'Diretoria de RH'),
+       ('Projetos', 'Diretoria de Projetos'),
+       ('Marketing', 'Diretoria de Marketing');
+
+-- Tabela: Professores
+-- Armazena informações sobre os professores/faculty (perfis acadêmicos)
+DROP TABLE IF EXISTS professores CASCADE;
+CREATE TABLE professores
+(
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome             VARCHAR(100) NOT NULL,
+    titulo           VARCHAR(50)  NOT NULL,
+    cargo            VARCHAR(100) NOT NULL,
+    especializacao   VARCHAR(200) NOT NULL,
+    imagem_url       VARCHAR(255) NOT NULL,
+    email            VARCHAR(150),
+    linkedin         VARCHAR(255),
+    github           VARCHAR(255),
+    usuario_id       UUID REFERENCES usuario (id), -- Este campo é opcional, pois um professor pode não ser um usuário
+    data_criacao     TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao TIMESTAMP        DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabela: Cores
@@ -222,17 +263,18 @@ CREATE TABLE produto_tamanho
 DROP TABLE IF EXISTS produto_categoria CASCADE;
 CREATE TABLE produto_categoria
 (
-    id      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    nome    VARCHAR(100) UNIQUE NOT NULL
+    id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome VARCHAR(100) UNIQUE NOT NULL
 );
 
 -- Tabela: Subcategoria
 -- Armazena as subcategorias de produtos
 DROP TABLE IF EXISTS produto_subcategoria CASCADE;
-CREATE TABLE produto_subcategoria(
-                                     id      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                                     nome    VARCHAR(100) UNIQUE NOT NULL,
-                                     categoria_id UUID REFERENCES produto_categoria (id)
+CREATE TABLE produto_subcategoria
+(
+    id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome         VARCHAR(100) UNIQUE NOT NULL,
+    categoria_id UUID REFERENCES produto_categoria (id)
 );
 
 -- Tabela: Produtos
@@ -241,16 +283,16 @@ DROP TABLE IF EXISTS produto CASCADE;
 CREATE TABLE produto
 (
     id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    nome                VARCHAR(150) NOT NULL,
-    descricao           TEXT         NOT NULL,
+    nome                VARCHAR(150)   NOT NULL,
+    descricao           TEXT           NOT NULL,
     descricao_detalhada TEXT,
-    destaque            BOOLEAN      DEFAULT FALSE,
+    destaque            BOOLEAN                 DEFAULT FALSE,
     preco               NUMERIC(10, 2) NOT NULL,
     preco_original      NUMERIC(10, 2),
     subcategoria_id     UUID REFERENCES produto_subcategoria (id),
-    ativo               BOOLEAN      NOT NULL DEFAULT TRUE,
-    data_criacao        TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
-    data_atualizacao    TIMESTAMP             DEFAULT CURRENT_TIMESTAMP
+    ativo               BOOLEAN        NOT NULL DEFAULT TRUE,
+    data_criacao        TIMESTAMP               DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao    TIMESTAMP               DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabela: Especificações de Produto
@@ -258,10 +300,10 @@ CREATE TABLE produto
 DROP TABLE IF EXISTS produto_especificacao CASCADE;
 CREATE TABLE produto_especificacao
 (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    produto_id  UUID REFERENCES produto (id) ON DELETE CASCADE,
-    nome        VARCHAR(100) NOT NULL,
-    valor       VARCHAR(255) NOT NULL,
+    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    produto_id UUID REFERENCES produto (id) ON DELETE CASCADE,
+    nome       VARCHAR(100) NOT NULL,
+    valor      VARCHAR(255) NOT NULL,
     UNIQUE (produto_id, nome)
 );
 
@@ -273,7 +315,7 @@ CREATE TABLE produto_informacao_envio
     id                 UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     produto_id         UUID REFERENCES produto (id) ON DELETE CASCADE UNIQUE,
     frete_gratis       BOOLEAN DEFAULT FALSE,
-    dias_estimados     VARCHAR(50) NOT NULL,
+    dias_estimados     INTEGER      NOT NULL DEFAULT 0,
     custo_envio        NUMERIC(10, 2),
     politica_devolucao VARCHAR(255) NOT NULL,
     garantia           VARCHAR(100)
@@ -284,9 +326,9 @@ CREATE TABLE produto_informacao_envio
 DROP TABLE IF EXISTS produto_perfeito_para CASCADE;
 CREATE TABLE produto_perfeito_para
 (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    produto_id  UUID REFERENCES produto (id) ON DELETE CASCADE,
-    ocasiao     VARCHAR(100) NOT NULL,
+    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    produto_id UUID REFERENCES produto (id) ON DELETE CASCADE,
+    ocasiao    VARCHAR(100) NOT NULL,
     UNIQUE (produto_id, ocasiao)
 );
 
@@ -295,15 +337,15 @@ CREATE TABLE produto_perfeito_para
 DROP TABLE IF EXISTS produto_variacao CASCADE;
 CREATE TABLE produto_variacao
 (
-    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    produto_id          UUID REFERENCES produto (id) ON DELETE CASCADE,
-    cor_id              UUID REFERENCES produto_cor (id),
-    tamanho_id          UUID REFERENCES produto_tamanho (id),
-    estoque             INT            NOT NULL DEFAULT 0,
-    sku                 VARCHAR(100) UNIQUE,
-    ordem               INT          NOT NULL DEFAULT 0,
-    data_criacao        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_atualizacao    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    produto_id       UUID REFERENCES produto (id) ON DELETE CASCADE,
+    cor_id           UUID REFERENCES produto_cor (id),
+    tamanho_id       UUID REFERENCES produto_tamanho (id),
+    estoque          INT              NOT NULL DEFAULT 0,
+    sku              VARCHAR(100) UNIQUE,
+    ordem            INT              NOT NULL DEFAULT 0,
+    data_criacao     TIMESTAMP                 DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao TIMESTAMP                 DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (produto_id, cor_id, tamanho_id)
 );
 
@@ -319,18 +361,7 @@ CREATE TABLE produto_imagem
     ordem               INT          NOT NULL DEFAULT 0
 );
 
--- Tabela: Reservas de produto
--- Cria uma reserva de quantidade de produto para ser alterado no pedido
-DROP TABLE IF EXISTS reserva_produto CASCADE;
-CREATE TABLE reserva_produto (
-                                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                                 produto_variacao_id UUID REFERENCES produto_variacao(id),
-                                 pedido_id UUID REFERENCES produto(id),
-                                 quantidade INT NOT NULL,
-                                 ativo BOOLEAN DEFAULT true,
-                                 data_expira TIMESTAMP NOT NULL,
-                                 data_criacao TIMESTAMP DEFAULT NOW()
-);
+
 
 -- Tabela: Status de Pedido
 -- Define os diferentes estados possíveis para um pedido
@@ -350,6 +381,22 @@ CREATE TABLE metodo_pagamento
     nome VARCHAR(50) NOT NULL UNIQUE
 );
 
+-- Tabela: Cupons de Desconto
+-- Armazena os cupons de desconto disponíveis
+DROP TABLE IF EXISTS cupom CASCADE;
+CREATE TABLE cupom
+(
+    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    codigo         VARCHAR(50)    NOT NULL UNIQUE,
+    tipo_desconto  VARCHAR(20)    NOT NULL, -- 'porcentagem' ou 'valor_fixo'
+    valor          NUMERIC(10, 2) NOT NULL,
+    data_expiracao TIMESTAMP,
+    limite_uso     INT,
+    uso_atual      INT     DEFAULT 0,
+    ativo          BOOLEAN DEFAULT TRUE,
+    data_criacao   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Tabela: Pedidos
 -- Armazena informações sobre pedidos
 DROP TABLE IF EXISTS pedido CASCADE;
@@ -359,10 +406,25 @@ CREATE TABLE pedido
     usuario_id               UUID REFERENCES usuario (id),
     data_pedido              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status_pedido            VARCHAR(50) REFERENCES status_pedido (nome),
-    mercadopago_pagamento_id BIGINT NULL,
-    preference_id            VARCHAR(100) NULL,
+    mercadopago_pagamento_id BIGINT         NULL,
+    preference_id            VARCHAR(100)   NULL,
     metodo_pagamento         VARCHAR(50) REFERENCES metodo_pagamento (nome) NULL,
-    total_pedido             NUMERIC(10, 2) NOT NULL
+    total_pedido             NUMERIC(10, 2) NOT NULL,
+    cupom_id                 UUID REFERENCES cupom (id)
+);
+
+-- Tabela: Reservas de produto
+-- Cria uma reserva de quantidade de produto para ser alterado no pedido
+DROP TABLE IF EXISTS reserva_produto CASCADE;
+CREATE TABLE reserva_produto
+(
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    produto_variacao_id UUID REFERENCES produto_variacao (id),
+    pedido_id           UUID REFERENCES pedido (id),
+    quantidade          INT NOT NULL,
+    ativo               BOOLEAN          DEFAULT true,
+    data_expira         TIMESTAMP NOT NULL,
+    data_criacao        TIMESTAMP        DEFAULT NOW()
 );
 
 -- Tabela: Itens do Pedido
@@ -383,14 +445,16 @@ CREATE TABLE item_pedido
 DROP TABLE IF EXISTS avaliacao CASCADE;
 CREATE TABLE avaliacao
 (
-    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    usuario_id       UUID REFERENCES usuario (id),
-    produto_id       UUID REFERENCES produto (id) ON DELETE CASCADE,
-    nota             DECIMAL(2,1) CHECK (nota BETWEEN 0.5 AND 5.0),
-    comentario       TEXT,
-    ativo            BOOLEAN   DEFAULT TRUE,
-    data_avaliacao   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    usuario_id          UUID REFERENCES usuario (id),
+    produto_id          UUID REFERENCES produto (id) ON DELETE CASCADE,
+    produto_variacao_id UUID REFERENCES produto_variacao (id) ON DELETE CASCADE,
+    nota                DECIMAL(2, 1) CHECK (nota BETWEEN 0.5 AND 5.0),
+    titulo              VARCHAR(100),
+    comentario          TEXT,
+    ativo               BOOLEAN          DEFAULT TRUE,
+    data_avaliacao      TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao    TIMESTAMP        DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabela: Notícias
@@ -406,8 +470,29 @@ CREATE TABLE noticia
     imagem_alt       VARCHAR(255),
     autor_id         UUID REFERENCES usuario (id),
     categoria        VARCHAR(50) REFERENCES categorias_noticia (nome),
-    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_publicacao  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    tags             VARCHAR(255)[],
+    tempo_leitura    INT,
+    data_atualizacao TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
+    data_publicacao  TIMESTAMP        DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela: Tags de Notícia
+-- Armazena as tags disponíveis para notícias
+DROP TABLE IF EXISTS noticia_tag CASCADE;
+CREATE TABLE noticia_tag
+(
+    id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- Tabela: Relacionamento Notícia e Tags
+-- Relaciona notícias com suas respectivas tags
+DROP TABLE IF EXISTS noticia_tags_relacao CASCADE;
+CREATE TABLE noticia_tags_relacao
+(
+    noticia_id UUID REFERENCES noticia (id) ON DELETE CASCADE,
+    tag_id     UUID REFERENCES noticia_tag (id) ON DELETE CASCADE,
+    PRIMARY KEY (noticia_id, tag_id)
 );
 
 -- Tabela: Projetos
@@ -420,12 +505,12 @@ CREATE TABLE projeto
     descricao        TEXT         NOT NULL,
     imagem_url       VARCHAR(255),
     status           VARCHAR(50) REFERENCES tipos_progresso (nome),
-    progresso        INT DEFAULT 0,
+    progresso        INT              DEFAULT 0,
     texto_conclusao  VARCHAR(100) NOT NULL,
-    diretoria        VARCHAR(100) REFERENCES diretoria (nome),
+    diretoria_id     UUID REFERENCES diretoria (id),
     tags             VARCHAR(20)[],
-    data_criacao     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    data_criacao     TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao TIMESTAMP        DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabela: UsuarioTokens
@@ -493,16 +578,16 @@ VALUES ('workshop'),
 
 -- Tipos de Progresso
 INSERT INTO tipos_progresso (nome)
-VALUES ('planejado'),
-       ('em progresso'),
-       ('concluido');
+VALUES ('planned'),
+       ('in_progress'),
+       ('completed');
 
 -- Categorias de Notícia
-INSERT INTO categorias_noticia (nome)
-VALUES ('geral'),
-       ('tecnologia'),
-       ('carreira'),
-       ('academico');
+INSERT INTO categorias_noticia (nome, icon, gradient)
+VALUES ('geral', 'Globe', 'from-blue-500 to-cyan-500'),
+       ('tecnologia', 'Cpu', 'from-purple-500 to-pink-500'),
+       ('carreira', 'Briefcase', 'from-green-500 to-emerald-500'),
+       ('academico', 'GraduationCap', 'from-orange-500 to-red-500');
 
 -- Status de Pedido
 INSERT INTO status_pedido (nome)
@@ -519,16 +604,17 @@ VALUES ('venda física'),
        ('pix');
 
 -- Categorias de Produtos
-INSERT INTO produto_categoria (nome)
-VALUES ('roupas'), ('outros');
+INSERT INTO produto_categoria (id, nome)
+VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'roupas'), 
+       ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', 'outros');
 
 -- Subcategorias de Produtos
-INSERT INTO produto_subcategoria (nome, categoria_id)
-VALUES ( 'camisetas', (SELECT id FROM produto_categoria WHERE nome = 'roupas')),
-       ( 'moletom', (SELECT id FROM produto_categoria WHERE nome = 'roupas')),
-       ( 'canecas', (SELECT id FROM produto_categoria WHERE nome = 'outros')),
-       ( 'adesivos', (SELECT id FROM produto_categoria WHERE nome = 'outros')),
-       ( 'acessorios', (SELECT id FROM produto_categoria WHERE nome = 'outros'));
+INSERT INTO produto_subcategoria (id, nome, categoria_id)
+VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', 'camisetas', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a23', 'moletom', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a24', 'canecas', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12'),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a25', 'adesivos', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12'),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a26', 'acessorios', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12');
 
 -- Permissões
 INSERT INTO permissoes (nome, descricao)
@@ -553,6 +639,12 @@ VALUES
     ('projetos.delete', 'Deletar projetos'),
     ('projetos.members.add', 'Adicionar membros a um projeto'),
     ('projetos.members.remove', 'Remover membros de um projeto'),
+
+    -- Permissões de Diretorias
+    ('diretorias.view', 'Visualizar diretorias'),
+    ('diretorias.create', 'Criar novas diretorias'),
+    ('diretorias.update', 'Atualizar diretorias'),
+    ('diretorias.delete', 'Deletar diretorias'),
 
     -- Permissões de Produtos
     ('produtos.view', 'Visualizar produtos da loja'),
@@ -596,7 +688,29 @@ VALUES
     ('reviews.delete', 'Deletar uma avaliação para um produto'),
 
     -- Permissões de Envio de arquivos no BackEnd
-    ('filestorage.uploadimage', 'Enviar e salvar uma imagem no backend');
+    ('filestorage.uploadimage', 'Enviar e salvar uma imagem no backend'),
+
+    -- Permissões do Carrinho
+    ('cart.view', 'Visualizar o carrinho'),
+    ('cart.items.add', 'Adicionar itens ao carrinho'),
+    ('cart.items.update', 'Atualizar itens no carrinho'),
+    ('cart.items.remove', 'Remover itens do carrinho'),
+    ('cart.clear', 'Limpar o carrinho'),
+
+    -- Permissões de Anúncios
+    ('anuncios.view', 'Visualizar anúncios'),
+    ('anuncios.create', 'Criar novos anúncios'),
+    ('anuncios.update', 'Atualizar anúncios'),
+    ('anuncios.delete', 'Deletar anúncios'),
+
+    -- Permissões de Cursos
+    ('cursos.view', 'Visualizar cursos'),
+    ('cursos.create', 'Criar novos cursos'),
+    ('cursos.update', 'Atualizar cursos'),
+    ('cursos.delete', 'Deletar cursos'),
+
+    -- Permissões do Dashboard
+    ('dashboard.view', 'Visualizar o dashboard de estatísticas');
 
 -- Atribuindo Permissões aos Roles (Tipos de Usuário)
 TRUNCATE TABLE role_permissoes;
@@ -610,48 +724,87 @@ $$
         SELECT 'aluno', p.nome
         FROM permissoes p
         WHERE p.nome IN (
-            -- Permissões básicas
-                         'noticias.view', 'projetos.view', 'produtos.view', 'eventos.view', 'forum.posts.view',
-                         'faculty.view', 'reviews.view',
-            -- Permissões específicas de Aluno
-                         'forum.posts.create', 'forum.posts.update', 'forum.posts.delete', 'forum.posts.vote',
-                         'forum.comments.create', 'forum.comments.update', 'forum.comments.delete',
-                         'forum.comments.vote', 'forum.comments.accept',
-                         'eventos.register',
-                         'reviews.create'
-            );
+            -- Usuários
+            'users.view', 'users.update', 'users.refreshtoken', 'users.logout',
+
+            -- Notícias
+            'noticias.view',
+
+            -- Projetos
+            'projetos.view',
+
+            -- Produtos
+            'produtos.view',
+
+            -- Eventos
+            'eventos.view', 'eventos.register',
+
+            -- Fórum
+            'forum.posts.view',
+            'forum.posts.create', 'forum.posts.update', 'forum.posts.delete', 'forum.posts.vote',
+            'forum.comments.create', 'forum.comments.update', 'forum.comments.delete', 'forum.comments.vote', 'forum.comments.accept',
+
+            -- Professores
+            'faculty.view',
+
+            -- Avaliações
+            'reviews.view', 'reviews.create',
+
+            -- Carrinho
+            'cart.view', 'cart.items.add', 'cart.items.update', 'cart.items.remove', 'cart.clear',
+
+            -- Anúncios e Cursos
+            'anuncios.view', 'cursos.view'
+        );
 
         -- Permissões do Diretor
+        -- 1. Herdar todas as permissões do Aluno
+        INSERT INTO role_permissoes (tipo_usuario, permissao)
+        SELECT 'diretor', permissao
+        FROM role_permissoes
+        WHERE tipo_usuario = 'aluno';
+
+        -- 2. Adicionar permissões específicas de Diretor (Moderador)
         INSERT INTO role_permissoes (tipo_usuario, permissao)
         SELECT 'diretor', p.nome
         FROM permissoes p
         WHERE p.nome IN (
-            -- Herda permissões de aluno
-                         'noticias.view',
-                         'projetos.view',
-                         'produtos.view',
-                         'eventos.view',
-                         'forum.posts.view',
-                         'faculty.view',
-                         'reviews.view',
-                         'forum.posts.create',
-                         'forum.posts.update',
-                         'forum.posts.delete',
-                         'forum.posts.vote',
-                         'forum.comments.create',
-                         'forum.comments.update',
-                         'forum.comments.delete',
-                         'forum.comments.vote',
-                         'forum.comments.accept',
-                         'eventos.register',
-                         'reviews.create',
-            -- Permissões específicas de Diretor
-                         'noticias.create', 'noticias.update', 'noticias.delete',
-                         'projetos.create', 'projetos.update', 'projetos.delete', 'projetos.members.add',
-                         'projetos.members.remove',
-                         'eventos.create', 'eventos.update', 'eventos.delete',
-                         'users.view'
-            );
+            -- Usuários
+            'users.viewall',
+
+            -- Notícias
+            'noticias.create', 'noticias.update', 'noticias.delete',
+
+            -- Projetos
+            'projetos.create', 'projetos.update', 'projetos.delete', 'projetos.members.add', 'projetos.members.remove',
+
+            -- Diretorias
+            'diretorias.create', 'diretorias.update', 'diretorias.delete',
+
+            -- Produtos
+            'produtos.create', 'produtos.update', 'produtos.delete',
+
+            -- Eventos
+            'eventos.create', 'eventos.update', 'eventos.delete',
+
+            -- Fórum (Admin)
+            'forum.admin.posts.update', 'forum.admin.posts.delete',
+            'forum.admin.comments.update', 'forum.admin.comments.delete',
+
+            -- Professores
+            'faculty.create', 'faculty.update', 'faculty.delete',
+
+            -- Avaliações
+            'reviews.update', 'reviews.delete',
+
+            -- Arquivos
+            'filestorage.uploadimage',
+
+            -- Anúncios e Cursos (Gestão)
+            'anuncios.create', 'anuncios.update', 'anuncios.delete',
+            'cursos.create', 'cursos.update', 'cursos.delete'
+        )
+        ON CONFLICT DO NOTHING;
 
         -- Permissões do Administrador (todas)
         FOR permissao_rec IN SELECT nome FROM permissoes

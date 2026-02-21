@@ -138,6 +138,16 @@ namespace DaccApi.Infrastructure.Dapper
         }
 
         /// <summary>
+        /// Executa uma consulta SQL assíncrona com mapeamento múltiplo (2 tipos).
+        /// </summary>
+        public async Task<IEnumerable<TReturn>> QueryAsync<T1, T2, TReturn>(string sql, Func<T1, T2, TReturn> map, object? parameters = null, string splitOn = "Id")
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            return await connection.QueryAsync<T1, T2, TReturn>(sql, map, parameters, splitOn: splitOn);
+        }
+
+        /// <summary>
         /// Executa uma consulta SQL assíncrona.
         /// </summary>
         public async Task<IEnumerable<T>> QueryAsync<T>(string sql, object? parameters = null)

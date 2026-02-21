@@ -1,0 +1,42 @@
+{
+  "Jwt": { // O ideal é gerar uma chave usando o site https://jwtsecrets.com/
+    "key": "38c9b755a4cb47db9fa063d5b3902b34",
+    "Issuer": "DACC.API",
+    "Audience": "<client>"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "ConnectionStrings": { // ConnectionString do banco de dados
+    "DefaultConnection": "Host=gt-hard-heart-acy4sa4fr8-pooler.na-east-3.aws.neon.tech;Port=5462;Database=neondb;Username=neondb_owner;Password=npg_a1a2F24h2syjV5;"
+  },
+  "MercadoPago": { // Informações de API do MercadoPago
+    "AccessToken": "TEST-134483246519430247-080419-f411a81183ac46a37532213444daeb733484a-2360790051",
+    "WebhookSecret": "bc84b866fc285426aed7f26e799eesfse4yw3d3gwt5e6978ac7a361d699c63d60c1",
+    "UseSandbox": true // Use true se estiver em ambiente de desenvolvimento
+  },
+  "OrderExpireMinutes": 60, // Tempo em minutos para o pedido expirar caso o pagamento não seja feito
+  "ReservationCleanup": {
+    "IntervalInMinutes": 240 // Intervalo de tempo em minutos para o serviço de limpeza de reservas ser executado
+  },
+  "RateLimit": { // Rate Limit de acesso (Padrão no máximo 200 requests por minuto)
+    "IntervalMinutes": 1,
+    "MaxRequests": 200
+  },
+  "EnableMailService": false, // Habilita o envio de emails
+  "SmtpSettings": {
+    "Server": "sandbox.smtp.mailtrap.io", // Configurações do SMTP Para envio de emails (Achei o Mailtrap bom o bastante)
+    "Port": 2525,
+    "Username": "9fy4287y432y49v",
+    "SenderName": "Coruja Overflow",
+    "SenderEmail": "contato@dacc.com",
+    "Password": "e5eg534543526234"
+  },
+  "AllowedHosts": "*", // IPs liberados para enviarem solicitações na API
+  "UploadFilesSubfolder": "uploads", // Pasta em que os arquivos de imagens e outros formatados serão salvos
+  "ApplicationURL": "https://f8574f4831b2.ngrok-free.app", // URL da API (Necessário ser HTTPS para o WebHook)
+  "WebsiteURL": "http://localhost:3000" // URL do Site (Necessário para envio automático nos emails)
+}

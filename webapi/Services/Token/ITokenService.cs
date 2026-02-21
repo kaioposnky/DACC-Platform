@@ -4,8 +4,12 @@ namespace DaccApi.Services.Token
 {
     public interface ITokenService
     {
-        public string GenerateAccessToken(Usuario usuario, HashSet<string> permissions);
-        public string GenerateRefreshToken(Usuario usuario);
-        public Task<bool> ValidateRefreshToken(Guid userId, string refreshToken);
+        string GenerateAccessToken(Usuario usuario, HashSet<string> permissions);
+        string GenerateRefreshToken(Usuario usuario);
+        Task<bool> ValidateRefreshToken(Guid userId, string refreshToken);
+        
+        // Métodos de Reset de Senha
+        string GenerateResetToken();
+        bool IsResetTokenValid(UsuarioResetToken token);
     }
 }

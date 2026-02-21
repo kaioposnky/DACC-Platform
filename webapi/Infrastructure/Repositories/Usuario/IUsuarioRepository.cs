@@ -6,13 +6,23 @@ namespace DaccApi.Infrastructure.Repositories.User
     {
         Task<List<Usuario>> GetAllAsync();
         Task<Usuario?> GetByIdAsync(Guid id);
+        Task<List<Usuario>> GetByIdsAsync(IEnumerable<Guid> ids);
         Task<bool> UpdateAsync(Guid id, Usuario entity);
         Task<bool> DeleteAsync(Guid id);
 
-        // Métodos específicos mantidos
-        public Task<Guid> CreateUser(Usuario request);
-        public Task<Usuario?> GetUserByEmail(string email);
-        public Task<TokensUsuario?> GetUserTokens(Guid id);
-        public Task UpdateUserTokens(Guid id, TokensUsuario tokensUsuario);
+        // Métodos específicos
+        Task<Guid> CreateUser(Usuario request);
+        Task<Usuario?> GetUserByEmail(string email);
+        Task<Usuario?> GetUserByRa(string ra);
+        Task<TokensUsuario?> GetUserTokens(Guid id);
+        Task UpdateUserTokens(Guid id, TokensUsuario tokensUsuario);
+        Task<EstatisticasUsuario?> GetUserStats(Guid id);
+        
+        // Métodos de Reset de Senha
+        Task SaveResetTokenAsync(UsuarioResetToken token);
+        Task<UsuarioResetToken?> GetResetTokenAsync(string token);
+        Task InvalidateResetTokenAsync(Guid tokenId);
+        Task UpdatePasswordAsync(Guid userId, string newPasswordHash);
+        Task<(List<Usuario> Usuarios, int TotalCount)> SearchUsuarios(Model.Requests.Usuario.RequestQueryUsuario query);
     }
 }

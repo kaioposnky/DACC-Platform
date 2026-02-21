@@ -13,7 +13,7 @@ namespace DaccApi.Controllers.Avaliacao
     /// </summary>
     [Authorize]
     [ApiController]
-    [Route("v1/api/ratings")]
+    [Route("v1/api/reviews")]
     public class AvaliacaoController : ControllerBase
     {
         private readonly IAvaliacaoService _avaliacaoService;
@@ -38,6 +38,15 @@ namespace DaccApi.Controllers.Avaliacao
             return response;
         }
 
+        [AuthenticatedGetResponses]
+        [HttpGet("search")]
+        [HasPermission(AppPermissions.Reviews.View)]
+        public async Task<IActionResult> SearchAvaliacoes([FromQuery] DaccApi.Model.Requests.RequestQueryAvaliacao query)
+        {
+            var response = await _avaliacaoService.SearchAvaliacoes(query);
+            return response;
+        }
+        
         /// <summary>
         /// Obtém uma avaliação específica pelo seu ID.
         /// </summary>
@@ -79,7 +88,7 @@ namespace DaccApi.Controllers.Avaliacao
         /// Obtém todas as avaliações de um usuário específico.
         /// </summary>
         [AuthenticatedGetResponses]
-        [HttpGet("users/{usuarioId:int}")]
+        [HttpGet("users/{usuarioId:guid}")]
         [HasPermission(AppPermissions.Reviews.View)]
         public async Task<IActionResult> GetAvaliacoesByUserId([FromRoute] Guid usuarioId)
         {

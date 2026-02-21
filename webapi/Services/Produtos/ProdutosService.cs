@@ -1,10 +1,15 @@
+using DaccApi.Helpers;
+using DaccApi.Infrastructure.Repositories.Products;
 using DaccApi.Model;
 using DaccApi.Model.Responses;
-using DaccApi.Infrastructure.Repositories.Products;
+using DaccApi.Model.Responses.Produto;
+using DaccApi.Responses;
 using DaccApi.Services.FileStorage;
 using Microsoft.AspNetCore.Mvc;
-using DaccApi.Helpers;
-using DaccApi.Responses;
+using Npgsql;
+using System.Data;
+using DaccApi.Infrastructure.Dapper;
+using DaccApi.Data.Orm.Subcategoria;
 
 namespace DaccApi.Services.Products
 {
@@ -12,11 +17,15 @@ namespace DaccApi.Services.Products
     {
         private readonly IProdutosRepository _produtosRepository;
         private readonly IFileStorageService _fileStorageService;
+        private readonly ISubcategoriaRepository _subcategoriaRepository;
+        private readonly IRepositoryDapper _repositoryDapper;
 
-        public ProdutosService(IProdutosRepository produtosRepository, IFileStorageService fileStorageService)
+        public ProdutosService(IProdutosRepository produtosRepository, IFileStorageService fileStorageService, ISubcategoriaRepository subcategoriaRepository, IRepositoryDapper repositoryDapper)
         {
             _produtosRepository = produtosRepository;
             _fileStorageService = fileStorageService;
+            _subcategoriaRepository = subcategoriaRepository;
+            _repositoryDapper = repositoryDapper;
         }
 
         public async Task<IActionResult> GetAllProductsAsync()
@@ -27,7 +36,7 @@ namespace DaccApi.Services.Products
 
                 if (products.Count == 0)
                 {
-                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, 
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT,
                         "Nenhum produto foi encontrado!");
                 }
 
@@ -72,11 +81,20 @@ namespace DaccApi.Services.Products
             try
             {
                 var productId = Guid.NewGuid();
-                var product = await CreateProductEntityAsync(requestCreateProduto, productId);
+                var categoryId = await ResolveCategoryIdAsync(requestCreateProduto.Category);
+                // Subcategory field is disabled in RequestCreateProduto
+                // var subcategoryId = await ResolveSubcategoryIdAsync(requestCreateProduto.Subcategory);
+                Guid? subcategoryId = null;
+
+                var product = await CreateProductEntityAsync(requestCreateProduto, productId, categoryId, subcategoryId);
 
                 return ResponseHelper.CreateSuccessResponse(
-                    ResponseSuccess.CREATED.WithData(new { productId = product.Id }),
+                    ResponseSuccess.CREATED.WithData(new { id = product.Id }),
                     "Produto criado com sucesso! Use o endpoint de variações para adicionar opções de compra.");
+            }
+            catch (ArgumentException ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.VALIDATION_ERROR, ex.Message);
             }
             catch (Exception ex)
             {
@@ -85,9 +103,9 @@ namespace DaccApi.Services.Products
             }
         }
 
-        private async Task<Produto> CreateProductEntityAsync(RequestCreateProduto request, Guid productId)
+        private async Task<Produto> CreateProductEntityAsync(RequestCreateProduto request, Guid productId, Guid categoryId, Guid? subcategoryId)
         {
-            var product = Produto.FromRequest(request, productId);
+            var product = Produto.FromRequest(request, productId, categoryId, subcategoryId);
             await _produtosRepository.CreateProductAsync(product);
             return product;
         }
@@ -118,13 +136,13 @@ namespace DaccApi.Services.Products
         {
             try
             {
-                var products = await _produtosRepository.SearchProductsAsync(requestQueryProdutos);
+                var (products, totalCount) = await _produtosRepository.SearchProductsAsync(requestQueryProdutos);
 
                 if (products.Count == 0)
-                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND,
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT,
                         "Nenhum produto encontrado com os critérios de busca!");
                 var response = products.Select(produto => new ResponseProduto(produto));
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { products = response }),
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { products = response, totalCount = totalCount }),
                     "Produtos encontrados com sucesso!");
             }
             catch (Exception ex)
@@ -145,15 +163,15 @@ namespace DaccApi.Services.Products
                         "Produto não encontrado!");
                 }
 
-                var variationExists = await _produtosRepository.VariationExistsAsync(productId, request.Cor.Trim(), request.Tamanho);
+                var variationExists = await _produtosRepository.VariationExistsAsync(productId, request.Color.Trim(), request.Size);
                 if (variationExists)
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_ALREADY_EXISTS,
-                        $"Já existe uma variação com cor '{request.Cor}' e tamanho '{request.Tamanho}' para este produto!");
+                        $"Já existe uma variação com cor '{request.Color}' e tamanho '{request.Size}' para este produto!");
                 }
 
                 var variationId = Guid.NewGuid();
-                var sku = ProdutoVariacao.GenerateSku(productId, request.Cor.Trim(), request.Tamanho);
+                var sku = ProdutoVariacao.GenerateSku(productId, request.Color.Trim(), request.Size);
                 var variation = ProdutoVariacao.FromRequest(request, productId, variationId, sku);
 
                 await _produtosRepository.CreateProductVariationAsync(variation);
@@ -228,11 +246,11 @@ namespace DaccApi.Services.Products
                         "Variação não encontrada para este produto!");
                 }
 
-                if ((request.Cor != null && request.Cor.Trim() != existingVariation.Cor) || 
-                    (request.Tamanho != null && request.Tamanho != existingVariation.Tamanho))
+                if ((request.Color != null && request.Color.Trim() != existingVariation.Cor) || 
+                    (request.Size != null && request.Size != existingVariation.Tamanho))
                 {
-                    var newCor = request.Cor?.Trim() ?? existingVariation.Cor;
-                    var newTamanho = request.Tamanho ?? existingVariation.Tamanho;
+                    var newCor = request.Color?.Trim() ?? existingVariation.Cor;
+                    var newTamanho = request.Size ?? existingVariation.Tamanho;
                     
                     var variationExists = await _produtosRepository.VariationExistsAsync(productId, newCor.Trim(), newTamanho);
                     if (variationExists)
@@ -244,7 +262,7 @@ namespace DaccApi.Services.Products
 
                 existingVariation.UpdateFromRequest(request);
                 
-                if (request.Cor != null || request.Tamanho != null)
+                if (request.Color != null || request.Size != null)
                 {
                     existingVariation.Sku = ProdutoVariacao.GenerateSku(productId, existingVariation.Cor, existingVariation.Tamanho);
                 }
@@ -329,7 +347,19 @@ namespace DaccApi.Services.Products
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Produto não encontrado!");
                 }
 
-                product.UpdateFromRequest(requestUpdateProduto);
+                Guid? categoryId = null;
+                if (!string.IsNullOrEmpty(requestUpdateProduto.Category))
+                {
+                    categoryId = await ResolveCategoryIdAsync(requestUpdateProduto.Category);
+                }
+                
+                Guid? subcategoryId = null;
+                if (requestUpdateProduto.Subcategory != null) // != null pois pode ser string vazia para limpar
+                {
+                    subcategoryId = await ResolveSubcategoryIdAsync(requestUpdateProduto.Subcategory);
+                }
+
+                product.UpdateFromRequest(requestUpdateProduto, categoryId, subcategoryId);
 
                 await _produtosRepository.UpdateProductAsync(product);
 
@@ -338,12 +368,17 @@ namespace DaccApi.Services.Products
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(response), "Produto atualizado com sucesso!");
             }
+            catch (ArgumentException ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.VALIDATION_ERROR, ex.Message);
+            }
             catch (Exception ex)
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, $"Erro ao atualizar produto: {ex.Message}");
             }
         }
         
+        // Métodos para imagem (sem alteração)
         public async Task<IActionResult> CreateVariationImageAsync(Guid productId, Guid variationId,
             RequestCreateProdutoImagem request)
         {
@@ -363,14 +398,30 @@ namespace DaccApi.Services.Products
                         "Variação não encontrada para este produto!");
                 }
 
-                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.Imagem);
+                string imageUrl;
+                if (!string.IsNullOrEmpty(request.ImageUrl))
+                {
+                    if (request.ImageUrl.StartsWith("data:image") || request.ImageUrl.Length > 255)
+                    {
+                        imageUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageUrl);
+                    }
+                    else
+                    {
+                        imageUrl = request.ImageUrl;
+                    }
+                }
+                else
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "A imagem é obrigatória.");
+                }
+
                 var produtoImagem = new ProdutoImagem
                 {
                     Id = Guid.NewGuid(),
                     ProdutoVariacaoId = variationId,
                     ImagemUrl = imageUrl,
-                    ImagemAlt = request.ImagemAlt?.Trim(),
-                    Ordem = request.Ordem,
+                    ImagemAlt = request.ImageAlt?.Trim(),
+                    Ordem = request.Order,
                 };
 
                 await _produtosRepository.AddProductImagesAsync(produtoImagem);
@@ -423,19 +474,26 @@ namespace DaccApi.Services.Products
                         "Imagem não encontrada!");
                 }
 
-                if (request.Imagem != null)
+                if (!string.IsNullOrEmpty(request.ImageUrl))
                 {
-                    existingImage.ImagemUrl = await _fileStorageService.SaveImageFileAsync(request.Imagem);
+                    if (request.ImageUrl.StartsWith("data:image") || request.ImageUrl.Length > 255)
+                    {
+                        existingImage.ImagemUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageUrl);
+                    }
+                    else
+                    {
+                        existingImage.ImagemUrl = request.ImageUrl;
+                    }
                 }
 
-                if (request.Ordem.HasValue)
+                if (request.Order.HasValue)
                 {
-                    existingImage.Ordem = request.Ordem.Value;
+                    existingImage.Ordem = request.Order.Value;
                 }
 
-                if (request.ImagemAlt != null)
+                if (request.ImageAlt != null)
                 {
-                    existingImage.ImagemAlt = request.ImagemAlt.Trim();
+                    existingImage.ImagemAlt = request.ImageAlt.Trim();
                 }
 
                 await _produtosRepository.UpdateProductImageAsync(existingImage);
@@ -471,6 +529,163 @@ namespace DaccApi.Services.Products
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,
                     $"Erro ao remover imagem: {ex.Message}");
+            }
+        }
+
+        public async Task<IActionResult> GetSubcategories()
+        {
+            var subcategories = await _subcategoriaRepository.GetAllAsync();
+
+            if (subcategories.Count == 0)
+            {
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT,
+                    "Não há subcategorias disponíveis.");
+            }
+
+            var subcategoriesResponse = subcategories.Select(subcategoria => subcategoria.ToResponse());
+
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { subcategories = subcategoriesResponse }));
+        }
+
+        public async Task<IActionResult> CreateSubcategory(ProdutoSubcategoria subcategoria)
+        {
+            await _subcategoriaRepository.CreateAsync(subcategoria);
+
+            return ResponseHelper.CreateSuccessResponse(
+                ResponseSuccess.CREATED.WithData(new { subcategoria = subcategoria.ToResponse() }));
+        }
+
+        public async Task<ResponseProduto> BatchUpdateProductInfo(RequestBatchUpdateProduto request)
+        {
+            var product = await _produtosRepository.GetProductByIdAsync(request.Id);
+
+            if (product == null)
+            {
+                throw new KeyNotFoundException("Produto não encontrado!");
+            }
+
+            var transaction = _repositoryDapper.BeginTransaction();
+            try
+            {
+                await _produtosRepository.BatchUpdateProductAsync(request, transaction);
+
+                var variations = request.Variations;
+                if (variations != null)
+                {
+                    await _produtosRepository.BatchUpdateVariationsAsync(product.Id, variations, transaction);
+                }
+                transaction.Commit();
+
+                var updatedProduct = await _produtosRepository.GetProductByIdAsync(request.Id);
+
+                if (updatedProduct == null)
+                {
+                    throw new KeyNotFoundException("Produto não encontrado!");
+                }
+
+                return new ResponseProduto(updatedProduct);
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
+            }
+        }
+
+        public async Task<ResponseProduto> BatchCreateProduct(RequestBatchCreateProduto request)
+        {
+            var productId = Guid.NewGuid();
+            var transaction = _repositoryDapper.BeginTransaction();
+            try
+            {
+                await _produtosRepository.BatchCreateProductAsync(productId, request, transaction);
+
+                if (request.Variations != null && request.Variations.Count != 0)
+                {
+                    await _produtosRepository.BatchCreateVariationsAsync(productId, request.Variations, transaction);
+                }
+
+                transaction.Commit();
+
+                var createdProduct = await _produtosRepository.GetProductByIdAsync(productId);
+                if (createdProduct == null)
+                {
+                    throw new Exception("Erro ao buscar produto criado");
+                }
+
+                return new ResponseProduto(createdProduct);
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
+            }
+        }
+
+        // Métodos Auxiliares para Resolução de ID vs Nome
+        
+        private async Task<Guid> ResolveCategoryIdAsync(string input)
+        {
+            if (Guid.TryParse(input, out var guid))
+            {
+                // TODO: Validar se categoria existe (opcional, pode deixar o FK do banco pegar)
+                return guid;
+            }
+
+            // Tenta buscar por nome
+            var categoryId = await _produtosRepository.GetCategoryIdByNameAsync(input);
+            if (categoryId == null)
+            {
+                throw new ArgumentException($"Categoria '{input}' não encontrada.");
+            }
+
+            return categoryId.Value;
+        }
+
+        private async Task<Guid?> ResolveSubcategoryIdAsync(string input)
+        {
+            if (string.IsNullOrEmpty(input)) return null;
+
+            if (Guid.TryParse(input, out var guid))
+            {
+                return guid;
+            }
+
+            // Tenta buscar por nome
+            var subcategoryId = await _produtosRepository.GetSubcategoryIdByNameAsync(input);
+            if (subcategoryId == null)
+            {
+                throw new ArgumentException($"Subcategoria '{input}' não encontrada.");
+            }
+
+            return subcategoryId;
+        }
+
+        public async Task<IActionResult> GetAvailableSizesAsync()
+        {
+            try
+            {
+                var sizes = await _produtosRepository.GetAvailableSizesAsync();
+                var response = sizes.Select(s => new ResponseFilterOption(s)).ToList();
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { sizes = response }));
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
+
+        public async Task<IActionResult> GetAvailableColorsAsync()
+        {
+            try
+            {
+                var colors = await _produtosRepository.GetAvailableColorsAsync();
+                var response = colors.Select(c => new ResponseFilterOption(c)).ToList();
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { colors = response }));
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
             }
         }
     }

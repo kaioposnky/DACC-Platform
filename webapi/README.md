@@ -1,50 +1,54 @@
 # DaccApi - API do Diretório Acadêmico de Ciência da Computação
 
-[![.NET](https://img.shields.io/badge/.NET-7.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/) 
+[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/) 
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/) 
 [![JWT](https://img.shields.io/badge/JWT-000000?style=flat-square&logo=JSON%20web%20tokens&logoColor=white)](https://jwt.io/) 
 [![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=flat-square&logo=swagger&logoColor=black)](https://swagger.io/) 
 
-Uma API REST completa construída em .NET 7.0 para gerenciar uma **plataforma digital acadêmica** integrada, combinando funcionalidades de gestão acadêmica e e-commerce para o Diretório Acadêmico de Ciência da Computação da FEI.
+Uma API REST completa construída em .NET 8.0 para gerenciar uma **plataforma digital acadêmica** integrada, combinando funcionalidades de gestão acadêmica e e-commerce para o Diretório Acadêmico de Ciência da Computação da FEI.
 
 ## 🛠️ Stack Tecnológica
 
 | Tecnologia                | Finalidade                 |
 |---------------------------|----------------------------|
-| **.NET Core**             | Framework principal da API |
-| **Entity Framework Core** | ORM principal              |
-| **Dapper**                | Queries na Database        |
-| **NHibernate**            | Mapeamentos complexos      |
-| **JWT Bearer**            | Autenticação e autorização |
-| **Argon2**                | Hash seguro de senhas      |
-| **ImageSharp**            | Processamento de imagens   |
-| **MercadoPago SDK**       | Gateway de pagamento       |
-| **Swagger**               | Documentação da API        |
+| **.NET Core**             | Framework principal da API (v8.0) |
+| **Entity Framework Core** | ORM para Migrations e CRUDs simples |
+| **Dapper**                | Queries de alta performance       |
+| **NHibernate**            | SQL Externo (.hbm.xml)            |
+| **JWT Bearer**            | Autenticação e autorização        |
+| **Argon2**                | Hash seguro de senhas             |
+| **ImageSharp**            | Processamento de imagens          |
+| **MailKit**               | Envio de e-mails transacionais    |
+| **MercadoPago SDK**       | Gateway de pagamento              |
+| **Swagger**               | Documentação da API               |
 
 ## 📁 Estrutura do Projeto
 
 ```
 DaccApi/
 ├── Controllers/          # Endpoints organizados por domínio
-│   ├── Auth/            # Autenticação e autorização
-│   ├── Usuario/         # Gestão de usuários
-│   ├── Produtos/        # Catálogo e e-commerce
-│   ├── Orders/          # Processamento de pedidos
-│   ├── Payments/        # Integração de pagamentos
-│   └── ...              # Outros domínios
-├── Services/            # Lógica de negócio
-├── Infrastructure/      # Camada de infraestrutura
-│   ├── Authorization/   # Sistema de permissões
-│   ├── Repositories/    # Acesso a dados
-│   ├── Cryptography/    # Serviços de criptografia
-│   └── MercadoPago/     # Integração de pagamento
-├── Model/               # DTOs e entidades
-│   ├── Objects/         # Entidades de domínio
+│   ├── Auth/            # Autenticação e redefinição de senha
+│   ├── Usuario/         # Gestão de usuários e perfis
+│   ├── Produtos/        # E-commerce, categorias e filtros
+│   ├── Orders/          # Pedidos, Carrinho e Cupons
+│   ├── Anuncio/         # Banners, tipos e detalhes
+│   ├── Professores/     # Corpo docente (Faculty)
+│   ├── Noticias/        # Blog e categorias de notícias
+│   ├── Eventos/         # Calendário acadêmico
+│   ├── Projetos/        # Diretórios e progresso
+│   └── Payments/        # Integração MercadoPago
+├── Services/            # Lógica de negócio e integrações
+├── Infrastructure/      # Camada de persistência e segurança
+│   ├── Authentication/  # JWT e Permissões customizadas
+│   ├── Repositories/    # Acesso a dados (BaseRepository)
+│   ├── Cryptography/    # Argon2 e hashing
+│   └── FileStorage/     # Gestão de uploads e Base64
+├── Model/               # DTOs (English) e Entities (PT-BR)
+│   ├── Objects/         # Entidades de banco
 │   ├── Requests/        # DTOs de entrada
-│   └── Responses/       # DTOs de saída
-├── Helpers/             # Utilitários e helpers
-├── Queries/             # Mapeamentos NHibernate
-└── wwwroot/uploads/     # Arquivos de upload
+│   └── Responses/       # DTOs de saída padronizados
+├── Queries/             # Arquivos .hbm.xml (SQL Externo)
+└── Tests/               # Testes de Integração e Helpers
 ```
 
 ## 🏗️ Arquitetura

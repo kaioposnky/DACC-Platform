@@ -34,9 +34,22 @@ namespace DaccApi.Model.Validation
                 return ValidationResult.Success!;
             }
 
-            if (value is not IFormFile[] files)
+            IFormFile[] files;
+
+            // Checa se é um collection, array ou imagem única
+            switch (value)
             {
-                return new ValidationResult("Valor deve ser um array de arquivos");
+                case IFormFile singleFile:
+                    files = [singleFile];
+                    break;
+                case IFormFile[] arrayFiles:
+                    files = arrayFiles;
+                    break;
+                case IEnumerable<IFormFile> enumerableFiles:
+                    files = enumerableFiles.ToArray();
+                    break;
+                default:
+                    return new ValidationResult("O valor deve ser um arquivo de imagem ou uma coleção de arquivos");
             }
 
             if (files.Length > _maxFileCount)

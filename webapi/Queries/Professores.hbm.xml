@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<queries>
+	<query name="GetAllProfessores">
+		SELECT 
+			id as Id,
+			nome as Nome,
+			titulo as Titulo,
+			cargo as Cargo,
+			especializacao as Especializacao,
+			imagem_url as ImagemUrl,
+			usuario_id as UserId,
+			email as Email,
+			github as Github,
+			linkedin as Linkedin
+		FROM professores
+	</query>
+	<query name="CreateProfessor">
+		INSERT INTO professores
+			(nome,
+			titulo,
+			cargo,
+			especializacao,
+			imagem_url,
+			usuario_id,
+			email,
+			github,
+			linkedin)
+		VALUES (@Nome, @Titulo, @Cargo, @Especializacao, @ImagemUrl, @UserId, @Email, @Github, @Linkedin)
+	</query>
+	<query name="GetProfessorById">
+		SELECT
+			id as Id,
+			nome as Nome,
+			titulo as Titulo,
+			cargo as Cargo,
+			especializacao as Especializacao,
+			imagem_url as ImagemUrl,
+			usuario_id as UserId,
+			email as Email,
+			github as Github,
+			linkedin as Linkedin
+		FROM professores 
+		WHERE id=@id
+	</query>
+	<query name="DeleteProfessor">
+		DELETE FROM professores WHERE id=@id
+	</query>
+	<query name="UpdateProfessor">
+		UPDATE professores
+			SET nome = @Nome,
+				titulo = @Titulo,
+				cargo = @Cargo,
+				especializacao = @Especializacao,
+				imagem_url = @ImagemUrl,
+				usuario_id = @UserId,
+				email = @Email,
+				github = @Github,
+				linkedin = @Linkedin
+				WHERE id=@id
+	</query>
+
+
+    <query name="SearchProfessores">
+        SELECT 
+            id as Id,
+            nome as Nome,
+            titulo as Titulo,
+            cargo as Cargo,
+            especializacao as Especializacao,
+            imagem_url as ImagemUrl,
+            usuario_id as UserId,
+            email as Email,
+            github as Github,
+            linkedin as Linkedin,
+            COUNT(*) OVER() as TotalCount
+        FROM professores
+        WHERE 1=1
+        AND (@SearchPattern IS NULL OR nome ILIKE @SearchPattern OR cargo ILIKE @SearchPattern OR especializacao ILIKE @SearchPattern)
+        ORDER BY nome ASC
+        OFFSET (@Page - 1) * @Limit
+        LIMIT @Limit
+    </query>
+</queries>

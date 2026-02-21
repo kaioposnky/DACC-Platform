@@ -46,10 +46,10 @@ namespace DaccApi.Model
         public string? Status { get; set; }
         
         /// <summary>
-        /// Obtém ou define a diretoria responsável pelo projeto.
+        /// Obtém ou define o ID da diretoria responsável pelo projeto.
         /// </summary>
-        [Column("diretoria")]
-        public string? Diretoria { get; set; }
+        [Column("diretoria_id")]
+        public Guid? DiretoriaId { get; set; }
         
         /// <summary>
         /// Obtém ou define as tags associadas ao projeto.
@@ -74,5 +74,14 @@ namespace DaccApi.Model
 
         [Column("data_atualizacao")]
         public DateTime? DataAtualizacao { get; set; }
+
+        [NotMapped]
+        public int TotalCount { get; set; }
+
+    /// <summary>
+    /// Obtém ou define a diretoria associada ao projeto.
+    /// </summary>
+    [NotMapped]
+    public Objects.Diretoria? Departamento { get; set; }
     }
 }

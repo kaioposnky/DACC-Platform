@@ -40,15 +40,8 @@ namespace DaccApi.Responses
         /// </summary>
         private static object UnwrapSinglePropertyObject(object data)
         {
-            var type = data.GetType();
-            
-            // Se é um tipo anônimo com apenas uma propriedade, desencapsula automaticamente
-            if (!type.Name.Contains("AnonymousType")) return data;
-            var properties = type.GetProperties();
-
-            if (properties.Length != 1) return data;
-            var property = properties[0];
-            return property.GetValue(data)!;
+            // Desabilitando desencapsulamento automático para preservar as chaves definidas nos Services
+            return data;
         }
         
         // Respostas de Sucesso Padrão

@@ -1,6 +1,8 @@
-﻿using DaccApi.Helpers.Attributes;
+﻿using DaccApi.Helpers;
+using DaccApi.Helpers.Attributes;
 using DaccApi.Infrastructure.Authentication;
 using DaccApi.Model;
+using DaccApi.Responses;
 using DaccApi.Services.Products;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -95,7 +97,7 @@ namespace DaccApi.Controllers.Produtos
         [HasPermission(AppPermissions.Produtos.Update)]
         public async Task<IActionResult> UpdateProduct(
             [FromRoute] Guid id,
-            [FromForm] RequestUpdateProduto requestUpdateProduto
+            [FromBody] RequestUpdateProduto requestUpdateProduto
         )
         {
             var response = await _produtosService.UpdateProductAsync(id, requestUpdateProduto);
@@ -110,7 +112,7 @@ namespace DaccApi.Controllers.Produtos
         [HasPermission(AppPermissions.Produtos.Create)]
         public async Task<IActionResult> CreateVariation(
             [FromRoute] Guid id,
-            [FromForm] RequestProdutoVariacaoCreate request
+            [FromBody] RequestProdutoVariacaoCreate request
         )
         {
             var response = await _produtosService.CreateVariationAsync(id, request);
@@ -138,7 +140,7 @@ namespace DaccApi.Controllers.Produtos
         public async Task<IActionResult> UpdateVariation(
             [FromRoute] Guid id,
             [FromRoute] Guid variationId,
-            [FromForm] RequestUpdateProdutoVariacao request
+            [FromBody] RequestUpdateProdutoVariacao request
         )
         {
             var response = await _produtosService.UpdateVariationAsync(id, variationId, request);
@@ -169,7 +171,7 @@ namespace DaccApi.Controllers.Produtos
         public async Task<IActionResult> CreateVariationImage(
             [FromRoute] Guid productId,
             [FromRoute] Guid variationId,
-            [FromForm] RequestCreateProdutoImagem request
+            [FromBody] RequestCreateProdutoImagem request
         )
         {
             var response = await _produtosService.CreateVariationImageAsync(
@@ -200,7 +202,7 @@ namespace DaccApi.Controllers.Produtos
         [HasPermission(AppPermissions.Produtos.Update)]
         public async Task<IActionResult> UpdateImage(
             [FromRoute] Guid imageId,
-            [FromForm] RequestUpdateProdutoImagem request
+            [FromBody] RequestUpdateProdutoImagem request
         )
         {
             var response = await _produtosService.UpdateImageAsync(imageId, request);
@@ -217,6 +219,84 @@ namespace DaccApi.Controllers.Produtos
         {
             var response = await _produtosService.DeleteImageAsync(imageId);
             return response;
+        }
+
+        [PublicGetResponses]
+        [HttpGet("subcategorias")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetSubcategories()
+        {
+            var response = await _produtosService.GetSubcategories();
+            return response;
+        }
+
+        [AuthenticatedPostResponses]
+        [HttpPost("subcategorias")]
+        [HasPermission(AppPermissions.Produtos.Create)]
+        public async Task<IActionResult> CreateSubcategory([FromBody] string name)
+        {
+            var subcategory = new ProdutoSubcategoria{ Nome = name };
+
+            var response = await _produtosService.CreateSubcategory(subcategory);
+            return response;
+        }
+
+        /// <summary>
+        /// Cria um novo produto com todas as informações de uma vez (variações, imagens, especificações).
+        /// </summary>
+        [AuthenticatedPostResponses]
+        [HttpPost("batch-create")]
+        [HasPermission(AppPermissions.Produtos.Create)]
+        public async Task<IActionResult> CreateFullProduct([FromBody] RequestBatchCreateProduto request)
+        {
+            try
+            {
+                var createdProduct = await _produtosService.BatchCreateProduct(request);
+                return ResponseHelper.CreateSuccessResponse(
+                    ResponseSuccess.CREATED.WithData(new { product = createdProduct }),
+                    "Produto criado com sucesso!"
+                );
+            }
+            catch (ArgumentException ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
+
+        [AuthenticatedPatchResponses]
+        [HttpPatch("{id:guid}/batch-update")]
+        [HasPermission(AppPermissions.Produtos.Update)]
+        public async Task<IActionResult> BatchUpdate([FromRoute] Guid id, [FromBody] RequestBatchUpdateProduto request)
+        {
+            request.Id = id;
+            var result = await _produtosService.BatchUpdateProductInfo(request);
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(result));
+        }
+
+        /// <summary>
+        /// Obtém lista de tamanhos disponíveis.
+        /// </summary>
+        [AllowAnonymous]
+        [PublicGetResponses]
+        [HttpGet("sizes")]
+        public async Task<IActionResult> GetAvailableSizes()
+        {
+            return await _produtosService.GetAvailableSizesAsync();
+        }
+
+        /// <summary>
+        /// Obtém lista de cores disponíveis.
+        /// </summary>
+        [AllowAnonymous]
+        [PublicGetResponses]
+        [HttpGet("colors")]
+        public async Task<IActionResult> GetAvailableColors()
+        {
+            return await _produtosService.GetAvailableColorsAsync();
         }
     }
 }

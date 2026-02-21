@@ -22,10 +22,12 @@ public class AvaliacaoService : IAvaliacaoService
             var newProductRating = new AvaliacaoProduto()
             {
                 Id = Guid.NewGuid(),
-                ProdutoId = avaliacao.ProdutoId,
+                ProdutoId = avaliacao.ProductId,
+                ProdutoVariacaoId = avaliacao.ProductVariationId,
                 UsuarioId = userId,
-                Comentario = avaliacao.Comentario,
-                Nota = avaliacao.Nota,
+                Nota = avaliacao.Rating,
+                Titulo = avaliacao.Title,
+                Comentario = avaliacao.Comment,
                 DataPostada = DateTime.UtcNow,
                 DataAtualizacao = DateTime.UtcNow,
                 Ativo = true
@@ -33,7 +35,7 @@ public class AvaliacaoService : IAvaliacaoService
 
             await _avaliacaoRepository.CreateAsync(newProductRating);
                 
-            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED.WithData(new ResponseAvaliacaoProduto(newProductRating)));
         }
         catch (Exception ex)
         {
@@ -45,12 +47,13 @@ public class AvaliacaoService : IAvaliacaoService
     {
         try
         {
-            var avaliacoes = await _avaliacaoRepository.GetAllAsync();
+            var avaliacoes = await _avaliacaoRepository.GetAllWithDetails();
 
-            if (avaliacoes.Count == 0) return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+            if (avaliacoes.Count == 0)
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<AvaliacaoProduto>()));
 
             var responseAvaliacoes = avaliacoes.Select(avaliacao => new ResponseAvaliacaoProduto(avaliacao));
-            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { avaliacoes = responseAvaliacoes}));
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { reviews = responseAvaliacoes }));
         }
         catch (Exception ex)
         {
@@ -64,14 +67,14 @@ public class AvaliacaoService : IAvaliacaoService
     {
         try
         {
-            var avaliacao = await _avaliacaoRepository.GetByIdAsync(id);
+            var avaliacao = await _avaliacaoRepository.GetByIdWithDetails(id);
 
                 
             if (avaliacao == null) 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<AvaliacaoProduto>()));
 
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
-                new { avaliacao = new ResponseAvaliacaoProduto(avaliacao)}));
+                new { review = new ResponseAvaliacaoProduto(avaliacao) }));
         }
         catch (Exception ex)
         {
@@ -87,12 +90,12 @@ public class AvaliacaoService : IAvaliacaoService
         {
             var avaliacoes = await _avaliacaoRepository.GetAvaliacoesByProductId(produtoId);
 
-            if (avaliacoes.Count == 0) 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+            if (avaliacoes.Count == 0)
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<AvaliacaoProduto>()));
 
             var responseAvaliacoes = avaliacoes.Select(avaliacao => new ResponseAvaliacaoProduto(avaliacao));
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
-                new { avaliacoes = responseAvaliacoes}));
+                new { reviews = responseAvaliacoes }));
         }
         catch (Exception ex)
         {
@@ -108,11 +111,11 @@ public class AvaliacaoService : IAvaliacaoService
             var avaliacoes = await _avaliacaoRepository.GetAvaliacoesByUserId(usuarioId);
 
             if (avaliacoes.Count == 0)
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<AvaliacaoProduto>()));
 
             var responseAvaliacoes = avaliacoes.Select(avaliacao => new ResponseAvaliacaoProduto(avaliacao));
             return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
-                new { avaliacoes = responseAvaliacoes}));
+                new { reviews = responseAvaliacoes }));
         }
         catch (Exception ex)
         {
@@ -150,8 +153,10 @@ public class AvaliacaoService : IAvaliacaoService
                 return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
             }
             
-            avaliacaoQuery.Nota = avaliacao.Nota;
-            avaliacaoQuery.Comentario = avaliacao.Comentario;
+            avaliacaoQuery.Nota = avaliacao.Rating;
+            avaliacaoQuery.Titulo = avaliacao.Title;
+            avaliacaoQuery.Comentario = avaliacao.Comment;
+            avaliacaoQuery.DataPostada = DateTime.SpecifyKind(avaliacaoQuery.DataPostada, DateTimeKind.Utc);
             avaliacaoQuery.DataAtualizacao = DateTime.UtcNow;
             
             await _avaliacaoRepository.UpdateAsync(id, avaliacaoQuery);
@@ -164,4 +169,22 @@ public class AvaliacaoService : IAvaliacaoService
         }
     }
 
-}
+    public async Task<IActionResult> SearchAvaliacoes(Model.Requests.RequestQueryAvaliacao query)
+        {
+            try
+            {
+                var (avaliacoes, totalCount) = await _avaliacaoRepository.SearchAvaliacoes(query);
+
+                if (avaliacoes.Count == 0 && totalCount == 0)
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<AvaliacaoProduto>()));
+
+                var responseAvaliacoes = avaliacoes.Select(avaliacao => new ResponseAvaliacaoProduto(avaliacao));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
+                    new { reviews = responseAvaliacoes, totalCount = totalCount }));
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
+    }

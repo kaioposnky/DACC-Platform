@@ -5,6 +5,9 @@ using DaccApi.Model;
 using DaccApi.Services.User;
 using System;
 using System.Threading.Tasks;
+using DaccApi.Helpers;
+using DaccApi.Infrastructure.Repositories.User;
+using DaccApi.Responses;
 
 namespace DaccApi.Controllers.Usuario
 {
@@ -16,13 +19,15 @@ namespace DaccApi.Controllers.Usuario
     public class UsuarioController : ControllerBase
     {
         private readonly IUsuarioService _usuarioService;
+        private readonly IUsuarioRepository _usuarioRepository;
 
         /// <summary>
         /// Inicia uma nova instância da classe <see cref="UsuarioController"/>.
         /// </summary>
-        public UsuarioController(IUsuarioService usuarioService)
+        public UsuarioController(IUsuarioService usuarioService, IUsuarioRepository usuarioRepository)
         {
             _usuarioService = usuarioService;
+            _usuarioRepository = usuarioRepository;
         }
         
         /// <summary>
@@ -34,6 +39,15 @@ namespace DaccApi.Controllers.Usuario
         public async Task<IActionResult> GetUsers()
         {
             var response = await _usuarioService.GetAllUsers();
+            return response;
+        }
+
+        [AuthenticatedGetResponses]
+        [HasPermission(AppPermissions.Users.ViewAll)]
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchUsuarios([FromQuery] DaccApi.Model.Requests.Usuario.RequestQueryUsuario query)
+        {
+            var response = await _usuarioService.SearchUsuarios(query);
             return response;
         }
 
@@ -55,7 +69,7 @@ namespace DaccApi.Controllers.Usuario
         [AuthenticatedPatchResponses]
         [HasPermission(AppPermissions.Users.Update)]
         [HttpPatch("{id:guid}")]
-        public async Task<IActionResult> UpdateUser([FromRoute] Guid id, [FromForm] RequestUpdateUsuario request)
+        public async Task<IActionResult> UpdateUser([FromRoute] Guid id, [FromBody] RequestUpdateUsuario request)
         {
             var response = await _usuarioService.UpdateUser(id, request);
             return response;
@@ -71,6 +85,35 @@ namespace DaccApi.Controllers.Usuario
         {
             var response = await _usuarioService.DeleteUser(id);
             return response;
+        }
+
+        /// <summary>
+        /// Obtém um usuário específico pelo seu ID.
+        /// </summary>
+        [AuthenticatedGetResponses]
+        [HttpGet("{id:guid}/stats")]
+        public async Task<IActionResult> GetUserStats([FromRoute] Guid id)
+        {
+            var usuario = await _usuarioRepository.GetByIdAsync(id);
+
+            if (usuario == null)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "Usuário não encontrado.");
+            }
+
+            var requestUserId = ClaimsHelper.GetUserId(User);
+            if (requestUserId != usuario.Id)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INVALID_CREDENTIALS);
+            }
+
+            var userStats = await _usuarioRepository.GetUserStats(id);
+            if (userStats == null)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST,
+                    "Não foi possível encontrar as estatísticas do usuário!");
+            }
+            return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(userStats));
         }
     }
 }   

@@ -1,5 +1,6 @@
 using System.Data;
 using DaccApi.Model.Objects.Order;
+using DaccApi.Model.Requests.Order;
 
 namespace DaccApi.Infrastructure.Repositories.Orders
 {
@@ -23,7 +24,7 @@ namespace DaccApi.Infrastructure.Repositories.Orders
         /// <summary>
         /// Obtém um pedido específico pelo seu ID.
         /// </summary>
-        Task<Order?> GetOrderById(Guid id);
+        Task<Order?> GetOrderById(Guid id, IDbTransaction? transaction = null);
         /// <summary>
         /// Obtém todos os itens de um pedido específico.
         /// </summary>
@@ -32,6 +33,10 @@ namespace DaccApi.Infrastructure.Repositories.Orders
         /// Obtém todos os pedidos de um usuário específico.
         /// </summary>
         Task<List<Order>> GetOrdersByUserId(Guid userId);
+        /// <summary>
+        /// Busca pedidos com base em filtros.
+        /// </summary>
+        Task<(List<Order> Orders, int TotalCount)> SearchOrdersAsync(RequestQueryOrders query);
         /// <summary>
         /// Atualiza o status de um pedido.
         /// </summary>

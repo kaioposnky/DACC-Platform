@@ -96,7 +96,7 @@ namespace DaccApi.Model.Responses
         /// </summary>
         /// <param name="usuario">A entidade Usuario de origem.</param>
         /// <param name="isLoggedIn">Indica se o usuário está logado (frontend specific).</param>
-        public ResponseUsuario(Usuario usuario, bool isLoggedIn = false)
+        public ResponseUsuario(DaccApi.Model.Usuario usuario, bool isLoggedIn = false)
         {
             Id = usuario.Id;
             Name = usuario.Nome;

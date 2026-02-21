@@ -22,6 +22,12 @@ namespace DaccApi.Model
         public double Nota { get; set; }
 
         /// <summary>
+        /// Obtém ou define o título da avaliação.
+        /// </summary>
+        [Column("titulo")]
+        public string? Titulo { get; set; }
+
+        /// <summary>
         /// Obtém ou define o ID do usuário que fez a avaliação.
         /// </summary>
         [Column("usuario_id")]
@@ -39,6 +45,12 @@ namespace DaccApi.Model
         [Column("produto_id")]
         public Guid ProdutoId { get; set; }
 
+        /// <summary>
+        /// Obtém ou define o ID da variação do produto avaliada.
+        /// </summary>
+        [Column("produto_variacao_id")]
+        public Guid? ProdutoVariacaoId { get; set; }
+
         [Column("ativo")]
         public bool Ativo { get; set; }
 
@@ -50,5 +62,32 @@ namespace DaccApi.Model
 
         [Column("data_atualizacao")]
         public DateTime DataAtualizacao { get; set; }
+
+        [NotMapped]
+        public int TotalCount { get; set; }
+
+        /// <summary>
+        /// Nome completo do usuário (vem da query JOIN).
+        /// </summary>
+        [NotMapped]
+        public string? UsuarioNome { get; set; }
+
+        /// <summary>
+        /// Avatar do usuário (vem da query JOIN).
+        /// </summary>
+        [NotMapped]
+        public string? UsuarioAvatar { get; set; }
+
+        /// <summary>
+        /// Nome do produto (vem da query JOIN).
+        /// </summary>
+        [NotMapped]
+        public string? ProdutoNome { get; set; }
+
+        /// <summary>
+        /// URL da imagem da variação do produto (vem da query JOIN).
+        /// </summary>
+        [NotMapped]
+        public string? VariacaoImagemUrl { get; set; }
     }
 }

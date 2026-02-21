@@ -5,15 +5,11 @@ using DaccApi.Infrastructure.MercadoPago.Constants;
 using DaccApi.Infrastructure.MercadoPago.Models;
 using DaccApi.Infrastructure.Services.MercadoPago;
 using DaccApi.Model.Requests;
+using DaccApi.Model.Requests.Order;
 using DaccApi.Services.Orders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DaccApi.Responses;
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace DaccApi.Controllers.Orders
 {
@@ -22,19 +18,21 @@ namespace DaccApi.Controllers.Orders
     /// </summary>
     [Authorize]
     [ApiController]
-    [Route("v1/api/[controller]")]
+    [Route("v1/api/orders")]
     public class OrdersController : ControllerBase
     {
         private readonly IOrdersService _ordersService;
         private readonly IMercadoPagoService _mercadoPagoService;
+        private readonly ICupomService _cupomService;
 
         /// <summary>
         /// Inicia uma nova instância da classe <see cref="OrdersController"/>.
         /// </summary>
-        public OrdersController(IOrdersService ordersService, IMercadoPagoService mercadoPagoService)
+        public OrdersController(IOrdersService ordersService, IMercadoPagoService mercadoPagoService, ICupomService cupomService)
         {
             _ordersService = ordersService;
             _mercadoPagoService = mercadoPagoService;
+            _cupomService = cupomService;
         }
 
         /// <summary>
@@ -46,7 +44,7 @@ namespace DaccApi.Controllers.Orders
         {
             try
             {
-                if (request.ItensPedido.Count == 0)
+                if (request.Items.Count == 0)
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST
                         , "Nenhum item foi adicionado ao pedido.");
@@ -71,6 +69,24 @@ namespace DaccApi.Controllers.Orders
         }
 
         /// <summary>
+        /// Busca pedidos com filtros.
+        /// </summary>
+        [AuthenticatedGetResponses]
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchOrders([FromQuery] RequestQueryOrders requestQuery)
+        {
+            try
+            {
+                var (orders, totalCount) = await _ordersService.SearchOrders(requestQuery);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { orders = orders, totalCount = totalCount }));
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Obtém um pedido específico pelo seu ID.
         /// </summary>
         [AuthenticatedGetResponses]
@@ -81,7 +97,7 @@ namespace DaccApi.Controllers.Orders
             {
                 var order = await _ordersService.GetOrderById(id);
                 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { orders = order }));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { order = order }));
             }
             catch (KeyNotFoundException ex)
             {
@@ -104,7 +120,7 @@ namespace DaccApi.Controllers.Orders
             try
             {
                 var orders = await _ordersService.GetOrdersByUserId(userId);
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(orders));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { orders }));
             }
             catch (KeyNotFoundException ex)
             {
@@ -126,7 +142,7 @@ namespace DaccApi.Controllers.Orders
             try
             {
                 await _ordersService.UpdateOrderStatus(id, status);
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData( new { OrderId = id, Status = status }));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData( new { orderId = id, status = status }));
             }
             catch (KeyNotFoundException ex)
             {
@@ -136,6 +152,16 @@ namespace DaccApi.Controllers.Orders
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Valida um cupom de desconto.
+        /// </summary>
+        [AllowAnonymous]
+        [HttpGet("coupons/{code}")]
+        public async Task<IActionResult> ValidateCupom([FromRoute] string code)
+        {
+            return await _cupomService.ValidateCupom(code);
         }
 
         /// <summary>

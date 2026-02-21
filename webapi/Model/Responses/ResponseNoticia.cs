@@ -22,9 +22,9 @@ public class ResponseNoticia
     /// </summary>
     public string? Content { get; set; }
     /// <summary>
-    /// Obtém ou define o autor da notícia (frontend specific).
+    /// Obtém ou define o autor da notícia.
     /// </summary>
-    public string? Author { get; set; }
+    public ResponseUsuario? Author { get; set; }
     /// <summary>
     /// Obtém ou define o tempo de leitura da notícia (frontend specific).
     /// </summary>
@@ -66,7 +66,7 @@ public class ResponseNoticia
     /// Construtor para mapear de uma entidade Noticia.
     /// </summary>
     /// <param name="noticia">A entidade Noticia de origem.</param>
-    public ResponseNoticia(Noticia noticia)
+    public ResponseNoticia(global::DaccApi.Model.Noticia noticia)
     {
         Id = noticia.Id;
         Title = noticia.Titulo;
@@ -76,14 +76,12 @@ public class ResponseNoticia
         Category = noticia.Categoria;
         Date = noticia.DataPublicacao;
         UpdatedAt = noticia.DataAtualizacao;
-
-        // Propriedades específicas do frontend sem correspondência direta
-        Author = string.Empty; // Preencher via serviço ou lógica adicional
-        ReadTime = null; // Valor padrão
-        Tags = noticia.Tags?.ToArray() ?? [];
-        Icon = string.Empty; // Valor padrão
-        Gradient = string.Empty; // Valor padrão
-        ReadMoreLink = string.Empty; // Valor padrão
+        Author = noticia.Autor != null ? new ResponseUsuario(noticia.Autor) : null;
+        ReadTime = noticia.TempoLeitura;
+        Tags = noticia.Tags.Select(tag => tag.Nome).ToArray();
+        Icon = noticia.CategoriaIcon;
+        Gradient = noticia.CategoriaGradient;
+        ReadMoreLink = $"/news/{Id}";
     }
 
     /// <summary>

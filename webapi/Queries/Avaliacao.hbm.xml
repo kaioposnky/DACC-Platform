@@ -3,53 +3,120 @@
 <queries>
 <!--    Query para criar uma avaliação de um usuário-->
     <query name="CreateAvaliacao">
-        INSERT INTO avaliacao(usuario_id, produto_id, nota, comentario)
-        VALUES (@UsuarioId, @ProdutoId, @Nota, @Comentario);
+        INSERT INTO avaliacao(usuario_id, produto_id, produto_variacao_id, nota, titulo, comentario)
+        VALUES (@UsuarioId, @ProdutoId, @ProdutoVariacaoId, @Nota, @Titulo, @Comentario);
     </query>
 <!--    Query para obter todas as avaliações-->
     <query name="GetAllAvaliacoes">
         SELECT 
-            id as Id,
-            nota as Nota,
-            usuario_id as UsuarioId,
-            comentario as Comentario,
-            produto_id as ProdutoId,
-            data_avaliacao as DataPostada
-        FROM avaliacao;
+            a.id as Id,
+            a.nota as Nota,
+            a.titulo as Titulo,
+            a.usuario_id as UsuarioId,
+            a.comentario as Comentario,
+            a.produto_id as ProdutoId,
+            a.produto_variacao_id as ProdutoVariacaoId,
+            a.data_avaliacao as DataPostada,
+            a.data_atualizacao as DataAtualizacao,
+            a.ativo as Ativo,
+            CONCAT(u.nome, ' ', u.sobrenome) as UsuarioNome,
+            u.imagem_url as UsuarioAvatar,
+            p.nome as ProdutoNome,
+            (
+                SELECT pi.imagem_url 
+                FROM produto_imagem pi 
+                WHERE pi.produto_variacao_id = a.produto_variacao_id 
+                ORDER BY pi.ordem ASC 
+                LIMIT 1
+            ) as VariacaoImagemUrl
+        FROM avaliacao a
+        LEFT JOIN usuario u ON a.usuario_id = u.id
+        LEFT JOIN produto p ON a.produto_id = p.id
     </query>
     
     <query name="GetAvaliacaoById">
         SELECT
-            id as Id,
-            nota as Nota,
-            usuario_id as UsuarioId,
-            comentario as Comentario,
-            produto_id as ProdutoId,
-            data_avaliacao as DataPostada
-        FROM avaliacao WHERE id = @id
+            a.id as Id,
+            a.nota as Nota,
+            a.titulo as Titulo,
+            a.usuario_id as UsuarioId,
+            a.comentario as Comentario,
+            a.produto_id as ProdutoId,
+            a.produto_variacao_id as ProdutoVariacaoId,
+            a.data_avaliacao as DataPostada,
+            a.data_atualizacao as DataAtualizacao,
+            a.ativo as Ativo,
+            CONCAT(u.nome, ' ', u.sobrenome) as UsuarioNome,
+            u.imagem_url as UsuarioAvatar,
+            p.nome as ProdutoNome,
+            (
+                SELECT pi.imagem_url 
+                FROM produto_imagem pi 
+                WHERE pi.produto_variacao_id = a.produto_variacao_id 
+                ORDER BY pi.ordem ASC 
+                LIMIT 1
+            ) as VariacaoImagemUrl
+        FROM avaliacao a
+        LEFT JOIN usuario u ON a.usuario_id = u.id
+        LEFT JOIN produto p ON a.produto_id = p.id
+        WHERE a.id=@id
     </query>
     
 <!--    Query para obter as avaliacoes de um produto especifico-->
     <query name="GetAvaliacoesByProductId">
-        SELECT
-            id as Id,
-            nota as Nota,
-            usuario_id as UsuarioId,
-            comentario as Comentario,
-            produto_id as ProdutoId,
-            data_avaliacao as DataPostada
-        FROM avaliacao WHERE produto_id = @ProdutoId;
+        SELECT 
+            a.id as Id,
+            a.nota as Nota,
+            a.titulo as Titulo,
+            a.usuario_id as UsuarioId,
+            a.comentario as Comentario,
+            a.produto_id as ProdutoId,
+            a.produto_variacao_id as ProdutoVariacaoId,
+            a.data_avaliacao as DataPostada,
+            a.data_atualizacao as DataAtualizacao,
+            a.ativo as Ativo,
+            CONCAT(u.nome, ' ', u.sobrenome) as UsuarioNome,
+            u.imagem_url as UsuarioAvatar,
+            p.nome as ProdutoNome,
+            (
+                SELECT pi.imagem_url 
+                FROM produto_imagem pi 
+                WHERE pi.produto_variacao_id = a.produto_variacao_id 
+                ORDER BY pi.ordem ASC 
+                LIMIT 1
+            ) as VariacaoImagemUrl
+        FROM avaliacao a
+        LEFT JOIN usuario u ON a.usuario_id = u.id
+        LEFT JOIN produto p ON a.produto_id = p.id
+        WHERE a.produto_id = @produtoId
     </query>
 <!--    Query para obter as avaliacoes de um usuario-->
     <query name="GetAvaliacoesByUserId">
-        SELECT
-            id as Id,
-            nota as Nota,
-            usuario_id as UsuarioId,
-            comentario as Comentario,
-            produto_id as ProdutoId,
-            data_avaliacao as DataPostada
-        FROM avaliacao WHERE usuario_id = @UsuarioId;
+        SELECT 
+            a.id as Id,
+            a.nota as Nota,
+            a.titulo as Titulo,
+            a.usuario_id as UsuarioId,
+            a.comentario as Comentario,
+            a.produto_id as ProdutoId,
+            a.produto_variacao_id as ProdutoVariacaoId,
+            a.data_avaliacao as DataPostada,
+            a.data_atualizacao as DataAtualizacao,
+            a.ativo as Ativo,
+            CONCAT(u.nome, ' ', u.sobrenome) as UsuarioNome,
+            u.imagem_url as UsuarioAvatar,
+            p.nome as ProdutoNome,
+            (
+                SELECT pi.imagem_url 
+                FROM produto_imagem pi 
+                WHERE pi.produto_variacao_id = a.produto_variacao_id 
+                ORDER BY pi.ordem ASC 
+                LIMIT 1
+            ) as VariacaoImagemUrl
+        FROM avaliacao a
+        LEFT JOIN usuario u ON a.usuario_id = u.id
+        LEFT JOIN produto p ON a.produto_id = p.id
+        WHERE a.usuario_id = @usuarioId;
     </query>
     <query name="DeleteAvaliacao">
         DELETE FROM avaliacao WHERE id = @id
@@ -57,9 +124,51 @@
     <query name="UpdateAvaliacao">
         UPDATE avaliacao
             SET nota = @Nota,
+            titulo = @Titulo,
             comentario = @Comentario,
             data_atualizacao = CURRENT_TIMESTAMP
         WHERE id = @id;
     </query>
     
+
+
+    <query name="SearchAvaliacoes">
+        SELECT 
+            a.id as Id,
+            a.nota as Nota,
+            a.titulo as Titulo,
+            a.usuario_id as UsuarioId,
+            a.comentario as Comentario,
+            a.produto_id as ProdutoId,
+            a.produto_variacao_id as ProdutoVariacaoId,
+            a.data_avaliacao as DataPostada,
+            a.data_atualizacao as DataAtualizacao,
+            a.ativo as Ativo,
+            CONCAT(u.nome, ' ', u.sobrenome) as UsuarioNome,
+            u.imagem_url as UsuarioAvatar,
+            p.nome as ProdutoNome,
+            (
+                SELECT pi.imagem_url 
+                FROM produto_imagem pi 
+                WHERE pi.produto_variacao_id = a.produto_variacao_id 
+                ORDER BY pi.ordem ASC 
+                LIMIT 1
+            ) as VariacaoImagemUrl,
+            COUNT(*) OVER() as TotalCount
+        FROM avaliacao a
+        LEFT JOIN usuario u ON a.usuario_id = u.id
+        LEFT JOIN produto p ON a.produto_id = p.id
+        WHERE 1=1
+        AND (@SearchPattern IS NULL OR 
+             a.comentario ILIKE @SearchPattern OR 
+             CONCAT(u.nome, ' ', u.sobrenome) ILIKE @SearchPattern OR 
+             p.nome ILIKE @SearchPattern)
+        AND (@MinRating IS NULL OR a.nota &gt;= @MinRating)
+        AND (@MaxRating IS NULL OR a.nota &lt;= @MaxRating)
+        AND (@DateFrom IS NULL OR a.data_avaliacao &gt;= @DateFrom)
+        AND (@DateTo IS NULL OR a.data_avaliacao &lt;= @DateTo)
+        ORDER BY a.data_avaliacao DESC
+        OFFSET (@Page - 1) * @Limit
+        LIMIT @Limit
+    </query>
 </queries>

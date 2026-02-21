@@ -10,41 +10,41 @@ namespace DaccApi.Model
         /// <summary>
         /// Obtém ou define o novo nome do produto.
         /// </summary>
-        public string? Nome { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// Obtém ou define a nova descrição do produto.
         /// </summary>
-        public string? Descricao { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Obtém ou define a nova categoria do produto.
         /// </summary>
-        public string? Categoria { get; set; }
+        public string? Category { get; set; }
 
         /// <summary>
         /// Obtém ou define a nova subcategoria do produto.
         /// </summary>
-        public string? Subcategoria { get; set; }
+        public string? Subcategory { get; set; }
 
         /// <summary>
         /// Obtém ou define o novo preço do produto.
         /// </summary>
-        public double? Preco { get; set; }
+        public double? Price { get; set; }
         
         /// <summary>
         /// Obtém ou define o novo preço original do produto.
         /// </summary>
-        public double? PrecoOriginal { get; set; }
+        public double? OriginalPrice { get; set; }
         
-        public string? DescricaoDetalhada { get; set; }
+        public string? DetailedDescription { get; set; }
         
-        public List<string>? PerfeitoPara { get; set; }
+        public List<string>? PerfectFor { get; set; }
         
-        public bool? Destaque { get; set; }
+        public bool? Featured { get; set; }
         
-        public List<SpecificationItem>? Especificacoes { get; set; }
+        public List<SpecificationItem>? Specifications { get; set; }
         
-        public ShippingInfo? InformacaoEnvio { get; set; }
+        public ShippingInfo? ShippingInfo { get; set; }
     }
 }

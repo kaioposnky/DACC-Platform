@@ -25,9 +25,9 @@ namespace DaccApi.Services.Eventos
                 var eventos = await _eventosRepository.GetAllAsync();
 
                 if (eventos.Count == 0)
-                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Evento>()));
                 var response = eventos.Select(evento => new ResponseEvento(evento));
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { eventos = response}));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { events = response }));
             }
             catch (Exception ex)
             {
@@ -40,11 +40,12 @@ namespace DaccApi.Services.Eventos
                 try
                 {
                     if (
-                        String.IsNullOrWhiteSpace(request.Titulo) ||
-                        String.IsNullOrWhiteSpace(request.Descricao) ||
-                        String.IsNullOrWhiteSpace(request.TipoEvento) ||
-                        String.IsNullOrWhiteSpace(request.TextoAcao)||
-                        String.IsNullOrWhiteSpace(request.LinkAcao)
+                        String.IsNullOrWhiteSpace(request.Title) ||
+                        String.IsNullOrWhiteSpace(request.Description) ||
+                        String.IsNullOrWhiteSpace(request.EventType) ||
+                        String.IsNullOrWhiteSpace(request.ActionText)||
+                        String.IsNullOrWhiteSpace(request.ActionLink) ||
+                        !request.Date.HasValue
                         )
                     {
                         return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
@@ -53,18 +54,18 @@ namespace DaccApi.Services.Eventos
                     var evento = new Evento()
                     {
                         Id = Guid.NewGuid(),
-                        Titulo = request.Titulo,
-                        AutorId = autorId,
-                        Descricao = request.Descricao,
-                        LinkAcao = request.LinkAcao,
-                        TextoAcao = request.TextoAcao,
-                        TipoEvento = request.TipoEvento,
-                        Data = request.Data
+                        Titulo = request.Title,
+                        AutorId = request.AuthorId ?? autorId,
+                        Descricao = request.Description,
+                        LinkAcao = request.ActionLink,
+                        TextoAcao = request.ActionText,
+                        TipoEvento = request.EventType,
+                        Data = request.Date.Value
                     };
 
                     await _eventosRepository.CreateAsync(evento);
                     
-                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED.WithData(new ResponseEvento(evento)));
                 }
                 catch (Exception ex)
                 {
@@ -102,10 +103,10 @@ namespace DaccApi.Services.Eventos
 
                     
                     if (evento == null) 
-                        return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                        return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Evento>()));
                     var response = new ResponseEvento(evento);
                     return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
-                        new { evento = response}));
+                        new { @event = response }));
                 }
                 catch (Exception ex)
                 {
@@ -124,12 +125,12 @@ namespace DaccApi.Services.Eventos
                         return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
                     }
 
-                    eventoQuery.Titulo = request.Titulo;
-                    eventoQuery.TextoAcao = request.TextoAcao;
-                    eventoQuery.Descricao = request.Descricao;
-                    eventoQuery.LinkAcao = request.LinkAcao;
-                    eventoQuery.TipoEvento = request.TipoEvento;
-                    eventoQuery.Data = request.Data;
+                    eventoQuery.Titulo = request.Title ?? eventoQuery.Titulo;
+                    eventoQuery.TextoAcao = request.ActionText ?? eventoQuery.TextoAcao;
+                    eventoQuery.Descricao = request.Description ?? eventoQuery.Descricao;
+                    eventoQuery.LinkAcao = request.ActionLink ?? eventoQuery.LinkAcao;
+                    eventoQuery.TipoEvento = request.EventType ?? eventoQuery.TipoEvento;
+                    eventoQuery.Data = request.Date.HasValue ? request.Date.Value : eventoQuery.Data;
                     
                     await _eventosRepository.UpdateAsync(id, eventoQuery);
 
@@ -138,6 +139,27 @@ namespace DaccApi.Services.Eventos
                 catch (Exception ex)
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,ex.Message);
+                }
+            }
+
+
+            public async Task<IActionResult> SearchEventos(DaccApi.Model.Requests.RequestQueryEvento query)
+            {
+                try
+                {
+                    var (eventos, totalCount) = await _eventosRepository.SearchEventos(query);
+
+                    if (eventos.Count == 0 && totalCount == 0)
+                    {
+                        return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Evento>()));
+                    }
+
+                    var response = eventos.Select(e => new ResponseEvento(e));
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { events = response, totalCount = totalCount }));
+                }
+                catch (Exception ex)
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
                 }
             }
     }

@@ -17,6 +17,6 @@ namespace DaccApi.Model
         /// Obtém ou define a senha do usuário.
         /// </summary>
         [Required]
-        public string Senha { get; set; }
+        public string Password { get; set; }
     }
 }

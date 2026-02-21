@@ -3,6 +3,7 @@ using DaccApi.Infrastructure.Repositories.User;
 using DaccApi.Model;
 using DaccApi.Model.Responses;
 using DaccApi.Responses;
+using DaccApi.Services.FileStorage;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.User
@@ -10,10 +11,14 @@ namespace DaccApi.Services.User
     public class UsuarioService : IUsuarioService
     {
         private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IFileStorageService _fileStorageService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UsuarioService(IUsuarioRepository usuarioRepository)
+        public UsuarioService(IUsuarioRepository usuarioRepository, IFileStorageService fileStorageService, IHttpContextAccessor httpContextAccessor)
         {
             _usuarioRepository = usuarioRepository;
+            _fileStorageService = fileStorageService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<IActionResult> GetAllUsers()
@@ -23,7 +28,7 @@ namespace DaccApi.Services.User
                 var users = await _usuarioRepository.GetAllAsync();
                 if (users.Count == 0)
                 {
-                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Usuario>()));
                 }
 
                 var response = users.Select(user => new ResponseUsuario(user));
@@ -45,18 +50,73 @@ namespace DaccApi.Services.User
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND);
                 }
-                
+
+                // Checar se existe um usuário com esse Email para evitar UNIQUE KEY CONSTRAINT
+                if (newUserData.Email != null && newUserData.Email != userData.Email)
+                {
+                    var userWithEmail = await _usuarioRepository.GetUserByEmail(newUserData.Email);
+                    if (userWithEmail != null && userWithEmail.Id != id)
+                    {
+                        return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST,
+                            "Já existe um usuário com esse email!");
+                    }
+                }
+
+                // Checar se existe um usuário com esse RA para evitar UNIQUE KEY CONSTRAINT
+                if (newUserData.Ra != null && newUserData.Ra != userData.Ra)
+                {
+                    var userWithRa = await _usuarioRepository.GetUserByRa(newUserData.Ra);
+                    if (userWithRa != null && userWithRa.Id != id)
+                    {
+                        return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST,
+                            "Já existe um usuário com esse RA!");
+                    }
+                }
+
+                // Atualiza a imagem do usuário
+                if (!string.IsNullOrEmpty(newUserData.Avatar))
+                {
+                    if (newUserData.Avatar.StartsWith("data:image") || newUserData.Avatar.Length > 255)
+                    {
+                        userData.ImagemUrl = await _fileStorageService.SaveBase64ImageAsync(newUserData.Avatar);
+                    }
+                    else
+                    {
+                        userData.ImagemUrl = newUserData.Avatar;
+                    }
+                }
+
+                // Atualiza o cargo (apenas se o solicitante for administrador)
+                if (newUserData.Role != null)
+                {
+                    var currentUserRole = ClaimsHelper.GetUserRole(_httpContextAccessor.HttpContext?.User);
+                    
+                    if (currentUserRole == CargoUsuario.Administrador)
+                    {
+                        userData.Cargo = newUserData.Role;
+                    }
+                }
+
+                // Atualiza o status ativo
+                if (newUserData.IsActive.HasValue)
+                {
+                    userData.Ativo = newUserData.IsActive.Value;
+                }
+
                 // Para cada atributo, tenta pegar um valor, se for nulo, usa o valor já setado do usuário
-                userData.Nome = newUserData.Nome ?? userData.Nome;
-                userData.Sobrenome = newUserData.Sobrenome ?? userData.Sobrenome;
-                userData.Curso = newUserData.Curso ?? userData.Curso;
-                userData.Telefone = newUserData.Telefone ?? userData.Telefone;
-                userData.InscritoNoticia = newUserData.InscritoNoticia ?? userData.InscritoNoticia;
+                userData.Nome = newUserData.Name ?? userData.Nome;
+                userData.Email = newUserData.Email ?? userData.Email;
+                userData.Sobrenome = newUserData.LastName ?? userData.Sobrenome;
+                userData.Curso = newUserData.Course ?? userData.Curso;
+                userData.Telefone = newUserData.Phone ?? userData.Telefone;
+                userData.Ra = newUserData.Ra ?? userData.Ra;
+                userData.InscritoNoticia = newUserData.IsSubscribedToNews ?? userData.InscritoNoticia;
                 userData.DataAtualizacao = DateTime.UtcNow;
-                
+
                 await _usuarioRepository.UpdateAsync(id, userData);
                 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { user = userData.ToResponse() }), 
+                "Usuário atualizado com sucesso!");
             }
             catch (Exception ex)
             {
@@ -96,7 +156,7 @@ namespace DaccApi.Services.User
                 if (usuario == null)
                     return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Usuário não encontrado!");
                 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK,"Usuário obtido com sucesso!");
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { user = usuario.ToResponse() }), "Usuário obtido com sucesso!");
             }
             catch (Exception ex)
             {
@@ -124,6 +184,27 @@ namespace DaccApi.Services.User
             } catch(Exception ex)
             {
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, "Erro ao obter usuário pelo Email! " + ex.Message);
+            }
+        }
+
+
+        public async Task<IActionResult> SearchUsuarios(Model.Requests.Usuario.RequestQueryUsuario query)
+        {
+            try
+            {
+                var (users, totalCount) = await _usuarioRepository.SearchUsuarios(query);
+                if (users.Count == 0 && totalCount == 0)
+                {
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Usuario>()));
+                }
+
+                var response = users.Select(user => new ResponseUsuario(user));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData(new { users = response, totalCount = totalCount }),
+                    "Usuários obtidos com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
             }
         }
     }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <queries>
 	<query name="InsertUsuario">
-		INSERT INTO usuario (nome, sobrenome, ra, curso, email, telefone, senha_hash, cargo)
-		VALUES (@Nome, @Sobrenome, @Ra, @Curso, @Email, @Telefone, @Senha, @Cargo)
+		INSERT INTO usuario (nome, sobrenome, ra, curso, email, telefone, senha_hash, cargo, imagem_url)
+		VALUES (@Nome, @Sobrenome, @Ra, @Curso, @Email, @Telefone, @Senha, @Cargo, @ImagemUrl)
 		RETURNING id;
 	</query>
 	
@@ -42,6 +42,25 @@
 		FROM usuario
 		WHERE id = @Id;
 	</query>
+
+	<query name="GetUserByRA">
+		SELECT
+		id as Id,
+		nome as Nome,
+		sobrenome as Sobrenome,
+		ra as Ra,
+		curso as Curso,
+		email as Email,
+		telefone as Telefone,
+		imagem_url as ImagemUrl,
+		ativo as Ativo,
+		newsletter_subscriber as NewsLetterSubscriber,
+		cargo as Cargo,
+		data_criacao as DataCriacao,
+		data_atualizacao as DataAtualizacao
+		FROM usuario
+		WHERE ra = @Ra;
+	</query>
 	
 	<query name="GetUserByEmail">
 		SELECT
@@ -68,10 +87,22 @@
 		SET 
 			nome = @Nome, 
 			sobrenome = @Sobrenome,
+			email = @Email,
+			ra = @Ra,
 			curso = @Curso,
 			telefone = @Telefone,
 			imagem_url = @ImagemUrl,
-			newsletter_subscriber = @NewsLetterSubscriber,
+			ativo = @Ativo,
+			cargo = @Cargo,
+			newsletter_subscriber = @InscritoNoticia,
+			data_atualizacao = CURRENT_TIMESTAMP
+		WHERE id = @Id;
+	</query>
+
+	<query name="UpdateUserPassword">
+		UPDATE usuario
+		SET
+			senha_hash = @SenhaHash,
 			data_atualizacao = CURRENT_TIMESTAMP
 		WHERE id = @Id;
 	</query>
@@ -90,15 +121,80 @@
 	</query>
 
 	<query name="UpdateUserTokens">
-		UPDATE usuario_tokens
-		SET
-		access_token = @AccessToken,
-		refresh_token = @RefreshToken
-		WHERE usuario_id = @Id;
+		INSERT INTO usuario_tokens (usuario_id, access_token, refresh_token)
+		VALUES (@Id, @AccessToken, @RefreshToken)
+		ON CONFLICT (usuario_id)
+		DO UPDATE SET
+			access_token = EXCLUDED.access_token,
+			refresh_token = EXCLUDED.refresh_token;
 	</query>
 
 	<query name="CreateUserToken">
 		INSERT INTO usuario_tokens(usuario_id, access_token, refresh_token)
 		VALUES (@UserId, '', '');
 	</query>
+
+	<query name="GetUserStats">
+		SELECT
+			(SELECT COUNT(*) FROM pedido WHERE usuario_id = @Id) as Orders,
+			(SELECT COUNT(*) FROM avaliacao WHERE usuario_id = @Id) as Reviews,
+			(SELECT COALESCE(AVG(nota), 0) FROM avaliacao WHERE usuario_id = @Id) as AverageRating,
+			TO_CHAR(data_criacao, 'DD/MM/YYYY') as RegistryDate
+		FROM usuario
+		WHERE id = @Id;
+	</query>
+
+	<query name="SaveResetToken">
+		INSERT INTO usuario_reset_tokens (usuario_id, token, data_expiracao)
+		VALUES (@UsuarioId, @Token, @DataExpiracao);
+	</query>
+
+	<query name="GetResetToken">
+		SELECT
+			id as Id,
+			usuario_id as UsuarioId,
+			token as Token,
+			data_expiracao as DataExpiracao,
+			usado as Usado,
+			data_usada as DataUsada,
+			data_criacao as DataCriacao
+		FROM usuario_reset_tokens
+		WHERE token = @Token;
+	</query>
+
+	<query name="InvalidateResetToken">
+		UPDATE usuario_reset_tokens
+		SET usado = true, data_usada = CURRENT_TIMESTAMP
+		WHERE id = @Id;
+	</query>
+
+
+    <query name="SearchUsuarios">
+        SELECT
+            id as Id,
+            nome as Nome,
+            sobrenome as Sobrenome,
+            ra as Ra,
+            curso as Curso,
+            email as Email,
+            telefone as Telefone,
+            imagem_url as ImagemUrl,
+            ativo as Ativo,
+            newsletter_subscriber as NewsLetterSubscriber,
+            cargo as Cargo,
+            data_criacao as DataCriacao,
+            data_atualizacao as DataAtualizacao,
+            COUNT(*) OVER() as TotalCount
+        FROM usuario
+        WHERE 1=1
+        AND (@SearchPattern IS NULL OR nome ILIKE @SearchPattern OR sobrenome ILIKE @SearchPattern OR email ILIKE @SearchPattern)
+        AND (@Role IS NULL OR cargo = @Role)
+        AND (@Course IS NULL OR curso = @Course)
+        AND (@IsActive IS NULL OR ativo = @IsActive)
+        AND (@CreatedFrom IS NULL OR data_criacao &gt;= @CreatedFrom)
+        AND (@CreatedTo IS NULL OR data_criacao &lt;= @CreatedTo)
+        ORDER BY nome ASC
+        OFFSET (@Page - 1) * @Limit
+        LIMIT @Limit
+    </query>
 </queries>

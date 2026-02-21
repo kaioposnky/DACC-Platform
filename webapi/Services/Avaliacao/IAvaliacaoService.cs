@@ -16,4 +16,5 @@ public interface IAvaliacaoService
     public Task<IActionResult> DeleteAvaliacao(Guid id);
     
     public Task<IActionResult> UpdateAvaliacao(Guid usuarioId,  RequestUpdateAvaliacao avaliacao);
+    public Task<IActionResult> SearchAvaliacoes(Model.Requests.RequestQueryAvaliacao query);
 }

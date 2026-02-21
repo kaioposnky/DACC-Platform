@@ -57,5 +57,33 @@ namespace DaccApi.Controllers
                 return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
             }
         }
+
+        /// <summary>
+        /// Realiza o upload de uma imagem via Base64.
+        /// </summary>
+        [FileUploadResponses]
+        [HttpPost("uploadBase64")]
+        [HasPermission(AppPermissions.FileStorage.UploadImage)]
+        public async Task<IActionResult> UploadImageBase64([FromBody] string base64Data)
+        {
+            if (string.IsNullOrEmpty(base64Data))
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "Dados Base64 vazios.");
+            }
+
+            try
+            {
+                var fileUrl = await _storageService.SaveBase64ImageAsync(base64Data);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK, new { url = fileUrl }));
+            }
+            catch (ArgumentException ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR);
+            }
+        }
     }
 }

@@ -12,48 +12,58 @@ namespace DaccApi.Model
         /// <summary>
         /// Obtém ou define o título do anúncio.
         /// </summary>
-        public string? Titulo { get; set; }
+        public string? Title { get; set; }
         /// <summary>
         /// Obtém ou define o conteúdo do anúncio.
         /// </summary>
-        public string? Conteudo { get; set; }
+        public string? Content { get; set; }
         /// <summary>
         /// Obtém ou define o tipo do anúncio.
         /// </summary>
-        public string? TipoAnuncio { get; set; }
+        public string? Type { get; set; }
         /// <summary>
         /// Obtém ou define se o anúncio está ativo.
         /// </summary>
-        public bool Ativo { get; set; }
+        public bool IsActive { get; set; }
 
         /// <summary>
         /// Obtém ou define o texto do botão primário.
         /// </summary>
-        public string? BotaoPrimarioTexto { get; set; }
+        public string? PrimaryButtonText { get; set; }
 
         /// <summary>
         /// Obtém ou define o link do botão primário.
         /// </summary>
-        public string? BotaoPrimarioLink { get; set; }
+        public string? PrimaryButtonLink { get; set; }
 
         /// <summary>
         /// Obtém ou define o texto do botão secundário.
         /// </summary>
-        public string? BotaoSecundarioTexto { get; set; }
+        public string? SecondaryButtonText { get; set; }
 
         /// <summary>
         /// Obtém ou define o link do botão secundário.
         /// </summary>
-        public string? BotaoSecundarioLink { get; set; }
+        public string? SecondaryButtonLink { get; set; }
 
         /// <summary>
         /// Obtém ou define a URL da imagem (caso já hospedada).
         /// </summary>
-        public string? ImagemUrl { get; set; }
+        public string? ImageSrc { get; set; }
 
         /// <summary>
         /// Obtém ou define o texto alternativo da imagem.
         /// </summary>
-        public string? ImagemAlt { get; set; }
+        public string? ImageAlt { get; set; }
+
+        /// <summary>
+        /// Obtém ou define o ícone do anúncio.
+        /// </summary>
+        public string? Icon { get; set; }
+
+        /// <summary>
+        /// Obtém ou define a lista de detalhes do anúncio.
+        /// </summary>
+        public List<Responses.DetailsItem>? Details { get; set; }
     }
 }

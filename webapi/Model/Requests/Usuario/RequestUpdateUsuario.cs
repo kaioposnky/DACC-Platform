@@ -12,11 +12,11 @@ namespace DaccApi.Model
         /// <summary>
         /// Obtém ou define o nome do usuário.
         /// </summary>
-        public string? Nome { get; set; }
+        public string? Name { get; set; }
         /// <summary>
         /// Obtém ou define o sobrenome do usuário.
         /// </summary>
-        public string? Sobrenome { get; set; }
+        public string? LastName { get; set; }
         /// <summary>
         /// Obtém ou define o e-mail do usuário.
         /// </summary>
@@ -25,19 +25,35 @@ namespace DaccApi.Model
         /// <summary>
         /// Obtém ou define o curso do usuário.
         /// </summary>
-        public string? Curso { get; set; }
+        public string? Course { get; set; }
+
+        /// <summary>
+        /// Obtém ou define o RA do usuário.
+        /// </summary>
+        public string? Ra { get; set; }
         /// <summary>
         /// Obtém ou define o telefone do usuário.
         /// </summary>
         [PhoneValidation(ErrorMessage = "Telefone inválido")]
-        public string? Telefone { get; set; }
+        public string? Phone { get; set; }
+
         /// <summary>
-        /// Obtém ou define o arquivo de imagem de perfil do usuário.
+        /// Obtém ou define a URL da imagem de perfil do usuário (usado em payloads JSON).
         /// </summary>
-        public IFormFile? ImageFile { get; set; }
+        public string? Avatar { get; set; }
         /// <summary>
         /// Obtém ou define se o usuário está inscrito na newsletter.
         /// </summary>
-        public bool? InscritoNoticia { get; set; }
+        public bool? IsSubscribedToNews { get; set; }
+
+        /// <summary>
+        /// Obtém ou define o cargo do usuário. Apenas Admins podem alterar este campo.
+        /// </summary>
+        public string? Role { get; set; }
+
+        /// <summary>
+        /// Obtém ou define se o usuário está ativo.
+        /// </summary>
+        public bool? IsActive { get; set; }
     }
 }

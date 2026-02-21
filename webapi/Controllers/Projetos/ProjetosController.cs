@@ -28,6 +28,15 @@ namespace DaccApi.Controllers.Projetos
             _projetosService = projetosService;
         }
 
+        [PublicGetResponses]
+        [AllowAnonymous]
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchProjetos([FromQuery] RequestQueryProjeto query)
+        {
+            var response = await _projetosService.SearchProjetos(query);
+            return response;
+        }
+
         /// <summary>
         /// Obtém todos os projetos.
         /// </summary>
@@ -36,7 +45,6 @@ namespace DaccApi.Controllers.Projetos
         [HttpGet("")]
         public async Task<IActionResult> GetAllProjetos()
         {
-
             var response = await _projetosService.GetAllProjetos();
             return response;
         }
@@ -70,7 +78,7 @@ namespace DaccApi.Controllers.Projetos
         /// </summary>
         [HttpPost("{id:guid}")]
         [HasPermission(AppPermissions.Projetos.Update)]
-        public async Task<IActionResult> AddProjetoImage([FromRoute] Guid id, [FromForm] ImageRequest request)
+        public async Task<IActionResult> AddProjetoImage([FromRoute] Guid id, [FromBody] ImageRequest request)
         {
             var response = await _projetosService.AddProjetoImage(id, request);
             return response;
@@ -82,7 +90,7 @@ namespace DaccApi.Controllers.Projetos
         [AuthenticatedPatchResponses]
         [HttpPatch("{id:guid}")]
         [HasPermission(AppPermissions.Projetos.Update)]
-        public async Task<IActionResult> UpdateProjeto([FromRoute] Guid id, [FromForm] RequestProjeto projeto)
+        public async Task<IActionResult> UpdateProjeto([FromRoute] Guid id, [FromBody] RequestProjeto projeto)
         {
             var response = await _projetosService.UpdateProjeto(id, projeto);
             return response;

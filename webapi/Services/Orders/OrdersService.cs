@@ -1,3 +1,5 @@
+using DaccApi.Enum.Orders;
+using DaccApi.Enum.Posts;
 using DaccApi.Exceptions;
 using DaccApi.Infrastructure.Dapper;
 using DaccApi.Infrastructure.Mail;
@@ -11,6 +13,8 @@ using DaccApi.Infrastructure.Services.MercadoPago;
 using DaccApi.Model;
 using DaccApi.Model.Objects.Order;
 using DaccApi.Model.Requests;
+using DaccApi.Model.Requests.Order;
+using DaccApi.Model.Responses;
 using DaccApi.Model.Responses.Order;
 
 namespace DaccApi.Services.Orders
@@ -22,6 +26,7 @@ namespace DaccApi.Services.Orders
         private readonly IProdutosRepository _produtosRepository;
         private readonly IReservaRepository _reservaRepository;
         private readonly IUsuarioRepository _usuarioRepository;
+        private readonly ICupomRepository _cupomRepository;
         private readonly IMailService _mailService;
         private readonly IRepositoryDapper _dapper;
         private readonly int _orderMinutesToExpire;
@@ -32,7 +37,10 @@ namespace DaccApi.Services.Orders
             IProdutosRepository produtosRepository,
             IReservaRepository reservaRepository,
             IConfiguration configuration,
-            IRepositoryDapper dapper, IMailService mailService, IUsuarioRepository usuarioRepository)
+            IRepositoryDapper dapper, 
+            IMailService mailService, 
+            IUsuarioRepository usuarioRepository,
+            ICupomRepository cupomRepository)
         {
             _ordersRepository = ordersRepository;
             _mercadoPagoService = mercadoPagoService;
@@ -42,130 +50,146 @@ namespace DaccApi.Services.Orders
             _dapper = dapper;
             _mailService = mailService;
             _usuarioRepository = usuarioRepository;
+            _cupomRepository = cupomRepository;
         }
 
         public async Task<CreateOrderResponse> CreateOrderWithPayment(Guid userId, CreateOrderRequest request)
         {
+            var user = await _usuarioRepository.GetByIdAsync(userId);
+
+            if (user == null)
+            {
+                throw new ArgumentException("Usuário não encontrado!");
+            }
+
+            // Validação de Logística via Enum
+            if (request.DeliveryMethod != DeliveryMethod.CampusDelivery)
+            {
+                throw new ArgumentException("Método de entrega inválido.");
+            }
+            
+            var variationIds = request.Items.Select(item => item.Id).ToList();
+
+            var productVariationsInfo = await _produtosRepository.GetVariationsWithProductByIdsAsync(variationIds);
+
+            if (productVariationsInfo.Count != request.Items.Count)
+            {
+                throw new ArgumentException("Um ou mais produtos não foram encontrados ou estão indisponíveis!");
+            }
+
+            var orderItemsData = request.Items
+                .Join(productVariationsInfo,
+                    item => item.Id,
+                    produto => produto.VariationId,
+                    (item, produto) => new
+                    {
+                        Item = item,
+                        Produto = produto,
+                        SubTotal = produto.Preco * item.Quantity
+                    })
+                .ToList();
+
+            var totalAmount = orderItemsData.Sum(x => x.SubTotal);
+
+            // Lógica de Cupom
+            Guid? cupomId = null;
+            if (!string.IsNullOrEmpty(request.CouponCode))
+            {
+                var cupom = await _cupomRepository.GetByCodeAsync(request.CouponCode);
+                if (cupom != null && cupom.Ativo && (cupom.DataExpiracao == null || cupom.DataExpiracao > DateTime.UtcNow) && (cupom.LimiteUso == null || cupom.UsoAtual < cupom.LimiteUso))
+                {
+                    cupomId = cupom.Id;
+                    if (cupom.TipoDesconto == TipoDesconto.porcentagem)
+                    {
+                        totalAmount -= totalAmount * (cupom.Valor / 100);
+                    }
+                    else
+                    {
+                        totalAmount -= cupom.Valor;
+                    }
+                    if (totalAmount < 0) totalAmount = 0;
+                }
+            }
+            
+            var orderItems = orderItemsData.Select(data => new OrderItem
+            {
+                Id = Guid.NewGuid(),
+                PrecoUnitario = data.Produto.Preco,
+                ProdutoId = data.Produto.ProductId,
+                ProdutoVariacaoId = data.Produto.VariationId,
+                Quantidade = data.Item.Quantity
+            }).ToList();
+            
+            var order = new Order
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                TotalAmount = totalAmount,
+                OrderItems = orderItems,
+                Status = MercadoPagoConstants.PaymentStatus.Pending,
+                OrderDate = DateTime.UtcNow,
+                CupomId = cupomId
+            };
+
+            var orderExpireDate = DateTime.UtcNow.AddMinutes(_orderMinutesToExpire);
+            
+            var reservas = orderItemsData.Select(data => new ProdutoReserva()
+                {
+                    OrderId = order.Id, 
+                    ProductVariationId = data.Produto.VariationId, 
+                    ExpiresAt = orderExpireDate, 
+                    Quantity = data.Item.Quantity,
+                    IsActive = true
+                })
+                .ToList();
+
+            PaymentResponse preference;
+            using var transaction = _dapper.BeginTransaction();
             try
             {
-                var user = await _usuarioRepository.GetByIdAsync(userId);
+                // Criar o pedido PRIMEIRO para satisfazer a FK em reserva_produto
+                await _ordersRepository.CreateOrder(order, transaction);
+                await _ordersRepository.CreateOrderItems(order.Id, orderItems, transaction);
 
-                if (user == null)
+                // Depois criar as reservas (que referenciam o pedido)
+                var totalReservado = await _reservaRepository.CreateReservasLoteAtomica(reservas, transaction);
+                var totalSolicitado = reservas.Sum(r => r.Quantity);
+
+                if (totalReservado < totalSolicitado)
                 {
-                    throw new ArgumentException("Usuário não encontrado!");
+                    throw new ProductOutOfStockException(
+                        "Um ou mais produtos não possuem estoque suficiente no momento!");
                 }
                 
-                var variationIds = request.ItensPedido.Select(item => item.ProdutoVariacaoId).ToList();
-
-                var productVariationsInfo = await _produtosRepository.GetVariationsWithProductByIdsAsync(variationIds);
-
-                if (productVariationsInfo.Count != request.ItensPedido.Count)
+                preference = await _mercadoPagoService.CreatePreferenceAsync(
+                    order, productVariationsInfo, orderExpireDate);
+                order.PreferenceId = preference.PreferenceId;
+            
+                await _ordersRepository.UpdateOrderPreferenceId(order.Id, order.PreferenceId, transaction);
+                
+                if (cupomId.HasValue)
                 {
-                    throw new ArgumentException("Um ou mais produtos não foram encontrados ou estão indisponíveis!");
+                    await _cupomRepository.IncrementUsageAsync(cupomId.Value);
                 }
 
-                // Junta Itens do pedido com Produtos
-                var orderItemsData = request.ItensPedido
-                    .Join(productVariationsInfo,
-                        item => item.ProdutoVariacaoId,
-                        produto => produto.VariationId,
-                        (item, produto) => new
-                        {
-                            Item = item,
-                            Produto = produto,
-                            SubTotal = produto.Preco * item.Quantidade
-                        })
-                    .ToList();
-
-                // Soma todos o preço de todos os produtos junto com a quantidade para calcular o preço total
-                var totalAmount = orderItemsData.Sum(x => x.SubTotal);
-                
-                var orderItems = orderItemsData.Select(data => new OrderItem
-                {
-                    Id = Guid.NewGuid(),
-                    PrecoUnitario = data.Produto.Preco,
-                    ProdutoId = data.Produto.ProductId,
-                    ProdutoVariacaoId = data.Produto.VariationId,
-                    Quantidade = data.Item.Quantidade
-                }).ToList();
-                
-                var order = new Order
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = userId,
-                    TotalAmount = totalAmount,
-                    OrderItems = orderItems,
-                    Status = MercadoPagoConstants.PaymentStatus.Pending,
-                    OrderDate = DateTime.UtcNow
-                };
-
-                var orderExpireDate = DateTime.Now.AddMinutes(_orderMinutesToExpire);
-                
-                // Cria reservas de forma atômica (evita race condition)
-                var reservas = orderItemsData.Select(data => new ProdutoReserva()
-                    {
-                        OrderId = order.Id, 
-                        ProductVariationId = data.Produto.VariationId, 
-                        ExpiresAt = orderExpireDate, 
-                        Quantity = data.Item.Quantidade,
-                        IsActive = true
-                    })
-                    .ToList();
-
-                PaymentResponse preference;
-                // Inicia uma transação no banco, se der algo de errado ele cancela tudo
-                using var transaction = _dapper.BeginTransaction();
-                try
-                {
-                    // Função Thread-Safe para prevenir Race Conditions
-                    var totalReservado = await _reservaRepository.CreateReservasLoteAtomica(reservas, transaction);
-                    var totalSolicitado = reservas.Sum(r => r.Quantity);
-
-                    if (totalReservado < totalSolicitado)
-                    {
-                        throw new ProductOutOfStockException(
-                            "Um ou mais produtos não possuem estoque suficiente no momento!");
-                    }
-
-                    // Cria o pedido no banco
-                    await _ordersRepository.CreateOrder(order, transaction);
-
-                    // Cria os itens do pedido no banco
-                    await _ordersRepository.CreateOrderItems(order.Id, orderItems, transaction);
-                    
-                    preference = await _mercadoPagoService.CreatePreferenceAsync(
-                        order, productVariationsInfo, orderExpireDate);
-                    order.PreferenceId = preference.PreferenceId;
-                
-                    // atualizar order no banco
-                    await _ordersRepository.UpdateOrderPreferenceId(order.Id, order.PreferenceId, transaction);
-
-                    await _mailService.SendOrderCreatedEmailAsync(user, order);
-                    
-                    // Se a operação deu certo dá commit em tudo
-                    transaction.Commit();
-                }
-                catch (Exception ex)
-                {
-                    // Cancela todas as operações
-                    transaction.Rollback();
-                    throw;
-                }
-
-                return new CreateOrderResponse(order);
+                transaction.Commit();
             }
-            catch (ArgumentException)
+            catch (Exception)
             {
+                transaction.Rollback();
                 throw;
             }
-            catch (ProductOutOfStockException)
+
+            try
             {
-                throw;
+                await _mailService.SendOrderCreatedEmailAsync(user, order);
             }
             catch (Exception ex)
             {
-                throw new Exception("Erro ao criar pedido! " + ex.Message, ex);
+                Console.WriteLine($"Falha ao enviar e-mail de criação de pedido: {ex.Message}");
             }
+
+            return new CreateOrderResponse(order);
         }
 
         public async Task<OrderResponse> GetOrderById(Guid id)
@@ -179,26 +203,90 @@ namespace DaccApi.Services.Orders
 
             order.OrderItems = await _ordersRepository.GetOrderItemsByOrderId(id);
 
-            return order.ToOrderResponse();
+            var response = order.ToOrderResponse();
+            await EnrichOrderResponses(new List<OrderResponse> { response });
+            return response;
         }
 
         public async Task<List<OrderResponse>> GetOrdersByUserId(Guid userId)
         {
             var orders = await _ordersRepository.GetOrdersByUserId(userId);
-            var orderResponses = new List<OrderResponse>();
-
             if (orders.Count == 0)
             {
                 throw new KeyNotFoundException("Nenhum pedido encontrado para o usuário!");
             }
             
+            var orderResponses = new List<OrderResponse>();
             foreach (var order in orders)
             {
                 order.OrderItems = await _ordersRepository.GetOrderItemsByOrderId(order.Id);
                 orderResponses.Add(order.ToOrderResponse());
             }
 
+            await EnrichOrderResponses(orderResponses);
             return orderResponses;
+        }
+
+        public async Task<(List<OrderResponse> Orders, int TotalCount)> SearchOrders(RequestQueryOrders query)
+        {
+            var (orders, totalCount) = await _ordersRepository.SearchOrdersAsync(query);
+            var orderResponses = new List<OrderResponse>();
+
+            foreach (var order in orders)
+            {
+                order.OrderItems = await _ordersRepository.GetOrderItemsByOrderId(order.Id);
+                orderResponses.Add(order.ToOrderResponse());
+            }
+
+            await EnrichOrderResponses(orderResponses);
+            return (orderResponses, totalCount);
+        }
+
+        private async Task EnrichOrderResponses(List<OrderResponse> orderResponses)
+        {
+            if (orderResponses == null || !orderResponses.Any()) return;
+
+            // Coleta IDs para busca em lote
+            var userIds = orderResponses.Select(o => o.UserId).Distinct().ToList();
+            var cupomIds = orderResponses.Where(o => o.CupomId.HasValue).Select(o => o.CupomId!.Value).Distinct().ToList();
+            var variationIds = orderResponses.SelectMany(o => o.Items ?? new List<ResponseOrderItem>())
+                                           .Select(i => i.ProductVariationId).Distinct().ToList();
+
+            // Busca dados em lote
+            var users = (await _usuarioRepository.GetByIdsAsync(userIds)).ToDictionary(u => u.Id);
+            var cupons = (await _cupomRepository.GetByIdsAsync(cupomIds)).ToDictionary(c => c.Id);
+            var variations = (await _produtosRepository.GetVariationsWithProductByIdsAsync(variationIds))
+                                .ToDictionary(v => v.VariationId);
+
+            foreach (var response in orderResponses)
+            {
+                // Popula Usuário
+                if (users.TryGetValue(response.UserId, out var user))
+                {
+                    response.User = new ResponseUsuario(user);
+                }
+
+                // Popula Cupom
+                if (response.CupomId.HasValue && cupons.TryGetValue(response.CupomId.Value, out var cupom))
+                {
+                    response.Coupon = new ResponseCupom(cupom);
+                }
+
+                // Popula Detalhes dos Itens (Nome do Produto, Imagem, etc.)
+                if (response.Items != null)
+                {
+                    foreach (var item in response.Items)
+                    {
+                        if (variations.TryGetValue(item.ProductVariationId, out var vInfo))
+                        {
+                            item.ProductName = vInfo.ProductName;
+                            item.ProductImage = vInfo.ImageUrl;
+                            item.VariationSize = vInfo.SizeName;
+                            item.VariationColor = vInfo.ColorName;
+                        }
+                    }
+                }
+            }
         }
 
         public async Task UpdateOrderStatus(Guid id, string status)
@@ -212,23 +300,18 @@ namespace DaccApi.Services.Orders
             {
                 var paymentStatus = await _mercadoPagoService.GetPaymentStatusAsync(paymentId); 
                 
-                // O externalreference salvo no pagamento é o orderId
                 var orderId = paymentStatus.ExternalReference;
-
                 var order = await _ordersRepository.GetOrderById(orderId);
                 
                 if (order == null) return;
                 
                 switch (order.Status)
                 {
-                    // Quebra o switch e segue para a transação
                     case MercadoPagoConstants.PaymentStatus.Pending:
                         await ProcessPendingOrder(order, paymentStatus);
                         break;
-                    // Se o pedido foi completado ignorar
                     case MercadoPagoConstants.PaymentStatus.Approved:
                         return;
-                    // Se o pedido foi rejeitado ou cancelado, cancelar a reserva
                     case MercadoPagoConstants.PaymentStatus.Rejected:
                     case MercadoPagoConstants.PaymentStatus.Cancelled:
                         await CancelOrder(orderId);
@@ -237,7 +320,7 @@ namespace DaccApi.Services.Orders
                         return;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Webhook retorna 200 de qualquer forma
             }
@@ -250,14 +333,12 @@ namespace DaccApi.Services.Orders
             {
                 var user = await _usuarioRepository.GetByIdAsync(order.UserId);
 
-                // Se o usuário for inválido cancelar o pedido e retornar
                 if (user == null)
                 {
                     await CancelOrder(order.Id);
                     return;
                 }
                 
-                // Atualiza os dados do pedido com as informações do pagamento recebidas
                 await _ordersRepository.UpdateOrderPaymentInfo(
                     order.Id,
                     paymentStatus.PaymentId,
@@ -271,17 +352,14 @@ namespace DaccApi.Services.Orders
                 var variationIds = orderItems.Select(item => item.ProdutoVariacaoId).ToList();
                 var quantities = orderItems.Select(item => item.Quantidade).ToList();
                 
-                // Atualiza a reserva
                 await _reservaRepository.ConfirmarReserva(order.Id, transaction);
-                
-                // Só remove os produtos depois de todas as etapas do pagamento são concluídas
                 await _produtosRepository.RemoveMultipleProductsStockDirectAsync(variationIds, quantities, transaction);
                     
                 transaction.Commit();
                 
                 await _mailService.SendOrderConfirmationEmailAsync(user, order);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 transaction.Rollback();
                 throw;
@@ -290,7 +368,6 @@ namespace DaccApi.Services.Orders
         
         private async Task CancelOrder(Guid orderId)
         {
-            // Change transaction to old
             using var transaction = _dapper.BeginTransaction();
             try
             {
@@ -300,7 +377,7 @@ namespace DaccApi.Services.Orders
                             
                 transaction.Commit();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 transaction.Rollback();
                 throw;

@@ -9,5 +9,6 @@ namespace DaccApi.Infrastructure.Repositories.Eventos
         Task<bool> CreateAsync(Evento entity);
         Task<bool> UpdateAsync(Guid id, Evento entity);
         Task<bool> DeleteAsync(Guid id);
+        Task<(List<Evento> Eventos, int TotalCount)> SearchEventos(DaccApi.Model.Requests.RequestQueryEvento query);
     }
 }

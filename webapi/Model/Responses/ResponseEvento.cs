@@ -39,10 +39,15 @@ public class ResponseEvento
     public string? Type { get; set; }
 
     /// <summary>
+    /// Obtém ou define o autor do evento.
+    /// </summary>
+    public ResponseUsuario? Author { get; set; }
+
+    /// <summary>
     /// Construtor para mapear de uma entidade Evento.
     /// </summary>
     /// <param name="evento">A entidade Evento de origem.</param>
-    public ResponseEvento(Evento evento)
+    public ResponseEvento(global::DaccApi.Model.Evento evento)
     {
         Id = evento.Id;
         Title = evento.Titulo;
@@ -51,6 +56,7 @@ public class ResponseEvento
         Type = evento.TipoEvento;
         ActionText = evento.TextoAcao;
         ActionLink = evento.LinkAcao;
+        Author = evento.Autor != null ? new ResponseUsuario(evento.Autor) : null;
 
         // Propriedades específicas do frontend sem correspondência direta
         Time = evento.Data.ToString("HH:mm") ?? string.Empty; // Extrai apenas a hora e minuto

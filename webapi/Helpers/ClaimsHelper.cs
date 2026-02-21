@@ -14,5 +14,13 @@ namespace DaccApi.Helpers
         {
             return Guid.Parse(user.FindFirst(ClaimTypes.NameIdentifier).Value);
         }
+
+        /// <summary>
+        /// Obtém o cargo do usuário a partir do ClaimsPrincipal.
+        /// </summary>
+        public static string GetUserRole(ClaimsPrincipal user)
+        {
+            return user.FindFirst(ClaimTypes.Role)?.Value;
+        }
     }
 }

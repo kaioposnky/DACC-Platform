@@ -57,6 +57,15 @@ namespace DaccApi.Model
         /// </summary>
         [Column("link_acao")]
         public string LinkAcao { get; set; }
+
+        [NotMapped]
+        public int TotalCount { get; set; }
+
+    /// <summary>
+    /// Obtém ou define o autor do evento.
+    /// </summary>
+    [NotMapped]
+    public Usuario? Autor { get; set; }
     
     }
 }

@@ -29,12 +29,12 @@ namespace DaccApi.Services.Anuncios
             {
                 var anuncios = await _anuncioRepository.GetAllAsync();
                 if (anuncios.Count == 0)
-                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Anuncio>()));
 
                 // Mapeia os anuncios para responses
                 var anunciosResponse = anuncios.Select(anuncio => new ResponseAnuncio(anuncio));
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
-                    new { anuncios = anunciosResponse }));
+                    new { announcements = anunciosResponse }));
             }
             catch (Exception ex)
             {
@@ -48,10 +48,10 @@ namespace DaccApi.Services.Anuncios
             {
                 var anuncio = await _anuncioRepository.GetByIdAsync(id);
                 if (anuncio == null)
-                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT);
+                    return ResponseHelper.CreateErrorResponse(ResponseError.RESOURCE_NOT_FOUND, "Anúncio não encontrado!");
                 var anuncioResponse = new ResponseAnuncio(anuncio);
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
-                    new { anuncio = anuncioResponse }));
+                    new { announcement = anuncioResponse }));
             }
             catch (Exception ex)
             {
@@ -64,8 +64,9 @@ namespace DaccApi.Services.Anuncios
             try
             {
                 if (
-                    String.IsNullOrEmpty(anuncio.Titulo) ||
-                    String.IsNullOrEmpty(anuncio.Conteudo)
+                    string.IsNullOrEmpty(anuncio.Title) ||
+                    string.IsNullOrEmpty(anuncio.Content) ||
+                    string.IsNullOrEmpty(anuncio.Type)
                 )
                 {
                     return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST);
@@ -74,23 +75,25 @@ namespace DaccApi.Services.Anuncios
                 var entity = new Anuncio
                 {
                     Id = Guid.NewGuid(),
-                    Titulo = anuncio.Titulo,
-                    Conteudo = anuncio.Conteudo,
-                    TipoAnuncio = anuncio.TipoAnuncio,
-                    Ativo = anuncio.Ativo,
+                    Titulo = anuncio.Title,
+                    Conteudo = anuncio.Content,
+                    TipoAnuncio = anuncio.Type,
+                    Ativo = anuncio.IsActive,
                     AutorId = autorId,
-                    BotaoPrimarioTexto = anuncio.BotaoPrimarioTexto ?? string.Empty,
-                    BotaoPrimarioLink = anuncio.BotaoPrimarioLink ?? string.Empty,
-                    BotaoSecundarioTexto = anuncio.BotaoSecundarioTexto ?? string.Empty,
-                    BotaoSecundarioLink = anuncio.BotaoSecundarioLink ?? string.Empty,
-                    ImagemUrl = anuncio.ImagemUrl ?? string.Empty,
-                    ImagemAlt = anuncio.ImagemAlt ?? string.Empty,
+                    BotaoPrimarioTexto = anuncio.PrimaryButtonText ?? string.Empty,
+                    BotaoPrimarioLink = anuncio.PrimaryButtonLink ?? string.Empty,
+                    BotaoSecundarioTexto = anuncio.SecondaryButtonText ?? string.Empty,
+                    BotaoSecundarioLink = anuncio.SecondaryButtonLink ?? string.Empty,
+                    ImagemUrl = anuncio.ImageSrc ?? string.Empty,
+                    ImagemAlt = anuncio.ImageAlt ?? string.Empty,
+                    Icone = anuncio.Icon ?? string.Empty,
+                    Detalhes = anuncio.Details,
                     DataCriacao = DateTime.UtcNow,
                     DataAtualizacao = DateTime.UtcNow
                 };
                 await _anuncioRepository.CreateAsync(entity);
 
-                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED);
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.CREATED.WithData(new ResponseAnuncio(entity)));
             }
             catch (Exception ex)
             {
@@ -102,7 +105,22 @@ namespace DaccApi.Services.Anuncios
         {
             try
             {
-                var imageUrl = await _fileStorageService.SaveImageFileAsync(request.ImageFile);
+                string imageUrl;
+                if (!string.IsNullOrEmpty(request.ImageUrl))
+                {
+                    if (request.ImageUrl.StartsWith("data:image") || request.ImageUrl.Length > 255)
+                    {
+                        imageUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageUrl);
+                    }
+                    else
+                    {
+                        imageUrl = request.ImageUrl;
+                    }
+                }
+                else
+                {
+                    return ResponseHelper.CreateErrorResponse(ResponseError.BAD_REQUEST, "A imagem é obrigatória.");
+                }
 
                 var anuncio = await _anuncioRepository.GetByIdAsync(id);
 
@@ -160,22 +178,54 @@ namespace DaccApi.Services.Anuncios
                         "Anúncio não encontrado!");
                 }
 
-                anuncioQuery.Titulo = request.Titulo;
-                anuncioQuery.Conteudo = request.Conteudo;
-                anuncioQuery.TipoAnuncio = request.TipoAnuncio;
-                anuncioQuery.Ativo = request.Ativo;
-                anuncioQuery.BotaoPrimarioTexto = request.BotaoPrimarioTexto ?? anuncioQuery.BotaoPrimarioTexto;
-                anuncioQuery.BotaoPrimarioLink = request.BotaoPrimarioLink ?? anuncioQuery.BotaoPrimarioLink;
-                anuncioQuery.BotaoSecundarioTexto = request.BotaoSecundarioTexto ?? anuncioQuery.BotaoSecundarioTexto;
-                anuncioQuery.BotaoSecundarioLink = request.BotaoSecundarioLink ?? anuncioQuery.BotaoSecundarioLink;
-                anuncioQuery.ImagemUrl = request.ImagemUrl ?? anuncioQuery.ImagemUrl;
-                anuncioQuery.ImagemAlt = request.ImagemAlt ?? anuncioQuery.ImagemAlt;
+                anuncioQuery.Titulo = request.Title ?? anuncioQuery.Titulo;
+                anuncioQuery.Conteudo = request.Content ?? anuncioQuery.Conteudo;
+                anuncioQuery.TipoAnuncio = request.Type ?? anuncioQuery.TipoAnuncio;
+                anuncioQuery.Ativo = request.IsActive;
+                anuncioQuery.BotaoPrimarioTexto = request.PrimaryButtonText ?? anuncioQuery.BotaoPrimarioTexto;
+                anuncioQuery.BotaoPrimarioLink = request.PrimaryButtonLink ?? anuncioQuery.BotaoPrimarioLink;
+                anuncioQuery.BotaoSecundarioTexto = request.SecondaryButtonText ?? anuncioQuery.BotaoSecundarioTexto;
+                anuncioQuery.BotaoSecundarioLink = request.SecondaryButtonLink ?? anuncioQuery.BotaoSecundarioLink;
+                if (request.ImageSrc != null)
+                {
+                    if (request.ImageSrc.StartsWith("data:image") || request.ImageSrc.Length > 255)
+                    {
+                        anuncioQuery.ImagemUrl = await _fileStorageService.SaveBase64ImageAsync(request.ImageSrc);
+                    }
+                    else
+                    {
+                        anuncioQuery.ImagemUrl = request.ImageSrc;
+                    }
+                }
+                anuncioQuery.ImagemAlt = request.ImageAlt ?? anuncioQuery.ImagemAlt;
+                anuncioQuery.Icone = request.Icon ?? anuncioQuery.Icone;
+                anuncioQuery.Detalhes = request.Details ?? anuncioQuery.Detalhes;
                 anuncioQuery.DataAtualizacao = DateTime.UtcNow;
                 
                 await _anuncioRepository.UpdateAsync(id, anuncioQuery);
 
                 return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
-                    new { anuncio = request }));
+                    new { announcement = request }));
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR, ex.Message);
+            }
+        }
+
+
+        public async Task<IActionResult> SearchAnuncio(RequestQueryAnuncio query)
+        {
+            try
+            {
+                var (anuncios, totalCount) = await _anuncioRepository.SearchAnuncio(query);
+                if (anuncios.Count == 0 && totalCount == 0)
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Anuncio>()));
+
+                // Mapeia os anuncios para responses
+                var anunciosResponse = anuncios.Select(anuncio => new ResponseAnuncio(anuncio));
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.WithData(ResponseSuccess.OK,
+                    new { announcements = anunciosResponse, totalCount = totalCount }));
             }
             catch (Exception ex)
             {

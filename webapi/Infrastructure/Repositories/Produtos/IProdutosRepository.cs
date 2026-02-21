@@ -35,7 +35,7 @@ namespace DaccApi.Infrastructure.Repositories.Products
         /// <summary>
         /// Busca produtos com base em filtros.
         /// </summary>
-        Task<List<Produto>> SearchProductsAsync(RequestQueryProdutos query);
+        Task<(List<Produto> Products, int TotalCount)> SearchProductsAsync(RequestQueryProdutos query);
         /// <summary>
         /// Atualiza um produto existente.
         /// </summary>
@@ -100,5 +100,50 @@ namespace DaccApi.Infrastructure.Repositories.Products
         /// Obtém um produto a partir do ID de uma de suas variações.
         /// </summary>
         Task<Produto?> GetProductByProductVariationIdAsync(Guid productVariationId);
+        /// <summary>
+        /// Obtém as avaliações de um produto.
+        /// </summary>
+        /// <summary>
+        /// Obtém o ID de uma categoria a partir de seu nome.
+        /// </summary>
+        Task<Guid?> GetCategoryIdByNameAsync(string categoryName);
+        /// <summary>
+        /// Obtém o ID de uma subcategoria a partir de seu nome.
+        /// </summary>
+        Task<Guid?> GetSubcategoryIdByNameAsync(string subcategoryName);
+        /// <summary>
+        /// Obtém as avaliações de um produto.
+        /// </summary>
+        Task<List<AvaliacaoProduto>> GetProductReviewsAsync(Guid productId);
+        
+        /// <summary>
+        /// Atualiza em lote as informações principais do produto (Scalar, Specs, PerfectFor, Envio).
+        /// </summary>
+        Task BatchUpdateProductAsync(RequestBatchUpdateProduto request, IDbTransaction? transaction = null);
+
+        /// <summary>
+        /// Atualiza em lote as variações (Cor, Tamanho, Estoque, Imagens).
+        /// </summary>
+        Task BatchUpdateVariationsAsync(Guid productId, List<VariationUpdateRequest> variations, IDbTransaction? transaction = null);
+
+        /// <summary>
+        /// Cria um produto completo com todas as informações em lote (Scalar, Specs, PerfectFor, Envio).
+        /// </summary>
+        Task BatchCreateProductAsync(Guid productId, RequestBatchCreateProduto request, IDbTransaction? transaction = null);
+
+        /// <summary>
+        /// Cria em lote as variações de um produto (Cor, Tamanho, Estoque, Imagens).
+        /// </summary>
+        Task BatchCreateVariationsAsync(Guid productId, List<VariationCreateRequest> variations, IDbTransaction? transaction = null);
+
+        /// <summary>
+        /// Obtém lista de tamanhos únicos disponíveis nas variações.
+        /// </summary>
+        Task<List<string>> GetAvailableSizesAsync();
+
+        /// <summary>
+        /// Obtém lista de cores únicas disponíveis nas variações.
+        /// </summary>
+        Task<List<string>> GetAvailableColorsAsync();
     }
 }

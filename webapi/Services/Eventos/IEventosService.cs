@@ -14,4 +14,6 @@ public interface IEventosService
     public Task <IActionResult> GetEventoById(Guid id);
         
     public Task<IActionResult> UpdateEvento(Guid id,RequestEvento request);
+
+    public Task<IActionResult> SearchEventos(DaccApi.Model.Requests.RequestQueryEvento query);
 }

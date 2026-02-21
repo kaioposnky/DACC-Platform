@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using DaccApi.Infrastructure.Repositories.User;
 using DaccApi.Model;
@@ -57,7 +58,7 @@ namespace DaccApi.Services.Token
 
         public string GenerateRefreshToken(Usuario usuario)
         {
-            var expirationTime = DateTime.UtcNow.AddHours(1);
+            var expirationTime = DateTime.UtcNow.AddDays(2);
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var issuer = _configuration["Jwt:Issuer"];
@@ -85,7 +86,10 @@ namespace DaccApi.Services.Token
         public async Task<bool> ValidateRefreshToken(Guid userId, string refreshToken)
         {
             var userTokensOld = await _usuarioRepository.GetUserTokens(userId);
-            var oldRefeshToken = userTokensOld!.RefreshToken;
+            
+            if (userTokensOld == null) return false;
+            
+            var oldRefeshToken = userTokensOld.RefreshToken;
             
             var token = new JwtSecurityTokenHandler().ReadJwtToken(refreshToken);
 
@@ -95,8 +99,21 @@ namespace DaccApi.Services.Token
             }
             
             // se o token salvo for "" ele deu logout, então o token é inválido
-            return !string.IsNullOrWhiteSpace(oldRefeshToken) || oldRefeshToken.Equals(refreshToken);
+            return !string.IsNullOrWhiteSpace(oldRefeshToken) && oldRefeshToken.Equals(refreshToken);
         }
-        
+
+        public string GenerateResetToken()
+        {
+            return Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
+        }
+
+        public bool IsResetTokenValid(UsuarioResetToken token)
+        {
+            if (token == null) return false;
+            if (token.Usado) return false;
+            if (token.DataExpiracao < DateTime.UtcNow) return false;
+
+            return true;
+        }
     }
 }

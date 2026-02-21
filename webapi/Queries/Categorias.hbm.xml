@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<queries>
+    <!-- Categorias -->
+    <query name="GetAllCategorias">
+        SELECT id AS Id, nome AS Nome 
+        FROM produto_categoria 
+        ORDER BY nome
+    </query>
+
+    <query name="GetCategoriaById">
+        SELECT id AS Id, nome AS Nome 
+        FROM produto_categoria 
+        WHERE id = @id
+    </query>
+
+    <!-- Subcategorias -->
+    <query name="GetAllSubcategorias">
+        SELECT 
+            id AS Id, 
+            nome AS Nome, 
+            categoria_id AS CategoriaId 
+        FROM produto_subcategoria 
+        ORDER BY nome
+    </query>
+
+    <query name="GetSubcategoriaById">
+        SELECT 
+            id AS Id, 
+            nome AS Nome, 
+            categoria_id AS CategoriaId 
+        FROM produto_subcategoria 
+        WHERE id = @id
+    </query>
+</queries>

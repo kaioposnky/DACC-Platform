@@ -15,14 +15,14 @@ namespace DaccApi.Model
         [Required(ErrorMessage = "Nome é obrigatório")]
         [StringLength(20, ErrorMessage = "Nome deve ter no máximo 20 caracteres")]
         [MinLength(3, ErrorMessage = "Nome deve ter pelo menos 3 caracteres")]
-        public string? Nome { get; set; }
+        public string? FirstName { get; set; }
         /// <summary>
         /// Obtém ou define o sobrenome do usuário.
         /// </summary>
         [Required(ErrorMessage = "Sobrenome é obrigatório")]
         [StringLength(20, ErrorMessage = "Sobrenome deve ter no máximo 20 caracteres")]
         [MinLength(3, ErrorMessage = "Sobrenome deve ter pelo menos 3 caracteres")]
-        public string? Sobrenome { get; set; }
+        public string? LastName { get; set; }
         /// <summary>
         /// Obtém ou define o e-mail do usuário.
         /// </summary>
@@ -37,20 +37,20 @@ namespace DaccApi.Model
         /// <summary>
         /// Obtém ou define o curso do usuário.
         /// </summary>
-        public string? Curso { get; set; }
+        public string? Course { get; set; }
         /// <summary>
         /// Obtém ou define o telefone do usuário.
         /// </summary>
         [PhoneValidation(ErrorMessage = "Telefone inválido")]
-        public string? Telefone { get; set; }
+        public string? Phone { get; set; }
         /// <summary>
         /// Obtém ou define a senha do usuário.
         /// </summary>
         [Required(ErrorMessage = "A senha é obrigatória")]
-        public string? Senha { get; set; }
+        public string? Password { get; set; }
         /// <summary>
         /// Obtém ou define se o usuário deseja se inscrever na newsletter.
         /// </summary>
-        public bool? InscritoNoticia { get; set; } = false;
+        public bool? IsSubscribedToNews { get; set; } = false;
     }
 }

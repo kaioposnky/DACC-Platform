@@ -7,5 +7,6 @@
         Task<bool> CreateAsync(Model.Anuncio entity);
         Task<bool> UpdateAsync(Guid id, Model.Anuncio entity);
         Task<bool> DeleteAsync(Guid id);
+        Task<(List<Model.Anuncio> Anuncios, int TotalCount)> SearchAnuncio(Model.Requests.RequestQueryAnuncio query);
     }
 }

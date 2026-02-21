@@ -14,6 +14,42 @@ public class AvaliacaoRepository : BaseRepository<AvaliacaoProduto>, IAvaliacaoR
     }
     
     /// <summary>
+    /// Obtém uma avaliação pelo ID com dados relacionados (usuário e produto).
+    /// </summary>
+    public async Task<AvaliacaoProduto?> GetByIdWithDetails(Guid id)
+    {
+        try
+        {
+            var sql = _repositoryDapper.GetQueryNamed("GetAvaliacaoById");
+            var param = new { id = id };
+
+            var queryResult = await _repositoryDapper.QueryAsync<AvaliacaoProduto>(sql, param);
+            return queryResult.FirstOrDefault();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Erro ao obter avaliação pelo ID no banco de dados! " + ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Obtém todas as avaliações com dados relacionados (usuário e produto).
+    /// </summary>
+    public async Task<List<AvaliacaoProduto>> GetAllWithDetails()
+    {
+        try
+        {
+            var sql = _repositoryDapper.GetQueryNamed("GetAllAvaliacoes");
+            var queryResult = await _repositoryDapper.QueryAsync<AvaliacaoProduto>(sql);
+            return queryResult.ToList();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Erro ao obter todas as avaliações no banco de dados! " + ex.Message);
+        }
+    }
+    
+    /// <summary>
     /// Obtém todas as avaliações de um produto específico.
     /// </summary>
     public async Task<List<AvaliacaoProduto>> GetAvaliacoesByProductId(Guid produtoId)
@@ -56,4 +92,30 @@ public class AvaliacaoRepository : BaseRepository<AvaliacaoProduto>, IAvaliacaoR
         }
     }
     
+
+
+    public async Task<(List<AvaliacaoProduto> Avaliacoes, int TotalCount)> SearchAvaliacoes(Model.Requests.RequestQueryAvaliacao query)
+    {
+        var sql = _repositoryDapper.GetQueryNamed("SearchAvaliacoes");
+        var queryParams = new
+        {
+            SearchPattern = string.IsNullOrEmpty(query.SearchQuery) ? null : $"%{query.SearchQuery}%",
+            Page = query.Page,
+            Limit = query.Limit,
+            MinRating = query.MinRating,
+            MaxRating = query.MaxRating,
+            DateFrom = query.DateFrom,
+            DateTo = query.DateTo
+        };
+
+        var result = (await _repositoryDapper.QueryAsync<AvaliacaoProduto>(sql, queryParams)).ToList();
+
+        var totalCount = 0;
+        if (result.Any())
+        {
+            totalCount = result.First().TotalCount;
+        }
+
+        return (result, totalCount);
+    }
 }

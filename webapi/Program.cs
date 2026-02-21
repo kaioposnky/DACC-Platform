@@ -8,18 +8,18 @@ using DaccApi.Infrastructure.BackgroundServices;
 using DaccApi.Infrastructure.Cryptography;
 using DaccApi.Infrastructure.Dapper;
 using DaccApi.Infrastructure.Mail;
-using DaccApi.Infrastructure.MercadoPago.Services;
 using DaccApi.Infrastructure.MercadoPago.Services.DaccApi.Infrastructure.MercadoPago.Services;
 using DaccApi.Infrastructure.Repositories.Anuncio;
 using DaccApi.Infrastructure.Repositories.Avaliacao;
-using DaccApi.Infrastructure.Repositories.Diretores;
+using DaccApi.Infrastructure.Repositories.Professores;
 using DaccApi.Infrastructure.Repositories.Eventos;
 using DaccApi.Infrastructure.Repositories.Noticias;
 using DaccApi.Infrastructure.Repositories.Orders;
-using DaccApi.Infrastructure.Repositories.Orders.DaccApi.Infrastructure.Repositories.Orders;
 using DaccApi.Infrastructure.Repositories.Permission;
 using DaccApi.Infrastructure.Repositories.Posts;
 using DaccApi.Infrastructure.Repositories.Products;
+using DaccApi.Infrastructure.Repositories.Produtos;
+using DaccApi.Data.Orm.Subcategoria;
 using DaccApi.Infrastructure.Repositories.Projetos;
 using DaccApi.Infrastructure.Repositories.Reservas;
 using DaccApi.Infrastructure.Repositories.User;
@@ -29,7 +29,7 @@ using DaccApi.Responses;
 using DaccApi.Services.Anuncios;
 using DaccApi.Services.Auth;
 using DaccApi.Services.Avaliacao;
-using DaccApi.Services.Diretores;
+using DaccApi.Services.Professores;
 using DaccApi.Services.Eventos;
 using DaccApi.Services.FileStorage;
 using DaccApi.Services.Noticias;
@@ -37,14 +37,17 @@ using DaccApi.Services.Orders;
 using DaccApi.Services.Permission;
 using DaccApi.Services.Posts;
 using DaccApi.Services.Products;
+using DaccApi.Services.Produtos;
 using DaccApi.Services.Projetos;
 using DaccApi.Services.Token;
 using DaccApi.Services.User;
+using DaccApi.Services.Statistics;
+using DaccApi.Infrastructure.Repositories.Statistics;
+using DaccApi.Infrastructure.Repositories.Home;
+using DaccApi.Services.Home;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
@@ -52,6 +55,10 @@ using Npgsql;
 var builder = WebApplication.CreateBuilder(args);
 
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 builder
     .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -130,7 +137,7 @@ builder
                 .ModelState.SelectMany(m =>
                     m.Value.Errors.Select(e => new ResponseError.ValidationErrorDetail
                     {
-                        Field = char.ToLowerInvariant(m.Key[0]) + m.Key[1..],
+                        Field = string.IsNullOrEmpty(m.Key) ? "unknown" : char.ToLowerInvariant(m.Key[0]) + m.Key[1..],
                         Message = e.ErrorMessage,
                     })
                 )
@@ -187,14 +194,30 @@ builder.Services.AddScoped<IArgon2Utility, Argon2Utility>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAnuncioService, AnuncioService>();
 builder.Services.AddScoped<IAnuncioRepository, AnuncioRepository>();
+builder.Services.AddScoped<ITipoAnuncioRepository, TipoAnuncioRepository>();
+builder.Services.AddScoped<ITipoAnuncioService, TipoAnuncioService>();
+
+builder.Services.AddScoped<ITipoEventoRepository, TipoEventoRepository>();
+builder.Services.AddScoped<ITipoEventoService, TipoEventoService>();
+
+builder.Services.AddScoped<ITipoProgressoRepository, TipoProgressoRepository>();
+builder.Services.AddScoped<ITipoProgressoService, TipoProgressoService>();
+
+builder.Services.AddScoped<ICategoriaNoticiaRepository, CategoriaNoticiaRepository>();
+builder.Services.AddScoped<ICategoriaNoticiaService, CategoriaNoticiaService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IProdutosService, ProdutosService>();
+builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<IProdutosRepository, ProdutosRepository>();
-builder.Services.AddScoped<IDiretoresService, DiretoresService>();
-builder.Services.AddScoped<IDiretoresRepository, DiretoresRepository>();
+builder.Services.AddScoped<ISubcategoriaRepository, SubcategoriaRepository>();
+builder.Services.AddScoped<IProfessoresService, ProfessoresService>();
+builder.Services.AddScoped<IProfessoresRepository, ProfessoresRepository>();
 builder.Services.AddScoped<IProjetosService, ProjetosService>();
 builder.Services.AddScoped<IProjetosRepository, ProjetosRepository>();
+builder.Services.AddScoped<IDiretoriaService, DiretoriaService>();
+builder.Services.AddScoped<IDiretoriaRepository, DiretoriaRepository>();
 builder.Services.AddScoped<IAvaliacaoService, AvaliacaoService>();
 builder.Services.AddScoped<IEventosService, EventosService>();
 builder.Services.AddScoped<IEventosRepository, EventosRepository>();
@@ -211,9 +234,19 @@ builder.Services.AddScoped<IPostsRepository, PostsRepository>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<IOrdersRepository, OrdersRepository>();
 builder.Services.AddScoped<IOrdersService, OrdersService>();
+builder.Services.AddScoped<ICupomRepository, CupomRepository>();
+builder.Services.AddScoped<ICupomService, CupomService>();
 builder.Services.AddScoped<IMercadoPagoService, MercadoPagoService>();
 builder.Services.AddScoped<IReservaRepository, ReservaRepository>();
 builder.Services.AddScoped<IMailService, MailService>();
+builder.Services.AddScoped<IStatisticsRepository, StatisticsRepository>();
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+builder.Services.AddScoped<IHomeRepository, HomeRepository>();
+builder.Services.AddScoped<IHomeService, HomeService>();
+builder.Services.AddScoped<ICursoRepository, CursoRepository>();
+builder.Services.AddScoped<ICursoService, CursoService>();
+builder.Services.AddScoped<ITipoUsuarioRepository, TipoUsuarioRepository>();
+builder.Services.AddScoped<ITipoUsuarioService, TipoUsuarioService>();
 
 builder.Services.AddHostedService<ReservationCleanupService>();
 
@@ -245,6 +278,7 @@ if (!Directory.Exists(webRootPath))
 }
 
 var uploadFilesSubfolder = builder.Configuration["UploadFilesSubfolder"]!;
+uploadFilesSubfolder = uploadFilesSubfolder.ToLowerInvariant().Trim('/', '\\');
 var uploadsPath = Path.Combine(app.Environment.WebRootPath, uploadFilesSubfolder);
 
 if (!Directory.Exists(uploadsPath))
@@ -264,3 +298,5 @@ app.UseFileServer(
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

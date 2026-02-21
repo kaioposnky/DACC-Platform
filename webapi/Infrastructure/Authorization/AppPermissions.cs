@@ -28,6 +28,14 @@
             public const string Create = "noticias.create";
             public const string Update = "noticias.update";
             public const string Delete = "noticias.delete";
+
+            public static class Categorias
+            {
+                public const string View = "noticias.categorias.view";
+                public const string Create = "noticias.categorias.create";
+                public const string Update = "noticias.categorias.update";
+                public const string Delete = "noticias.categorias.delete";
+            }
         }
 
         /// <summary>
@@ -41,6 +49,25 @@
             public const string Delete = "projetos.delete";
             public const string AddMembers = "projetos.members.add";
             public const string RemoveMembers = "projetos.members.remove";
+
+            public static class TiposProgresso
+            {
+                public const string View = "projetos.tiposprogresso.view";
+                public const string Create = "projetos.tiposprogresso.create";
+                public const string Update = "projetos.tiposprogresso.update";
+                public const string Delete = "projetos.tiposprogresso.delete";
+            }
+        }
+
+        /// <summary>
+        /// Permissões relacionadas a diretorias (departamentos).
+        /// </summary>
+        public static class Diretorias
+        {
+            public const string View = "diretorias.view";
+            public const string Create = "diretorias.create";
+            public const string Update = "diretorias.update";
+            public const string Delete = "diretorias.delete";
         }
 
         /// <summary>
@@ -64,6 +91,14 @@
             public const string Update = "eventos.update";
             public const string Delete = "eventos.delete";
             public const string Register = "eventos.register";
+
+            public static class TiposEvento
+            {
+                public const string View = "eventos.tiposevento.view";
+                public const string Create = "eventos.tiposevento.create";
+                public const string Update = "eventos.tiposevento.update";
+                public const string Delete = "eventos.tiposevento.delete";
+            }
         }
 
         /// <summary>
@@ -95,7 +130,7 @@
         }
 
         /// <summary>
-        /// Permissões relacionadas a diretores (faculty).
+        /// Permissões relacionadas a professores (faculty).
         /// </summary>
         public static class Faculty
         {
@@ -134,6 +169,58 @@
         public static class FileStorage
         {
             public const string UploadImage = "filestorage.uploadimage";
+        }
+
+        /// <summary>
+        /// Permissões relacionadas a cursos.
+        /// </summary>
+        public static class Cursos
+        {
+            public const string View = "cursos.view";
+            public const string Create = "cursos.create";
+            public const string Update = "cursos.update";
+            public const string Delete = "cursos.delete";
+        }
+
+        /// <summary>
+        /// Permissões relacionadas ao Dashboard de Estatísticas.
+        /// </summary>
+        public static class Dashboard
+        {
+            public const string View = "dashboard.view";
+        }
+
+        /// <summary>
+        /// Permissões relacionadas a anúncios.
+        /// </summary>
+        public static class Anuncios
+        {
+            public const string View = "anuncios.view";
+            public const string Create = "anuncios.create";
+            public const string Update = "anuncios.update";
+            public const string Delete = "anuncios.delete";
+
+            /// <summary>
+            /// Permissões relacionadas a tipos de anúncios.
+            /// </summary>
+            public static class TiposAnuncio
+            {
+                public const string View = "anuncios.tiposanuncio.view";
+                public const string Create = "anuncios.tiposanuncio.create";
+                public const string Update = "anuncios.tiposanuncio.update";
+                public const string Delete = "anuncios.tiposanuncio.delete";
+            }
+        }
+
+        /// <summary>
+        /// Permissões relacionadas a cupons de desconto.
+        /// </summary>
+        public static class Cupons
+        {
+            public const string View = "cupons.view";
+            public const string Create = "cupons.create";
+            public const string Update = "cupons.update";
+            public const string Delete = "cupons.delete";
         }
     }
 }

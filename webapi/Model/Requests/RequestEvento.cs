@@ -8,31 +8,35 @@
         /// <summary>
         /// Obtém ou define o ID do evento.
         /// </summary>
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
         /// <summary>
         /// Obtém ou define o título do evento.
         /// </summary>
-        public string? Titulo { get; set; }
+        public string? Title { get; set; }
         /// <summary>
         /// Obtém ou define a descrição do evento.
         /// </summary>
-        public string? Descricao { get; set; }
+        public string? Description { get; set; }
         /// <summary>
         /// Obtém ou define a data do evento.
         /// </summary>
-        public DateTime Data { get; set; }
+        public DateTime? Date { get; set; }
         /// <summary>
         /// Obtém ou define o tipo do evento.
         /// </summary>
-        public string? TipoEvento { get; set; }
+        public string? EventType { get; set; }
         /// <summary>
         /// Obtém ou define o texto do botão de ação.
         /// </summary>
-        public string? TextoAcao { get; set; }
+        public string? ActionText { get; set; }
         /// <summary>
         /// Obtém ou define o link da ação.
         /// </summary>
-        public string? LinkAcao { get; set; }
+        public string? ActionLink { get; set; }
 
+        /// <summary>
+        /// Obtém ou define o ID do autor do evento.
+        /// </summary>
+        public Guid? AuthorId { get; set; }
     }
 }

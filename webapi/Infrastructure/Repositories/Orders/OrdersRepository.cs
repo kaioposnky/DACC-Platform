@@ -1,11 +1,10 @@
 using System.Data;
 using DaccApi.Infrastructure.Dapper;
 using DaccApi.Model.Objects.Order;
+using DaccApi.Model.Requests.Order;
 using Npgsql;
 
 namespace DaccApi.Infrastructure.Repositories.Orders
-{
-    namespace DaccApi.Infrastructure.Repositories.Orders
 {
     /// <summary>
     /// Implementação do repositório de pedidos.
@@ -38,20 +37,21 @@ namespace DaccApi.Infrastructure.Repositories.Orders
                     Status = "created", 
                     TotalAmount = order.TotalAmount,
                     MercadoPagoPaymentId = (long?)null, // Será definido mais tarde
-                    PaymentMethod = (string?)null // Será definido mais tarde 
+                    PaymentMethod = (string?)null, // Será definido mais tarde
+                    CupomId = order.CupomId
                 };
                 
-                IEnumerable<Guid> orderId;
+                
                 if (transaction != null)
                 {
-                    orderId = await _repositoryDapper.QueryAsync<Guid>(sql, parameters, transaction);
+                    await _repositoryDapper.ExecuteAsync(sql, parameters, transaction);
                 }
                 else
                 {
-                    orderId = await _repositoryDapper.QueryAsync<Guid>(sql, parameters);
+                    await _repositoryDapper.ExecuteAsync(sql, parameters);
                 }
                 
-                return orderId.FirstOrDefault();
+                return order.Id;
             }
             catch (Exception ex)
             {
@@ -130,14 +130,25 @@ namespace DaccApi.Infrastructure.Repositories.Orders
         /// <summary>
         /// Obtém um pedido específico pelo seu ID.
         /// </summary>
-        public async Task<Order?> GetOrderById(Guid id)
+        public async Task<Order?> GetOrderById(Guid id, IDbTransaction? transaction = null)
         {
             try
             {
                 var sql = _repositoryDapper.GetQueryNamed("GetOrderById");
                 var parameters = new { Id = id };
-                var order = (await _repositoryDapper.QueryAsync<Order>(sql, parameters)).FirstOrDefault();
-                return order;
+                IEnumerable<Order> order;
+                
+                if (transaction != null)
+                {
+                    order = await _repositoryDapper.QueryAsync<Order>(sql, parameters, transaction);
+                }
+                else
+                {
+                    order = await _repositoryDapper.QueryAsync<Order>(sql, parameters);
+                }
+                
+                var result = order.FirstOrDefault();
+                return result;
             }
             catch (Exception ex)
             {
@@ -188,6 +199,31 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             catch (Exception ex)
             {
                 throw new Exception("Erro ao obter pedidos por ID de usuário no banco de dados.", ex);
+            }
+        }
+
+        public async Task<(List<Order> Orders, int TotalCount)> SearchOrdersAsync(RequestQueryOrders query)
+        {
+            try
+            {
+                var sql = _repositoryDapper.GetQueryNamed("SearchOrders");
+                var param = new
+                {
+                    Status = query.Status == "all" ? null : query.Status,
+                    StartDate = query.StartDate.HasValue ? DateTime.SpecifyKind(query.StartDate.Value, DateTimeKind.Utc) : (DateTime?)null,
+                    EndDate = query.EndDate.HasValue ? DateTime.SpecifyKind(query.EndDate.Value, DateTimeKind.Utc) : (DateTime?)null,
+                    SearchQuery = string.IsNullOrEmpty(query.SearchQuery) ? null : $"%{query.SearchQuery}%",
+                    Page = query.Page,
+                    Limit = query.Limit
+                };
+
+                var result = (await _repositoryDapper.QueryAsync<Order>(sql, param)).ToList();
+                var totalCount = result.FirstOrDefault()?.TotalCount ?? 0;
+                return (result, totalCount);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erro ao buscar pedidos no banco de dados.", ex);
             }
         }
 
@@ -276,5 +312,4 @@ namespace DaccApi.Infrastructure.Repositories.Orders
             }
         }
     }
-}
 }

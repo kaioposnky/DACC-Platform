@@ -14,6 +14,10 @@ namespace DaccApi.Model.Objects.Order
         /// <summary>
         /// Obtém ou define o ID do produto.
         /// </summary>
+        public Guid OrderId { get; set; }
+        /// <summary>
+        /// Obtém ou define o ID do produto.
+        /// </summary>
         public Guid ProdutoId { get; set; }
         /// <summary>
         /// Obtém ou define o ID da variação do produto.
@@ -31,25 +35,44 @@ namespace DaccApi.Model.Objects.Order
         /// <summary>
         /// Converte uma lista de requisições de itens de pedido para uma lista de objetos OrderItem.
         /// </summary>
-        public static List<OrderItem> FromRequestList(IEnumerable<OrderItemRequest> requestList)
+        public static List<OrderItem> FromRequestList(IEnumerable<CartItemRequest> requestList)
         {
-            // Seleciona todos os elementos passa eles para FromRequest e retorna o resultado adicionando eles na lista
             return requestList.Select(request => FromRequest(request)).ToList();
         }
         
         /// <summary>
         /// Converte uma requisição de item de pedido para um objeto OrderItem.
         /// </summary>
-        public static OrderItem FromRequest(OrderItemRequest request, decimal precoUnitario = 0)
+        public static OrderItem FromRequest(CartItemRequest request, decimal precoUnitario = 0)
         {
             return new OrderItem()
             {
-                Id = Guid.Empty,
-                ProdutoVariacaoId = request.ProdutoVariacaoId,
-                Quantidade = request.Quantidade,
-                ProdutoId = request.ProdutoId,
+                Id = Guid.NewGuid(),
+                ProdutoVariacaoId = request.Id,
+                Quantidade = request.Quantity,
+                ProdutoId = request.ProductId,
                 PrecoUnitario = precoUnitario
             };
         }
+
+        /// <summary>
+        /// Nome do produto (vem da query JOIN).
+        /// </summary>
+        public string? ProductName { get; set; }
+
+        /// <summary>
+        /// URL da imagem do produto (vem da query JOIN).
+        /// </summary>
+        public string? ProductImage { get; set; }
+
+        /// <summary>
+        /// Tamanho da variação (vem da query JOIN).
+        /// </summary>
+        public string? VariationSize { get; set; }
+
+        /// <summary>
+        /// Cor da variação (vem da query JOIN).
+        /// </summary>
+        public string? VariationColor { get; set; }
     }
 }

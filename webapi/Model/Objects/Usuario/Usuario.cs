@@ -103,14 +103,14 @@ namespace DaccApi.Model
         {
             return new Usuario()
             {
-                Nome = requestCreate.Nome,
-                Sobrenome = requestCreate.Sobrenome,
+                Nome = requestCreate.FirstName,
+                Sobrenome = requestCreate.LastName,
                 Ra = requestCreate.Ra,
                 Email = requestCreate.Email,
-                Telefone = requestCreate.Telefone,
-                InscritoNoticia = requestCreate.InscritoNoticia,
-                SenhaHash = requestCreate.Senha,
-                Curso = requestCreate.Curso
+                Telefone = requestCreate.Phone,
+                InscritoNoticia = requestCreate.IsSubscribedToNews,
+                SenhaHash = requestCreate.Password,
+                Curso = requestCreate.Course
             };
         }
 
@@ -121,12 +121,12 @@ namespace DaccApi.Model
         {
             return new Usuario()
             {
-                Nome = request.Nome,
-                Sobrenome = request.Sobrenome,
+                Nome = request.Name,
+                Sobrenome = request.LastName,
                 Email = request.Email,
-                Curso = request.Curso,
-                Telefone = request.Telefone,
-                InscritoNoticia = request.InscritoNoticia
+                Curso = request.Course,
+                Telefone = request.Phone,
+                InscritoNoticia = request.IsSubscribedToNews
             };
         }
 
@@ -145,6 +145,10 @@ namespace DaccApi.Model
         {
             return new ResponseUsuario(this);
         }
+        
+
+        [NotMapped]
+        public int TotalCount { get; set; }
         
     }
 }

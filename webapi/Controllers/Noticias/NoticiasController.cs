@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using DaccApi.Infrastructure.Authentication;
 using DaccApi.Model.Requests;
 using System.Threading.Tasks;
+using DaccApi.Model.Responses;
+using DaccApi.Responses;
 
 namespace DaccApi.Controllers.Noticias
 {
@@ -34,12 +36,28 @@ namespace DaccApi.Controllers.Noticias
         [PublicGetResponses]
         [AllowAnonymous]
         [HttpGet("")]
-        public async Task<IActionResult> GetAllNoticias()
+        public async Task<IActionResult> GetAllNoticias([FromQuery] RequestQueryNoticia requestQuery, ILogger<NoticiasController> logger)
         {
-            var response = await _noticiasServices.GetAllNoticias();
-            return response;
+            try
+            {
+                var (noticias, totalCount) = await _noticiasServices.GetAllNoticias(requestQuery);
+
+                if (noticias.Count == 0)
+                {
+                    return ResponseHelper.CreateSuccessResponse(ResponseSuccess.NO_CONTENT.WithData(new List<Noticia>()));
+                }
+
+                var response = noticias.Select((noticia) =>  new ResponseNoticia(noticia));
+
+                return ResponseHelper.CreateSuccessResponse(ResponseSuccess.OK.WithData( new { news = response, totalCount } ));
+            }
+            catch (Exception ex)
+            {
+                return ResponseHelper.CreateErrorResponse(ResponseError.INTERNAL_SERVER_ERROR,
+                    "Ocorreu um erro ao obter as notícias.");
+            }
         }
-        
+
         /// <summary>
         /// Cria uma nova notícia.
         /// </summary>
@@ -58,12 +76,12 @@ namespace DaccApi.Controllers.Noticias
         /// </summary>
         [HttpPatch("{id:guid}/image")]
         [HasPermission(AppPermissions.Noticias.Update)]
-        public async Task<IActionResult> UpdateNoticiaImage([FromRoute] Guid id, [FromForm] ImageRequest request)
+        public async Task<IActionResult> UpdateNoticiaImage([FromRoute] Guid id, [FromBody] ImageRequest request)
         {
             var response = await _noticiasServices.UpdateNoticiaImage(id, request);
             return response;
         }
-        
+
         /// <summary>
         /// Obtém uma notícia específica pelo seu ID.
         /// </summary>
@@ -75,7 +93,7 @@ namespace DaccApi.Controllers.Noticias
             var response = await _noticiasServices.GetNoticiaById(id);
             return response;
         }
-        
+
         /// <summary>
         /// Deleta uma notícia existente.
         /// </summary>
@@ -87,14 +105,26 @@ namespace DaccApi.Controllers.Noticias
             var response = await _noticiasServices.DeleteNoticia(id);
             return response;
         }
-        
+
         /// <summary>
         /// Atualiza uma notícia existente.
         /// </summary>
         [AuthenticatedPatchResponses]
         [HttpPatch("{id:guid}")]
         [HasPermission(AppPermissions.Noticias.Update)]
-        public async Task<IActionResult> UpdateNoticia([FromRoute] Guid id, [FromForm] RequestNoticia request)
+        public async Task<IActionResult> UpdateNoticia([FromRoute] Guid id, [FromBody] RequestNoticia request)
+        {
+            var response = await _noticiasServices.UpdateNoticia(id, request);
+            return response;
+        }
+
+        /// <summary>
+        /// Atualiza uma notícia existente via JSON.
+        /// </summary>
+        [AuthenticatedPatchResponses]
+        [HttpPatch("{id:guid}/json")]
+        [HasPermission(AppPermissions.Noticias.Update)]
+        public async Task<IActionResult> UpdateNoticiaJson([FromRoute] Guid id, [FromBody] RequestNoticia request)
         {
             var response = await _noticiasServices.UpdateNoticia(id, request);
             return response;

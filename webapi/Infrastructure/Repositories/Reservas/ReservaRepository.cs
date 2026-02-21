@@ -164,20 +164,25 @@ namespace DaccApi.Infrastructure.Repositories.Reservas
         /// <summary>
         /// Cria múltiplas reservas de produto em lote de forma atômica.
         /// </summary>
+        /// <summary>
+        /// Cria múltiplas reservas de produto em lote de forma atômica.
+        /// </summary>
         public async Task<int> CreateReservasLoteAtomica(List<ProdutoReserva> reservas, IDbTransaction? transaction = null)
         {
-            try
+            var sql = _repositoryDapper.GetQueryNamed("CreateReservasLoteAtomica");
+            var totalReservado = 0;
+
+            foreach (var r in reservas)
             {
-                var sql = _repositoryDapper.GetQueryNamed("CreateReservasLoteAtomica");
-                var parameters = reservas.Select(r => new
+                var parameters = new
                 {
                     ProdutoVariacaoId = r.ProductVariationId,
                     PedidoId = r.OrderId,
                     Quantidade = r.Quantity,
                     Ativo = r.IsActive,
                     DataExpira = r.ExpiresAt
-                }).ToArray();
-                
+                };
+
                 IEnumerable<int> result;
                 if (transaction != null)
                 {
@@ -188,12 +193,10 @@ namespace DaccApi.Infrastructure.Repositories.Reservas
                     result = await _repositoryDapper.QueryAsync<int>(sql, parameters);
                 }
                 
-                return result.Sum(); // Soma todas as quantidades reservadas com sucesso
+                totalReservado += result.FirstOrDefault();
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao criar reservas atômicas: " + ex.Message);
-            }
+            
+            return totalReservado;
         }
 
         /// <summary>

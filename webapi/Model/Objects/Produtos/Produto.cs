@@ -32,13 +32,13 @@ namespace DaccApi.Model
         /// Obtém ou define o preço atual do produto.
         /// </summary>
         [Column("preco")]
-        public double Preco { get; set; }
+        public decimal Preco { get; set; }
 
         /// <summary>
         /// Obtém ou define o preço original do produto (para promoções).
         /// </summary>
         [Column("preco_original")]
-        public double? PrecoOriginal { get; set; }
+        public decimal? PrecoOriginal { get; set; }
 
         /// <summary>
         /// Obtém ou define a categoria do produto.
@@ -100,7 +100,7 @@ namespace DaccApi.Model
         public bool Destaque { get; set; }
         
         [NotMapped]
-        public double AvaliacaoMedia { get; set; }
+        public decimal AvaliacaoMedia { get; set; }
         
         [NotMapped]
         public int NumeroAvaliacoes { get; set; }
@@ -113,6 +113,12 @@ namespace DaccApi.Model
         
         [NotMapped]
         public ProdutoInformacaoEnvio? InformacaoEnvio { get; set; }
+
+        /// <summary>
+        /// Obtém ou define a contagem total de itens (usado para paginação).
+        /// </summary>
+        [NotMapped]
+        public int TotalCount { get; set; }
 
         /// <summary>
         /// Mapeia uma variação de produto para seu objeto de resposta.
@@ -134,60 +140,61 @@ namespace DaccApi.Model
         /// <summary>
         /// Cria um objeto Produto a partir de uma requisição de criação.
         /// </summary>
-        public static Produto FromRequest(RequestCreateProduto request, Guid productId)
+        public static Produto FromRequest(RequestCreateProduto request, Guid productId, Guid categoryId, Guid? subcategoryId)
         {
             return new Produto
             {
                 Id = productId,
-                Nome = request.Nome,
-                Descricao = request.Descricao,
-                Categoria = Guid.Parse(request.Categoria),
-                Subcategoria = !string.IsNullOrEmpty(request.Subcategoria) ? Guid.Parse(request.Subcategoria) : null,
-                Preco = request.Preco ?? 0,
-                PrecoOriginal = request.Preco,
+                Nome = request.Name,
+                Descricao = request.Description,
+                Categoria = categoryId,
+                Subcategoria = subcategoryId,
+                Preco = Convert.ToDecimal(request.Price),
+                PrecoOriginal = Convert.ToDecimal(request.Price),
                 Ativo = true,
                 DataCriacao = DateTime.UtcNow,
-                DescricaoDetalhada = request.DescricaoDetalhada,
-                PerfeitoPara = request.PerfeitoPara,
-                Destaque = request.Destaque,
-                Especificacoes = request.Especificacoes?.Select(e => new ProdutoEspecificacao { Id = Guid.NewGuid(), ProdutoId = productId, Nome = e.Name, Valor = e.Value }).ToList(),
-                InformacaoEnvio = request.InformacaoEnvio != null ? new ProdutoInformacaoEnvio
-                {
-                    Id = Guid.NewGuid(),
-                    ProdutoId = productId,
-                    FreteGratis = request.InformacaoEnvio.FreeShipping,
-                    DiasEstimados = request.InformacaoEnvio.EstimatedDays,
-                    CustoEnvio = request.InformacaoEnvio.ShippingCost,
-                    PoliticaDevolucao = request.InformacaoEnvio.ReturnPolicy,
-                    Garantia = request.InformacaoEnvio.Warranty
-                } : null
+                DescricaoDetalhada = request.DetailedDescription,
+                PerfeitoPara = request.PerfectFor,
+                Destaque = request.Featured,
+                Especificacoes = request.Specifications?.Select(e => new ProdutoEspecificacao { Id = Guid.NewGuid(), ProdutoId = productId, Nome = e.Name, Valor = e.Value }).ToList()
+                // ShippingInfo field is disabled in RequestCreateProduto
+                // InformacaoEnvio = request.ShippingInfo != null ? new ProdutoInformacaoEnvio
+                // {
+                //     Id = Guid.NewGuid(),
+                //     ProdutoId = productId,
+                //     FreteGratis = request.ShippingInfo.FreeShipping,
+                //     DiasEstimados = request.ShippingInfo.EstimatedDays,
+                //     CustoEnvio = request.ShippingInfo.ShippingCost,
+                //     PoliticaDevolucao = request.ShippingInfo.ReturnPolicy,
+                //     Garantia = request.ShippingInfo.Warranty
+                // } : null
             };
         }
 
         /// <summary>
         /// Atualiza as propriedades do produto a partir de uma requisição de atualização.
         /// </summary>
-        public void UpdateFromRequest(RequestUpdateProduto request)
+        public void UpdateFromRequest(RequestUpdateProduto request, Guid? categoryId = null, Guid? subcategoryId = null)
         {
-            if (request.Nome != null) Nome = request.Nome;
-            if (request.Descricao != null) Descricao = request.Descricao;
-            if (request.Categoria != null) Categoria = Guid.Parse(request.Categoria);
-            if (request.Subcategoria != null) Subcategoria = !string.IsNullOrEmpty(request.Subcategoria) ? Guid.Parse(request.Subcategoria) : null;
-            if (request.Preco.HasValue) Preco = request.Preco.Value;
-            if (request.PrecoOriginal.HasValue) PrecoOriginal = request.PrecoOriginal.Value;
-            if (request.DescricaoDetalhada != null) DescricaoDetalhada = request.DescricaoDetalhada;
-            if (request.PerfeitoPara != null) PerfeitoPara = request.PerfeitoPara;
-            if (request.Destaque.HasValue) Destaque = request.Destaque.Value;
-            if (request.Especificacoes != null) Especificacoes = request.Especificacoes.Select(e => new ProdutoEspecificacao { Id = Guid.NewGuid(), ProdutoId = Id, Nome = e.Name, Valor = e.Value }).ToList();
-            if (request.InformacaoEnvio != null) InformacaoEnvio = new ProdutoInformacaoEnvio
+            if (request.Name != null) Nome = request.Name;
+            if (request.Description != null) Descricao = request.Description;
+            if (categoryId.HasValue) Categoria = categoryId.Value;
+            if (request.Subcategory != null) Subcategoria = subcategoryId;
+            if (request.Price.HasValue) Preco = Convert.ToDecimal(request.Price.Value);
+            if (request.OriginalPrice.HasValue) PrecoOriginal = Convert.ToDecimal(request.OriginalPrice.Value);
+            if (request.DetailedDescription != null) DescricaoDetalhada = request.DetailedDescription;
+            if (request.PerfectFor != null) PerfeitoPara = request.PerfectFor;
+            if (request.Featured.HasValue) Destaque = request.Featured.Value;
+            if (request.Specifications != null) Especificacoes = request.Specifications.Select(e => new ProdutoEspecificacao { Id = Guid.NewGuid(), ProdutoId = Id, Nome = e.Name, Valor = e.Value }).ToList();
+            if (request.ShippingInfo != null) InformacaoEnvio = new ProdutoInformacaoEnvio
             {
                 Id = InformacaoEnvio?.Id ?? Guid.NewGuid(),
                 ProdutoId = Id,
-                FreteGratis = request.InformacaoEnvio.FreeShipping,
-                DiasEstimados = request.InformacaoEnvio.EstimatedDays,
-                CustoEnvio = request.InformacaoEnvio.ShippingCost,
-                PoliticaDevolucao = request.InformacaoEnvio.ReturnPolicy,
-                Garantia = request.InformacaoEnvio.Warranty
+                FreteGratis = request.ShippingInfo.FreeShipping,
+                DiasEstimados = request.ShippingInfo.EstimatedDays,
+                CustoEnvio = request.ShippingInfo.ShippingCost,
+                PoliticaDevolucao = request.ShippingInfo.ReturnPolicy,
+                Garantia = request.ShippingInfo.Warranty
             };
             
             DataAtualizacao = DateTime.UtcNow;
@@ -223,10 +230,10 @@ namespace DaccApi.Model
         public bool FreteGratis { get; set; }
         
         [Column("dias_estimados")]
-        public string DiasEstimados { get; set; }
+        public int DiasEstimados { get; set; }
         
         [Column("custo_envio")]
-        public double? CustoEnvio { get; set; }
+        public decimal? CustoEnvio { get; set; }
         
         [Column("politica_devolucao")]
         public string PoliticaDevolucao { get; set; }

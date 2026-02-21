@@ -1,4 +1,5 @@
 using DaccApi.Model;
+using DaccApi.Model.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DaccApi.Services.Products
@@ -19,5 +20,11 @@ namespace DaccApi.Services.Products
         public Task<IActionResult> GetImageAsync(Guid imageId);
         public Task<IActionResult> UpdateImageAsync(Guid imageId, RequestUpdateProdutoImagem request);
         public Task<IActionResult> DeleteImageAsync(Guid imageId);
+        public Task<IActionResult> GetSubcategories();
+        public Task<IActionResult> CreateSubcategory(ProdutoSubcategoria subcategoria);
+        public Task<ResponseProduto> BatchUpdateProductInfo(RequestBatchUpdateProduto request);
+        public Task<ResponseProduto> BatchCreateProduct(RequestBatchCreateProduto request);
+        public Task<IActionResult> GetAvailableSizesAsync();
+        public Task<IActionResult> GetAvailableColorsAsync();
     }
 }

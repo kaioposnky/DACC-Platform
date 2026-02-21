@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2">
+	<query name="GetAllCursos">
+		SELECT 
+			c.id as Id,
+			c.nome as Nome,
+			COUNT(*) OVER() as TotalCount
+		FROM curso c
+		ORDER BY c.nome ASC
+	</query>
+
+	<query name="GetCursoById">
+		SELECT 
+			c.id as Id,
+			c.nome as Nome
+		FROM curso c
+		WHERE c.id = @id
+	</query>
+
+	<query name="GetCursoByNome">
+		SELECT 
+			c.id as Id,
+			c.nome as Nome
+		FROM curso c
+		WHERE LOWER(c.nome) = LOWER(@nome)
+	</query>
+</hibernate-mapping>
