@@ -51,8 +51,14 @@ export const ProfileSecurityForm = ({
 
         if (!formData.newPassword) {
             newErrors.newPassword = 'A nova senha é obrigatória';
-        } else if (formData.newPassword.length < 6) {
-            newErrors.newPassword = 'A nova senha deve ter no mínimo 6 caracteres';
+        } else if (formData.newPassword.length < 8) {
+            newErrors.newPassword = 'A nova senha deve ter no mínimo 8 caracteres';
+        } else if (!/[A-Z]/.test(formData.newPassword)) {
+            newErrors.newPassword = 'A nova senha deve conter pelo menos uma letra maiúscula';
+        } else if (!/[a-z]/.test(formData.newPassword)) {
+            newErrors.newPassword = 'A nova senha deve conter pelo menos uma letra minúscula';
+        } else if (!/[0-9]/.test(formData.newPassword)) {
+            newErrors.newPassword = 'A nova senha deve conter pelo menos um número';
         }
 
         if (!formData.confirmPassword) {
