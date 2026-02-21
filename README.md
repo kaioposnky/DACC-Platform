@@ -1,6 +1,6 @@
-# DACC Platform
+# DACC-FEI Platform
 
-Bem-vindo ao repositório unificado da Plataforma Digital Acadêmica do DACC (Diretório Acadêmico de Ciência da Computação).
+Bem-vindo ao repositório unificado da Plataforma Digital Acadêmica do DACC (Diretório Acadêmico de Ciência da Computação) da FEI.
 
 Este monorepo agrupa tanto o back-end quanto o front-end da solução.
 
