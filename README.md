@@ -8,8 +8,19 @@ Este monorepo agrupa tanto o back-end quanto o front-end da solução.
 
 | Módulo | Tecnologia | Descrição | Documentação |
 | :--- | :--- | :--- | :--- |
-| **API** | .NET 7 / C# | API REST completa com gestão acadêmica e e-commerce. | [Acessar Documentação](./webapi/README.md) |
-| **Website** | Next.js / React | Interface frontend utilizando Atomic Design. | [Acessar Documentação](./website/README.md) |
+| **API** | .NET 8 / C# | API REST completa com gestão acadêmica e e-commerce. | [Ver Detalhes](./webapi/README.md) |
+| **Website** | Next.js 15 / TS | Interface moderna com Tailwind CSS e Atomic Design. | [Ver Detalhes](./website/README.md) |
+
+## 💻 Frontend
+
+Para detalhes sobre a arquitetura, componentes e scripts do frontend, acesse a documentação dedicada:
+👉 **[Documentação do Website](./website/README.md)**
+
+## ⚙️ Backend
+
+A API central do projeto gerencia toda a lógica de negócio, autenticação e integrações. Para detalhes técnicos, stack e arquitetura do servidor:
+👉 **[Documentação do Backend](./webapi/README.md)**
+👉 **[Documentação da API (Endpoints)](./webapi/DOCUMENTACAO_API.md)**
 
 ## 🚀 Como Rodar
 
