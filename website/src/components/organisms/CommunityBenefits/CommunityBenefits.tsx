@@ -1,12 +1,12 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { 
-  AcademicCapIcon, 
-  UsersIcon, 
-  ShoppingBagIcon, 
+import {
+  AcademicCapIcon,
+  UsersIcon,
+  ShoppingBagIcon,
   CalendarIcon,
-  BookmarkIcon 
+  BookmarkIcon
 } from '@heroicons/react/24/outline';
 
 interface Benefit {
@@ -23,23 +23,23 @@ export default function CommunityBenefits({ className = '' }: CommunityBenefitsP
   const benefits: Benefit[] = [
     {
       icon: <UsersIcon className="w-6 h-6 text-yellow-400" />,
-      title: 'Connect with Peers',
-      description: 'Join a community of passionate computer science students'
+      title: 'Conecte-se com Colegas',
+      description: 'Junte-se a uma comunidade de estudantes apaixonados por tecnologia'
     },
     {
       icon: <ShoppingBagIcon className="w-6 h-6 text-yellow-400" />,
-      title: 'Exclusive Shop Access',
-      description: 'Get access to student discounts and exclusive merchandise'
+      title: 'Acesso Exclusivo à Loja',
+      description: 'Tenha acesso a descontos estudantis e produtos exclusivos'
     },
     {
       icon: <CalendarIcon className="w-6 h-6 text-yellow-400" />,
-      title: 'Event Notifications',
-      description: 'Stay updated on hackathons, workshops, and tech events'
+      title: 'Notificações de Eventos',
+      description: 'Fique por dentro de hackathons, workshops e eventos de tecnologia'
     },
     {
       icon: <BookmarkIcon className="w-6 h-6 text-yellow-400" />,
-      title: 'Save Your Progress',
-      description: 'Track your learning journey and save favorite content'
+      title: 'Salve seu Progresso',
+      description: 'Acompanhe sua jornada de aprendizado e salve seus conteúdos favoritos'
     }
   ];
 
@@ -89,7 +89,7 @@ export default function CommunityBenefits({ className = '' }: CommunityBenefitsP
         <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-400 rounded-full mb-6">
           <AcademicCapIcon className="w-8 h-8 text-blue-900" />
         </div>
-        <h2 className="text-3xl font-bold mb-4">Join Our Community</h2>
+        <h2 className="text-3xl font-bold mb-4">Junte-se à Nossa Comunidade</h2>
       </motion.div>
 
       {/* Benefits List */}
@@ -124,16 +124,16 @@ export default function CommunityBenefits({ className = '' }: CommunityBenefitsP
         className="grid grid-cols-3 gap-8 text-center"
       >
         <div>
-          <div className="text-3xl font-bold text-yellow-400 mb-2">1,200+</div>
-          <div className="text-sm text-blue-100">Students</div>
+          <div className="text-3xl font-bold text-yellow-400 mb-2">1.200+</div>
+          <div className="text-sm text-blue-100">Alunos</div>
         </div>
         <div>
           <div className="text-3xl font-bold text-yellow-400 mb-2">50+</div>
-          <div className="text-sm text-blue-100">Projects</div>
+          <div className="text-sm text-blue-100">Projetos</div>
         </div>
         <div>
           <div className="text-3xl font-bold text-yellow-400 mb-2">25+</div>
-          <div className="text-sm text-blue-100">Events</div>
+          <div className="text-sm text-blue-100">Eventos</div>
         </div>
       </motion.div>
     </div>
