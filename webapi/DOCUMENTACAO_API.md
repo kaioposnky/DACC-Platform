@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-A DaccApi é uma API REST completa construída em .NET 7.0 para gerenciar uma plataforma digital acadêmica do Diretório Acadêmico de Ciência da Computação (DACC). A API oferece funcionalidades integradas de gestão acadêmica, e-commerce e gestão de conteúdo.
+A DaccApi is a complete REST API built with **.NET 8.0** to manage a digital academic platform for the Diretório Acadêmico de Ciência da Computação (DACC). The API offers integrated features for academic management, e-commerce, and content management.
 
 ## Base URL
 
@@ -446,6 +446,42 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
       "registryDate": "08/08/2025"
     }
     ```
+
+## Corpo Docente (Faculty/Professores)
+
+Este módulo gerencia as informações dos professores e membros do corpo docente.
+
+### **GET /api/professores**
+* **Descrição:** Lista todos os professores com suporte a busca.
+* **Autorização:** Público
+* **Query Params:**
+    | Nome | Tipo | Descrição |
+    |------|------|-----------|
+    | `SearchQuery` | `string` | Busca por nome ou descrição |
+
+### **GET /api/professores/{id}**
+* **Descrição:** Obtém detalhes de um professor específico.
+* **Autorização:** Público
+
+### **POST /api/professores**
+* **Descrição:** Cadastra um novo professor.
+* **Autorização:** Requer permissão `professores.create`
+* **Body (`multipart/form-data` ou `application/json`):**
+    | Campo | Tipo | Descrição |
+    |-------|------|-----------|
+    | `Name` | `string` | Nome completo |
+    | `Description` | `string` | Biografia/Descrição |
+    | `ImageURL` | `string` | URL ou Base64 da imagem |
+    | `Lattes` | `string` | Link do currículo Lattes |
+    | `LinkedIn` | `string` | Link do perfil LinkedIn |
+
+### **PATCH /api/professores/{id}**
+* **Descrição:** Atualiza dados de um professor.
+* **Autorização:** Requer permissão `professores.update`
+
+### **DELETE /api/professores/{id}**
+* **Descrição:** Remove um professor do sistema.
+* **Autorização:** Requer permissão `professores.delete`
 ## Cursos
 
 ### **GET /api/cursos**
@@ -567,6 +603,51 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           }
         }
         ```
+
+---
+
+## Anúncios (Banners/Promotions)
+
+Módulo para gerenciamento de banners e anúncios na plataforma.
+
+### **GET /api/anuncios**
+* **Descrição:** Lista todos os anúncios ativos.
+* **Autorização:** Público
+* **Response:**
+    ```json
+    {
+      "success": true,
+      "data": [
+        {
+          "id": "uuid",
+          "title": "Promoção de Verão",
+          "imageSrc": "url_da_imagem",
+          "icon": "icon_name",
+          "details": ["10% OFF", "Frete Grátis"],
+          "author": { "name": "Admin" }
+        }
+      ]
+    }
+    ```
+
+### **POST /api/anuncios**
+* **Descrição:** Cria um novo anúncio.
+* **Autorização:** Requer permissão `anuncios.create`
+* **Body:**
+    | Campo | Tipo | Descrição |
+    |-------|------|-----------|
+    | `Title` | `string` | Título do anúncio |
+    | `ImageSrc` | `string` | URL da imagem (Base64 suportado) |
+    | `Icon` | `string` | Nome do ícone (Lucide/Heroicons) |
+    | `Details` | `array` | Lista de strings com detalhes |
+
+### **PATCH /api/anuncios/{id}**
+* **Descrição:** Atualiza um anúncio existente.
+* **Autorização:** Requer permissão `anuncios.update`
+
+### **DELETE /api/anuncios/{id}**
+* **Descrição:** Remove um anúncio.
+* **Autorização:** Requer permissão `anuncios.delete`
 
 ---
 
@@ -727,6 +808,31 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
           ]
         }
         ```
+
+### **POST /api/products/batch-create**
+
+* **Descrição:** Criação em massa de produtos, incluindo especificações, variações e imagens.
+* **Autorização:** Requer permissão `produtos.create`
+* **Body (`application/json`):**
+    | Campo | Tipo | Descrição |
+    |-------|------|-----------|
+    | `items` | `array` | Lista de produtos a serem criados |
+
+* **Exemplo de Item:**
+    ```json
+    {
+      "name": "Camiseta DACC",
+      "description": "...",
+      "price": 29.90,
+      "category": "Clothing",
+      "variations": [
+        { "color": "Blue", "size": "M", "stock": 50 }
+      ]
+    }
+    ```
+
+* **Respostas:**
+    * **`201 Created` - Sucesso**
 
 ### **GET /api/products/search**
 
@@ -1566,36 +1672,36 @@ Todas as respostas da API seguem o padrão `ApiResponse`:
 
 ## Cupons (Descontos)
 
-### **GET /api/coupons**
+### **GET /api/cupons** (CUPONS_VIEW)
 * **Descrição:** Lista todos os cupons cadastrados.
 * **Autorização:** Requer permissão `cupons.view`
 
-### **GET /api/coupons/{id}**
+### **GET /api/cupons/{id}** (CUPONS_VIEW)
 * **Descrição:** Obtém detalhes de um cupom específico pelo ID.
-* **Autorização:** Requer permissão `cupons.view`
 
-### **POST /api/coupons**
+### **POST /api/cupons** (CUPONS_CREATE)
 * **Descrição:** Cria um novo cupom de desconto.
 * **Autorização:** Requer permissão `cupons.create`
-* **Parâmetros da Requisição (Body):**
-    | Campo | Tipo | Obrigatório | Descrição |
-    |-------|------|-------------|-----------|
-    | `code` | `string` | Sim | Código único do cupom |
-    | `discountValue` | `decimal` | Sim | Valor do desconto |
-    | `type` | `int` | Sim | `0` (Fixo), `1` (Porcentagem) |
-    | `expirationDate` | `datetime` | Não | Data de expiração |
-    | `usageLimit` | `int` | Não | Limite máximo de utilizadores |
+* **Body:**
+    | Campo | Tipo | Descrição |
+    |-------|------|-----------|
+    | `Code` | `string` | Código único (ex: PROMO10) |
+    | `DiscountType` | `int` | `0` (Fixo), `1` (Porcentagem) |
+    | `Value` | `decimal` | Valor do desconto |
+    | `ExpirationDate` | `datetime` | Data de validade |
+    | `UsageLimit` | `int` | Limite de usos total |
+    | `IsActive` | `boolean` | Status do cupom |
 
-### **PATCH /api/coupons/{id}**
-* **Descrição:** Atualiza as informações de um cupom existente.
+### **PATCH /api/cupons/{id}** (CUPONS_UPDATE)
+* **Descrição:** Atualiza as informações de um cupom.
 * **Autorização:** Requer permissão `cupons.update`
 
-### **DELETE /api/coupons/{id}**
-* **Descrição:** Remove um cupom do sistema.
+### **DELETE /api/cupons/{id}** (CUPONS_DELETE)
+* **Descrição:** Remove um cupom.
 * **Autorização:** Requer permissão `cupons.delete`
 
 ### **GET /api/orders/validate-coupon/{code}**
-* **Descrição:** Valida se um cupom é válido e retorna seus detalhes para aplicação no pedido.
+* **Descrição:** Valida se um código de cupom é válido para o usuário atual e retorna o desconto.
 * **Autorização:** Autenticado
 
 ---
