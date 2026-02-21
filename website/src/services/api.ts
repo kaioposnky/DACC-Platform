@@ -21,7 +21,9 @@ import {
   ProductSize,
   ProductColor,
   ProjectRequest,
-  EventRequest
+  EventRequest,
+  CreateOrderRequest,
+  CreateOrderResponse
 } from '@/types';
 import { DashboardStats } from '@/types/dashboard';
 import { storageService } from "@/services/storage";
@@ -974,6 +976,13 @@ class ApiService {
       body: JSON.stringify(status),
     });
     return data.order;
+  }
+
+  async createOrder(request: CreateOrderRequest): Promise<CreateOrderResponse> {
+    return this.request<CreateOrderResponse>('/orders', {
+      method: 'POST',
+      body: JSON.stringify(request),
+    });
   }
   // Product Reviews
 

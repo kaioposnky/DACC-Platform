@@ -72,15 +72,14 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         );
       } else {
         // Add new item
+        const matchingVariation = product.variations?.find(v => (v.size === size || !size) && (v.color === color || !color));
         const newItem: CartItem = {
           id: `${product.id}-${Date.now()}-${Math.random()}`,
           productId: product.id,
+          variationId: matchingVariation?.id || '',
           name: product.name,
           price: product.price,
-          image: (() => {
-            const matchingVariation = product.variations?.find(v => v.size === size && v.color === color);
-            return matchingVariation?.images?.[0]?.url || product.image || product.variations?.[0]?.images?.[0]?.url || "";
-          })(),
+          image: matchingVariation?.images?.[0]?.url || product.image || product.variations?.[0]?.images?.[0]?.url || "",
           quantity,
           selectedSize: size,
           selectedColor: color,

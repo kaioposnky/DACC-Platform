@@ -9,6 +9,8 @@ import { OrderSummary } from '../OrderSummary';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import { apiService } from '@/services/api';
+import { CreateOrderRequest, DeliveryMethodType } from '@/types';
 
 interface CheckoutFormProps {
   className?: string;
@@ -52,7 +54,7 @@ export const CheckoutForm = ({ className = '' }: CheckoutFormProps) => {
     // Validate required delivery fields
     const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'address', 'city', 'state', 'zipCode'];
     const missingFields = requiredFields.filter(field => !deliveryData[field as keyof DeliveryFormData]);
-    
+
     if (missingFields.length > 0) {
       setError('Por favor, preencha todos os campos obrigatórios de entrega');
       return;
@@ -62,7 +64,7 @@ export const CheckoutForm = ({ className = '' }: CheckoutFormProps) => {
     if ((paymentData.method === 'credit' || paymentData.method === 'debit')) {
       const requiredPaymentFields = ['cardNumber', 'expiryDate', 'cvv', 'nameOnCard'];
       const missingPaymentFields = requiredPaymentFields.filter(field => !paymentData[field as keyof PaymentData]);
-      
+
       if (missingPaymentFields.length > 0) {
         setError('Por favor, preencha todos os dados do cartão');
         return;
@@ -75,26 +77,36 @@ export const CheckoutForm = ({ className = '' }: CheckoutFormProps) => {
     }
 
     setIsSubmitting(true);
+    setError(null);
 
     try {
-      // Simulate API call to place order
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Here you would typically:
-      // 1. Send order data to your backend
-      // 2. Process payment
-      // 3. Send confirmation email
-      // 4. Clear cart
-      // 5. Redirect to confirmation page
+      // 1. Prepare request
+      const orderItems = cart.items.map(item => ({
+        id: item.variationId,
+        productId: item.productId,
+        quantity: item.quantity
+      }));
 
-      // Clear cart and redirect to confirmation
-      clearCart();
-      router.push('/checkout/confirmation');
-      
-    } catch (error) {
-      console.error('Error placing order:', error);
-      setError('Erro ao processar pedido. Tente novamente.');
-    } finally {
+      const orderRequest: CreateOrderRequest = {
+        items: orderItems,
+        deliveryMethod: DeliveryMethodType.CampusDelivery
+      };
+
+      // 2. Call API to create order
+      const response = await apiService.createOrder(orderRequest);
+
+      if (response && response.paymentUrl) {
+        // Clear cart before redirecting
+        clearCart();
+
+        // 3. Redirect to Mercado Pago
+        window.location.href = response.paymentUrl;
+      } else {
+        throw new Error('URL de pagamento não recebida do servidor.');
+      }
+    } catch (err: any) {
+      console.error('Error placing order:', err);
+      setError(err.message || 'Erro ao processar pedido. Tente novamente.');
       setIsSubmitting(false);
     }
   };
@@ -134,15 +146,15 @@ export const CheckoutForm = ({ className = '' }: CheckoutFormProps) => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Left Column - Delivery Information */}
         <div className="lg:pr-4 col-span-2">
-          <DeliveryInformation 
+          <DeliveryInformation
             onFormChange={handleDeliveryInfoChange}
             className="mb-6"
           />
-          <DeliveryOptions 
+          <DeliveryOptions
             onDeliveryOptionChange={handleDeliveryOptionChange}
             className="mb-6"
           />
-          <PaymentMethod 
+          <PaymentMethod
             onPaymentDataChange={handlePaymentDataChange}
             className="mb-6"
           />
@@ -150,11 +162,11 @@ export const CheckoutForm = ({ className = '' }: CheckoutFormProps) => {
 
         {/* Right Column - Order Summary */}
         <div className="lg:pl-4">
-          <OrderSummary 
+          <OrderSummary
             onPlaceOrder={handlePlaceOrder}
             className="sticky top-8"
           />
-          
+
           {/* Loading overlay */}
           {isSubmitting && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

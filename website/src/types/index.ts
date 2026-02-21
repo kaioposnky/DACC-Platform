@@ -248,6 +248,7 @@ export interface Product {
 export interface CartItem {
   id: string;
   productId: string;
+  variationId: string; // ID da variação específica (cor/tamanho)
   name: string;
   price: number;
   image: string;
@@ -393,4 +394,31 @@ export interface EventRequest {
   actionLink: string;
   eventType: string;
   authorId: string;
+}
+
+// Order Creation Types
+export enum DeliveryMethodType {
+  CampusDelivery = 0
+}
+
+export interface CartItemRequest {
+  id: string; // Variation ID
+  productId: string;
+  quantity: number;
+}
+
+export interface CreateOrderRequest {
+  items: CartItemRequest[];
+  couponCode?: string;
+  deliveryMethod: DeliveryMethodType;
+}
+
+export interface CreateOrderResponse {
+  id: string;
+  userId: string;
+  orderDate: string;
+  status: string;
+  totalAmount: number;
+  paymentUrl: string;
+  orderItems: any[];
 }
