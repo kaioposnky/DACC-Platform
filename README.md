@@ -32,7 +32,7 @@ Agradecimento aos colaboradores que contribuíram para a criação da plataforma
 
 | Avatar | Contribuidor | Área     |
 | :---: | :--- |----------|
-| <img src="https://github.com/kaioposnky.png?size=64" alt="Kaio" width="64"> | [Kaio](https://github.com/kaioposnky) | BackEnd  |
+| <img src="https://github.com/kaioposnky.png?size=64" alt="Kaio" width="64"> | [Kaio](https://github.com/kaioposnky) | BackEnd & Frontend  |
 | <img src="https://github.com/LuiisMarim.png?size=64" alt="Luis" width="64"> | [Luis](https://github.com/LuiisMarim) | BackEnd  |
 | <img src="https://github.com/sergiomos.png?size=64" alt="Sérgio" width="64"> | [Sérgio](https://github.com/sergiomos) | FrontEnd |
 | <img src="https://github.com/Zeengle.png?size=64" alt="Sérgio" width="64"> | [Gabriel](https://github.com/Zeengle) | FrontEnd |
