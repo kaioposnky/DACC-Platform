@@ -12,7 +12,6 @@ Uma API REST completa construída em .NET 8.0 para gerenciar uma **plataforma di
 | Tecnologia                | Finalidade                 |
 |---------------------------|----------------------------|
 | **.NET Core**             | Framework principal da API (v8.0) |
-| **Entity Framework Core** | ORM para Migrations e CRUDs simples |
 | **Dapper**                | Queries de alta performance       |
 | **NHibernate**            | SQL Externo (.hbm.xml)            |
 | **JWT Bearer**            | Autenticação e autorização        |
@@ -63,9 +62,30 @@ DaccApi/
 
 ### ORMs Utilizados
 
-- **Entity Framework Core**: CRUD principal e migrações
 - **Dapper**: Queries otimizadas e performance
 - **NHibernate**: Mapeamentos complexos (arquivos .hbm.xml)
+
+## 🚀 Como Rodar
+
+### Pré-requisitos
+- .NET 8 SDK
+- PostgreSQL
+
+### Passos para Execução
+1. Clone o repositório
+2. Navegue até a pasta `webapi`:
+   ```bash
+   cd webapi
+   ```
+3. Restaure as dependências:
+   ```bash
+   dotnet restore
+   ```
+4. Configure a ConnectionString no `appsettings.json`.
+5. Execute a aplicação:
+   ```bash
+   dotnet run
+   ```
 
 ## 🤝 Contribuição
 
